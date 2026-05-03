@@ -1,23 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { 
-  FileText, 
-  Sparkles, 
-  Copy, 
-  Check, 
+import {
+  FileText,
+  Sparkles,
+  Copy,
+  Check,
   ArrowLeft,
   Loader2,
-  Lock
+  Lock,
+  Square,
+  Globe,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "@/components/hooks/useSession";
 import { usePlanStatus } from "@/components/hooks/usePlanStatus";
 import { usePersonas } from "@/components/hooks/usePersonas";
+import { CopilotKit, useCopilotChatInternal, useCopilotReadable, useCopilotAdditionalInstructions } from "@copilotkit/react-core";
+import { TextMessage, Role } from "@copilotkit/runtime-client-gql";
 
 interface LongFormSection {
   heading: string;
@@ -59,7 +65,84 @@ const LENGTH_OPTIONS = [
   { value: 4000, label: "Extended (~4000 words)", desc: "Comprehensive, 15-20 min" },
 ];
 
+// Gold-standard example injected as additional instructions for the brief agent
+const BRIEF_GOLD_STANDARD = `Here is your GOLD STANDARD example of the exact tone, depth, and structure you must follow:
+
+--- START GOLD STANDARD ---
+## Audience
+
+Senior SDETs, staff engineers, and QA leads running Playwright at scale within CI/CD pipelines. They've shipped feature-flagged code before and rely on LaunchDarkly, Split/Harness, Flagsmith, or a homegrown toggle system. Their pain points: tests that break when flags change in shared environments, parallel workers colliding on flag state, and flag-dependent tests either too tightly coupled to a live SDK or too loosely defined to be trusted. They want architectural patterns, not a beginner introduction to feature flags.
+
+## Outcome
+
+By the end, readers will understand why feature flags break Playwright's isolation model, know the exact mechanisms (route mocking, fixture-level injection, per-worker scoping, globalSetup seeding) to achieve deterministic per-test flag state, and be able to audit their own suites for flag-induced flakiness.
+
+## Key Arguments
+
+1. Playwright isolates browser context, not external flag state — treating them as equivalent is the root cause of flag-induced flakiness.
+2. API-level flag mutation under parallelism is an anti-pattern; fixture-level injection is the correct primitive.
+3. Flag state must be declared like auth state — deterministic and scoped — not read reactively from the environment.
+4. Worker-scoped fixtures are faster but require all co-located tests to share identical flag configurations.
+5. Cross-run observability (not just test isolation) is required to diagnose flag-induced regressions reliably.
+
+## Suggested Structure
+
+### Introduction
+- Open with the core tension: feature flags and Playwright's isolation guarantees operate at different layers.
+- Playwright isolates browser contexts (cookies, localStorage, sessions), but feature flags are evaluated outside that boundary — often via backend services or SDKs. This creates hidden shared state across tests.
+- Example: a beforeAll mutating a flag via an API in Worker 1 can affect what Worker 3 sees mid-test.
+- Acknowledge the common initial response: hardcoding flag state in environments, conditional test logic. Explain why these break under parallelism.
+- [Internal link: Playwright adoption guide]
+
+## H2: Why Feature Flags Break Playwright's Isolation Model
+- Clarify that Playwright isolation is not broken, but limited to browser context. Feature flags introduce state outside that boundary.
+- Flag evaluation paths: server-side evaluation based on user identity; client-side SDK fetching remote config; cookie or header overrides.
+
+### H3: The Shared Environment Problem
+- In shared environments, flag state is effectively global unless scoped per user. Parallel workers operate as the same user, hit the same endpoints, and share flag state.
+- [Code example: beforeAll API mutation creating cross-worker race condition]
+- [Internal link: Debugging Playwright timeouts]
+- [External link: https://currents.dev/posts/debugging-playwright-timeouts]
+
+### H3: Conditional Test Logic as a Code Smell
+- Critique: if (featureEnabled) { … } else { test.skip() }
+- Principle: Flag state should be declared like auth state, not read reactively.
+- [Internal link: Building reliable Playwright tests]
+
+## H2: A Taxonomy of Flag Integration Patterns
+- Live SDK: No isolation, only for smoke tests validating real production config.
+- API-level mutation: Fragile under parallelism, requires strict isolation or serial execution.
+- Network interception (page.route): Full per-test isolation, preferred for client-side flags.
+- Cookie/header overrides: Lightweight and isolated within browser context.
+
+## H2: Fixture-Level Flag Architecture
+
+### H3: The Flag Context Fixture
+- Introduce flagContext / withFlags fixture pattern.
+- [Code example: Route handler registered before page.goto()]
+
+### H3: Worker-Scoped vs Test-Scoped Fixtures
+- Test-scoped: full isolation; higher overhead.
+- Worker-scoped: faster; safe only when all tests share the same flag config.
+
+## H2: Research Anchors
+
+[Playwright Fixtures Docs] — https://playwright.dev/docs/test-fixtures — Official guide to fixture scoping; essential for understanding worker vs test scope
+[LaunchDarkly Playwright Integration] — https://docs.launchdarkly.com — SDK evaluation model and override patterns
+[Currents.dev Playwright Blog] — https://currents.dev/posts — Observability patterns for parallel Playwright runs
+--- END GOLD STANDARD ---
+
+Always output all five sections: Audience, Outcome, Key Arguments, Suggested Structure, Research Anchors. Match this level of specificity and depth.`;
+
 export default function LongFormPage() {
+  return (
+    <CopilotKit runtimeUrl="/api/copilotkit">
+      <LongFormContent />
+    </CopilotKit>
+  );
+}
+
+function LongFormContent() {
   const router = useRouter();
   const { session, sessionLoading } = useSession();
   const { planStatus, stats, isLoading: planLoading } = usePlanStatus(session);
@@ -77,7 +160,7 @@ export default function LongFormPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [article, setArticle] = useState<LongFormArticle | null>(null);
   const [copiedSection, setCopiedSection] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<"input" | "output" | "history">("input");
+  const [activeTab, setActiveTab] = useState<"input" | "output" | "history" | "brief">("input");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
@@ -94,18 +177,14 @@ export default function LongFormPage() {
     if (!session) return;
     setIsLoadingHistory(true);
     try {
-      console.log("[v0] Fetching history with token:", session.access_token?.substring(0, 20));
       const response = await fetch("/api/long-form/history", {
         headers: { "Authorization": `Bearer ${session.access_token}` },
       });
-      console.log("[v0] History response status:", response.status);
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("[v0] History error response:", errorData);
         throw new Error(errorData.error || "Failed to fetch history");
       }
       const data = await response.json();
-      console.log("[v0] History data received:", data);
       setHistory(data.articles || []);
     } catch (error) {
       console.error("[LongForm] History fetch error:", error);
@@ -165,7 +244,6 @@ export default function LongFormPage() {
       setArticle(data.article);
       setActiveTab("output");
       toast.success("Article generated successfully!");
-      // Refresh history in the background so the tab is ready when the user switches to it
       fetchHistory();
     } catch (error: any) {
       console.error("[LongForm] Error:", error);
@@ -242,20 +320,20 @@ export default function LongFormPage() {
             <div className="flex items-center gap-3 mb-2">
               <FileText className="w-8 h-8 text-brand-red" />
               <h1 className="text-3xl font-black uppercase tracking-tighter">
-                Blog Post
+                Long-Form Content
               </h1>
             </div>
-            <p className="text-slate-500">Generate articles optimized for your audience</p>
+            <p className="text-slate-500">Generate articles and structured technical briefs for your audience</p>
           </div>
 
           {!hasAccess ? (
             <div className="bg-white border-4 border-slate-200 rounded-2xl p-8 text-center">
               <Lock className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-slate-900 mb-2">
-                Upgrade to Access Blog Post Generation
+                Upgrade to Access Long-Form Generation
               </h2>
               <p className="text-slate-500 mb-6">
-                Blog post generation is available on Organization and Enterprise plans.
+                Blog post and brief generation are available on Organization and Enterprise plans.
               </p>
               <button
                 onClick={() => router.push("/pricing")}
@@ -267,19 +345,25 @@ export default function LongFormPage() {
           ) : (
             <>
               {/* Tabs */}
-              <div className="flex gap-2 mb-6">
-                {(["input", "output", "history"] as const).map((tab) => (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {(["input", "output", "history", "brief"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     disabled={tab === "output" && !article}
-                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest transition-colors disabled:opacity-50 ${
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-2 ${
                       activeTab === tab
                         ? "bg-brand-navy text-white"
                         : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
                     }`}
                   >
-                    {tab === "history" ? `History (${history.length})` : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {tab === "history" ? `History (${history.length})` :
+                     tab === "brief" ? (
+                       <>
+                         <Sparkles className="w-3.5 h-3.5" />
+                         Technical Brief
+                       </>
+                     ) : tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
                 ))}
               </div>
@@ -508,12 +592,246 @@ export default function LongFormPage() {
                   )}
                 </div>
               )}
+
+              {/* Technical Brief Tab */}
+              {activeTab === "brief" && (
+                <BriefTab />
+              )}
             </>
           )}
         </main>
       </div>
 
       <Footer />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Technical Brief Tab — powered by CopilotKit agent with Google Search
+// ---------------------------------------------------------------------------
+function BriefTab() {
+  const [topic, setTopic] = useState("");
+  const [copiedBrief, setCopiedBrief] = useState(false);
+
+  // In CopilotKit v1.56.5 there is a type/runtime mismatch:
+  //   • TS type says useCopilotChatInternal returns `visibleMessages`
+  //   • Runtime actually returns a property called `messages`
+  // We cast to any and probe both names so the component works regardless.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _chat = useCopilotChatInternal() as any;
+  const messages: any[] = _chat.messages ?? _chat.visibleMessages ?? [];
+  const appendMessage: (...args: any[]) => Promise<void> = _chat.appendMessage;
+  const isLoading: boolean = Boolean(_chat.isLoading);
+  const stopGeneration: () => void = _chat.stopGeneration ?? (() => {});
+
+  // Make the topic available to the agent as context
+  useCopilotReadable({
+    description:
+      "The user's topic, rough notes, or target audience they want turned into a structured technical brief.",
+    value: topic,
+  });
+
+  // Inject the gold-standard example so the agent knows the exact output format
+  useCopilotAdditionalInstructions({
+    instructions: BRIEF_GOLD_STANDARD,
+  });
+
+  const handleGenerate = useCallback(async () => {
+    if (!topic.trim()) {
+      toast.error("Please enter a topic or notes first");
+      return;
+    }
+    try {
+      await appendMessage(
+        new TextMessage({
+          role: Role.User,
+          content: `Generate a comprehensive technical brief for: ${topic}`,
+        })
+      );
+    } catch (err) {
+      console.error("[BriefTab] appendMessage error:", err);
+      toast.error("Failed to start generation. Please try again.");
+    }
+  }, [topic, appendMessage]);
+
+  // Extract the latest assistant message text (messages may be undefined before agent syncs)
+  const briefText: string = (() => {
+    const msgs = messages ?? [];
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      const m = msgs[i] as any;
+      if (m.role === "assistant" && typeof m.content === "string" && m.content.length > 0) {
+        return m.content as string;
+      }
+    }
+    return "";
+  })();
+
+  const handleCopyBrief = useCallback(() => {
+    if (!briefText) return;
+    navigator.clipboard.writeText(briefText);
+    setCopiedBrief(true);
+    toast.success("Brief copied to clipboard");
+    setTimeout(() => setCopiedBrief(false), 2000);
+  }, [briefText]);
+
+  return (
+    <div className="space-y-6">
+      {/* Input card */}
+      <div className="bg-white border-4 border-slate-200 rounded-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">
+              Technical Brief Generator
+            </h2>
+            <p className="text-sm text-slate-500 mt-0.5 flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-green-500" />
+              AI agent with real-time web search · Audience · Outcome · Structure · Research Anchors
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+            Topic / Notes *
+          </label>
+          <textarea
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Describe your topic, paste rough notes, or outline your target audience and their pain points. The more context you give, the more detailed the brief."
+            className="w-full h-44 p-4 border border-slate-200 rounded-xl text-sm resize-none focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-none text-brand-slate placeholder:text-slate-400"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleGenerate}
+            disabled={isLoading || !topic.trim()}
+            className="flex-1 bg-brand-red text-white py-3.5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generating Brief...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                {briefText ? "Regenerate Brief" : "Generate Brief"}
+              </>
+            )}
+          </button>
+
+          {isLoading && (
+            <button
+              onClick={stopGeneration}
+              className="px-4 py-3.5 border-2 border-slate-300 hover:border-red-300 rounded-xl text-slate-600 hover:text-brand-red transition-colors font-bold text-sm flex items-center gap-2"
+            >
+              <Square className="w-4 h-4" />
+              Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Streaming / completed output */}
+      {(briefText || isLoading) && (
+        <div className="bg-white border-4 border-slate-200 rounded-2xl overflow-hidden">
+          {/* Output header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <div className="flex items-center gap-2">
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-brand-red" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+                    Writing Brief...
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 text-green-500" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+                    Brief Ready
+                  </span>
+                </>
+              )}
+            </div>
+            {briefText && !isLoading && (
+              <button
+                onClick={handleCopyBrief}
+                className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors"
+              >
+                {copiedBrief ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-400" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Copy Brief
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Rendered markdown output */}
+          <div className="p-6 md:p-8">
+            <div className="prose prose-slate prose-sm md:prose-base max-w-none
+              prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
+              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-slate-100
+              prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
+              prose-p:text-slate-700 prose-p:leading-relaxed
+              prose-li:text-slate-700 prose-li:leading-relaxed
+              prose-strong:text-slate-900
+              prose-a:text-brand-red prose-a:no-underline hover:prose-a:underline
+              prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:text-slate-800
+            ">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {briefText}
+              </ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Footer copy button (repeated for convenience on long briefs) */}
+          {briefText && !isLoading && (
+            <div className="px-6 pb-6 flex justify-end">
+              <button
+                onClick={handleCopyBrief}
+                className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors"
+              >
+                {copiedBrief ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-400" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Copy Brief
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!briefText && !isLoading && (
+        <div className="text-center py-20 text-slate-400">
+          <div className="relative inline-block mb-6">
+            <FileText className="w-14 h-14 opacity-20" />
+            <Globe className="w-5 h-5 text-green-500 absolute -bottom-1 -right-1" />
+          </div>
+          <p className="font-bold text-slate-500 text-lg">Enter your topic above</p>
+          <p className="text-sm mt-2 max-w-sm mx-auto">
+            The agent searches the web in real time and returns a structured brief with Audience, Outcome, Key Arguments, Suggested Structure, and Research Anchors.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

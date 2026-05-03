@@ -23,6 +23,7 @@
     "@copilotkit/react-core": "^1.56.5",
     "@copilotkit/react-ui": "^1.56.5",
     "@copilotkit/runtime": "^1.56.5",
+    "@copilotkit/runtime-client-gql": "1.56.5",
     "@google/genai": "^1.46.0",
     "@google/generative-ai": "0.24.1",
     "@mendable/firecrawl-js": "^4.18.0",
