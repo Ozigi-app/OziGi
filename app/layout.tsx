@@ -49,10 +49,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://ozigi.app/opengraph-image.png", // Ensure this matches your actual deployed URL
+        url: "https://ozigi.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Ozigi — Turn raw notes into social posts without sounding like AI",
+        alt: "Ozigi — Content that sounds like a person wrote it",
       },
     ],
   },
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ozigi — AI Content Generator That Sounds Human",
     description: "Drop in raw notes, a PDF, or a URL. Get content or posts for X, LinkedIn, Slack and Discord in your voice — not AI's.",
-    images: ["https://ozigi.app/opengraph-image.png"],
+    images: ["https://ozigi.app/og-image.png"],
     creator: "@DumebiTheWriter",
   },
   robots: {
@@ -90,7 +90,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <meta property="og:image" content="https://ozigi.app/opengraph-image.png" />
+        <meta property="og:image" content="https://ozigi.app/og-image.png" />
               <script src="https://analytics.ahrefs.com/analytics.js" data-key="MhdBfYlV5PLcSxQWguZYSQ" async></script>
       </head>
 
