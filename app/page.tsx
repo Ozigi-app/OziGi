@@ -313,6 +313,8 @@ export default function Home() {
                     title="AI Sites | 2026">
                     AI Nav Site
                   </a>
+                  <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank"><img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Ozigi - Featured on Startup Fame" width="224" height="36" />
+                  </a>
                 </div>
               </motion.div>
             </div>
