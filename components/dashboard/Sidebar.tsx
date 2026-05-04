@@ -35,11 +35,11 @@ export default function Sidebar({
       className={`
         ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0 transition-all duration-300 ease-in-out
-        fixed md:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col shadow-2xl md:shadow-none
+        fixed md:relative z-50 h-full bg-surface border-r border-border flex flex-col shadow-2xl md:shadow-none
         ${isSidebarCollapsed ? "w-20" : "w-64 md:w-72"}
       `}
     >
-      <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+      <div className="p-6 border-b border-border flex justify-between items-center bg-surface">
         {!isSidebarCollapsed ? (
           <>
                         <Link href="/" className="flex items-center gap-2">
@@ -54,12 +54,12 @@ export default function Sidebar({
           <img src="/logo.png" alt="Ozigi" className="h-8 w-auto logo-spin" />
         )}
         <button
-          className="hidden md:block text-slate-400 hover:text-slate-600"
+          className="hidden md:block text-foreground-subtle hover:text-foreground-muted"
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         >
           {isSidebarCollapsed ? "→" : "←"}
         </button>
-        <button className="md:hidden text-slate-400" onClick={() => setIsMobileSidebarOpen(false)}>
+        <button className="md:hidden text-foreground-subtle" onClick={() => setIsMobileSidebarOpen(false)}>
           ✕
         </button>
       </div>
@@ -83,7 +83,7 @@ export default function Sidebar({
       key={item.label}
       data-tour={tourId}
       onClick={() => { item.onClick(); setIsMobileSidebarOpen(false); }}
-      className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-xl transition-colors ${isSidebarCollapsed ? 'justify-center' : ''} ${item.locked ? 'text-slate-400 hover:bg-slate-50 hover:text-slate-500 cursor-pointer' : 'text-slate-600 hover:bg-slate-50 hover:text-brand-red'}`}
+      className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-xl transition-colors ${isSidebarCollapsed ? 'justify-center' : ''} ${item.locked ? 'text-foreground-subtle hover:bg-bg hover:text-foreground-muted cursor-pointer' : 'text-foreground-muted hover:bg-bg hover:text-accent'}`}
       title={isSidebarCollapsed ? item.label : undefined}
     >
       <span className={isSidebarCollapsed ? 'mx-auto' : ''}>{item.icon}</span>
@@ -91,7 +91,7 @@ export default function Sidebar({
         <span className="flex items-center gap-2 flex-1">
           {item.label}
           {item.locked && (
-            <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+            <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-foreground-subtle bg-surface-2 px-1.5 py-0.5 rounded">
               Org
             </span>
           )}
