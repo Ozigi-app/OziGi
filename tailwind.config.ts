@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,17 +10,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand colors
+        // Brand colors (constant across themes)
         brand: {
-          navy: "#0A1628",      // Primary dark background
-          red: "#E8320A",        // Primary accent (CTAs, highlights)
-          offwhite: "#FAFAFA",   // Light background / text on dark
-          slate: "#1E293B",      // Secondary dark surface
-          grey: "#94A3B8",       // Muted text / secondary UI
+          navy: "#0A1628",
+          red: "#E8320A",
+          offwhite: "#FAFAFA",
+          slate: "#1E293B",
+          grey: "#94A3B8",
         },
-        // Keep existing background/foreground if needed
-        background: "var(--background)",
+        // Semantic tokens (light/dark aware via CSS vars)
+        bg: "var(--bg)",
+        "bg-deep": "var(--bg-deep)",
+        surface: "var(--surface)",
+        "surface-2": "var(--surface-2)",
+        "surface-3": "var(--surface-3)",
+        border: "var(--border)",
+        "border-strong": "var(--border-strong)",
         foreground: "var(--foreground)",
+        "foreground-muted": "var(--foreground-muted)",
+        "foreground-subtle": "var(--foreground-subtle)",
+        accent: "var(--accent)",
+        "accent-foreground": "var(--accent-foreground)",
+        success: "var(--success)",
+        warning: "var(--warning)",
+        info: "var(--info)",
+        // Legacy alias
+        background: "var(--bg)",
+      },
+      borderColor: {
+        DEFAULT: "var(--border)",
       },
       animation: {
         scroll: "scroll 20s linear infinite",
@@ -32,5 +51,5 @@ export default {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;

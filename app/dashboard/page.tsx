@@ -373,7 +373,7 @@ useEffect(() => {
   if (!session) return null;
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-bg text-foreground overflow-hidden">
       <Sidebar
         isMobileSidebarOpen={isMobileSidebarOpen}
         setIsMobileSidebarOpen={setIsMobileSidebarOpen}
@@ -387,13 +387,13 @@ useEffect(() => {
 
       {isMobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
           onClick={() => setIsMobileSidebarOpen(false)}
         />
       )}
 
-      <main className="flex-1 h-full overflow-y-auto relative bg-slate-50">
-        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <main className="flex-1 h-full overflow-y-auto relative bg-bg">
+        <div className="sticky top-0 z-30 bg-surface/80 backdrop-blur-md border-b border-border">
           <Header
             session={session}
             onSignIn={() => setIsAuthModalOpen(true)}
@@ -409,15 +409,15 @@ useEffect(() => {
           />
 
           {isUpgradeModalOpen && (
-            <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto relative">
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+              <div className="bg-surface text-foreground w-full max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto relative border border-border">
                 <button
                   onClick={() => setIsUpgradeModalOpen(false)}
-                  className="absolute top-4 right-4 text-slate-400 hover:text-red-600 font-black text-xl"
+                  className="absolute top-4 right-4 text-foreground-subtle hover:text-accent font-black text-xl"
                 >
                   ✕
                 </button>
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-4">
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-4 text-foreground">
                   Upgrade Your Plan
                 </h2>
                 <PricingCards onOpenAuthModal={() => setIsAuthModalOpen(true)} />
@@ -428,12 +428,12 @@ useEffect(() => {
           {!session && <GuestModeBanner onSignIn={() => setIsAuthModalOpen(true)} />}
 
           {errorMessage && (
-            <div className="mb-8 p-5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-bold flex items-center gap-3 shadow-sm animate-in fade-in slide-in-from-top-4">
-              <span className="text-xl">⚠️</span> {errorMessage}
+            <div className="mb-8 p-5 rounded-2xl bg-accent/10 border border-accent/30 text-accent text-sm font-bold flex items-center gap-3 shadow-sm animate-in fade-in slide-in-from-top-4">
+              <span className="text-xl" aria-hidden>!</span> {errorMessage}
             </div>
           )}
 
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mt-6">
+          <div className="bg-surface text-foreground rounded-3xl border border-border shadow-sm p-6 md:p-8 mt-6">
             {!loading && campaign.length === 0 && (
               <Distillery
                 session={session}
@@ -461,7 +461,7 @@ useEffect(() => {
                 <div className="flex justify-between items-center mb-8">
                   <button
                     onClick={() => setCampaign([])}
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-red-700 transition-colors bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md active:scale-95"
+                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground-muted hover:text-accent transition-colors bg-surface px-5 py-3 rounded-xl border border-border shadow-sm hover:shadow-md active:scale-95"
                   >
                     ← Architect New Campaign
                   </button>

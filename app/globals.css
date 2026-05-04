@@ -2,46 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   THEME TOKENS
+   - Light mode = default (`:root`)
+   - Dark mode  = `.dark` class on <html> (controlled by next-themes)
+   - Brand colors (navy + red) are constant across both themes.
+   - All UI surfaces reference --bg / --surface / --border / etc.
+============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand (constant) */
   --brand-navy: #0A1628;
   --brand-red: #E8320A;
   --brand-offwhite: #FAFAFA;
   --brand-slate: #1E293B;
   --brand-grey: #94A3B8;
+
+  /* Light theme */
+  --bg: #FAFAFA;
+  --bg-deep: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F9;          /* slate-100 */
+  --surface-3: #E2E8F0;          /* slate-200 */
+  --border: #E2E8F0;             /* slate-200 */
+  --border-strong: #CBD5E1;      /* slate-300 */
+  --foreground: #0F172A;         /* slate-900 */
+  --foreground-muted: #475569;   /* slate-600 */
+  --foreground-subtle: #94A3B8;  /* slate-400 */
+  --accent: #E8320A;
+  --accent-foreground: #FFFFFF;
+  --success: #15803D;            /* green-700 */
+  --warning: #B45309;            /* amber-700 */
+  --info: #1D4ED8;               /* blue-700 */
+  --code-bg: #0F172A;            /* keep code dark in both themes */
+  --code-fg: #E2E8F0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  /* Dark theme — mirrors the landing page */
+  --bg: #060D1A;
+  --bg-deep: #03070F;
+  --surface: #0A1628;            /* brand-navy */
+  --surface-2: #0E1B30;
+  --surface-3: #16243F;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --foreground: #FAFAFA;
+  --foreground-muted: #CBD5E1;   /* slate-300 */
+  --foreground-subtle: #94A3B8;  /* slate-400 */
+  --accent: #E8320A;
+  --accent-foreground: #FFFFFF;
+  --success: #4ADE80;            /* green-400 */
+  --warning: #FBBF24;            /* amber-400 */
+  --info: #60A5FA;               /* blue-400 */
+  --code-bg: #03070F;
+  --code-fg: #E2E8F0;
+}
+
+/* Disable transitions during theme swap to avoid flashing */
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: none !important;
 }
 
 html {
   scroll-behavior: smooth;
-  background: #060d1a; /* prevents white flash before hydration */
+  background: var(--bg);
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   color: var(--foreground);
-  background: #060d1a;
-  /* Use Geist (loaded via next/font in layout.tsx) instead of browser default Arial */
+  background: var(--bg);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Accessible keyboard focus indicator */
 :focus-visible {
-  outline: 2px solid #E8320A;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Subtle grain/noise overlay — adds texture, prevents sterility */
-body::after {
+/* Subtle grain/noise overlay — visible only in dark mode */
+.dark body::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -53,24 +105,20 @@ body::after {
   background-size: 160px 160px;
 }
 
-/* Animated glow orbs — hero background */
+/* Animated glow orbs — hero background (kept) */
 @keyframes glow-drift {
   0%, 100% { transform: translate(0px, 0px) scale(1); opacity: 0.18; }
   33%       { transform: translate(28px, -18px) scale(1.07); opacity: 0.25; }
   66%       { transform: translate(-18px, 26px) scale(0.95); opacity: 0.14; }
 }
-.animate-glow-drift {
-  animation: glow-drift 9s ease-in-out infinite;
-}
+.animate-glow-drift { animation: glow-drift 9s ease-in-out infinite; }
 
 @keyframes glow-drift-slow {
   0%, 100% { transform: translate(0px, 0px) scale(1); opacity: 0.12; }
   40%       { transform: translate(-32px, 18px) scale(1.05); opacity: 0.2; }
   80%       { transform: translate(22px, -28px) scale(0.96); opacity: 0.1; }
 }
-.animate-glow-drift-slow {
-  animation: glow-drift-slow 14s ease-in-out infinite;
-}
+.animate-glow-drift-slow { animation: glow-drift-slow 14s ease-in-out infinite; }
 
 /* Shimmer — card hover shine sweep */
 @keyframes shimmer-sweep {
@@ -90,32 +138,21 @@ body::after {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-.logo-spin {
-  animation: gentleSpin 8s linear infinite;
-}
-
-.logo-spin:hover {
-  animation: gentleSpin 1s ease-in-out;
-}
+.logo-spin { animation: gentleSpin 8s linear infinite; }
+.logo-spin:hover { animation: gentleSpin 1s ease-in-out; }
 
 @keyframes gradient-x {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
-
-.animate-gradient-x {
-  background-size: 200% 200%;
-  animation: gradient-x 8s ease infinite;
-}
+.animate-gradient-x { background-size: 200% 200%; animation: gradient-x 8s ease infinite; }
 
 /* Hero card tweet styling */
 .hero-card .tweet {
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
 }
-
 .hero-card .tweet:last-child {
   border-bottom: none;
   margin-bottom: 0;
@@ -127,6 +164,4 @@ body::after {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
