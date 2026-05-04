@@ -195,7 +195,7 @@ export async function getRelatedPosts(categories: string[], currentSlug: string)
 }
 
 export function getAllSections(): string[] {
-  return ["Engineering", "Marketing", "Content", "Security", "Tools Roundup", "Ozigi Focus"];
+  return ["Engineering", "Marketing", "Content", "WordPress", "Security", "Tools Roundup", "Ozigi Focus"];
 }
 
 export interface SectionMeta {
@@ -241,6 +241,19 @@ export const SECTION_META: Record<string, SectionMeta> = {
       "Content distribution"
     ],
     wordCount: "1,000-2,000 words"
+  },
+  "WordPress": {
+    title: "WordPress",
+    description: "WordPress tutorials, troubleshooting guides, optimization strategies, and best practices. Share your WordPress expertise and solutions for common challenges.",
+    examples: [
+      "Troubleshooting guides",
+      "Performance optimization",
+      "Security hardening",
+      "Plugin development",
+      "WordPress migration",
+      "SEO optimization"
+    ],
+    wordCount: "1,200-2,500 words"
   },
   "Tools Roundup": {
     title: "Tools Roundup",
