@@ -273,6 +273,16 @@ export default function Home() {
                 className="w-full overflow-x-auto scrollbar-hide"
               >
                 <div className="flex items-center gap-6 pb-2 w-fit">
+                  <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
+                    target="_blank" rel="noopener noreferrer"
+                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+                    aria-label="Featured on Peerlist">
+                    <img
+                      src="https://peerlist.io/api/v1/projects/embed/PRJHBARJ6AKQ7AG6MFPMRJPBREPQBN?showUpvote=false&theme=light"
+                      alt="AI Content Generator That Sounds Human on Peerlist"
+                      className="h-7 w-auto"
+                    />
+                  </a>
                   <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
                     className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
                     aria-label="Featured on Better Launch">
