@@ -1,3 +1,5 @@
+import { ANTI_AI_RULES_LONGFORM } from "./anti-ai";
+
 /**
  * Long-form content generation prompt builder
  * CRITICAL: This is separate from buildGenerationPrompt in lib/prompts.ts
@@ -303,6 +305,8 @@ ${structureInstructions}
 ${depthInstructions}
 
 ${QUALITY_BAR}
+
+${ANTI_AI_RULES_LONGFORM}
 
 ${REFERENCES_INSTRUCTION}
 
