@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SettingsModal from "./SettingsModal";
+import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/lib/supabase/client";
 
 interface HeaderProps {
@@ -89,7 +90,7 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
             {isDashboard && (
               <button
                 onClick={onOpenMobileSidebar}
-                className="md:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900 focus:outline-none bg-white rounded-lg shadow-sm border border-slate-200"
+                className="md:hidden p-2 -ml-2 text-foreground-muted hover:text-foreground focus:outline-none bg-surface rounded-lg shadow-sm border border-border"
                 aria-label="Open sidebar"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,6 +182,9 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
                 </a>
               </nav>
             )}
+
+            {/* Theme toggle — visible on every page */}
+            <ThemeToggle />
 
             {/* User Profile Dropdown (logged in) */}
             {session ? (

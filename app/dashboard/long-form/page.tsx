@@ -314,8 +314,8 @@ function LongFormContent() {
 
   if (sessionLoading || planLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-red" />
+      <div className="min-h-screen flex items-center justify-center bg-bg">
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
       </div>
     );
   }
@@ -326,7 +326,7 @@ function LongFormContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-bg">
       <Header
         session={session}
         onOpenSettings={() => {}}
@@ -350,7 +350,7 @@ function LongFormContent() {
         }`}>
           <button
             onClick={() => router.push("/dashboard")}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6 text-sm font-medium"
+            className="flex items-center gap-2 text-foreground-muted hover:text-foreground mb-6 text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
@@ -358,26 +358,26 @@ function LongFormContent() {
 
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <FileText className="w-8 h-8 text-brand-red" />
+              <FileText className="w-8 h-8 text-accent" />
               <h1 className="text-3xl font-black uppercase tracking-tighter">
                 Long-Form Content
               </h1>
             </div>
-            <p className="text-slate-500">Generate articles and structured technical briefs for your audience</p>
+            <p className="text-foreground-muted">Generate articles and structured technical briefs for your audience</p>
           </div>
 
           {!hasAccess ? (
-            <div className="bg-white border-4 border-slate-200 rounded-2xl p-8 text-center">
-              <Lock className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-slate-900 mb-2">
+            <div className="bg-surface border-4 border-border rounded-2xl p-8 text-center">
+              <Lock className="w-12 h-12 text-foreground-subtle mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-foreground mb-2">
                 Upgrade to Access Long-Form Generation
               </h2>
-              <p className="text-slate-500 mb-6">
+              <p className="text-foreground-muted mb-6">
                 Blog post and brief generation are available on Organization and Enterprise plans.
               </p>
               <button
                 onClick={() => router.push("/pricing")}
-                className="bg-brand-navy text-white px-6 py-3 rounded-lg font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-colors"
+                className="bg-accent text-accent-foreground px-6 py-3 rounded-lg font-bold uppercase tracking-widest text-xs hover:bg-accent-strong transition-colors"
               >
                 View Plans
               </button>
@@ -393,8 +393,8 @@ function LongFormContent() {
                     disabled={tab === "output" && !article}
                     className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-2 ${
                       activeTab === tab
-                        ? "bg-brand-navy text-white"
-                        : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                        ? "bg-surface text-white"
+                        : "bg-surface text-foreground-muted hover:bg-surface-2 border border-border"
                     }`}
                   >
                     {tab === "history" ? `History (${history.length})` :
@@ -410,18 +410,18 @@ function LongFormContent() {
 
               {/* Input Tab */}
               {activeTab === "input" && (
-                <div className="bg-white border-4 border-slate-200 rounded-2xl p-6 space-y-6">
+                <div className="bg-surface border-4 border-border rounded-2xl p-6 space-y-6">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                    <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                       Source Context *
                     </label>
                     <textarea
                       value={context}
                       onChange={(e) => setContext(e.target.value)}
                       placeholder="Paste your source material here: articles, notes, research, URLs content, etc. The more context you provide, the better the output."
-                      className="w-full h-48 p-4 border border-slate-200 rounded-xl text-sm resize-none focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-none text-brand-slate placeholder:text-slate-400"
+                      className="w-full h-48 p-4 border border-border rounded-xl text-sm resize-none focus:border-accent focus:ring-1 focus:ring-brand-red outline-none text-foreground placeholder:text-foreground-subtle"
                     />
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-foreground-subtle mt-1">
                       {context.length} characters ({context.length < 50 ? "min 50 required" : "ready"})
                     </p>
                     <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
@@ -437,44 +437,44 @@ function LongFormContent() {
                     aria-pressed={enableWebResearch}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-colors flex items-start gap-4 ${
                       enableWebResearch
-                        ? "border-brand-red bg-red-50/60"
-                        : "border-slate-200 bg-white hover:border-slate-300"
+                        ? "border-accent bg-red-50/60"
+                        : "border-border bg-surface hover:border-border-strong"
                     }`}
                   >
                     <div
                       className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 ${
-                        enableWebResearch ? "bg-brand-red text-white" : "bg-slate-100 text-slate-500"
+                        enableWebResearch ? "bg-accent text-white" : "bg-surface-2 text-foreground-muted"
                       }`}
                     >
                       <Globe className="h-5 w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-black uppercase tracking-widest text-xs text-slate-900">
+                        <span className="font-black uppercase tracking-widest text-xs text-foreground">
                           Live Web Research
                         </span>
                         <span
                           className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${
                             enableWebResearch
-                              ? "bg-brand-red text-white"
-                              : "bg-slate-200 text-slate-600"
+                              ? "bg-accent text-white"
+                              : "bg-surface-3 text-foreground-muted"
                           }`}
                         >
                           {enableWebResearch ? "On" : "Off"}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                      <p className="text-xs text-foreground-muted mt-1 leading-relaxed">
                         Pull current sources from the open web (Exa + Tavily + Firecrawl) and ground the article in real, citable evidence with inline links.
                       </p>
                     </div>
                     <div
                       className={`relative h-6 w-11 rounded-full transition-colors flex-shrink-0 ${
-                        enableWebResearch ? "bg-brand-red" : "bg-slate-300"
+                        enableWebResearch ? "bg-accent" : "bg-surface-3"
                       }`}
                       aria-hidden
                     >
                       <span
-                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform ${
                           enableWebResearch ? "translate-x-5" : "translate-x-0"
                         }`}
                       />
@@ -483,13 +483,13 @@ function LongFormContent() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                         Voice/Persona
                       </label>
                       <select
                         value={selectedPersonaId}
                         onChange={(e) => setSelectedPersonaId(e.target.value)}
-                        className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-brand-red outline-none appearance-none bg-white text-brand-slate"
+                        className="w-full p-3 border border-border rounded-xl text-sm focus:border-accent outline-none appearance-none bg-surface text-foreground"
                       >
                         <option value="default">Default (no specific voice)</option>
                         {personas?.map((p) => (
@@ -499,13 +499,13 @@ function LongFormContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                         Tone
                       </label>
                       <select
                         value={tone}
                         onChange={(e) => setTone(e.target.value)}
-                        className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-brand-red outline-none appearance-none bg-white text-brand-slate"
+                        className="w-full p-3 border border-border rounded-xl text-sm focus:border-accent outline-none appearance-none bg-surface text-foreground"
                       >
                         {TONE_OPTIONS.map((t) => (
                           <option key={t.value} value={t.value}>{t.label} - {t.desc}</option>
@@ -514,13 +514,13 @@ function LongFormContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                         Structure
                       </label>
                       <select
                         value={structure}
                         onChange={(e) => setStructure(e.target.value)}
-                        className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-brand-red outline-none appearance-none bg-white text-brand-slate"
+                        className="w-full p-3 border border-border rounded-xl text-sm focus:border-accent outline-none appearance-none bg-surface text-foreground"
                       >
                         {STRUCTURE_OPTIONS.map((s) => (
                           <option key={s.value} value={s.value}>{s.label} - {s.desc}</option>
@@ -529,13 +529,13 @@ function LongFormContent() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                         Target Length
                       </label>
                       <select
                         value={targetLength}
                         onChange={(e) => setTargetLength(Number(e.target.value))}
-                        className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-brand-red outline-none appearance-none bg-white text-brand-slate"
+                        className="w-full p-3 border border-border rounded-xl text-sm focus:border-accent outline-none appearance-none bg-surface text-foreground"
                       >
                         {LENGTH_OPTIONS.map((l) => (
                           <option key={l.value} value={l.value}>{l.label}</option>
@@ -544,7 +544,7 @@ function LongFormContent() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                         <span className="inline-flex items-center gap-1.5">
                           <GraduationCap className="w-3.5 h-3.5" />
                           Reader Depth
@@ -558,12 +558,12 @@ function LongFormContent() {
                             onClick={() => setDepth(d.value as typeof depth)}
                             className={`p-3 rounded-xl border-2 text-left transition-colors ${
                               depth === d.value
-                                ? "border-brand-red bg-red-50/60"
-                                : "border-slate-200 bg-white hover:border-slate-300"
+                                ? "border-accent bg-red-50/60"
+                                : "border-border bg-surface hover:border-border-strong"
                             }`}
                           >
-                            <div className="text-sm font-black text-slate-900">{d.label}</div>
-                            <div className="text-xs text-slate-500 mt-0.5 leading-snug">{d.desc}</div>
+                            <div className="text-sm font-black text-foreground">{d.label}</div>
+                            <div className="text-xs text-foreground-muted mt-0.5 leading-snug">{d.desc}</div>
                           </button>
                         ))}
                       </div>
@@ -571,21 +571,21 @@ function LongFormContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                    <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
                       Additional Instructions (Optional)
                     </label>
                     <textarea
                       value={additionalInstructions}
                       onChange={(e) => setAdditionalInstructions(e.target.value)}
                       placeholder="Any specific requirements, focus areas, or constraints..."
-                      className="w-full h-24 p-4 border border-slate-200 rounded-xl text-sm resize-none focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-none text-brand-slate placeholder:text-slate-400"
+                      className="w-full h-24 p-4 border border-border rounded-xl text-sm resize-none focus:border-accent focus:ring-1 focus:ring-brand-red outline-none text-foreground placeholder:text-foreground-subtle"
                     />
                   </div>
 
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating || context.length < 50}
-                    className="w-full bg-brand-red text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-accent text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isGenerating ? (
                       <>
@@ -601,7 +601,7 @@ function LongFormContent() {
                       </>
                     )}
                   </button>
-                  <p className="text-xs text-slate-400 text-center -mt-2">
+                  <p className="text-xs text-foreground-subtle text-center -mt-2">
                     {enableWebResearch
                       ? "Web research adds ~10-30 seconds for live source gathering."
                       : "Tip: enable Live Web Research for current, citable content."}
@@ -612,34 +612,34 @@ function LongFormContent() {
               {/* Output Tab */}
               {activeTab === "output" && article && (
                 <div className="space-y-6">
-                  <div className="bg-white border-4 border-slate-200 rounded-2xl p-6">
+                  <div className="bg-surface border-4 border-border rounded-2xl p-6">
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div className="min-w-0">
-                        <h2 className="text-2xl font-black text-slate-900 mb-1 text-balance">{article.title}</h2>
+                        <h2 className="text-2xl font-black text-foreground mb-1 text-balance">{article.title}</h2>
                         {article.subtitle && (
-                          <p className="text-slate-500">{article.subtitle}</p>
+                          <p className="text-foreground-muted">{article.subtitle}</p>
                         )}
                       </div>
                       <button
                         onClick={handleCopyAll}
-                        className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors flex-shrink-0"
+                        className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors flex-shrink-0"
                       >
                         <Copy className="w-4 h-4" />
                         Copy All
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">
+                      <span className="px-2 py-1 rounded-md bg-surface-2 text-foreground font-medium">
                         {article.totalWordCount} words
                       </span>
-                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                      <span className="px-2 py-1 rounded-md bg-surface-2 text-foreground font-medium capitalize">
                         {article.metadata.tone} tone
                       </span>
-                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                      <span className="px-2 py-1 rounded-md bg-surface-2 text-foreground font-medium capitalize">
                         {article.metadata.structure}
                       </span>
                       {article.metadata.depth && (
-                        <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                        <span className="px-2 py-1 rounded-md bg-surface-2 text-foreground font-medium capitalize">
                           {article.metadata.depth} depth
                         </span>
                       )}
@@ -659,12 +659,12 @@ function LongFormContent() {
                   </div>
 
                   {article.sections.map((section, index) => (
-                    <div key={index} className="bg-white border border-slate-200 rounded-xl p-6 group">
+                    <div key={index} className="bg-surface border border-border rounded-xl p-6 group">
                       <div className="flex items-start justify-between gap-4 mb-4">
-                        <h3 className="text-lg font-bold text-slate-900 text-pretty">{section.heading}</h3>
+                        <h3 className="text-lg font-bold text-foreground text-pretty">{section.heading}</h3>
                         <button
                           onClick={() => handleCopySection(index, `## ${section.heading}\n\n${section.content}`)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors flex-shrink-0"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-surface-2 hover:bg-surface-3 text-foreground rounded-lg text-xs font-medium transition-colors flex-shrink-0"
                         >
                           {copiedSection === index ? (
                             <>
@@ -680,26 +680,26 @@ function LongFormContent() {
                         </button>
                       </div>
                       <ArticleMarkdown content={section.content} />
-                      <p className="text-xs text-slate-400 mt-4">{section.wordCount} words</p>
+                      <p className="text-xs text-foreground-subtle mt-4">{section.wordCount} words</p>
                     </div>
                   ))}
 
                   {/* References / Sources */}
                   {article.references && article.references.length > 0 && (
-                    <div className="bg-white border border-slate-200 rounded-xl p-6">
+                    <div className="bg-surface border border-border rounded-xl p-6">
                       <div className="flex items-center gap-2 mb-4">
-                        <Link2 className="w-5 h-5 text-brand-red" />
-                        <h3 className="text-lg font-black uppercase tracking-widest text-slate-900">
+                        <Link2 className="w-5 h-5 text-accent" />
+                        <h3 className="text-lg font-black uppercase tracking-widest text-foreground">
                           References
                         </h3>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-foreground-subtle">
                           ({article.references.length})
                         </span>
                       </div>
                       <ol className="space-y-3">
                         {article.references.map((ref, i) => (
                           <li key={i} className="flex gap-3">
-                            <span className="text-xs font-bold text-slate-400 mt-0.5 flex-shrink-0 w-6">
+                            <span className="text-xs font-bold text-foreground-subtle mt-0.5 flex-shrink-0 w-6">
                               [{i + 1}]
                             </span>
                             <div className="min-w-0 flex-1">
@@ -707,17 +707,17 @@ function LongFormContent() {
                                 href={ref.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm font-bold text-brand-navy hover:text-brand-red transition-colors inline-flex items-start gap-1.5 group/ref break-words"
+                                className="text-sm font-bold text-foreground hover:text-accent transition-colors inline-flex items-start gap-1.5 group/ref break-words"
                               >
                                 <span className="break-words">{ref.title}</span>
                                 <ExternalLink className="w-3 h-3 mt-1 flex-shrink-0 opacity-0 group-hover/ref:opacity-100 transition-opacity" />
                               </a>
                               {ref.note && (
-                                <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                <p className="text-xs text-foreground-muted mt-0.5 leading-relaxed">
                                   {ref.note}
                                 </p>
                               )}
-                              <p className="text-xs text-slate-400 mt-0.5 break-all">
+                              <p className="text-xs text-foreground-subtle mt-0.5 break-all">
                                 {ref.url}
                               </p>
                             </div>
@@ -732,7 +732,7 @@ function LongFormContent() {
                       setArticle(null);
                       setActiveTab("input");
                     }}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 hover:border-brand-red hover:text-brand-red transition-colors font-medium"
+                    className="w-full py-3 border-2 border-dashed border-border-strong rounded-xl text-foreground-muted hover:border-accent hover:text-accent transition-colors font-medium"
                   >
                     Generate Another Article
                   </button>
@@ -741,42 +741,42 @@ function LongFormContent() {
 
               {/* History Tab */}
               {activeTab === "history" && (
-                <div className="bg-white border-4 border-slate-200 rounded-2xl p-6">
+                <div className="bg-surface border-4 border-border rounded-2xl p-6">
                   {isLoadingHistory ? (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-8 h-8 animate-spin text-brand-red" />
+                      <Loader2 className="w-8 h-8 animate-spin text-accent" />
                     </div>
                   ) : history.length === 0 ? (
                     <div className="text-center py-12">
-                      <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-500 font-medium">No articles generated yet</p>
-                      <p className="text-slate-400 text-sm mt-1">Generate your first article to see it here</p>
+                      <FileText className="w-12 h-12 text-foreground-subtle mx-auto mb-4" />
+                      <p className="text-foreground-muted font-medium">No articles generated yet</p>
+                      <p className="text-foreground-subtle text-sm mt-1">Generate your first article to see it here</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <h3 className="font-bold text-slate-900 mb-4">Generated Articles</h3>
+                      <h3 className="font-bold text-foreground mb-4">Generated Articles</h3>
                       {history.map((historyArticle, idx) => (
                         <div
                           key={idx}
                           onClick={() => handleLoadFromHistory(historyArticle)}
-                          className="p-4 border border-slate-200 rounded-xl hover:border-brand-red hover:bg-slate-50 transition-colors cursor-pointer group"
+                          className="p-4 border border-border rounded-xl hover:border-accent hover:bg-bg transition-colors cursor-pointer group"
                         >
-                          <h4 className="font-bold text-slate-900 group-hover:text-brand-red transition-colors">
+                          <h4 className="font-bold text-foreground group-hover:text-accent transition-colors">
                             {historyArticle.title}
                           </h4>
-                          <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-500">
+                          <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-foreground-muted">
                             <span>{historyArticle.totalWordCount} words</span>
-                            <span className="text-slate-300">|</span>
+                            <span className="text-foreground-subtle">|</span>
                             <span className="capitalize">{historyArticle.structure}</span>
-                            <span className="text-slate-300">|</span>
+                            <span className="text-foreground-subtle">|</span>
                             <span className="capitalize">{historyArticle.tone}</span>
                             {historyArticle.depth && (
                               <>
-                                <span className="text-slate-300">|</span>
+                                <span className="text-foreground-subtle">|</span>
                                 <span className="capitalize">{historyArticle.depth}</span>
                               </>
                             )}
-                            <span className="text-slate-300">|</span>
+                            <span className="text-foreground-subtle">|</span>
                             <span>{new Date(historyArticle.createdAt).toLocaleDateString()}</span>
                             {historyArticle.webResearch && (
                               <span className="ml-1 px-1.5 py-0.5 rounded bg-green-100 text-green-800 font-bold inline-flex items-center gap-1">
@@ -823,16 +823,16 @@ const DIAGRAM_LANGS = new Set(["diagram", "text", "ascii", "txt", "plain", ""]);
 function ArticleMarkdown({ content }: { content: string }) {
   return (
     <div
-      className="prose prose-slate prose-sm md:prose-base max-w-none
-        prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
+      className="prose prose-slate dark:prose-invert prose-sm md:prose-base max-w-none
+        prose-headings:font-black prose-headings:tracking-tight prose-headings:text-foreground
         prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-2
         prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
-        prose-p:text-slate-700 prose-p:leading-relaxed
-        prose-li:text-slate-700 prose-li:leading-relaxed
-        prose-strong:text-slate-900 prose-strong:font-bold
-        prose-a:text-brand-red prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-        prose-blockquote:border-l-brand-red prose-blockquote:bg-slate-50 prose-blockquote:rounded-r prose-blockquote:py-1
-        prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.85em] prose-code:text-slate-800 prose-code:before:content-none prose-code:after:content-none
+        prose-p:text-foreground prose-p:leading-relaxed
+        prose-li:text-foreground prose-li:leading-relaxed
+        prose-strong:text-foreground prose-strong:font-bold
+        prose-a:text-accent prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+        prose-blockquote:border-l-brand-red prose-blockquote:bg-bg prose-blockquote:rounded-r prose-blockquote:py-1
+        prose-code:bg-surface-2 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.85em] prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none
       "
     >
       <ReactMarkdown
@@ -866,13 +866,13 @@ function ArticleMarkdown({ content }: { content: string }) {
             // ASCII diagrams / plain text → monospace pre, no highlighter
             if (DIAGRAM_LANGS.has(lang)) {
               return (
-                <div className="my-4 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
-                  <div className="px-3 py-1.5 border-b border-slate-200 bg-white">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <div className="my-4 rounded-lg border border-border bg-bg overflow-hidden">
+                  <div className="px-3 py-1.5 border-b border-border bg-surface">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground-muted">
                       {lang === "diagram" ? "Diagram" : lang || "Text"}
                     </span>
                   </div>
-                  <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono text-slate-800 whitespace-pre">
+                  <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono text-foreground whitespace-pre">
                     <code>{codeStr}</code>
                   </pre>
                 </div>
@@ -883,7 +883,7 @@ function ArticleMarkdown({ content }: { content: string }) {
             return (
               <div className="my-4 rounded-lg overflow-hidden border border-slate-800">
                 <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground-subtle">
                     {lang || "code"}
                   </span>
                 </div>
@@ -983,13 +983,13 @@ function BriefTab() {
   return (
     <div className="space-y-6">
       {/* Input card */}
-      <div className="bg-white border-4 border-slate-200 rounded-2xl p-6 space-y-4">
+      <div className="bg-surface border-4 border-border rounded-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-black uppercase tracking-widest text-slate-900">
+            <h2 className="text-lg font-black uppercase tracking-widest text-foreground">
               Technical Brief Generator
             </h2>
-            <p className="text-sm text-slate-500 mt-0.5 flex items-center gap-1.5">
+            <p className="text-sm text-foreground-muted mt-0.5 flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-green-500" />
               AI agent with real-time web search · Audience · Outcome · Structure · Research Anchors
             </p>
@@ -997,14 +997,14 @@ function BriefTab() {
         </div>
 
         <div>
-          <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+          <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
             Topic / Notes *
           </label>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder="Describe your topic, paste rough notes, or outline your target audience and their pain points. The more context you give, the more detailed the brief."
-            className="w-full h-44 p-4 border border-slate-200 rounded-xl text-sm resize-none focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-none text-brand-slate placeholder:text-slate-400"
+            className="w-full h-44 p-4 border border-border rounded-xl text-sm resize-none focus:border-accent focus:ring-1 focus:ring-brand-red outline-none text-foreground placeholder:text-foreground-subtle"
             disabled={isLoading}
           />
         </div>
@@ -1013,7 +1013,7 @@ function BriefTab() {
           <button
             onClick={handleGenerate}
             disabled={isLoading || !topic.trim()}
-            className="flex-1 bg-brand-red text-white py-3.5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 bg-accent text-white py-3.5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -1031,7 +1031,7 @@ function BriefTab() {
           {isLoading && (
             <button
               onClick={stopGeneration}
-              className="px-4 py-3.5 border-2 border-slate-300 hover:border-red-300 rounded-xl text-slate-600 hover:text-brand-red transition-colors font-bold text-sm flex items-center gap-2"
+              className="px-4 py-3.5 border-2 border-border-strong hover:border-red-300 rounded-xl text-foreground-muted hover:text-accent transition-colors font-bold text-sm flex items-center gap-2"
             >
               <Square className="w-4 h-4" />
               Stop
@@ -1042,21 +1042,21 @@ function BriefTab() {
 
       {/* Streaming / completed output */}
       {(briefText || isLoading) && (
-        <div className="bg-white border-4 border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-surface border-4 border-border rounded-2xl overflow-hidden">
           {/* Output header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-bg">
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-brand-red" />
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                  <span className="text-xs font-black uppercase tracking-widest text-foreground-muted">
                     Writing Brief...
                   </span>
                 </>
               ) : (
                 <>
                   <Check className="w-4 h-4 text-green-500" />
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  <span className="text-xs font-black uppercase tracking-widest text-foreground-muted">
                     Brief Ready
                   </span>
                 </>
@@ -1065,34 +1065,25 @@ function BriefTab() {
             {briefText && !isLoading && (
               <button
                 onClick={handleCopyBrief}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors"
-              >
-                {copiedBrief ? (
-                  <>
-                    <Check className="w-4 h-4 text-green-400" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    Copy Brief
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+                            className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors"
+                          >
+                            <Copy className="w-4 h-4" />
+                            Copy All
+                          </button>
+                        </div>
 
-          {/* Rendered markdown output */}
-          <div className="p-6 md:p-8">
-            <div className="prose prose-slate prose-sm md:prose-base max-w-none
-              prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
-              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-slate-100
+                        <article
+                          ref={articleContentRef}
+                          className="px-8 py-8 lg:px-12
+                            prose prose-slate dark:prose-invert max-w-none
+                            prose-headings:font-black prose-headings:tracking-tight prose-headings:text-foreground
+                            prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border
               prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
-              prose-p:text-slate-700 prose-p:leading-relaxed
-              prose-li:text-slate-700 prose-li:leading-relaxed
-              prose-strong:text-slate-900
-              prose-a:text-brand-red prose-a:no-underline hover:prose-a:underline
-              prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:text-slate-800
+              prose-p:text-foreground prose-p:leading-relaxed
+              prose-li:text-foreground prose-li:leading-relaxed
+              prose-strong:text-foreground
+              prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                            prose-code:bg-surface-2 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:text-foreground
             ">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {briefText}
@@ -1105,8 +1096,8 @@ function BriefTab() {
             <div className="px-6 pb-6 flex justify-end">
               <button
                 onClick={handleCopyBrief}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors"
-              >
+                          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors"
+                        >
                 {copiedBrief ? (
                   <>
                     <Check className="w-4 h-4 text-green-400" />
@@ -1126,12 +1117,12 @@ function BriefTab() {
 
       {/* Empty state */}
       {!briefText && !isLoading && (
-        <div className="text-center py-20 text-slate-400">
+        <div className="text-center py-20 text-foreground-subtle">
           <div className="relative inline-block mb-6">
             <FileText className="w-14 h-14 opacity-20" />
             <Globe className="w-5 h-5 text-green-500 absolute -bottom-1 -right-1" />
           </div>
-          <p className="font-bold text-slate-500 text-lg">Enter your topic above</p>
+          <p className="font-bold text-foreground-muted text-lg">Enter your topic above</p>
           <p className="text-sm mt-2 max-w-sm mx-auto">
             The agent searches the web in real time and returns a structured brief with Audience, Outcome, Key Arguments, Suggested Structure, and Research Anchors.
           </p>
