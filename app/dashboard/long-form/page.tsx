@@ -13,9 +13,14 @@ import {
   Lock,
   Square,
   Globe,
+  Link2,
+  ExternalLink,
+  GraduationCap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Sidebar from "@/components/dashboard/Sidebar";
@@ -31,14 +36,23 @@ interface LongFormSection {
   wordCount: number;
 }
 
+interface LongFormReference {
+  title: string;
+  url: string;
+  note?: string;
+}
+
 interface LongFormArticle {
   title: string;
   subtitle?: string;
   sections: LongFormSection[];
   totalWordCount: number;
+  references?: LongFormReference[];
   metadata: {
     tone: string;
     structure: string;
+    depth?: "beginner" | "intermediate" | "advanced";
+    webResearch?: boolean;
     generatedAt: string;
   };
 }
@@ -63,6 +77,12 @@ const LENGTH_OPTIONS = [
   { value: 1500, label: "Medium (~1500 words)", desc: "Standard article, 6-8 min" },
   { value: 2500, label: "Long (~2500 words)", desc: "Deep dive, 10-12 min" },
   { value: 4000, label: "Extended (~4000 words)", desc: "Comprehensive, 15-20 min" },
+];
+
+const DEPTH_OPTIONS = [
+  { value: "beginner", label: "Beginner", desc: "Define terms, simple examples" },
+  { value: "intermediate", label: "Intermediate", desc: "Practical patterns, working knowledge" },
+  { value: "advanced", label: "Advanced", desc: "Internals, edge cases, primary sources" },
 ];
 
 // Gold-standard example injected as additional instructions for the brief agent
@@ -154,6 +174,8 @@ function LongFormContent() {
   const [tone, setTone] = useState("professional");
   const [structure, setStructure] = useState("narrative");
   const [targetLength, setTargetLength] = useState(1500);
+  const [depth, setDepth] = useState<"beginner" | "intermediate" | "advanced">("intermediate");
+  const [enableWebResearch, setEnableWebResearch] = useState(true);
   const [additionalInstructions, setAdditionalInstructions] = useState("");
 
   // UI state
@@ -197,12 +219,15 @@ function LongFormContent() {
   const handleLoadFromHistory = (historyArticle: any) => {
     const parsedArticle: LongFormArticle = {
       title: historyArticle.title,
-      subtitle: historyArticle.metadata?.subtitle,
+      subtitle: historyArticle.subtitle ?? historyArticle.metadata?.subtitle,
       totalWordCount: historyArticle.totalWordCount,
       sections: historyArticle.sections || [],
+      references: Array.isArray(historyArticle.references) ? historyArticle.references : undefined,
       metadata: {
         tone: historyArticle.tone,
         structure: historyArticle.structure,
+        depth: historyArticle.depth,
+        webResearch: historyArticle.webResearch,
         generatedAt: historyArticle.createdAt,
       },
     };
@@ -234,6 +259,8 @@ function LongFormContent() {
           tone,
           structure,
           targetLength,
+          depth,
+          enableWebResearch,
           additionalInstructions: additionalInstructions.trim() || undefined,
         }),
       });
@@ -262,11 +289,24 @@ function LongFormContent() {
 
   const handleCopyAll = async () => {
     if (!article) return;
+    const refsBlock =
+      article.references && article.references.length > 0
+        ? [
+            "## References",
+            "",
+            ...article.references.map(
+              (r, i) =>
+                `${i + 1}. [${r.title}](${r.url})${r.note ? ` — ${r.note}` : ""}`
+            ),
+          ].join("\n")
+        : "";
+
     const fullText = [
       `# ${article.title}`,
       article.subtitle ? `*${article.subtitle}*` : '',
       '',
       ...article.sections.map(s => `## ${s.heading}\n\n${s.content}`),
+      refsBlock,
     ].filter(Boolean).join('\n\n');
     await navigator.clipboard.writeText(fullText);
     toast.success("Full article copied to clipboard");
@@ -385,10 +425,61 @@ function LongFormContent() {
                       {context.length} characters ({context.length < 50 ? "min 50 required" : "ready"})
                     </p>
                     <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                      <p className="text-xs font-semibold text-amber-900 mb-1">💡 Pro Tip:</p>
+                      <p className="text-xs font-semibold text-amber-900 mb-1">Pro Tip:</p>
                       <p className="text-xs text-amber-700">Avoid overly verbose or repetitive context/briefs as they can confuse the model and break the generation cycle. Keep your input concise and focused.</p>
                     </div>
                   </div>
+
+                  {/* Web research toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setEnableWebResearch((v) => !v)}
+                    aria-pressed={enableWebResearch}
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-colors flex items-start gap-4 ${
+                      enableWebResearch
+                        ? "border-brand-red bg-red-50/60"
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div
+                      className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 ${
+                        enableWebResearch ? "bg-brand-red text-white" : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      <Globe className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-black uppercase tracking-widest text-xs text-slate-900">
+                          Live Web Research
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                            enableWebResearch
+                              ? "bg-brand-red text-white"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
+                        >
+                          {enableWebResearch ? "On" : "Off"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                        Pull current sources from the open web (Exa + Tavily + Firecrawl) and ground the article in real, citable evidence with inline links.
+                      </p>
+                    </div>
+                    <div
+                      className={`relative h-6 w-11 rounded-full transition-colors flex-shrink-0 ${
+                        enableWebResearch ? "bg-brand-red" : "bg-slate-300"
+                      }`}
+                      aria-hidden
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                          enableWebResearch ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </div>
+                  </button>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -451,6 +542,32 @@ function LongFormContent() {
                         ))}
                       </select>
                     </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                        <span className="inline-flex items-center gap-1.5">
+                          <GraduationCap className="w-3.5 h-3.5" />
+                          Reader Depth
+                        </span>
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {DEPTH_OPTIONS.map((d) => (
+                          <button
+                            key={d.value}
+                            type="button"
+                            onClick={() => setDepth(d.value as typeof depth)}
+                            className={`p-3 rounded-xl border-2 text-left transition-colors ${
+                              depth === d.value
+                                ? "border-brand-red bg-red-50/60"
+                                : "border-slate-200 bg-white hover:border-slate-300"
+                            }`}
+                          >
+                            <div className="text-sm font-black text-slate-900">{d.label}</div>
+                            <div className="text-xs text-slate-500 mt-0.5 leading-snug">{d.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <div>
@@ -473,7 +590,9 @@ function LongFormContent() {
                     {isGenerating ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Generating Article...
+                        {enableWebResearch
+                          ? "Researching the web & writing..."
+                          : "Writing your article..."}
                       </>
                     ) : (
                       <>
@@ -482,6 +601,11 @@ function LongFormContent() {
                       </>
                     )}
                   </button>
+                  <p className="text-xs text-slate-400 text-center -mt-2">
+                    {enableWebResearch
+                      ? "Web research adds ~10-30 seconds for live source gathering."
+                      : "Tip: enable Live Web Research for current, citable content."}
+                  </p>
                 </div>
               )}
 
@@ -490,40 +614,61 @@ function LongFormContent() {
                 <div className="space-y-6">
                   <div className="bg-white border-4 border-slate-200 rounded-2xl p-6">
                     <div className="flex items-start justify-between gap-4 mb-4">
-                      <div>
-                        <h2 className="text-2xl font-black text-slate-900 mb-1">{article.title}</h2>
+                      <div className="min-w-0">
+                        <h2 className="text-2xl font-black text-slate-900 mb-1 text-balance">{article.title}</h2>
                         {article.subtitle && (
                           <p className="text-slate-500">{article.subtitle}</p>
                         )}
                       </div>
                       <button
                         onClick={handleCopyAll}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-800 text-brand-slate hover:text-white rounded-lg text-sm font-medium transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-navy hover:bg-slate-800 text-white rounded-lg text-sm font-bold transition-colors flex-shrink-0"
                       >
                         <Copy className="w-4 h-4" />
                         Copy All
                       </button>
                     </div>
-                    <div className="flex gap-4 text-xs text-slate-500">
-                      <span>{article.totalWordCount} words</span>
-                      <span>|</span>
-                      <span className="capitalize">{article.metadata.tone} tone</span>
-                      <span>|</span>
-                      <span className="capitalize">{article.metadata.structure} structure</span>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">
+                        {article.totalWordCount} words
+                      </span>
+                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                        {article.metadata.tone} tone
+                      </span>
+                      <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                        {article.metadata.structure}
+                      </span>
+                      {article.metadata.depth && (
+                        <span className="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-medium capitalize">
+                          {article.metadata.depth} depth
+                        </span>
+                      )}
+                      {article.metadata.webResearch && (
+                        <span className="px-2 py-1 rounded-md bg-green-100 text-green-800 font-bold inline-flex items-center gap-1">
+                          <Globe className="w-3 h-3" />
+                          Web-researched
+                        </span>
+                      )}
+                      {article.references && article.references.length > 0 && (
+                        <span className="px-2 py-1 rounded-md bg-blue-100 text-blue-800 font-bold inline-flex items-center gap-1">
+                          <Link2 className="w-3 h-3" />
+                          {article.references.length} sources
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   {article.sections.map((section, index) => (
                     <div key={index} className="bg-white border border-slate-200 rounded-xl p-6 group">
                       <div className="flex items-start justify-between gap-4 mb-4">
-                        <h3 className="text-lg font-bold text-slate-900">{section.heading}</h3>
+                        <h3 className="text-lg font-bold text-slate-900 text-pretty">{section.heading}</h3>
                         <button
                           onClick={() => handleCopySection(index, `## ${section.heading}\n\n${section.content}`)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-brand-slate hover:text-white rounded-lg text-xs font-medium transition-colors"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors flex-shrink-0"
                         >
                           {copiedSection === index ? (
                             <>
-                              <Check className="w-3 h-3 text-green-400" />
+                              <Check className="w-3 h-3 text-green-600" />
                               Copied
                             </>
                           ) : (
@@ -534,14 +679,53 @@ function LongFormContent() {
                           )}
                         </button>
                       </div>
-                      <div className="prose prose-slate prose-sm max-w-none">
-                        <p className="whitespace-pre-wrap text-brand-slate leading-relaxed">
-                          {section.content}
-                        </p>
-                      </div>
+                      <ArticleMarkdown content={section.content} />
                       <p className="text-xs text-slate-400 mt-4">{section.wordCount} words</p>
                     </div>
                   ))}
+
+                  {/* References / Sources */}
+                  {article.references && article.references.length > 0 && (
+                    <div className="bg-white border border-slate-200 rounded-xl p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Link2 className="w-5 h-5 text-brand-red" />
+                        <h3 className="text-lg font-black uppercase tracking-widest text-slate-900">
+                          References
+                        </h3>
+                        <span className="text-xs text-slate-400">
+                          ({article.references.length})
+                        </span>
+                      </div>
+                      <ol className="space-y-3">
+                        {article.references.map((ref, i) => (
+                          <li key={i} className="flex gap-3">
+                            <span className="text-xs font-bold text-slate-400 mt-0.5 flex-shrink-0 w-6">
+                              [{i + 1}]
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <a
+                                href={ref.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-bold text-brand-navy hover:text-brand-red transition-colors inline-flex items-start gap-1.5 group/ref break-words"
+                              >
+                                <span className="break-words">{ref.title}</span>
+                                <ExternalLink className="w-3 h-3 mt-1 flex-shrink-0 opacity-0 group-hover/ref:opacity-100 transition-opacity" />
+                              </a>
+                              {ref.note && (
+                                <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                  {ref.note}
+                                </p>
+                              )}
+                              <p className="text-xs text-slate-400 mt-0.5 break-all">
+                                {ref.url}
+                              </p>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
 
                   <button
                     onClick={() => {
@@ -580,11 +764,33 @@ function LongFormContent() {
                           <h4 className="font-bold text-slate-900 group-hover:text-brand-red transition-colors">
                             {historyArticle.title}
                           </h4>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                          <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-500">
                             <span>{historyArticle.totalWordCount} words</span>
+                            <span className="text-slate-300">|</span>
                             <span className="capitalize">{historyArticle.structure}</span>
+                            <span className="text-slate-300">|</span>
                             <span className="capitalize">{historyArticle.tone}</span>
+                            {historyArticle.depth && (
+                              <>
+                                <span className="text-slate-300">|</span>
+                                <span className="capitalize">{historyArticle.depth}</span>
+                              </>
+                            )}
+                            <span className="text-slate-300">|</span>
                             <span>{new Date(historyArticle.createdAt).toLocaleDateString()}</span>
+                            {historyArticle.webResearch && (
+                              <span className="ml-1 px-1.5 py-0.5 rounded bg-green-100 text-green-800 font-bold inline-flex items-center gap-1">
+                                <Globe className="w-3 h-3" />
+                                Web
+                              </span>
+                            )}
+                            {Array.isArray(historyArticle.references) &&
+                              historyArticle.references.length > 0 && (
+                                <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold inline-flex items-center gap-1">
+                                  <Link2 className="w-3 h-3" />
+                                  {historyArticle.references.length}
+                                </span>
+                              )}
                           </div>
                         </div>
                       ))}
@@ -603,6 +809,105 @@ function LongFormContent() {
       </div>
 
       <Footer />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ArticleMarkdown — rich rendering for generated long-form sections
+// Handles: markdown, inline links, fenced code (with syntax highlighting),
+// and ASCII / line diagrams (rendered in monospace, no highlighting).
+// ---------------------------------------------------------------------------
+const DIAGRAM_LANGS = new Set(["diagram", "text", "ascii", "txt", "plain", ""]);
+
+function ArticleMarkdown({ content }: { content: string }) {
+  return (
+    <div
+      className="prose prose-slate prose-sm md:prose-base max-w-none
+        prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
+        prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-2
+        prose-h3:text-base prose-h3:mt-4 prose-h3:mb-2
+        prose-p:text-slate-700 prose-p:leading-relaxed
+        prose-li:text-slate-700 prose-li:leading-relaxed
+        prose-strong:text-slate-900 prose-strong:font-bold
+        prose-a:text-brand-red prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+        prose-blockquote:border-l-brand-red prose-blockquote:bg-slate-50 prose-blockquote:rounded-r prose-blockquote:py-1
+        prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.85em] prose-code:text-slate-800 prose-code:before:content-none prose-code:after:content-none
+      "
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ href, children, ...props }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              {...props}
+            >
+              {children}
+            </a>
+          ),
+          code({ className, children, ...props }: any) {
+            const inline = (props as any).inline as boolean | undefined;
+            const match = /language-(\w+)/.exec(className || "");
+            const lang = (match?.[1] || "").toLowerCase();
+            const codeStr = String(children).replace(/\n$/, "");
+
+            // Inline code: leave to prose styling
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            }
+
+            // ASCII diagrams / plain text → monospace pre, no highlighter
+            if (DIAGRAM_LANGS.has(lang)) {
+              return (
+                <div className="my-4 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+                  <div className="px-3 py-1.5 border-b border-slate-200 bg-white">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      {lang === "diagram" ? "Diagram" : lang || "Text"}
+                    </span>
+                  </div>
+                  <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono text-slate-800 whitespace-pre">
+                    <code>{codeStr}</code>
+                  </pre>
+                </div>
+              );
+            }
+
+            // Highlighted code block
+            return (
+              <div className="my-4 rounded-lg overflow-hidden border border-slate-800">
+                <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    {lang || "code"}
+                  </span>
+                </div>
+                <SyntaxHighlighter
+                  language={lang || "text"}
+                  style={oneDark as any}
+                  customStyle={{
+                    margin: 0,
+                    padding: "1rem",
+                    fontSize: "0.8rem",
+                    lineHeight: 1.55,
+                    background: "#0f172a",
+                  }}
+                  codeTagProps={{ style: { fontFamily: "var(--font-mono, ui-monospace, monospace)" } }}
+                >
+                  {codeStr}
+                </SyntaxHighlighter>
+              </div>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

@@ -76,10 +76,15 @@ export async function GET(req: NextRequest) {
       return {
         id: article.id,
         title: article.subject,
+        subtitle: meta.subtitle,
         content: article.content,
         totalWordCount: meta.totalWordCount || 0,
         tone: meta.tone || "unknown",
         structure: meta.structure || "unknown",
+        depth: meta.depth,
+        webResearch: meta.webResearch ?? false,
+        references: Array.isArray(meta.references) ? meta.references : [],
+        researchQueries: Array.isArray(meta.researchQueries) ? meta.researchQueries : [],
         sections,
         createdAt: article.created_at,
       };
