@@ -115,7 +115,7 @@ export default function PeerlistReviews() {
 
         <div
           className="flex items-stretch gap-5 animate-scroll whitespace-nowrap"
-          style={{ animationDuration: "60s" }}
+          style={{ animationDuration: "35s" }}
         >
           {DOUBLED.map((review, i) => (
             <ReviewCard key={`${review.name}-${i}`} review={review} />
