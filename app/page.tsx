@@ -200,65 +200,108 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
+          <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col items-center text-center gap-10">
 
-            {/* ── Left col: headline + CTAs ───────────────────────────── */}
-            <div className="flex-1 max-w-xl">
-              {/* Headline */}
-              <motion.div style={{ y: heroParallaxY }}>
+            {/* ── Eyebrow pill ────────────────────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em]"
+              style={{ background: "rgba(232,50,10,0.08)", color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
+              Human-sounding · No AI fluff · Publish anywhere
+            </motion.div>
+
+            {/* ── Demo widget (above headline) ────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-2xl"
+            >
+              <div className="relative">
+                {/* Top-left corner accent lines */}
+                <div className="absolute -top-3 -left-3 w-10 h-10 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
+                  <div className="absolute top-0 left-0 h-full w-px" style={{ background: `linear-gradient(to bottom, ${C.red}, transparent)` }} />
+                </div>
+                {/* Bottom-right corner accent lines */}
+                <div className="absolute -bottom-3 -right-3 w-10 h-10 pointer-events-none">
+                  <div className="absolute bottom-0 right-0 w-full h-px" style={{ background: `linear-gradient(to left, ${C.red}, transparent)` }} />
+                  <div className="absolute bottom-0 right-0 h-full w-px" style={{ background: `linear-gradient(to top, ${C.red}, transparent)` }} />
+                </div>
+
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
+                  <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: C.red }}>
+                    Try it now — live demo
+                  </span>
+                </div>
+
+                <LandingDemoWidget />
+
+                <p className="text-center text-[10px] font-medium mt-3" style={{ color: C.dim }}>
+                  No credit card · No account · Free to try
+                </p>
+              </div>
+            </motion.div>
+
+            {/* ── Full-width headline ─────────────────────────────────── */}
+            <motion.div style={{ y: heroParallaxY }} className="w-full">
               <motion.h1
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                className="text-5xl md:text-7xl lg:text-[5.5rem] font-black italic uppercase tracking-tighter leading-[0.92] mb-5"
+                transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full text-5xl md:text-7xl lg:text-8xl xl:text-[8.5rem] font-black italic uppercase tracking-tighter leading-[0.9] text-balance"
               >
-                Automate Content<br />
+                Automate content creation{" "}
                 <span className="relative inline-block">
-                  Creation
+                  <span style={{ color: C.red }}>without ChatGPT&apos;s voice.</span>
                   <motion.span
-                    className="absolute left-0 -bottom-0.5 h-1 rounded-full origin-left"
+                    className="absolute left-0 -bottom-1 h-1 rounded-full origin-left"
                     style={{ background: C.red }}
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.5, delay: 0.55, ease: "easeOut" }}
+                    transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
                   />
-                </span>{" "}
-                <span style={{ color: C.red }}>Without ChatGPT&apos;s Voice.</span>
+                </span>
               </motion.h1>
-              </motion.div>
+            </motion.div>
 
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.38 }}
-                className="text-base md:text-lg font-medium leading-relaxed mb-8 max-w-md"
-                style={{ color: C.muted }}
-              >
-                Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
-              </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.38 }}
+              className="text-base md:text-lg font-medium leading-relaxed max-w-xl text-pretty"
+              style={{ color: C.muted }}
+            >
+              Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
+            </motion.p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-wrap items-center gap-3 mb-10"
-              >
-                <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
-                  Get started free →
-                </MagneticBtn>
-                <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
-                  Sign in
-                </MagneticBtn>
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-3"
+            >
+              <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
+                Get started free →
+              </MagneticBtn>
+              <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
+                Sign in
+              </MagneticBtn>
+            </motion.div>
 
-              {/* Launch badges — horizontal scroll */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.65 }}
-                className="w-full overflow-x-auto scrollbar-hide"
-              >
-                <div className="flex items-center gap-6 pb-2 w-fit">
+            {/* Launch badges — horizontal scroll */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.65 }}
+              className="w-full overflow-x-auto scrollbar-hide mt-2"
+            >
+              <div className="flex items-center justify-center gap-6 pb-2 w-fit mx-auto">
                   <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
                     target="_blank" rel="noopener noreferrer"
                     className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
@@ -313,44 +356,6 @@ export default function Home() {
                   </a>
                 </div>
               </motion.div>
-            </div>
-
-            {/* ── Right col: demo widget ─��────────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.75, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="flex-1 w-full max-w-lg lg:max-w-none"
-            >
-              {/* Outer accent frame */}
-              <div className="relative">
-                {/* Top-left corner accent lines */}
-                <div className="absolute -top-3 -left-3 w-10 h-10 pointer-events-none">
-                  <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
-                  <div className="absolute top-0 left-0 h-full w-px" style={{ background: `linear-gradient(to bottom, ${C.red}, transparent)` }} />
-                </div>
-                {/* Bottom-right corner accent lines */}
-                <div className="absolute -bottom-3 -right-3 w-10 h-10 pointer-events-none">
-                  <div className="absolute bottom-0 right-0 w-full h-px" style={{ background: `linear-gradient(to left, ${C.red}, transparent)` }} />
-                  <div className="absolute bottom-0 right-0 h-full w-px" style={{ background: `linear-gradient(to top, ${C.red}, transparent)` }} />
-                </div>
-
-                {/* Label above widget */}
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-                  <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: C.red }}>
-                    Try it now — live demo
-                  </span>
-                </div>
-
-                <LandingDemoWidget />
-
-                {/* No account pill below */}
-                <p className="text-center text-[10px] font-medium mt-3" style={{ color: C.dim }}>
-                  No credit card · No account · Free to try
-                </p>
-              </div>
-            </motion.div>
           </div>
         </section>
 
