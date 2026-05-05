@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────────────��������������──────── */}
+        {/* ──────────────────────────────────────────────���───────��������������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -379,11 +379,11 @@ export default function Home() {
                 Inside the dashboard
               </p>
               <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.98] max-w-3xl mx-auto">
-                One input. Four formats. <span style={{ color: C.muted }}>Ready to publish.</span>
+                One input. Five channels. <span style={{ color: C.muted }}>Plus a long-form draft.</span>
               </h2>
-              <p className="text-sm md:text-base font-medium mt-4 max-w-lg mx-auto" style={{ color: C.muted }}>
-                A real generation, not a screenshot. Blog post, newsletter, LinkedIn post and X thread &mdash;
-                drafted in your voice, all from the same brief.
+              <p className="text-sm md:text-base font-medium mt-4 max-w-xl mx-auto" style={{ color: C.muted }}>
+                Drop raw context. Get scheduled-ready drafts for X, LinkedIn, Discord, Email and Slack &mdash;
+                then watch a full long-form article slide in next, all in your voice.
               </p>
             </motion.div>
 
