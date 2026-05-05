@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────────────����������──────── */}
+        {/* ──────────────────────────────────────────────────────������������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -219,7 +219,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-2xl"
+              className="w-full max-w-md"
             >
               <div className="relative">
                 {/* Top-left corner accent lines */}
@@ -254,7 +254,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full text-5xl md:text-7xl lg:text-8xl xl:text-[8.5rem] font-black italic uppercase tracking-tighter leading-[0.9] text-balance"
+                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] whitespace-normal"
               >
                 Automate content creation{" "}
                 <span className="relative inline-block">
