@@ -15,7 +15,6 @@ import Footer from "../components/Footer";
 import DashboardPreview from "../components/DashboardPreview";
 import AuthModal from "../components/AuthModal";
 import PricingCards from "../components/PricingCards";
-import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import { LandingDemoWidget } from "../components/LandingDemoWidget";
 import SocialProof from "../components/SocialProof";
 import PeerlistReviews from "../components/PeerlistReviews";
@@ -167,7 +166,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────���───────��������������──────── */}
+        {/* ──────────────────────────────────────────────�����───────��������������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -481,32 +480,6 @@ export default function Home() {
         </div>
 
         {/* ─────────────────────────────────────────────────────────────── */}
-        {/* STATS                                                           */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="relative py-16 md:py-20"
-          style={{ background: C.navy, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
-          <div className="max-w-4xl mx-auto px-8 md:px-14">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={stagger}
-              className="grid grid-cols-3 gap-6 text-center">
-              {[
-                { val: "6",    label: "Content formats",     sub: "Blog · Newsletter · LinkedIn · X · Discord · Briefs" },
-                { val: "1-click", label: "Publish & send",   sub: "Direct to social or inbox" },
-                { val: "0",    label: "AI fluff",            sub: "Banned lexicon enforced" },
-              ].map((s, i) => (
-                <motion.div key={i} variants={springUp}>
-                  <p className="text-4xl md:text-6xl lg:text-7xl font-black italic uppercase tracking-tighter mb-2 animate-gradient-x bg-clip-text text-transparent bg-[length:220%_100%]"
-                    style={{ backgroundImage: `linear-gradient(90deg, ${C.red}, #ff7b3d, ${C.red})` }}>
-                    {s.val}
-                  </p>
-                  <p className="text-sm md:text-base font-bold mb-1">{s.label}</p>
-                  <p className="text-[11px] font-medium" style={{ color: C.dim }}>{s.sub}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
         {/* HUMAN-IN-THE-LOOP — cross pattern                              */}
         {/* ─────────────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-32"
@@ -606,12 +579,6 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <motion.div variants={fadeUp} className="mt-14">
-                <p className="text-[9px] uppercase font-black tracking-widest mb-5" style={{ color: C.dim }}>
-                  Try it yourself — drag to reveal
-                </p>
-                <BeforeAfterSlider />
-              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -722,18 +689,6 @@ export default function Home() {
           style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
           <CrossGrid id="pricing-cross" opacity={0.035} />
           <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={fadeUp}
-              className="text-center mb-14">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>Pricing</p>
-              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]" style={{ color: C.white }}>
-                Blog posts.<br />
-                Newsletters.<br />
-                <span style={{ color: C.muted }}>Social. Briefs.</span>
-              </h2>
-              <p className="text-base font-medium mt-5" style={{ color: C.muted }}>
-                All formats. All human. Start free.
-              </p>
-            </motion.div>
             <PricingCards onOpenAuthModal={() => setIsAuthModalOpen(true)} />
           </div>
         </section>
