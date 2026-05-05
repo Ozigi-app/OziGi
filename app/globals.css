@@ -39,15 +39,15 @@
 }
 
 .dark {
-  /* Dark theme — mirrors the landing page */
-  --bg: #060D1A;
-  --bg-deep: #03070F;
-  --surface: #0A1628;            /* brand-navy */
-  --surface-2: #0E1B30;
-  --surface-3: #16243F;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --foreground: #FAFAFA;
+  /* Dark theme — brand-slate base for cohesive look */
+  --bg: #0F172A;                 /* slate-900 */
+  --bg-deep: #0F172A;            /* slate-900 */
+  --surface: #1E293B;            /* brand-slate / slate-800 */
+  --surface-2: #334155;          /* slate-700 */
+  --surface-3: #475569;          /* slate-600 */
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --foreground: #F8FAFC;         /* slate-50 */
   --foreground-muted: #CBD5E1;   /* slate-300 */
   --foreground-subtle: #94A3B8;  /* slate-400 */
   --accent: #E8320A;
@@ -55,7 +55,7 @@
   --success: #4ADE80;            /* green-400 */
   --warning: #FBBF24;            /* amber-400 */
   --info: #60A5FA;               /* blue-400 */
-  --code-bg: #03070F;
+  --code-bg: #0F172A;            /* slate-900 */
   --code-fg: #E2E8F0;
 }
 
