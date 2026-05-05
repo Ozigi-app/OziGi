@@ -23,9 +23,9 @@ import { supabase } from "@/lib/supabase/client";
 
 /* ─── Palette — light slate base with brand navy + red ────────────────── */
 const C = {
-  navy:     "#F1F5F9",   // bg — light slate-100 (airy base)
-  navyDeep: "#E2E8F0",   // slate-200 — section contrast
-  navyMid:  "#F8FAFC",   // slate-50 — lighter alt surface
+  navy:     "#F8FAFC",   // bg — light slate-50 (very airy)
+  navyDeep: "#F1F5F9",   // slate-100 — section contrast
+  navyMid:  "#FFFFFF",   // pure white — lighter alt surface
   card:     "#FFFFFF",   // pure white cards
   cardB:    "#F0F7FF",   // blue-tinted card
   cardS:    "#F8FAFC",   // slate-tinted card
@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* ──────────────────────────────────────────────────────��──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -721,7 +721,7 @@ export default function Home() {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={fadeUp}
               className="text-center mb-14">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>Pricing</p>
-              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
+              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]" style={{ color: C.white }}>
                 No surprises.<br />
                 <span style={{ color: C.muted }}>No AI voice.</span><br />
                 Just results.
@@ -734,52 +734,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* BOTTOM CTA CARD — like Nchiko's closing                        */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="py-16 md:py-24 px-6"
-          style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={fadeUp}
-            className="max-w-3xl mx-auto rounded-3xl p-12 md:p-20 text-center relative overflow-hidden"
-            style={{
-              background: `linear-gradient(135deg, #1f0d0a 0%, ${C.navyMid} 55%, ${C.card} 100%)`,
-              border: `1px solid rgba(232,50,10,0.2)`,
-              boxShadow: `0 0 80px rgba(232,50,10,0.09), 0 0 0 1px rgba(15,23,42,0.04)`,
-            }}>
-            {/* Background glow */}
-            <div className="absolute inset-0 pointer-events-none rounded-3xl"
-              style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(232,50,10,0.14), transparent 65%)` }} />
-            {/* Diagonal lines inside card */}
-            <DiagLines id="cta-diag" opacity={0.04} />
-
-            <div className="relative z-10">
-              {/* Logo */}
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6"
-                style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}>
-                <img src="/logo.png" alt="Ozigi" className="h-9 w-auto" />
-              </div>
-
-              <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter mb-4">
-                Stop sounding like AI.
-              </h2>
-              <p className="text-base font-medium mb-8 max-w-sm mx-auto leading-relaxed" style={{ color: C.muted }}>
-                Join creators and builders who ship content in their voice — not AI's.
-              </p>
-              <motion.button
-                onClick={() => setIsAuthModalOpen(true)}
-                whileHover={{ boxShadow: "0 18px 56px rgba(232,50,10,0.55)" }}
-                className="inline-flex items-center gap-3 rounded-xl px-10 py-4 text-sm font-black uppercase tracking-widest transition-all duration-300 active:scale-95 cursor-pointer"
-                style={{
-                  background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`,
-                  boxShadow: `0 8px 32px ${C.redGlow}`,
-                  color: "#FFFFFF",
-                }}>
-                Get started — it's free
-              </motion.button>
-              <p className="text-xs font-medium mt-4" style={{ color: C.dim }}>No credit card required.</p>
-            </div>
-          </motion.div>
-        </section>
       </main>
 
       <Footer />
