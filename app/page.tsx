@@ -18,6 +18,7 @@ import PricingCards from "../components/PricingCards";
 import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import { LandingDemoWidget } from "../components/LandingDemoWidget";
 import SocialProof from "../components/SocialProof";
+import PeerlistReviews from "../components/PeerlistReviews";
 import { supabase } from "@/lib/supabase/client";
 
 /* ─── Palette — brand navy base ───────────────────────────────────────── */
@@ -168,7 +169,7 @@ export default function Home() {
 
         {/* ─────────────────────────────────────────────────────────────── */}
         {/* HERO — split: headline left · demo right                        */}
-        {/* ────────────────────────���────────────────────────────────────── */}
+        {/* ────────────────────────����────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="relative overflow-hidden min-h-[100dvh] flex items-center"
@@ -373,6 +374,13 @@ export default function Home() {
         {/* ─────────────────────────────────────────────────────────────── */}
         <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
           <SocialProof />
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* PEERLIST REVIEWS — real user feedback on output quality         */}
+        {/* ─────────────────────────────────────────────────────────────── */}
+        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
+          <PeerlistReviews />
         </div>
 
         {/* ─────────────────────────────────────────────────────────────── */}
