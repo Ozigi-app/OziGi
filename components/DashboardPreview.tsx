@@ -15,20 +15,20 @@ import { useEffect, useMemo, useState } from "react";
    Colors mirror the actual dark dashboard (deep navy + brand red).
 ───────────────────────────────────────────────────────────────────── */
 
-// Real dashboard tones
+// Real dashboard tones — light theme (matches /dashboard live colors)
 const C = {
-  bg: "#0A1628",          // outer dashboard bg
-  sidebar: "#0F1B30",     // sidebar bg
-  panel: "#142136",        // card outer (dark)
-  inner: "#1A2540",        // controls inside panels
-  border: "rgba(255,255,255,0.08)",
-  borderStrong: "rgba(255,255,255,0.14)",
-  text: "#FFFFFF",
-  muted: "#94A3B8",
-  dim: "#64748B",
+  bg: "#F8FAFC",           // slate-50 — outer dashboard bg
+  sidebar: "#FFFFFF",      // white sidebar
+  panel: "#FFFFFF",        // white card surfaces
+  inner: "#F1F5F9",        // slate-100 — nested controls inside cards
+  border: "#E2E8F0",       // slate-200
+  borderStrong: "#CBD5E1", // slate-300
+  text: "#0A1628",         // brand-navy — primary text
+  muted: "#334155",        // slate-700 — secondary text
+  dim: "#64748B",          // slate-500 — hints
   red: "#E8320A",
-  redDeep: "#c52000",
-  cardWhite: "#FFFFFF",
+  redDeep: "#C4290A",
+  cardWhite: "#F1F5F9",    // slate-100 — nested "summary" tiles
   ink: "#0A1628",
 };
 
@@ -114,7 +114,7 @@ export default function DashboardPreview() {
           background: C.bg,
           border: `1px solid ${C.border}`,
           boxShadow:
-            "0 30px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)",
+            "0 30px 80px -20px rgba(10,22,40,0.18), 0 0 0 1px rgba(10,22,40,0.04)",
         }}
       >
         {/* Mac chrome */}
@@ -128,7 +128,7 @@ export default function DashboardPreview() {
           <div
             className="ml-3 flex-1 max-w-md mx-auto rounded-md px-3 py-1 text-[10px] md:text-[11px] font-medium text-center"
             style={{
-              background: "rgba(255,255,255,0.04)",
+              background: C.inner,
               color: C.muted,
               border: `1px solid ${C.border}`,
             }}
@@ -186,7 +186,7 @@ export default function DashboardPreview() {
             className="block h-1 rounded-full transition-all duration-500"
             style={{
               width: i === phaseIdx ? 32 : 12,
-              background: i === phaseIdx ? C.red : "rgba(255,255,255,0.18)",
+              background: i === phaseIdx ? C.red : "rgba(10,22,40,0.16)",
             }}
           />
         ))}
@@ -296,9 +296,9 @@ function InputPhase({ typedInput }: { typedInput: string }) {
                   key={p.label}
                   className="w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center"
                   style={{
-                    background: p.on ? C.text : "transparent",
-                    color: p.on ? C.ink : C.muted,
-                    border: `1px solid ${p.on ? C.text : C.border}`,
+                    background: p.on ? C.ink : "transparent",
+                    color: p.on ? "#FFFFFF" : C.muted,
+                    border: `1px solid ${p.on ? C.ink : C.border}`,
                   }}
                 >
                   {p.label}
@@ -309,7 +309,7 @@ function InputPhase({ typedInput }: { typedInput: string }) {
             <div className="flex items-center gap-1.5">
               <span
                 className="w-6 h-6 rounded-full text-[9px] font-black flex items-center justify-center"
-                style={{ background: C.text, color: C.ink }}
+                style={{ background: C.ink, color: "#FFFFFF" }}
               >
                 X
               </span>
@@ -733,12 +733,12 @@ function ArticleSection({
         <pre
           className="mt-3 rounded-lg p-3 text-[10px] md:text-[11px] leading-snug font-mono overflow-x-auto"
           style={{
-            background: C.inner,
-            border: `1px solid ${C.border}`,
+            background: "#0A1628",
+            border: "1px solid rgba(255,255,255,0.06)",
             color: "#a5f3fc",
           }}
         >
-          <span style={{ color: C.dim }}>JSON</span>
+          <span style={{ color: "#64748B" }}>JSON</span>
           {"\n"}
           {code}
         </pre>
@@ -838,6 +838,7 @@ function Sidebar({ active }: { active: string }) {
       style={{
         background: C.sidebar,
         borderRight: `1px solid ${C.border}`,
+        boxShadow: "1px 0 0 0 rgba(10,22,40,0.02)",
       }}
     >
       {/* logo row */}

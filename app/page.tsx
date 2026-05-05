@@ -254,7 +254,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] lg:whitespace-nowrap"
+                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] 2xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] text-balance"
               >
                 Automate content creation{" "}
                 <span className="relative inline-block">
