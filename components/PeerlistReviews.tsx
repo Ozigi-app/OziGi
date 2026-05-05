@@ -163,16 +163,9 @@ function ReviewCard({ review }: { review: Review }) {
       <p className="text-sm md:text-base text-foreground-muted leading-relaxed mb-5">
         &ldquo;{highlightText(review.text, review.highlight)}&rdquo;
       </p>
-      <div className="flex items-center gap-3">
-        <img
-          src={review.avatar}
-          alt={review.name}
-          className="w-10 h-10 rounded-full object-cover border-2 border-border"
-        />
-        <div>
-          <p className="text-sm font-bold text-foreground">{review.name}</p>
-          <p className="text-xs text-foreground-subtle">Peerlist reviewer</p>
-        </div>
+      <div className="flex flex-col">
+        <p className="text-sm font-bold text-foreground">{review.name}</p>
+        <p className="text-xs text-foreground-subtle">Peerlist reviewer</p>
       </div>
     </div>
   );

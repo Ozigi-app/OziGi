@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ForceLightTheme from "@/components/dashboard/ForceLightTheme";
 
 export const metadata: Metadata = {
   title: "Dashboard — Ozigi",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <ForceLightTheme />
+      {children}
+    </>
+  );
 }

@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────────────������������──────── */}
+        {/* ──────────────────────────────────────────────────────��������������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -200,7 +200,7 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col items-center text-center gap-10">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col items-center text-center gap-8">
 
             {/* ── Eyebrow pill ────────────────────────────────────────── */}
             <motion.div
@@ -219,7 +219,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-md"
+              className="w-full max-w-3xl"
             >
               <div className="relative">
                 {/* Top-left corner accent lines */}
@@ -254,7 +254,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] whitespace-normal"
+                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] lg:whitespace-nowrap"
               >
                 Automate content creation{" "}
                 <span className="relative inline-block">

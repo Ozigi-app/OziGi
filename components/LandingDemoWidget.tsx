@@ -57,78 +57,78 @@ export function LandingDemoWidget() {
       }}>
 
       {/* Title bar — echoes the Mac chrome from the hero */}
-      <div className="flex items-center gap-1.5 px-4 py-3 border-b border-slate-100">
-        <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-        <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-        <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-        <span className="ml-3 text-[11px] font-semibold text-slate-400">ozigi.app — live demo</span>
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+        <span className="ml-2 text-[10px] font-semibold text-slate-400">ozigi.app — live demo</span>
       </div>
 
-      <div className="p-5 md:p-6">
-        {/* Auto-expanding textarea — starts compact, expands as user types */}
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={handleChange}
-          placeholder="Paste a URL, notes, or idea..."
-          rows={1}
-          className="w-full text-sm text-slate-800 placeholder:text-slate-400
-                     bg-slate-50 border border-slate-200 rounded-xl px-4 py-3
-                     overflow-hidden resize-none focus:outline-none
-                     focus:border-[#E8320A]/50 focus:ring-2 focus:ring-[#E8320A]/10
-                     transition-all duration-200 leading-relaxed"
-          style={{ minHeight: "2.5rem" }}
-        />
+      <div className="p-3">
+        {/* Inline row: textarea + button on the same line */}
+        <div className="flex items-stretch gap-2">
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={handleChange}
+            placeholder="Paste a URL, notes, or idea..."
+            rows={1}
+            className="flex-1 text-sm text-left text-slate-800 placeholder:text-slate-400
+                       bg-slate-50 border border-slate-200 rounded-lg px-3 py-2
+                       overflow-hidden resize-none focus:outline-none
+                       focus:border-[#E8320A]/50 focus:ring-2 focus:ring-[#E8320A]/10
+                       transition-all duration-200 leading-snug"
+            style={{ minHeight: "2.25rem" }}
+          />
+
+          <button
+            onClick={handleGenerate}
+            disabled={!input.trim() || loading}
+            className="shrink-0 px-4 disabled:opacity-40
+                       text-white font-black uppercase tracking-widest text-[11px] rounded-lg
+                       transition-all duration-300 active:scale-[0.98]
+                       flex items-center justify-center gap-2"
+            style={{
+              background: !input.trim() || loading
+                ? "#E8320A"
+                : "linear-gradient(135deg, #E8320A 0%, #c52000 100%)",
+              boxShadow: input.trim() && !loading ? "0 8px 24px rgba(232,50,10,0.35)" : "none",
+            }}
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span className="hidden sm:inline">Taking you there...</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Generate ⚡</span>
+                <span className="sm:hidden">⚡</span>
+              </>
+            )}
+          </button>
+        </div>
 
         {/* Sample pills */}
-        <div className="flex items-center gap-2 mt-3 flex-wrap">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            Try a sample:
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
+            Try:
           </span>
           {SAMPLES.map((s) => (
             <button
               key={s.label}
               onClick={() => handleSample(s.value)}
               className="text-[10px] font-bold text-slate-500 border border-slate-200
-                         rounded-full px-3 py-1 hover:border-[#E8320A] hover:text-[#E8320A]
+                         rounded-full px-2.5 py-0.5 hover:border-[#E8320A] hover:text-[#E8320A]
                          transition-colors duration-200"
             >
               {s.label}
             </button>
           ))}
         </div>
-
-        {/* Generate button */}
-        <button
-          onClick={handleGenerate}
-          disabled={!input.trim() || loading}
-          className="mt-3.5 w-full py-3.5 disabled:opacity-40
-                     text-white font-black uppercase tracking-widest text-xs rounded-xl
-                     transition-all duration-300 active:scale-[0.98]
-                     flex items-center justify-center gap-2"
-          style={{
-            background: !input.trim() || loading
-              ? "#E8320A"
-              : "linear-gradient(135deg, #E8320A 0%, #c52000 100%)",
-            boxShadow: input.trim() && !loading ? "0 8px 24px rgba(232,50,10,0.35)" : "none",
-          }}
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Taking you there...
-            </>
-          ) : (
-            "Generate my campaign ⚡"
-          )}
-        </button>
-
-        <p className="text-center text-[10px] text-slate-400 mt-2.5">
-          No account needed · One free generation
-        </p>
       </div>
     </div>
   );
