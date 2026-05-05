@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────────────����������──────── */}
+        {/* ──────────────────────────────────────────���───────────����������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -200,17 +200,35 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 lg:px-16 py-20 md:py-24 flex flex-col-reverse gap-12 md:gap-16">
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 lg:px-16 py-20 md:py-28 flex flex-col items-center gap-12 md:gap-14">
 
-            {/* ── Headline + CTAs (full width, below demo) ────────────── */}
-            <div className="w-full max-w-4xl">
-              {/* Headline */}
+            {/* ── Centered headline + CTAs ─────────────────────────────── */}
+            <div className="w-full max-w-4xl flex flex-col items-center text-center">
+              {/* Centered pill badge — Ghostly style */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-7"
+              >
+                <span className="inline-flex items-center gap-2 text-xs font-medium px-4 py-1.5 rounded-full"
+                  style={{ background: C.card, border: `1px solid ${C.border}`, color: C.muted }}>
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
+                  <span>Live demo</span>
+                  <span style={{ color: C.dim }}>·</span>
+                  <span>No sign-up</span>
+                  <span style={{ color: C.dim }}>·</span>
+                  <span>Free forever</span>
+                </span>
+              </motion.div>
+
+              {/* Centered headline */}
               <motion.div style={{ y: heroParallaxY }}>
               <motion.h1
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                className="text-5xl md:text-7xl lg:text-[5.5rem] font-black italic uppercase tracking-tighter leading-[0.92] mb-5"
+                className="text-5xl md:text-7xl lg:text-[5.5rem] font-black italic uppercase tracking-tighter leading-[0.92] mb-6"
               >
                 Automate Content<br />
                 <span className="relative inline-block">
@@ -231,7 +249,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.38 }}
-                className="text-base md:text-lg font-medium leading-relaxed mb-8 max-w-md"
+                className="text-base md:text-lg font-medium leading-relaxed mb-8 max-w-xl"
                 style={{ color: C.muted }}
               >
                 Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
@@ -241,7 +259,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-wrap items-center gap-3 mb-10"
+                className="flex flex-wrap items-center justify-center gap-3 mb-3"
               >
                 <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
                   Get started free →
@@ -251,14 +269,48 @@ export default function Home() {
                 </MagneticBtn>
               </motion.div>
 
-              {/* Launch badges — horizontal scroll */}
-              <motion.div
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.65 }}
-                className="w-full overflow-x-auto scrollbar-hide"
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="text-xs font-medium"
+                style={{ color: C.dim }}
               >
-                <div className="flex items-center gap-6 pb-2 w-fit">
+                No credit card · No account · Free to try
+              </motion.p>
+            </div>
+
+            {/* ── Demo widget — the visual showcase ────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-3xl mx-auto"
+            >
+              <div className="relative">
+                {/* Top-left corner accent lines */}
+                <div className="absolute -top-3 -left-3 w-12 h-12 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
+                  <div className="absolute top-0 left-0 h-full w-px" style={{ background: `linear-gradient(to bottom, ${C.red}, transparent)` }} />
+                </div>
+                {/* Bottom-right corner accent lines */}
+                <div className="absolute -bottom-3 -right-3 w-12 h-12 pointer-events-none">
+                  <div className="absolute bottom-0 right-0 w-full h-px" style={{ background: `linear-gradient(to left, ${C.red}, transparent)` }} />
+                  <div className="absolute bottom-0 right-0 h-full w-px" style={{ background: `linear-gradient(to top, ${C.red}, transparent)` }} />
+                </div>
+
+                <LandingDemoWidget />
+              </div>
+            </motion.div>
+
+            {/* ── Launch badges — centered, scrolls horizontally on small screens ── */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.85 }}
+              className="w-full overflow-x-auto scrollbar-hide flex justify-center"
+            >
+              <div className="flex items-center gap-6 pb-2 px-4">
                   <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
                     target="_blank" rel="noopener noreferrer"
                     className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
@@ -313,45 +365,6 @@ export default function Home() {
                   </a>
                 </div>
               </motion.div>
-            </div>
-
-            {/* ── Right col: demo widget ─��────────────────────────────── */}
-            {/* Demo widget — full attention, top of fold */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-2xl mx-auto"
-            >
-              {/* Outer accent frame */}
-              <div className="relative">
-                {/* Top-left corner accent lines */}
-                <div className="absolute -top-3 -left-3 w-10 h-10 pointer-events-none">
-                  <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
-                  <div className="absolute top-0 left-0 h-full w-px" style={{ background: `linear-gradient(to bottom, ${C.red}, transparent)` }} />
-                </div>
-                {/* Bottom-right corner accent lines */}
-                <div className="absolute -bottom-3 -right-3 w-10 h-10 pointer-events-none">
-                  <div className="absolute bottom-0 right-0 w-full h-px" style={{ background: `linear-gradient(to left, ${C.red}, transparent)` }} />
-                  <div className="absolute bottom-0 right-0 h-full w-px" style={{ background: `linear-gradient(to top, ${C.red}, transparent)` }} />
-                </div>
-
-                {/* Label above widget */}
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-                  <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: C.red }}>
-                    Try it now — live demo
-                  </span>
-                </div>
-
-                <LandingDemoWidget />
-
-                {/* No account pill below */}
-                <p className="text-center text-[10px] font-medium mt-3" style={{ color: C.dim }}>
-                  No credit card · No account · Free to try
-                </p>
-              </div>
-            </motion.div>
           </div>
         </section>
 
