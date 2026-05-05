@@ -18,6 +18,11 @@ import {
   type WebSourceSnippet,
 } from '@/lib/prompts/long-form';
 import { containsPromptInjection } from '@/lib/prompts';
+import {
+  validateLongForm,
+  buildRepairDirective,
+  summarizeForClient,
+} from '@/lib/prompts/lexicon-validator';
 import { searchWebWithExa } from '@/lib/exa';
 import { searchWeb as searchTavily } from '@/lib/search';
 import { fetchPageContent } from '@/lib/firecrawl';
@@ -487,6 +492,61 @@ export async function POST(req: Request) {
     );
 
     // ---------------------------------------------------------------------
+    // Lexicon validation + single repair retry on slop
+    // ---------------------------------------------------------------------
+    let lexiconReport = validateLongForm(parsed);
+    let lexiconRetried = false;
+    const retryWorthy =
+      lexiconReport.slopScore >= 4 ||
+      lexiconReport.violations.some(
+        (v) => v.kind === 'banned-structure' || v.kind === 'banned-contrast'
+      );
+
+    if (retryWorthy) {
+      console.log(
+        `[LongForm][lexicon] initial article had ${lexiconReport.violations.length} violations (slop=${lexiconReport.slopScore}); retrying with repair directive`
+      );
+      try {
+        const repairPrompt = `${prompt}\n\n${buildRepairDirective(lexiconReport)}\n\n## Rejected article (for reference only — rewrite from source, do NOT paraphrase)\n${responseText.slice(0, 6000)}`;
+        const retryResp = await client.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: [{ role: 'user', parts: [{ text: repairPrompt }] }],
+          config: { temperature: 0.7, maxOutputTokens: 32768 },
+        });
+        let retryText = '';
+        if ((retryResp as any).text) {
+          const t = (retryResp as any).text;
+          retryText = typeof t === 'function' ? t() : t;
+        } else if (retryResp.candidates?.[0]?.content?.parts?.[0]?.text) {
+          retryText = retryResp.candidates[0].content.parts[0].text;
+        }
+        const retryParsed = retryText ? parseLongFormResponse(retryText) : null;
+        if (retryParsed) {
+          const retryReport = validateLongForm(retryParsed);
+          console.log(
+            `[LongForm][lexicon] retry produced ${retryReport.violations.length} violations (slop=${retryReport.slopScore})`
+          );
+          if (retryReport.slopScore < lexiconReport.slopScore) {
+            // Adopt the cleaner article. Preserve metadata + reconciled refs.
+            retryParsed.metadata = parsed.metadata;
+            if (!retryParsed.references && parsed.references) {
+              retryParsed.references = parsed.references;
+            }
+            parsed = retryParsed;
+            lexiconReport = retryReport;
+          }
+          lexiconRetried = true;
+        } else {
+          console.warn('[LongForm][lexicon] retry response unparseable, keeping original');
+        }
+      } catch (err) {
+        console.error('[LongForm][lexicon] retry failed, keeping original:', err);
+      }
+    }
+
+    const lexiconWarnings = summarizeForClient(lexiconReport);
+
+    // ---------------------------------------------------------------------
     // Persist to history
     // ---------------------------------------------------------------------
     try {
@@ -532,6 +592,8 @@ export async function POST(req: Request) {
           success: true,
           article: parsed,
           warning: `Article generated but could not be saved to history: ${saveError.message}`,
+          lexiconWarnings,
+          lexiconRetried,
         });
       }
       console.log('[LongForm] Saved to database, id:', savedRow?.id);
@@ -543,6 +605,8 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       article: parsed,
+      lexiconWarnings,
+      lexiconRetried,
     });
   } catch (error: any) {
     console.error('[LongForm] Error:', error);

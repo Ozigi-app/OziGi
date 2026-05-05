@@ -1,6 +1,13 @@
 export const maxDuration = 60;
 import { NextResponse } from 'next/server';
 import { buildGenerationPrompt, containsPromptInjection } from '../../../lib/prompts';
+import {
+  validateCampaign,
+  buildRepairDirective,
+  summarizeForClient,
+  type CampaignShape,
+  type ValidationReport,
+} from '@/lib/prompts/lexicon-validator';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { PostHog } from 'posthog-node';
@@ -83,6 +90,84 @@ async function generateFromParts(parts: any[], stream = false) {
   }
 
   return responseText;
+}
+
+/**
+ * Generation slot that runs lexicon validation on the parsed campaign and,
+ * if violations exceed the threshold, performs ONE retry with a strict
+ * repair directive appended to the original prompt. Returns the final
+ * response text plus a typed report so the caller can decide whether to
+ * surface warnings to the client.
+ *
+ * Threshold: slopScore >= 3 OR any banned-structure / banned-contrast /
+ * banned-closer violation. Single banned-word slips through with a warning
+ * because LLMs occasionally use a flagged word in a sentence the lexicon
+ * was never meant to catch.
+ */
+async function generateWithLexiconGuard(
+  parts: any[],
+  basePrompt: string
+): Promise<{ responseText: string; report: ValidationReport; retried: boolean }> {
+  const initial = await generateFromParts(parts);
+
+  let parsed: CampaignShape | null = null;
+  try {
+    parsed = JSON.parse(initial);
+  } catch (err) {
+    console.warn('[lexicon] could not parse initial response, skipping validation');
+    return { responseText: initial, report: { violations: [], slopScore: 0, clean: true }, retried: false };
+  }
+
+  const report = validateCampaign(parsed);
+  const retryWorthy =
+    report.slopScore >= 3 ||
+    report.violations.some(
+      (v) =>
+        v.kind === 'banned-structure' ||
+        v.kind === 'banned-contrast' ||
+        v.kind === 'banned-closer'
+    );
+
+  if (!retryWorthy) {
+    return { responseText: initial, report, retried: false };
+  }
+
+  console.log(
+    `[lexicon] initial output had ${report.violations.length} violation(s) (slop=${report.slopScore}); retrying with repair directive`
+  );
+
+  const repairDirective = buildRepairDirective(report);
+  const repairParts: any[] = [
+    { text: `${basePrompt}\n\n${repairDirective}\n\n## Rejected output (for reference only — do NOT paraphrase, rewrite from source)\n${initial.slice(0, 4000)}` },
+    ...parts.slice(1), // preserve any inline asset parts (images, PDFs, etc.)
+  ];
+
+  let retried: string;
+  try {
+    retried = (await generateFromParts(repairParts)) as string;
+  } catch (err) {
+    console.error('[lexicon] retry failed, returning original:', err);
+    return { responseText: initial, report, retried: true };
+  }
+
+  let retriedParsed: CampaignShape | null = null;
+  try {
+    retriedParsed = JSON.parse(retried);
+  } catch {
+    console.warn('[lexicon] retried response unparseable, returning original');
+    return { responseText: initial, report, retried: true };
+  }
+
+  const retriedReport = validateCampaign(retriedParsed);
+  console.log(
+    `[lexicon] retry produced ${retriedReport.violations.length} violation(s) (slop=${retriedReport.slopScore})`
+  );
+
+  // Take whichever response is cleaner.
+  if (retriedReport.slopScore < report.slopScore) {
+    return { responseText: retried, report: retriedReport, retried: true };
+  }
+  return { responseText: initial, report, retried: true };
 }
 
 export async function POST(req: Request) {
@@ -179,7 +264,9 @@ export async function POST(req: Request) {
         }
       }
 
-      const responseText = await generateFromParts(parts);
+      const { responseText, report: lexiconReport, retried } =
+        await generateWithLexiconGuard(parts, textPrompt);
+      const lexiconWarnings = summarizeForClient(lexiconReport);
 
       const durationMs = Date.now() - startTime;
       posthog.capture({
@@ -191,11 +278,14 @@ export async function POST(req: Request) {
           hasFile: assetUrls.length > 0,
           assetCount: assetUrls.length,
           status: 'success',
+          lexiconViolations: lexiconReport.violations.length,
+          lexiconSlopScore: lexiconReport.slopScore,
+          lexiconRetried: retried,
         },
       });
       await posthog.shutdown();
 
-      return NextResponse.json({ output: responseText });
+      return NextResponse.json({ output: responseText, lexiconWarnings });
     }
 
     // --- AUTHENTICATED FLOW ---
@@ -338,7 +428,9 @@ export async function POST(req: Request) {
       }
     }
 
-    const responseText = await generateFromParts(parts);
+    const { responseText, report: lexiconReport, retried } =
+      await generateWithLexiconGuard(parts, textPrompt);
+    const lexiconWarnings = summarizeForClient(lexiconReport);
 
     await incrementCampaignGeneration(user.id);
 
@@ -352,11 +444,14 @@ export async function POST(req: Request) {
         hasFile: assetUrls.length > 0,
         assetCount: assetUrls.length,
         status: 'success',
+        lexiconViolations: lexiconReport.violations.length,
+        lexiconSlopScore: lexiconReport.slopScore,
+        lexiconRetried: retried,
       },
     });
     await posthog.shutdown();
 
-    return NextResponse.json({ output: responseText });
+    return NextResponse.json({ output: responseText, lexiconWarnings });
   } catch (error: any) {
     const durationMs = Date.now() - startTime;
     posthog.capture({
