@@ -236,7 +236,16 @@ async function runWebResearch(context: string): Promise<WebResearchBundle | null
 // Main handler
 // ---------------------------------------------------------------------------
 
+// Hard budget for the route, including the optional repair retry. Sits
+// ~10s below `maxDuration` so the function has room to persist + return.
+const LONGFORM_BUDGET_MS = 170_000;
+// Minimum runtime headroom required before we'll START a repair retry.
+// A long-form regeneration can take 30-60s; skip the retry if we don't
+// have enough budget left and ship the original with `lexiconWarnings`.
+const LONGFORM_RETRY_MIN_REMAINING_MS = 65_000;
+
 export async function POST(req: Request) {
+  const routeStartTime = Date.now();
   try {
     const cookieStore = await cookies();
 
@@ -502,9 +511,22 @@ export async function POST(req: Request) {
         (v) => v.kind === 'banned-structure' || v.kind === 'banned-contrast'
       );
 
-    if (retryWorthy) {
+    // Time-budget guard: don't start a retry that could push us past
+    // `maxDuration`. Better to ship a flagged draft with warnings than
+    // time out and ship nothing.
+    const elapsed = Date.now() - routeStartTime;
+    const remaining = LONGFORM_BUDGET_MS - elapsed;
+    const haveBudget = remaining >= LONGFORM_RETRY_MIN_REMAINING_MS;
+
+    if (retryWorthy && !haveBudget) {
+      console.warn(
+        `[LongForm][lexicon] skipping repair retry: only ${remaining}ms of budget left (need ${LONGFORM_RETRY_MIN_REMAINING_MS}ms). Returning original with ${lexiconReport.violations.length} violation(s).`
+      );
+    }
+
+    if (retryWorthy && haveBudget) {
       console.log(
-        `[LongForm][lexicon] initial article had ${lexiconReport.violations.length} violations (slop=${lexiconReport.slopScore}); retrying with repair directive`
+        `[LongForm][lexicon] initial article had ${lexiconReport.violations.length} violations (slop=${lexiconReport.slopScore}); retrying with repair directive (${remaining}ms budget remaining)`
       );
       try {
         const repairPrompt = `${prompt}\n\n${buildRepairDirective(lexiconReport)}\n\n## Rejected article (for reference only — rewrite from source, do NOT paraphrase)\n${responseText.slice(0, 6000)}`;
