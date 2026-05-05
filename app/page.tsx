@@ -167,7 +167,7 @@ export default function Home() {
       <Header session={session} onSignIn={() => setIsAuthModalOpen(true)} />
       <main className="flex-1">
 
-        {/* ──────────────────────────────────────────────────────��������──────── */}
+        {/* ──────────────────────────────────────────────────────����������──────── */}
         {/* HERO — split: headline left · demo right                        */}
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
@@ -200,25 +200,10 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
 
-            {/* ── Left col: headline ──────────────────────────────────── */}
+            {/* ── Left col: headline + CTAs ───────────────────────────── */}
             <div className="flex-1 max-w-xl">
-              {/* Demo badge — top priority */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45 }}
-                className="mb-6"
-              >
-                <button onClick={() => setIsAuthModalOpen(true)}
-                  className="inline-flex items-center gap-2.5 text-[10px] font-black uppercase tracking-[0.22em] px-5 py-2.5 rounded-full transition-all hover:scale-105"
-                  style={{ background: C.redSoft, border: `1px solid rgba(232,50,10,0.3)`, color: C.red }}>
-                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-                  Live demo — no sign-up
-                </button>
-              </motion.div>
-
               {/* Headline */}
               <motion.div style={{ y: heroParallaxY }}>
               <motion.h1
@@ -230,7 +215,6 @@ export default function Home() {
                 Automate Content<br />
                 <span className="relative inline-block">
                   Creation
-                  {/* Animated underline */}
                   <motion.span
                     className="absolute left-0 -bottom-0.5 h-1 rounded-full origin-left"
                     style={{ background: C.red }}
@@ -239,7 +223,7 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.55, ease: "easeOut" }}
                   />
                 </span>{" "}
-                <span style={{ color: C.red }}>Without ChatGPT's Voice.</span>
+                <span style={{ color: C.red }}>Without ChatGPT&apos;s Voice.</span>
               </motion.h1>
               </motion.div>
 
@@ -250,10 +234,9 @@ export default function Home() {
                 className="text-base md:text-lg font-medium leading-relaxed mb-8 max-w-md"
                 style={{ color: C.muted }}
               >
-                Generate blog posts, newsletters, social content — all in your voice, not AI's.
+                Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
               </motion.p>
 
-              {/* Ghost CTAs (secondary — demo is the primary CTA) */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -372,20 +355,6 @@ export default function Home() {
         </section>
 
         {/* ─────────────────────────────────────────────────────────────── */}
-        {/* SOCIAL PROOF                                                    */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
-          <SocialProof />
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* PEERLIST REVIEWS — real user feedback on output quality         */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
-          <PeerlistReviews />
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
         {/* OUTPUT SHOWCASE — fixed bg to match brand navy                  */}
         {/* ─────────────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
@@ -479,8 +448,22 @@ export default function Home() {
         </section>
 
         {/* ─────────────────────────────────────────────────────────────── */}
+        {/* SOCIAL PROOF                                                    */}
+        {/* ─────────────────────────────────────────────────────────────── */}
+        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
+          <SocialProof />
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* PEERLIST REVIEWS — real user feedback on output quality         */}
+        {/* ─────────────────────────────────────────────────────────────── */}
+        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
+          <PeerlistReviews />
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────── */}
         {/* STATS                                                           */}
-        {/* ─────────────��───────────────────────────────────────────────── */}
+        {/* ─────────────────────────────────────────────────────────────── */}
         <section className="relative py-16 md:py-20"
           style={{ background: C.navy, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
           <div className="max-w-4xl mx-auto px-8 md:px-14">

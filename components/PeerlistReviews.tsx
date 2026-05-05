@@ -5,57 +5,57 @@ import { Quote } from "lucide-react";
 
 interface Review {
   name: string;
-  initials: string;
+  avatar: string;
   text: string;
-  highlight?: string; // key phrase to emphasize
+  highlight?: string;
 }
 
 const REVIEWS: Review[] = [
   {
     name: "Chukwuka Ikeh",
-    initials: "CI",
+    avatar: "/reviewers/chukwuka-ikeh.jpg",
     text: "I highly recommend, give it a try. Its output feels so humanly. Amazing work to the creator!",
     highlight: "output feels so humanly",
   },
   {
     name: "Henschel Emmanuel",
-    initials: "HE",
+    avatar: "/reviewers/henschel-emmanuel.jpg",
     text: "The focus on turning raw input into structured, usable content while preserving the user's voice is actually thoughtful. The banned lexicon idea especially stands out. It tackles one of the biggest problems with AI-generated content sounding robotic.",
     highlight: "banned lexicon idea especially stands out",
   },
   {
     name: "Chris Roland",
-    initials: "CR",
+    avatar: "/reviewers/chris-roland.jpg",
     text: "This is genuinely useful for anyone who writes regularly. The personalised voice truly makes this a game changer and eliminates the worry generating generic content.",
     highlight: "personalised voice truly makes this a game changer",
   },
   {
     name: "Ganiru Zubie-Okolo",
-    initials: "GZ",
+    avatar: "/reviewers/ganiru-zubie.jpg",
     text: "Amazing work. The fact it gives me human like output is great. I highly recommend.",
     highlight: "human like output",
   },
   {
     name: "Olusegun Bobate",
-    initials: "OB",
+    avatar: "/reviewers/olusegun-bobate.jpg",
     text: "Great product! It was easy to use and gave a great output that feels human.",
     highlight: "output that feels human",
   },
   {
     name: "Anmol Baranwal",
-    initials: "AB",
+    avatar: "/reviewers/anmol-baranwal.jpg",
     text: "Nice. Most content out there feels like AI slop and has no personality.",
     highlight: "AI slop",
   },
   {
     name: "Adaobi Okolo",
-    initials: "AO",
-    text: "This is very essential for creatives and people that write frequently. You'd be able to do more with less time. I recommend.",
+    avatar: "/reviewers/adaobi-okolo.jpg",
+    text: "This is very essential for creatives and people that write frequently. You&apos;d be able to do more with less time. I recommend.",
     highlight: "do more with less time",
   },
   {
     name: "Onuselogu Letiscia",
-    initials: "OL",
+    avatar: "/reviewers/onuselogu-letiscia.jpg",
     text: "The output of this is really good. I recommend.",
     highlight: "output of this is really good",
   },
@@ -164,9 +164,11 @@ function ReviewCard({ review }: { review: Review }) {
         &ldquo;{highlightText(review.text, review.highlight)}&rdquo;
       </p>
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-[#ff6b4a] flex items-center justify-center">
-          <span className="text-xs font-black text-white">{review.initials}</span>
-        </div>
+        <img
+          src={review.avatar}
+          alt={review.name}
+          className="w-10 h-10 rounded-full object-cover border-2 border-border"
+        />
         <div>
           <p className="text-sm font-bold text-foreground">{review.name}</p>
           <p className="text-xs text-foreground-subtle">Peerlist reviewer</p>
