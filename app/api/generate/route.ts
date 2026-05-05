@@ -1,3 +1,7 @@
+// Vercel Hobby tier caps function runtime at 60s. Anything declared above
+// that is silently capped, so we set 60 explicitly and rely on the budget
+// guard below to skip the lexicon repair retry whenever the initial call
+// already consumed most of the runtime. Upgrade to Pro to raise this to 300.
 export const maxDuration = 60;
 import { NextResponse } from 'next/server';
 import { buildGenerationPrompt, containsPromptInjection } from '../../../lib/prompts';
@@ -104,9 +108,19 @@ async function generateFromParts(parts: any[], stream = false) {
  * because LLMs occasionally use a flagged word in a sentence the lexicon
  * was never meant to catch.
  */
+// Hard budget for the entire generation slot, sized for Hobby (60s cap).
+// Leaves ~5s for DB persist + JSON return + PostHog flush.
+const GENERATION_BUDGET_MS = 55_000;
+// Minimum runtime headroom required before we'll START a repair retry.
+// A 5-platform Gemini call typically takes 25-50s, so on Hobby the retry
+// will only fire when the initial call came back unusually fast (~10-20s).
+// Otherwise we ship the original with `lexiconWarnings` — no timeout.
+const RETRY_MIN_REMAINING_MS = 25_000;
+
 async function generateWithLexiconGuard(
   parts: any[],
-  basePrompt: string
+  basePrompt: string,
+  startTime: number
 ): Promise<{ responseText: string; report: ValidationReport; retried: boolean }> {
   const initial = await generateFromParts(parts);
 
@@ -132,8 +146,20 @@ async function generateWithLexiconGuard(
     return { responseText: initial, report, retried: false };
   }
 
+  // Time-budget guard: never start a retry that could push us past the
+  // function timeout. Better to ship a flagged draft than time out and
+  // ship nothing.
+  const elapsed = Date.now() - startTime;
+  const remaining = GENERATION_BUDGET_MS - elapsed;
+  if (remaining < RETRY_MIN_REMAINING_MS) {
+    console.warn(
+      `[lexicon] skipping repair retry: only ${remaining}ms of budget left (need ${RETRY_MIN_REMAINING_MS}ms). Returning original with ${report.violations.length} violation(s).`
+    );
+    return { responseText: initial, report, retried: false };
+  }
+
   console.log(
-    `[lexicon] initial output had ${report.violations.length} violation(s) (slop=${report.slopScore}); retrying with repair directive`
+    `[lexicon] initial output had ${report.violations.length} violation(s) (slop=${report.slopScore}); retrying with repair directive (${remaining}ms budget remaining)`
   );
 
   const repairDirective = buildRepairDirective(report);
@@ -265,7 +291,7 @@ export async function POST(req: Request) {
       }
 
       const { responseText, report: lexiconReport, retried } =
-        await generateWithLexiconGuard(parts, textPrompt);
+        await generateWithLexiconGuard(parts, textPrompt, startTime);
       const lexiconWarnings = summarizeForClient(lexiconReport);
 
       const durationMs = Date.now() - startTime;
@@ -429,7 +455,7 @@ export async function POST(req: Request) {
     }
 
     const { responseText, report: lexiconReport, retried } =
-      await generateWithLexiconGuard(parts, textPrompt);
+      await generateWithLexiconGuard(parts, textPrompt, startTime);
     const lexiconWarnings = summarizeForClient(lexiconReport);
 
     await incrementCampaignGeneration(user.id);

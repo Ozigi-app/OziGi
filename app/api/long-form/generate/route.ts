@@ -1,4 +1,8 @@
-export const maxDuration = 180; // Web research + long-form generation needs more headroom
+// Vercel Hobby caps at 60s. Long-form + web research routinely runs 30-55s
+// on its own, which means the lexicon repair retry will rarely fire on Hobby
+// — we ship the original with `lexiconWarnings` instead of timing out.
+// Upgrade to Pro to raise this to 300s and let retries run reliably.
+export const maxDuration = 60;
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
@@ -236,7 +240,16 @@ async function runWebResearch(context: string): Promise<WebResearchBundle | null
 // Main handler
 // ---------------------------------------------------------------------------
 
+// Hard budget for the route, sized for Vercel Hobby's 60s function cap.
+// Leaves ~5s for DB persist + JSON return.
+const LONGFORM_BUDGET_MS = 55_000;
+// Minimum runtime headroom before we'll START a repair retry. On Hobby
+// long-form often consumes 30-55s on its own, so the retry will rarely
+// fire — we ship the original with `lexiconWarnings` instead of timing out.
+const LONGFORM_RETRY_MIN_REMAINING_MS = 30_000;
+
 export async function POST(req: Request) {
+  const routeStartTime = Date.now();
   try {
     const cookieStore = await cookies();
 
@@ -502,9 +515,22 @@ export async function POST(req: Request) {
         (v) => v.kind === 'banned-structure' || v.kind === 'banned-contrast'
       );
 
-    if (retryWorthy) {
+    // Time-budget guard: don't start a retry that could push us past
+    // `maxDuration`. Better to ship a flagged draft with warnings than
+    // time out and ship nothing.
+    const elapsed = Date.now() - routeStartTime;
+    const remaining = LONGFORM_BUDGET_MS - elapsed;
+    const haveBudget = remaining >= LONGFORM_RETRY_MIN_REMAINING_MS;
+
+    if (retryWorthy && !haveBudget) {
+      console.warn(
+        `[LongForm][lexicon] skipping repair retry: only ${remaining}ms of budget left (need ${LONGFORM_RETRY_MIN_REMAINING_MS}ms). Returning original with ${lexiconReport.violations.length} violation(s).`
+      );
+    }
+
+    if (retryWorthy && haveBudget) {
       console.log(
-        `[LongForm][lexicon] initial article had ${lexiconReport.violations.length} violations (slop=${lexiconReport.slopScore}); retrying with repair directive`
+        `[LongForm][lexicon] initial article had ${lexiconReport.violations.length} violations (slop=${lexiconReport.slopScore}); retrying with repair directive (${remaining}ms budget remaining)`
       );
       try {
         const repairPrompt = `${prompt}\n\n${buildRepairDirective(lexiconReport)}\n\n## Rejected article (for reference only — rewrite from source, do NOT paraphrase)\n${responseText.slice(0, 6000)}`;
