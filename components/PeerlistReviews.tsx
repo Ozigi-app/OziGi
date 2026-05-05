@@ -80,10 +80,10 @@ export default function PeerlistReviews() {
           variants={fadeUp}
           className="text-center mb-12"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4 text-[#E8320A]">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4 text-accent">
             From Peerlist Launch
           </p>
-          <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] text-white">
+          <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] text-foreground">
             Real feedback<br />from real users
           </h2>
           <div className="flex items-center justify-center gap-3 mt-6">
@@ -94,7 +94,7 @@ export default function PeerlistReviews() {
                 </svg>
               ))}
             </div>
-            <span className="text-sm font-bold text-slate-400">
+            <span className="text-sm font-bold text-foreground-muted">
               5.0 Idea / 4.9 Execution / 4.4 Design
             </span>
           </div>
@@ -103,14 +103,14 @@ export default function PeerlistReviews() {
 
       {/* Scrolling marquee */}
       <div className="relative w-full overflow-hidden">
-        {/* Fade edges */}
+        {/* Fade edges — use CSS var for bg */}
         <div
           className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 z-10"
-          style={{ background: "linear-gradient(to right, #071020, transparent)" }}
+          style={{ background: "linear-gradient(to right, var(--bg), transparent)" }}
         />
         <div
           className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 z-10"
-          style={{ background: "linear-gradient(to left, #071020, transparent)" }}
+          style={{ background: "linear-gradient(to left, var(--bg), transparent)" }}
         />
 
         <div
@@ -129,7 +129,7 @@ export default function PeerlistReviews() {
           href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors text-xs font-bold uppercase tracking-widest"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-foreground-muted hover:text-accent hover:border-accent transition-colors text-xs font-bold uppercase tracking-widest"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
@@ -148,7 +148,7 @@ function ReviewCard({ review }: { review: Review }) {
     const parts = text.split(new RegExp(`(${highlight})`, "gi"));
     return parts.map((part, i) =>
       part.toLowerCase() === highlight.toLowerCase() ? (
-        <span key={i} className="text-[#E8320A] font-bold">
+        <span key={i} className="text-accent font-bold">
           {part}
         </span>
       ) : (
@@ -158,20 +158,18 @@ function ReviewCard({ review }: { review: Review }) {
   };
 
   return (
-    <div
-      className="flex-shrink-0 w-[340px] md:w-[400px] p-6 rounded-2xl border border-slate-800 bg-[#0A1628]/80 backdrop-blur-sm whitespace-normal"
-    >
-      <Quote className="w-6 h-6 text-[#E8320A] mb-3 opacity-60" />
-      <p className="text-sm md:text-base text-slate-300 leading-relaxed mb-5">
+    <div className="flex-shrink-0 w-[340px] md:w-[400px] p-6 rounded-2xl border border-border bg-surface shadow-sm whitespace-normal">
+      <Quote className="w-6 h-6 text-accent mb-3 opacity-60" />
+      <p className="text-sm md:text-base text-foreground-muted leading-relaxed mb-5">
         &ldquo;{highlightText(review.text, review.highlight)}&rdquo;
       </p>
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E8320A] to-[#ff6b4a] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-[#ff6b4a] flex items-center justify-center">
           <span className="text-xs font-black text-white">{review.initials}</span>
         </div>
         <div>
-          <p className="text-sm font-bold text-white">{review.name}</p>
-          <p className="text-xs text-slate-500">Peerlist reviewer</p>
+          <p className="text-sm font-bold text-foreground">{review.name}</p>
+          <p className="text-xs text-foreground-subtle">Peerlist reviewer</p>
         </div>
       </div>
     </div>

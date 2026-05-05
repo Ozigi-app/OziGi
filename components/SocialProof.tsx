@@ -98,9 +98,9 @@ export default function SocialProof() {
 
       {/* Scrolling marquee — no hover pause, continuous */}
       <div className="relative w-full overflow-hidden">
-        {/* Fade edges — match the section wrapper bg */}
-        <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-20 z-10" style={{ background: "linear-gradient(to right, #E2E8F0, transparent)" }} />
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 z-10" style={{ background: "linear-gradient(to left, #E2E8F0, transparent)" }} />
+        {/* Fade edges — use CSS var for bg */}
+        <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-20 z-10" style={{ background: "linear-gradient(to right, var(--bg), transparent)" }} />
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 z-10" style={{ background: "linear-gradient(to left, var(--bg), transparent)" }} />
 
         <div
           className="flex items-center gap-14 animate-scroll whitespace-nowrap"

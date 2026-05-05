@@ -42,13 +42,13 @@ const C = {
 };
 
 /* ─── Reusable SVG patterns ───────────────────────────────────────────── */
-function DiagLines({ id, opacity = 0.04 }: { id: string; opacity?: number }) {
+function DiagLines({ id, opacity = 0.06 }: { id: string; opacity?: number }) {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true" style={{ opacity }}>
       <svg className="w-full h-full" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id={id} width="32" height="32" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
-            <line x1="0" y1="0" x2="0" y2="32" stroke="white" strokeWidth="0.7" />
+            <line x1="0" y1="0" x2="0" y2="32" stroke="#0A1628" strokeWidth="0.7" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -57,13 +57,13 @@ function DiagLines({ id, opacity = 0.04 }: { id: string; opacity?: number }) {
   );
 }
 
-function DotGrid({ id, opacity = 0.055 }: { id: string; opacity?: number }) {
+function DotGrid({ id, opacity = 0.08 }: { id: string; opacity?: number }) {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true" style={{ opacity }}>
       <svg className="w-full h-full" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id={id} width="22" height="22" patternUnits="userSpaceOnUse">
-            <circle cx="11" cy="11" r="0.85" fill="white" />
+            <circle cx="11" cy="11" r="0.85" fill="#0A1628" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -72,14 +72,14 @@ function DotGrid({ id, opacity = 0.055 }: { id: string; opacity?: number }) {
   );
 }
 
-function CrossGrid({ id, opacity = 0.035 }: { id: string; opacity?: number }) {
+function CrossGrid({ id, opacity = 0.05 }: { id: string; opacity?: number }) {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true" style={{ opacity }}>
       <svg className="w-full h-full" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id={id} width="20" height="20" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="10" x2="20" y2="10" stroke="white" strokeWidth="0.45" />
-            <line x1="10" y1="0" x2="10" y2="20" stroke="white" strokeWidth="0.45" />
+            <line x1="0" y1="10" x2="20" y2="10" stroke="#0A1628" strokeWidth="0.45" />
+            <line x1="10" y1="0" x2="10" y2="20" stroke="#0A1628" strokeWidth="0.45" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -121,8 +121,8 @@ function MagneticBtn({ onClick, children, variant = "red" }: {
       style={{
         x: sx, y: sy,
         ...(variant === "red"
-          ? { background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`, boxShadow: `0 8px 32px ${C.redGlow}` }
-          : { background: "rgba(255,255,255,0.08)", border: `1px solid ${C.borderHi}` }),
+          ? { background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`, boxShadow: `0 8px 32px ${C.redGlow}`, color: "#FFFFFF" }
+          : { background: "rgba(15,23,42,0.06)", border: `1px solid ${C.borderHi}`, color: C.white }),
       }}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
@@ -133,8 +133,8 @@ function MagneticBtn({ onClick, children, variant = "red" }: {
       onClick={onClick}
       whileHover={variant === "red"
         ? { boxShadow: "0 14px 52px rgba(232,50,10,0.5)" } as any
-        : { background: "rgba(255,255,255,0.14)" } as any}
-      className="px-7 py-3.5 rounded-xl text-sm font-black uppercase tracking-widest text-white transition-colors duration-300 active:scale-95 cursor-pointer"
+        : { background: "rgba(15,23,42,0.08)" } as any}
+      className="px-7 py-3.5 rounded-xl text-sm font-black uppercase tracking-widest text-inherit transition-colors duration-300 active:scale-95 cursor-pointer"
     >
       {children}
     </motion.button>
@@ -224,7 +224,7 @@ export default function Home() {
                   initial="hidden"
                   animate="visible"
                   variants={staggerFast}
-                  className="font-black italic uppercase tracking-tighter text-white leading-[0.93] mb-7"
+                  className="font-black italic uppercase tracking-tighter text-inherit leading-[0.93] mb-7"
                   style={{ fontSize: "clamp(2.6rem, 5vw, 4.75rem)" }}
                 >
                   {["Content", "that sounds", "like"].map((line, i) => (
@@ -451,7 +451,7 @@ export default function Home() {
                   style={{ background: step.bg, border: `1px solid ${C.border}` }}>
                   {/* Watermark number */}
                   <span className="absolute right-3 bottom-0 text-[6.5rem] font-black leading-none select-none pointer-events-none"
-                    style={{ color: "rgba(255,255,255,0.035)" }}>{step.n}</span>
+                    style={{ color: "rgba(15,23,42,0.04)" }}>{step.n}</span>
                   {/* Hover top glow */}
                   <div className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
@@ -467,7 +467,7 @@ export default function Home() {
                   <div className="flex flex-wrap gap-2 relative z-10">
                     {step.tags.map((t) => (
                       <span key={t} className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded"
-                        style={{ background: "rgba(255,255,255,0.05)", color: C.dim }}>{t}</span>
+                        style={{ background: "rgba(15,23,42,0.05)", color: C.dim }}>{t}</span>
                     ))}
                   </div>
                 </motion.div>
@@ -535,8 +535,8 @@ export default function Home() {
               </motion.div>
               <motion.div variants={fadeUp}>
                 <Link href="/docs#human-in-the-loop"
-                  className="group flex-shrink-0 flex items-center gap-3 rounded-xl px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 active:scale-95"
-                  style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`, boxShadow: `0 8px 32px ${C.redGlow}` }}>
+                  className="group flex-shrink-0 flex items-center gap-3 rounded-xl px-8 py-4 text-sm font-black uppercase tracking-widest transition-all duration-300 active:scale-95"
+                  style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`, boxShadow: `0 8px 32px ${C.redGlow}`, color: "#FFFFFF" }}>
                   See how it works
                   <span className="group-hover:translate-x-1.5 transition-transform duration-200">→</span>
                 </Link>
@@ -569,7 +569,7 @@ export default function Home() {
                   style={{ background: C.cardS, border: `1px solid ${C.border}` }}>
                   <p className="text-[10px] font-black uppercase tracking-widest mb-6" style={{ color: C.dim }}>Standard AI Output</p>
                   <div className="flex-1 min-h-[13rem] rounded-xl flex items-center justify-center italic mb-6 p-6 text-center text-sm font-medium leading-relaxed"
-                    style={{ background: "rgba(255,255,255,0.04)", color: C.dim, border: `1px solid ${C.border}` }}>
+                    style={{ background: "rgba(15,23,42,0.04)", color: C.dim, border: `1px solid ${C.border}` }}>
                     "Here are 5 key takeaways from this PDF about Scaling automation. Number 1 will shock you!
                     In conclusion, AI is changing the landscape of development for everyone..."
                   </div>
@@ -588,11 +588,11 @@ export default function Home() {
                   <div className="flex-1 min-h-[13rem] rounded-xl flex flex-col md:flex-row items-stretch mb-6 overflow-hidden text-sm font-medium"
                     style={{ border: `1px solid ${C.border}` }}>
                     <div className="flex-1 p-5 flex items-center justify-center text-center italic text-xs"
-                      style={{ background: "rgba(255,255,255,0.04)", color: C.dim, borderRight: `1px solid ${C.border}` }}>
+                      style={{ background: "rgba(15,23,42,0.04)", color: C.dim, borderRight: `1px solid ${C.border}` }}>
                       [ Structured thread with your actual insights, pacing, and tone. No templates. ]
                     </div>
                     <div className="flex-1 p-5 flex items-start pt-6 text-sm leading-relaxed"
-                      style={{ background: "rgba(255,255,255,0.06)", color: C.white }}>
+                      style={{ background: "rgba(15,23,42,0.06)", color: C.white }}>
                       Scaling automation requires treating test code like production code. Poor architecture
                       sinks suites faster than flaky environments.
                     </div>
@@ -744,7 +744,7 @@ export default function Home() {
             style={{
               background: `linear-gradient(135deg, #1f0d0a 0%, ${C.navyMid} 55%, ${C.card} 100%)`,
               border: `1px solid rgba(232,50,10,0.2)`,
-              boxShadow: `0 0 80px rgba(232,50,10,0.09), 0 0 0 1px rgba(255,255,255,0.04)`,
+              boxShadow: `0 0 80px rgba(232,50,10,0.09), 0 0 0 1px rgba(15,23,42,0.04)`,
             }}>
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none rounded-3xl"
@@ -768,10 +768,11 @@ export default function Home() {
               <motion.button
                 onClick={() => setIsAuthModalOpen(true)}
                 whileHover={{ boxShadow: "0 18px 56px rgba(232,50,10,0.55)" }}
-                className="inline-flex items-center gap-3 rounded-xl px-10 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-3 rounded-xl px-10 py-4 text-sm font-black uppercase tracking-widest transition-all duration-300 active:scale-95 cursor-pointer"
                 style={{
                   background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`,
                   boxShadow: `0 8px 32px ${C.redGlow}`,
+                  color: "#FFFFFF",
                 }}>
                 Get started — it's free
               </motion.button>
