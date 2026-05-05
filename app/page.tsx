@@ -12,7 +12,7 @@ import {
 } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Hero from "../components/Hero";
+import DashboardPreview from "../components/DashboardPreview";
 import AuthModal from "../components/AuthModal";
 import PricingCards from "../components/PricingCards";
 import BeforeAfterSlider from "../components/BeforeAfterSlider";
@@ -360,20 +360,34 @@ export default function Home() {
         </section>
 
         {/* ─────────────────────────────────────────────────────────────── */}
-        {/* OUTPUT SHOWCASE — fixed bg to match brand navy                  */}
+        {/* DASHBOARD PREVIEW — what a completed generation looks like      */}
         {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden" style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
-          <DotGrid id="output-dots" opacity={0.05} />
-          <div className="relative z-10">
-            <div className="pt-14 pb-2 px-8 md:px-14">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-1" style={{ color: C.dim }}>
-                What it produces
+        <section
+          className="relative overflow-hidden py-20 md:py-28"
+          style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}
+        >
+          <DotGrid id="preview-dots" opacity={0.05} />
+          <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={fadeUp}
+              className="text-center mb-12 md:mb-14"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-3" style={{ color: C.red }}>
+                Inside the dashboard
               </p>
-              <p className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter" style={{ color: C.white }}>
-                Real outputs. Swipe to explore.
+              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.98] max-w-3xl mx-auto">
+                One input. Four formats. <span style={{ color: C.muted }}>Ready to publish.</span>
+              </h2>
+              <p className="text-sm md:text-base font-medium mt-4 max-w-lg mx-auto" style={{ color: C.muted }}>
+                A real generation, not a screenshot. Blog post, newsletter, LinkedIn post and X thread &mdash;
+                drafted in your voice, all from the same brief.
               </p>
-            </div>
-            <Hero />
+            </motion.div>
+
+            <DashboardPreview />
           </div>
         </section>
 
