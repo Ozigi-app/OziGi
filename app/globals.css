@@ -24,11 +24,11 @@
      foreground: brand navy for all text — rich, not generic grey
      accent    : brand red for CTAs, highlights, links
   */
-  --bg: #F1F5F9;                 /* slate-100 — light, airy, not stark */
-  --bg-deep: #F8FAFC;            /* slate-50 */
+  --bg: #F8FAFC;                 /* slate-50 — very light, airy */
+  --bg-deep: #FFFFFF;            /* pure white */
   --surface: #FFFFFF;            /* pure white cards */
-  --surface-2: #F8FAFC;          /* slate-50 — subtle elevation */
-  --surface-3: #F1F5F9;          /* slate-100 */
+  --surface-2: #F1F5F9;          /* slate-100 — subtle elevation */
+  --surface-3: #E2E8F0;          /* slate-200 */
   --border: #E2E8F0;             /* slate-200 */
   --border-strong: #CBD5E1;      /* slate-300 */
   --foreground: #0A1628;         /* brand-navy — rich, intentional */

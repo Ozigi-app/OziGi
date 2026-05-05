@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SettingsModal from "./SettingsModal";
-import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/lib/supabase/client";
 
 interface HeaderProps {
@@ -182,9 +181,6 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
                 </a>
               </nav>
             )}
-
-            {/* Theme toggle — visible on every page */}
-            <ThemeToggle />
 
             {/* User Profile Dropdown (logged in) */}
             {session ? (
