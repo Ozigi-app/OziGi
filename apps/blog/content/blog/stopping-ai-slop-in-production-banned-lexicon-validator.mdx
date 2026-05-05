@@ -454,7 +454,8 @@ The validator catches lexical slop (specific words, phrases, structures, openers
 - Information-density tells (saying nothing in 200 words)
 - Tone drift (slipping from blunt-engineering to corporate-marketing mid-post)
 
-The next layer is an LLM judge: a second, smaller model that reads the output and rates it on rhythm, density, and tone, returning a structured score. That is a 2026 Q3 project for us — needs more thought on prompt design, judge model selection, and how to keep the judge from rubber-stamping its own training distribution.
+The next layer is an LLM judge: a second, smaller model that reads the output and rates it on rhythm, density, and tone, returning a structured score. 
+That is a 2026 Q3 project for us. It needs more thought on prompt design, judge model selection, and how to keep the judge from rubber-stamping its own training distribution.
 
 For now, lexical enforcement catches roughly 85% of what users would call "slop". That is a meaningful jump from the prompt-only baseline, and it shipped this week.
 
@@ -468,6 +469,6 @@ The whole system is open source. If you want the same layer in your product:
 4. Add the three PostHog properties.
 5. Update your loader copy. Tell users why it is slower. They will respect you for it.
 
-Source: [github.com/Dumebii/OziGi](https://github.com/Dumebii/OziGi).
+Source: [github.com/ozigi-app/OziGi](https://github.com/ozigi-app/OziGi).
 
 If you ship LLM output to people who can spot slop, you need both layers. The prompt asks the model to behave. The validator makes sure it did. Trust, but verify — and verify in code.
