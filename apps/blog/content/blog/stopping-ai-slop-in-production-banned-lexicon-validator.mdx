@@ -3,7 +3,7 @@ title: "How to Stop AI Slop in Production: A Two-Layer Validator for LLM Output 
 date: "2026-05-06"
 modifiedTime: "2026-05-06"
 description: "AI slop slips past prompt rules in roughly one in five LLM generations. Here is the field-tested architecture we shipped at Ozigi to catch it: a structured banned lexicon, regex pattern matching for AI cadence tells, code-block sanitization, and a bounded one-retry repair loop. Full TypeScript code, latency numbers from production, and an honest answer on whether humanizer APIs solve the problem."
-coverImage: "/images/blog/banned-lexicon/cover.jpg"
+coverImage: "/images/blog/banned-lexicon/cover.svg"
 section: "Engineering"
 author: "Dumebi Okolo"
 authorImage: "/images/authors/dumebi-okolo.jpg"
@@ -270,8 +270,8 @@ The result is a lexicon that grows from real production data instead of guesswor
 Three categories sit outside what regex can detect:
 
 1. **Statistical rhythm.** LLMs default to even sentence lengths. Regex cannot measure that. A future LLM-judge pass with [perplexity-style scoring](https://huggingface.co/docs/transformers/perplexity) will. The work to add a small judge model — likely Gemini 3 Flash on a sampled fraction of drafts — is on the Q3 roadmap.
-2. **Paragraph balance.** AI defaults to roughly equal paragraph weights. Real engineering writing is uneven by design — a one-line punchline after a long technical explanation is the entire point. Detecting balance violations needs a structural pass we have not built yet.
-3. **Tone drift.** A draft can be lexicon-clean and still feel off — too formal for the user's persona, too casual for a B2B audience. Tone is what [Ozigi Personas](https://ozigi.app/docs/system-personas) handle on the prompt side, and what manual review still owns. We have a [piece on the human-in-the-loop principle](https://ozigi.app/docs/human-in-the-loop) that explains the 90/10 rule we follow.
+2. **Paragraph balance.** AI defaults to roughly equal paragraph weights. Real engineering writing is uneven by design. A one-line punchline after a long technical explanation is the entire point. Detecting balance violations needs a structural pass we have not built yet.
+3. **Tone drift.** A draft can be lexicon-clean and still feel off, too formal for the user's persona, too casual for a B2B audience. Tone is what [Ozigi Personas](https://ozigi.app/docs/system-personas) handle on the prompt side, and what manual review still owns. We have a [piece on the human-in-the-loop principle](https://ozigi.app/docs/human-in-the-loop) that explains the 90/10 rule we follow.
 
 Every system has gaps. The honest thing is to name them.
 
@@ -279,10 +279,10 @@ Every system has gaps. The honest thing is to name them.
 
 If you ship LLM output and want a similar layer, the minimum viable version is four files:
 
-- `anti-ai.ts` — your prose rules + structured arrays. Start with the [English-language buzzword list from the Pangram paper](https://www.pangram.com/research/buzzwords) plus anything specific to your domain.
-- `lexicon-validator.ts` — the four scan passes. Less than 200 lines of TypeScript.
-- `repair-directive.ts` — the "rewrite from source, do not paraphrase" prompt builder.
-- API-route hook — call validator → check threshold → optionally retry → return final draft + warnings.
+- `anti-ai.ts`: your prose rules + structured arrays. Start with the [English-language buzzword list from the Pangram paper](https://www.pangram.com/research/buzzwords) plus anything specific to your domain.
+- `lexicon-validator.ts`: the four scan passes. Less than 200 lines of TypeScript.
+- `repair-directive.ts`: the "rewrite from source, do not paraphrase" prompt builder.
+- API-route hook: call validator → check threshold → optionally retry → return final draft + warnings.
 
 
 If you want the full TypeScript, the [Ozigi changelog](https://blog.ozigi.app/changelog) tracks the architecture as it grows. Our [deep dives hub](https://ozigi.app/docs/deep-dives) covers the surrounding pieces: multimodal ingestion, system personas, human-in-the-loop. And if you are thinking about content quality more broadly, this [GEO and AEO guide](https://blog.ozigi.app/geo-aeo-guide-ozigi) explains why this work matters for AI search ranking, not just reader trust.
