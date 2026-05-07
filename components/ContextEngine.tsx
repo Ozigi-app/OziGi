@@ -220,16 +220,22 @@ export default function Distillery({
 
           {/* File list */}
           {inputs.files.length > 0 && (
-            <ul className="space-y-2">
-              {inputs.files.map((file, idx) => (
-                <li key={idx} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700">
-                  <span className="truncate flex-1">{file.name}</span>
-                  <button onClick={() => removeFile(idx)} className="text-red-500 hover:text-red-700 font-bold ml-4">
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-2">
+              <ul className="space-y-2">
+                {inputs.files.map((file, idx) => (
+                  <li key={idx} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700">
+                    <span className="truncate flex-1">{file.name}</span>
+                    <button onClick={() => removeFile(idx)} className="text-red-500 hover:text-red-700 font-bold ml-4">
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex items-start gap-1.5">
+                <span className="mt-px">⚠️</span>
+                <span>Larger files take longer to process. For fastest results, keep files small and limit to 1–2 at a time.</span>
+              </p>
+            </div>
           )}
 
           {/* Config row: Persona + Platforms + X Format — hidden in demo mode */}
