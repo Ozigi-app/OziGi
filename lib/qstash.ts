@@ -74,11 +74,18 @@ export async function enqueueGenerationJob(
     process.env.GENERATION_WORKER_URL ||
     `${appUrl}/api/qstash/generate`;
 
+  // Local dev: call the worker directly instead of going through QStash,
+  // since QStash can't deliver webhooks to localhost. Run the worker with:
+  //   npx tsx worker/server.ts
+  // and set GENERATION_WORKER_URL=http://localhost:8080 in .env.local
   if (workerUrl.includes('localhost')) {
-    throw new Error(
-      'QStash cannot deliver webhooks to localhost. ' +
-      'Set APP_URL or GENERATION_WORKER_URL to your public domain.'
-    );
+    console.log(`[QStash] Dev mode — calling worker directly at ${workerUrl}`);
+    fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId }),
+    }).catch((err) => console.error('[QStash] Dev worker call failed:', err));
+    return 'dev-direct';
   }
 
   const response = await qstashClient.publishJSON({

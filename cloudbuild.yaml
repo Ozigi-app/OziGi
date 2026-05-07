@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.worker', '-t', 'gcr.io/ozigi-489021/ozigi-generator', '.']
+images:
+  - 'gcr.io/ozigi-489021/ozigi-generator'
