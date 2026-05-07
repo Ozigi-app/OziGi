@@ -1,9 +1,11 @@
-// QStash worker for async campaign generation.
-// On Vercel Hobby this is still capped at 60s — point GENERATION_WORKER_URL
-// at a Cloud Run endpoint to remove the limit entirely (no other changes needed).
+// Worker for async campaign generation.
+// Called either:
+//   • by /api/generate via Next.js after() with x-internal-secret (Vercel path, 60s limit)
+//   • by QStash pointing at Cloud Run when GENERATION_WORKER_URL is set (no time limit)
 export const maxDuration = 60;
 
 import { NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { buildGenerationPrompt } from '@/lib/prompts';
 import {
@@ -159,9 +161,16 @@ export async function POST(req: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  // --- VERIFY QSTASH SIGNATURE ---
+  // --- AUTH ---
+  // Accept either a QStash signature (Cloud Run path) or the internal secret
+  // derived from SUPABASE_SERVICE_ROLE_KEY (Vercel after() path).
   const signature = req.headers.get('upstash-signature');
+  const internalSecret = req.headers.get('x-internal-secret');
   const rawBody = await req.text();
+
+  const expectedSecret = createHash('sha256')
+    .update((process.env.SUPABASE_SERVICE_ROLE_KEY ?? '') + ':ozigi-worker')
+    .digest('hex');
 
   if (signature) {
     const isValid = await verifyQStashRequest(signature, rawBody);
@@ -169,8 +178,12 @@ export async function POST(req: Request) {
       console.error('[worker] Invalid QStash signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
+    console.log('[worker] Authorized via QStash signature');
+  } else if (internalSecret && internalSecret === expectedSecret) {
+    console.log('[worker] Authorized via internal secret (after() path)');
   } else if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
+    console.error('[worker] Unauthorized: no valid QStash signature or internal secret');
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { jobId } = JSON.parse(rawBody);

@@ -1,7 +1,12 @@
-// Thin enqueue-only route. All heavy Gemini work happens in the QStash
-// worker (/api/qstash/generate) so this function returns in <1s and never
-// approaches Vercel Hobby's 60s timeout.
-import { NextResponse } from 'next/server';
+// Thin enqueue-only route. Inserts a job row, fires the worker in the
+// background via Next.js after() (no QStash needed for Vercel), then returns
+// {jobId} in <1s. The frontend polls /api/generate/status to pick up the result.
+// If GENERATION_WORKER_URL is set (Cloud Run), QStash is used instead so the
+// 60s Vercel limit is bypassed entirely.
+export const maxDuration = 60;
+
+import { NextResponse, after } from 'next/server';
+import { createHash } from 'crypto';
 import { containsPromptInjection } from '../../../lib/prompts';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -10,6 +15,13 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { getPlanStatus } from '@/lib/plan';
 import { enqueueGenerationJob } from '@/lib/qstash';
+
+/** Derive a stable internal secret from the service-role key (no new env var). */
+function internalSecret(): string {
+  return createHash('sha256')
+    .update((process.env.SUPABASE_SERVICE_ROLE_KEY ?? '') + ':ozigi-worker')
+    .digest('hex');
+}
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -141,7 +153,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to start generation' }, { status: 500 });
     }
 
-    // --- ENQUEUE ---
+    // --- DISPATCH WORKER ---
     // Derive the app URL from the request so it works even if APP_URL is wrong.
     const reqUrl = new URL(req.url);
     const appUrl =
@@ -149,13 +161,41 @@ export async function POST(req: Request) {
       process.env.NEXT_PUBLIC_APP_URL ||
       `${reqUrl.protocol}//${reqUrl.host}`;
 
-    try {
-      await enqueueGenerationJob(job.id, appUrl);
-    } catch (qErr: any) {
-      // Clean up the orphaned job row before returning the error
-      await supabaseAdmin.from('generation_jobs').delete().eq('id', job.id);
-      console.error('[generate] QStash enqueue failed:', qErr.message);
-      return NextResponse.json({ error: qErr.message }, { status: 500 });
+    if (process.env.GENERATION_WORKER_URL) {
+      // Cloud Run path: use QStash to dispatch to the long-running worker.
+      // This bypasses Vercel's 60s limit entirely.
+      try {
+        await enqueueGenerationJob(job.id, appUrl);
+      } catch (qErr: any) {
+        await supabaseAdmin.from('generation_jobs').delete().eq('id', job.id);
+        console.error('[generate] QStash enqueue failed:', qErr.message);
+        return NextResponse.json({ error: qErr.message }, { status: 500 });
+      }
+    } else {
+      // Vercel path: call the worker endpoint directly in the background via
+      // after() so we return {jobId} in <1s while generation runs for up to 60s.
+      const workerUrl = `${appUrl}/api/qstash/generate`;
+      const secret = internalSecret();
+      const jobId = job.id;
+      console.log(`[generate] Dispatching worker via after() for job ${jobId}`);
+      after(async () => {
+        try {
+          const res = await fetch(workerUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-secret': secret,
+            },
+            body: JSON.stringify({ jobId }),
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            console.error(`[generate] Worker returned ${res.status}:`, txt);
+          }
+        } catch (err) {
+          console.error('[generate] Background worker call failed:', err);
+        }
+      });
     }
 
     return NextResponse.json({ jobId: job.id });

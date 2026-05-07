@@ -64,6 +64,21 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
+  // If a job has been stuck in pending/processing for more than 5 minutes,
+  // treat it as a timeout so the frontend shows an error instead of spinning.
+  const STALE_THRESHOLD_MS = 5 * 60 * 1000;
+  if (job.status === 'pending' || job.status === 'processing') {
+    const age = Date.now() - new Date(job.updated_at).getTime();
+    if (age > STALE_THRESHOLD_MS) {
+      console.warn(`[status] Job ${jobId} stale (status=${job.status}, age=${Math.round(age / 1000)}s)`);
+      return NextResponse.json({
+        status: 'error',
+        error: 'Generation timed out. Please try again.',
+        result: null,
+      });
+    }
+  }
+
   return NextResponse.json({
     status: job.status,
     result: job.status === 'done' ? job.result : null,
