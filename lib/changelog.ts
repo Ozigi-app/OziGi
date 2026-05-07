@@ -13,6 +13,48 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "v0.7",
+    title: "Generation Reliability & Media Support",
+    date: "2026-05-07",
+    dateLabel: "April 28 – May 7, 2026",
+    summary:
+      "A full reliability pass on the generation engine — output quality guardrails, faster file handling, three production bug fixes, and Google Ads tracking.",
+    items: [
+      {
+        label: "AI",
+        text: "Lexicon quality guard — generated campaigns are now validated against a banned-phrase list (AI clichés, filler structures, weak closers). Flagged drafts are automatically repaired with a second targeted call before being returned to the user.",
+      },
+      {
+        label: "Improvement",
+        text: "Faster file & image generation — images, audio, and PDFs are now passed to Vertex AI as direct HTTPS URIs instead of being fetched and base64-encoded, cutting per-file overhead and keeping requests well within the 60s runtime limit.",
+      },
+      {
+        label: "Improvement",
+        text: "File upload warning — an amber notice now appears whenever attachments are added, advising users that larger files increase generation time.",
+      },
+      {
+        label: "Fix",
+        text: "Composio OAuth redirect — connecting integrations no longer redirects to localhost in production. The callback URL is now derived from the live request origin.",
+      },
+      {
+        label: "Fix",
+        text: "Persona manager infinite spinner — the loading state now always resolves, even when the Supabase fetch errors or returns no data.",
+      },
+      {
+        label: "Fix",
+        text: "Generation stuck at loading — restored the synchronous generation flow that was silently failing in production due to a misconfigured async worker pipeline.",
+      },
+      {
+        label: "Infra",
+        text: "Google Ads conversion tracking (AW-18111303438) wired up across the main app and blog via a shared `gtag` module.",
+      },
+    ],
+    prLinks: [
+      { number: 117, url: "https://github.com/Ozigi-app/OziGi/pull/117" },
+    ],
+    accent: "blue",
+  },
+  {
     version: "v0.6",
     title: "LinkedIn & Gemini 3 Upgrade",
     date: "2026-04-10",
