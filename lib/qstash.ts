@@ -61,6 +61,37 @@ export async function cancelQStashMessage(messageId: string): Promise<void> {
 }
 
 /**
+ * Enqueue an async generation job.
+ * The worker URL defaults to /api/qstash/generate on this host, but can be
+ * overridden via GENERATION_WORKER_URL to point at a Cloud Run endpoint with
+ * a longer timeout — no other code changes needed.
+ */
+export async function enqueueGenerationJob(
+  jobId: string,
+  appUrl: string,
+): Promise<string> {
+  const workerUrl =
+    process.env.GENERATION_WORKER_URL ||
+    `${appUrl}/api/qstash/generate`;
+
+  if (workerUrl.includes('localhost')) {
+    throw new Error(
+      'QStash cannot deliver webhooks to localhost. ' +
+      'Set APP_URL or GENERATION_WORKER_URL to your public domain.'
+    );
+  }
+
+  const response = await qstashClient.publishJSON({
+    url: workerUrl,
+    body: { jobId },
+    retries: 3,
+  });
+
+  console.log(`[QStash] Enqueued generation job ${jobId}, messageId: ${response.messageId}`);
+  return response.messageId;
+}
+
+/**
  * Verify that an incoming request is from QStash
  */
 export async function verifyQStashRequest(

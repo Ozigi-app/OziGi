@@ -1,0 +1,33 @@
+# Build stage
+FROM node:20-slim AS builder
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+# Compile worker/server.ts using tsx (handles @/* path aliases via tsconfig)
+RUN npx tsx --tsconfig worker/tsconfig.json --print "console.log('build ok')" 2>/dev/null || true
+# Bundle into a single JS file with esbuild for a clean, fast runtime image
+RUN npx esbuild worker/server.ts \
+  --bundle \
+  --platform=node \
+  --target=node20 \
+  --outfile=dist-worker/server.js \
+  --alias:@/=./ \
+  --external:@google-cloud/aiplatform
+
+# Runtime stage
+FROM node:20-slim
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/dist-worker/server.js ./server.js
+
+EXPOSE 8080
+ENV NODE_ENV=production
+
+CMD ["node", "server.js"]

@@ -186,52 +186,99 @@ const handleGenerate = async () => {
       },
     };
 
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    // Step 1: enqueue the job (returns in <1s)
+    let enqueueRes: Response;
+    try {
+      enqueueRes = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      setErrorMessage("Network error. Please check your connection and try again.");
+      setLoading(false);
+      return;
+    }
 
-    if (!response.ok) {
-      let errorMsg = "We encountered a hiccup connecting to the AI engine. Please try again.";
+    if (!enqueueRes.ok) {
+      let errorMsg = "We encountered a hiccup starting the generation. Please try again.";
       try {
-        const errorData = await response.json();
+        const errorData = await enqueueRes.json();
         if (errorData.error) errorMsg = errorData.error;
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
       setErrorMessage(errorMsg);
       setLoading(false);
       return;
     }
 
-    const data = await response.json();
-    if (data.error) {
-      setErrorMessage(data.error);
+    const { jobId, error: enqueueError } = await enqueueRes.json();
+    if (enqueueError || !jobId) {
+      setErrorMessage(enqueueError || "Failed to start generation.");
       setLoading(false);
       return;
     }
 
-    // --- Robust JSON extraction ---
+    // Step 2: poll /api/generate/status until done or error
+    // Max 3 minutes (90 attempts × 2s). QStash retries the worker automatically
+    // if it times out, so heavy content may complete on a second worker attempt.
+    const MAX_ATTEMPTS = 90;
+    const POLL_INTERVAL_MS = 2_000;
+    let data: { output: string; lexiconWarnings?: any[] } | null = null;
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+
+      let statusRes: Response;
+      try {
+        statusRes = await fetch(`/api/generate/status?jobId=${jobId}`, {
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
+      } catch {
+        // Transient network blip — keep polling
+        continue;
+      }
+
+      if (!statusRes.ok) continue;
+
+      const statusData = await statusRes.json();
+
+      if (statusData.status === "error") {
+        setErrorMessage(statusData.error || "Generation failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      if (statusData.status === "done" && statusData.result) {
+        data = statusData.result;
+        break;
+      }
+    }
+
+    if (!data) {
+      setErrorMessage(
+        "Generation is taking longer than expected. Your content may still be processing — check back in a moment or try again with less content."
+      );
+      setLoading(false);
+      return;
+    }
+
+    // Step 3: parse and display the result (same logic as before)
     let jsonString = data.output;
     let finalResponse;
 
     try {
-      // Remove markdown code fences
       jsonString = jsonString.replace(/```json\s*([\s\S]*?)\s*```/gi, '$1');
       jsonString = jsonString.replace(/```\s*([\s\S]*?)\s*```/gi, '$1').trim();
 
-      // Find the first '{' and the last '}'
       const firstBrace = jsonString.indexOf('{');
       const lastBrace = jsonString.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
         jsonString = jsonString.slice(firstBrace, lastBrace + 1);
       }
 
-      // If still not valid, try to find any JSON object
       if (!jsonString.startsWith('{')) {
         const possibleMatch = jsonString.match(/\{[\s\S]*\}/);
         if (possibleMatch) jsonString = possibleMatch[0];
@@ -240,7 +287,6 @@ const handleGenerate = async () => {
       finalResponse = JSON.parse(jsonString);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      console.error('Raw AI output that caused the crash:', data.output);
       setErrorMessage("The AI returned an unexpected format. Please try again with different context.");
       setLoading(false);
       return;
@@ -255,7 +301,6 @@ const handleGenerate = async () => {
       return;
     }
 
-    // Show the generated content immediately
     setCampaign(finalCampaign);
     setEmailContent(finalEmail);
     setTimeout(() => {
@@ -277,7 +322,6 @@ const handleGenerate = async () => {
           toast.error('Campaign saved locally but failed to sync to history.');
         }
 
-        // Refresh stats
         await new Promise((resolve) => setTimeout(resolve, 200));
         refreshStats();
         fetchHistory(session.user.id);

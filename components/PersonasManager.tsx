@@ -22,13 +22,18 @@ export default function PersonasManager({ session }: PersonasManagerProps) {
 
   const fetchPersonas = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("user_personas")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .order("created_at", { ascending: false });
-    if (!error && data) setPersonas(data);
-    setIsLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from("user_personas")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false });
+      if (!error && data) setPersonas(data);
+    } catch {
+      // Supabase client error (e.g. network timeout) — don't leave spinner forever
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreate = async () => {

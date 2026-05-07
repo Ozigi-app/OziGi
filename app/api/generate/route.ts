@@ -1,28 +1,15 @@
-// Vercel Hobby tier caps function runtime at 60s. Anything declared above
-// that is silently capped, so we set 60 explicitly and rely on the budget
-// guard below to skip the lexicon repair retry whenever the initial call
-// already consumed most of the runtime. Upgrade to Pro to raise this to 300.
-export const maxDuration = 60;
+// Thin enqueue-only route. All heavy Gemini work happens in the QStash
+// worker (/api/qstash/generate) so this function returns in <1s and never
+// approaches Vercel Hobby's 60s timeout.
 import { NextResponse } from 'next/server';
-import { buildGenerationPrompt, containsPromptInjection } from '../../../lib/prompts';
-import {
-  validateCampaign,
-  buildRepairDirective,
-  summarizeForClient,
-  type CampaignShape,
-  type ValidationReport,
-} from '@/lib/prompts/lexicon-validator';
+import { containsPromptInjection } from '../../../lib/prompts';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { PostHog } from 'posthog-node';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { getPlanStatus, incrementCampaignGeneration } from '@/lib/plan';
-import { getVertexAIClient } from '@/lib/genai-client';
-import { getGitHubEnrichedContext } from '@/lib/composio';
-import { extractYouTubeId, getYouTubeTranscript } from '@/lib/youtube';
-
+import { getPlanStatus } from '@/lib/plan';
+import { enqueueGenerationJob } from '@/lib/qstash';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -35,186 +22,19 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
-const distributionSchema = {
-  type: 'OBJECT',
-  properties: {
-    campaign: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: {
-          day: { type: 'INTEGER' },
-          x: { type: 'STRING' },
-          linkedin: { type: 'STRING' },
-          discord: { type: 'STRING' },
-          slack: { type: 'STRING' },
-        },
-        required: ['day', 'x', 'linkedin', 'discord', 'slack'],
-      },
-    },
-    email: { type: 'STRING' },
-  },
-  required: ['campaign'],
-};
-
-async function generateFromParts(parts: any[], stream = false) {
-  const client = await getVertexAIClient();
-  
-  if (stream) {
-    // Return streaming response
-    const streamingResult = await client.models.generateContentStream({
-      model: 'gemini-3-flash-preview',
-      contents: [{ role: 'user', parts }],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: distributionSchema,
-      },
-    });
-    return streamingResult;
-  }
-  
-  // Non-streaming response
-  const response = await client.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: [{ role: 'user', parts }],
-    config: {
-      responseMimeType: 'application/json',
-      responseSchema: distributionSchema,
-    },
-  });
-  
-  const responseText =
-    response.text ??
-    response.candidates?.[0]?.content?.parts?.[0]?.text ??
-    '';
-
-  if (!responseText) {
-    console.error('Unexpected response format:', JSON.stringify(response, null, 2));
-    throw new Error('Unexpected response format from Vertex AI');
-  }
-
-  return responseText;
-}
-
-/**
- * Generation slot that runs lexicon validation on the parsed campaign and,
- * if violations exceed the threshold, performs ONE retry with a strict
- * repair directive appended to the original prompt. Returns the final
- * response text plus a typed report so the caller can decide whether to
- * surface warnings to the client.
- *
- * Threshold: slopScore >= 3 OR any banned-structure / banned-contrast /
- * banned-closer violation. Single banned-word slips through with a warning
- * because LLMs occasionally use a flagged word in a sentence the lexicon
- * was never meant to catch.
- */
-// Hard budget for the entire generation slot, sized for Hobby (60s cap).
-// Leaves ~5s for DB persist + JSON return + PostHog flush.
-const GENERATION_BUDGET_MS = 55_000;
-// Minimum runtime headroom required before we'll START a repair retry.
-// A 5-platform Gemini call typically takes 25-50s, so on Hobby the retry
-// will only fire when the initial call came back unusually fast (~10-20s).
-// Otherwise we ship the original with `lexiconWarnings` — no timeout.
-const RETRY_MIN_REMAINING_MS = 25_000;
-
-async function generateWithLexiconGuard(
-  parts: any[],
-  basePrompt: string,
-  startTime: number
-): Promise<{ responseText: string; report: ValidationReport; retried: boolean }> {
-  const initial = await generateFromParts(parts);
-
-  let parsed: CampaignShape | null = null;
-  try {
-    parsed = JSON.parse(initial);
-  } catch (err) {
-    console.warn('[lexicon] could not parse initial response, skipping validation');
-    return { responseText: initial, report: { violations: [], slopScore: 0, clean: true }, retried: false };
-  }
-
-  const report = validateCampaign(parsed);
-  const retryWorthy =
-    report.slopScore >= 3 ||
-    report.violations.some(
-      (v) =>
-        v.kind === 'banned-structure' ||
-        v.kind === 'banned-contrast' ||
-        v.kind === 'banned-closer'
-    );
-
-  if (!retryWorthy) {
-    return { responseText: initial, report, retried: false };
-  }
-
-  // Time-budget guard: never start a retry that could push us past the
-  // function timeout. Better to ship a flagged draft than time out and
-  // ship nothing.
-  const elapsed = Date.now() - startTime;
-  const remaining = GENERATION_BUDGET_MS - elapsed;
-  if (remaining < RETRY_MIN_REMAINING_MS) {
-    console.warn(
-      `[lexicon] skipping repair retry: only ${remaining}ms of budget left (need ${RETRY_MIN_REMAINING_MS}ms). Returning original with ${report.violations.length} violation(s).`
-    );
-    return { responseText: initial, report, retried: false };
-  }
-
-  console.log(
-    `[lexicon] initial output had ${report.violations.length} violation(s) (slop=${report.slopScore}); retrying with repair directive (${remaining}ms budget remaining)`
-  );
-
-  const repairDirective = buildRepairDirective(report);
-  const repairParts: any[] = [
-    { text: `${basePrompt}\n\n${repairDirective}\n\n## Rejected output (for reference only — do NOT paraphrase, rewrite from source)\n${initial.slice(0, 4000)}` },
-    ...parts.slice(1), // preserve any inline asset parts (images, PDFs, etc.)
-  ];
-
-  let retried: string;
-  try {
-    retried = (await generateFromParts(repairParts)) as string;
-  } catch (err) {
-    console.error('[lexicon] retry failed, returning original:', err);
-    return { responseText: initial, report, retried: true };
-  }
-
-  let retriedParsed: CampaignShape | null = null;
-  try {
-    retriedParsed = JSON.parse(retried);
-  } catch {
-    console.warn('[lexicon] retried response unparseable, returning original');
-    return { responseText: initial, report, retried: true };
-  }
-
-  const retriedReport = validateCampaign(retriedParsed);
-  console.log(
-    `[lexicon] retry produced ${retriedReport.violations.length} violation(s) (slop=${retriedReport.slopScore})`
-  );
-
-  // Take whichever response is cleaner.
-  if (retriedReport.slopScore < report.slopScore) {
-    return { responseText: retried, report: retriedReport, retried: true };
-  }
-  return { responseText: initial, report, retried: true };
-}
-
 export async function POST(req: Request) {
-  const startTime = Date.now();
-  const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-  });
-
   try {
     const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
     const { success } = await ratelimit.limit(`ratelimit_${ip}`);
 
     if (!success) {
-      console.warn(`[SECURITY] Rate limit exceeded for IP: ${ip}`);
       return NextResponse.json(
         { error: 'Too many generation requests. Please try again later.' },
         { status: 429 },
       );
     }
 
-    // --- DEMO MODE CHECK ---
+    // --- DEMO MODE ---
     const isDemo = req.headers.get('x-demo-mode') === 'true';
     if (isDemo) {
       const demoKey = `demo_${ip}`;
@@ -226,272 +46,121 @@ export async function POST(req: Request) {
         );
       }
       await redis.set(demoKey, '1', { ex: 86400 });
-
-      const payload = await req.json();
-      const { sourceMaterial, campaignDirectives } = payload;
-
-      let urlContext = sourceMaterial?.url || '';
-      const textContext = sourceMaterial?.rawText || '';
-      const assetUrls = sourceMaterial?.assetUrls || [];
-
-      // --- YouTube transcript handling (Demo mode) ---
-      let effectiveUrlContext = urlContext;
-      if (urlContext) {
-        const videoId = extractYouTubeId(urlContext);
-        if (videoId) {
-          const transcript = await getYouTubeTranscript(videoId);
-          if (transcript) {
-            effectiveUrlContext = `YouTube transcript: ${transcript}`;
-          }
-        }
-      }
-
-      const tweetFormat = campaignDirectives?.tweetFormat || 'single';
-      const personaVoice = campaignDirectives?.personaVoice || 'Expert Content Strategist';
-
-      const finalContext = campaignDirectives?.additionalContext
-        ? `${textContext}\n\nAdditional Directives: ${campaignDirectives.additionalContext}`
-        : textContext;
-
-      if (containsPromptInjection(finalContext)) {
-        console.warn(`[SECURITY] Prompt injection attempt intercepted from IP: ${ip}`);
-        return NextResponse.json(
-          { error: 'Security Policy Violation: Invalid context structure detected.' },
-          { status: 400 },
-        );
-      }
-
-      const textPrompt = buildGenerationPrompt({
-        tweetFormat,
-        personaVoice,
-        textContext: finalContext,
-        urlContext: effectiveUrlContext,
-      });
-
-      const parts: any[] = [{ text: textPrompt }];
-
-      if (assetUrls?.length) {
-        for (const assetUrl of assetUrls) {
-          try {
-            const fileRes = await fetch(assetUrl);
-            if (!fileRes.ok) throw new Error(`HTTP error! status: ${fileRes.status}`);
-            const mimeType = fileRes.headers.get('content-type') || 'application/octet-stream';
-            const arrayBuffer = await fileRes.arrayBuffer();
-            const base64Data = Buffer.from(arrayBuffer).toString('base64');
-            parts.push({
-              inlineData: {
-                data: base64Data,
-                mimeType,
-              },
-            });
-          } catch (err) {
-            console.error(`Failed to fetch and process asset from R2: ${assetUrl}`, err);
-          }
-        }
-      }
-
-      const { responseText, report: lexiconReport, retried } =
-        await generateWithLexiconGuard(parts, textPrompt, startTime);
-      const lexiconWarnings = summarizeForClient(lexiconReport);
-
-      const durationMs = Date.now() - startTime;
-      posthog.capture({
-        distinctId: ip,
-        event: 'vertex_generation_completed_demo',
-        properties: {
-          durationMs,
-          personaVoice,
-          hasFile: assetUrls.length > 0,
-          assetCount: assetUrls.length,
-          status: 'success',
-          lexiconViolations: lexiconReport.violations.length,
-          lexiconSlopScore: lexiconReport.slopScore,
-          lexiconRetried: retried,
-        },
-      });
-      await posthog.shutdown();
-
-      return NextResponse.json({ output: responseText, lexiconWarnings });
     }
 
-    // --- AUTHENTICATED FLOW ---
+    // --- AUTH ---
     let user = null;
-    let authError = null;
 
-    const cookieStore = await cookies();
-    const supabaseFromCookie = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll() {
-            /* no‑op */
-          },
-        },
-      },
-    );
-    const { data: { user: userFromCookie }, error: cookieError } = await supabaseFromCookie.auth.getUser();
-    if (userFromCookie) user = userFromCookie;
-
-    if (!user) {
-      const authHeader = req.headers.get('Authorization');
-      if (authHeader?.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        const supabaseFromToken = createSupabaseClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        );
-        const { data: { user: userFromToken }, error: tokenError } = await supabaseFromToken.auth.getUser(token);
-        if (userFromToken) user = userFromToken;
-        else authError = tokenError;
-      }
-    }
-
-    if (!user) {
-      console.log('Auth failed:', { cookieError, authError });
-      return NextResponse.json(
-        { error: 'Unauthorized', details: authError?.message || 'No valid session' },
-        { status: 401 },
-      );
-    }
-
-    // --- GitHub context (repos + recent commits + README + latest release) ---
-    let githubContext = '';
-    const { data: githubConn, error: githubError } = await supabaseFromCookie
-      .from('user_composio_connections')
-      .select('connection_id')
-      .eq('user_id', user.id)
-      .eq('app', 'github')
-      .maybeSingle();
-
-    if (githubConn && !githubError) {
-      try {
-        githubContext = await getGitHubEnrichedContext(githubConn.connection_id);
-      } catch (err) {
-        console.error('Failed to fetch GitHub context:', err);
-      }
-    }
-
-    const planStatus = await getPlanStatus(user.id);
-    if (!planStatus.canGenerate) {
-      return NextResponse.json(
+    if (!isDemo) {
+      const cookieStore = await cookies();
+      const supabaseFromCookie = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          error: 'generation_limit_reached',
-          plan: planStatus.plan,
-          generationsUsed: planStatus.generationsUsed,
-          generationsLimit: planStatus.generationsLimit,
+          cookies: {
+            getAll() { return cookieStore.getAll(); },
+            setAll() { /* no-op */ },
+          },
         },
-        { status: 403 },
       );
+      const { data: { user: userFromCookie } } = await supabaseFromCookie.auth.getUser();
+      if (userFromCookie) user = userFromCookie;
+
+      if (!user) {
+        const authHeader = req.headers.get('Authorization');
+        if (authHeader?.startsWith('Bearer ')) {
+          const token = authHeader.split(' ')[1];
+          const supabaseFromToken = createSupabaseClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          );
+          const { data: { user: userFromToken } } = await supabaseFromToken.auth.getUser(token);
+          if (userFromToken) user = userFromToken;
+        }
+      }
+
+      if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+
+      // --- PLAN CHECK ---
+      const planStatus = await getPlanStatus(user.id);
+      if (!planStatus.canGenerate) {
+        return NextResponse.json(
+          {
+            error: 'generation_limit_reached',
+            plan: planStatus.plan,
+            generationsUsed: planStatus.generationsUsed,
+            generationsLimit: planStatus.generationsLimit,
+          },
+          { status: 403 },
+        );
+      }
     }
 
+    // --- PAYLOAD VALIDATION ---
     const payload = await req.json();
     const { sourceMaterial, campaignDirectives } = payload;
 
-    let urlContext = sourceMaterial?.url || '';
     const textContext = sourceMaterial?.rawText || '';
-    const assetUrls = sourceMaterial?.assetUrls || [];
+    const additionalContext = campaignDirectives?.additionalContext || '';
 
-    // --- YouTube transcript handling (Authenticated flow) ---
-    let effectiveUrlContext = urlContext;
-    if (urlContext) {
-      const videoId = extractYouTubeId(urlContext);
-      if (videoId) {
-        const transcript = await getYouTubeTranscript(videoId);
-        if (transcript) {
-          effectiveUrlContext = `YouTube transcript: ${transcript}`;
-        }
-      }
-    }
-
-    // Combine textContext with GitHub context (if any)
-    const enhancedText = textContext + githubContext;
-
-    const tweetFormat = campaignDirectives?.tweetFormat || 'single';
-    const personaVoice = campaignDirectives?.personaVoice || 'Expert Content Strategist';
-
-    const finalContext = campaignDirectives?.additionalContext
-      ? `${enhancedText}\n\nAdditional Directives: ${campaignDirectives.additionalContext}`
-      : enhancedText;
-
-    if (containsPromptInjection(finalContext)) {
-      console.warn(`[SECURITY] Prompt injection attempt intercepted from IP: ${ip}`);
+    if (containsPromptInjection(textContext) || containsPromptInjection(additionalContext)) {
+      console.warn(`[SECURITY] Prompt injection attempt from IP: ${ip}`);
       return NextResponse.json(
         { error: 'Security Policy Violation: Invalid context structure detected.' },
         { status: 400 },
       );
     }
 
-    const textPrompt = buildGenerationPrompt({
-      tweetFormat,
-      personaVoice,
-      textContext: finalContext,
-      urlContext: effectiveUrlContext,
-    });
+    // --- INSERT JOB ---
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
 
-    const parts: any[] = [{ text: textPrompt }];
+    const jobPayload = {
+      sourceMaterial,
+      campaignDirectives,
+      isDemo,
+      userId: user?.id ?? null,
+    };
 
-    if (assetUrls?.length) {
-      for (const assetUrl of assetUrls) {
-        try {
-          const fileRes = await fetch(assetUrl);
-          if (!fileRes.ok) throw new Error(`HTTP error! status: ${fileRes.status}`);
-          const mimeType = fileRes.headers.get('content-type') || 'application/octet-stream';
-          const arrayBuffer = await fileRes.arrayBuffer();
-          const base64Data = Buffer.from(arrayBuffer).toString('base64');
-          parts.push({
-            inlineData: {
-              data: base64Data,
-              mimeType,
-            },
-          });
-        } catch (err) {
-          console.error(`Failed to fetch and process asset from R2: ${assetUrl}`, err);
-        }
-      }
+    const { data: job, error: insertError } = await supabaseAdmin
+      .from('generation_jobs')
+      .insert({
+        user_id: user?.id ?? null,
+        payload: jobPayload,
+        status: 'pending',
+      })
+      .select('id')
+      .single();
+
+    if (insertError || !job) {
+      console.error('[generate] Failed to insert job:', insertError);
+      return NextResponse.json({ error: 'Failed to start generation' }, { status: 500 });
     }
 
-    const { responseText, report: lexiconReport, retried } =
-      await generateWithLexiconGuard(parts, textPrompt, startTime);
-    const lexiconWarnings = summarizeForClient(lexiconReport);
+    // --- ENQUEUE ---
+    // Derive the app URL from the request so it works even if APP_URL is wrong.
+    const reqUrl = new URL(req.url);
+    const appUrl =
+      process.env.APP_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      `${reqUrl.protocol}//${reqUrl.host}`;
 
-    await incrementCampaignGeneration(user.id);
+    try {
+      await enqueueGenerationJob(job.id, appUrl);
+    } catch (qErr: any) {
+      // Clean up the orphaned job row before returning the error
+      await supabaseAdmin.from('generation_jobs').delete().eq('id', job.id);
+      console.error('[generate] QStash enqueue failed:', qErr.message);
+      return NextResponse.json({ error: qErr.message }, { status: 500 });
+    }
 
-    const durationMs = Date.now() - startTime;
-    posthog.capture({
-      distinctId: ip,
-      event: 'vertex_generation_completed',
-      properties: {
-        durationMs,
-        personaVoice,
-        hasFile: assetUrls.length > 0,
-        assetCount: assetUrls.length,
-        status: 'success',
-        lexiconViolations: lexiconReport.violations.length,
-        lexiconSlopScore: lexiconReport.slopScore,
-        lexiconRetried: retried,
-      },
-    });
-    await posthog.shutdown();
-
-    return NextResponse.json({ output: responseText, lexiconWarnings });
+    return NextResponse.json({ jobId: job.id });
   } catch (error: any) {
-    const durationMs = Date.now() - startTime;
-    posthog.capture({
-      distinctId: req.headers.get('x-forwarded-for') ?? '127.0.0.1',
-      event: 'vertex_generation_failed',
-      properties: {
-        durationMs,
-        errorMessage: error.message,
-        status: 'error',
-      },
-    });
-    await posthog.shutdown();
-
-    console.error('Vertex AI Generate Error:', error);
+    console.error('[generate] Unexpected error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

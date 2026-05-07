@@ -5,9 +5,20 @@ import { ExternalAccountClient } from 'google-auth-library';
 export async function getVertexAIClient() {
   const projectId = process.env.GCP_PROJECT_ID || 'ozigi-489021';
 
+  // Cloud Run sets K_SERVICE. Use Application Default Credentials (ADC) —
+  // the service account attached to the Cloud Run service is used automatically.
+  const isCloudRun = !!process.env.K_SERVICE;
+  if (isCloudRun) {
+    return new GoogleGenAI({
+      vertexai: true,
+      project: projectId,
+      location: 'global',
+    });
+  }
+
   // Check for Vercel environment (production, preview, or v0 sandbox)
   const isVercelEnv = process.env.VERCEL || process.env.VERCEL_ENV || process.env.VERCEL_URL;
-  
+
   if (isVercelEnv) {
     const projectNumber = process.env.GCP_PROJECT_NUMBER?.trim();
     const poolId = process.env.GCP_WORKLOAD_IDENTITY_POOL_ID?.trim();

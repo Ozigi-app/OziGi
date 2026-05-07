@@ -21,7 +21,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/composio/callback`;
+    // Derive the app origin from the incoming request so this works correctly
+    // in production even if NEXT_PUBLIC_APP_URL is misconfigured or missing.
+    const reqUrl = new URL(req.url);
+    const appOrigin =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      `${reqUrl.protocol}//${reqUrl.host}`;
+    const redirectUri = `${appOrigin}/api/composio/callback`;
     const redirectUrl = await initiateGitHubConnection(user.id, redirectUri);
     return NextResponse.json({ url: redirectUrl });
   } catch (error: any) {
