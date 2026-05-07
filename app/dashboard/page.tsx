@@ -186,27 +186,19 @@ const handleGenerate = async () => {
       },
     };
 
-    // Step 1: enqueue the job (returns in <1s)
-    let enqueueRes: Response;
-    try {
-      enqueueRes = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-    } catch {
-      setErrorMessage("Network error. Please check your connection and try again.");
-      setLoading(false);
-      return;
-    }
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-    if (!enqueueRes.ok) {
-      let errorMsg = "We encountered a hiccup starting the generation. Please try again.";
+    if (!response.ok) {
+      let errorMsg = "We encountered a hiccup connecting to the AI engine. Please try again.";
       try {
-        const errorData = await enqueueRes.json();
+        const errorData = await response.json();
         if (errorData.error) errorMsg = errorData.error;
       } catch { /* ignore */ }
       setErrorMessage(errorMsg);
@@ -214,58 +206,13 @@ const handleGenerate = async () => {
       return;
     }
 
-    const { jobId, error: enqueueError } = await enqueueRes.json();
-    if (enqueueError || !jobId) {
-      setErrorMessage(enqueueError || "Failed to start generation.");
+    const data = await response.json();
+    if (data.error) {
+      setErrorMessage(data.error);
       setLoading(false);
       return;
     }
 
-    // Step 2: poll /api/generate/status until done or error
-    // Max 3 minutes (90 attempts × 2s). QStash retries the worker automatically
-    // if it times out, so heavy content may complete on a second worker attempt.
-    const MAX_ATTEMPTS = 90;
-    const POLL_INTERVAL_MS = 2_000;
-    let data: { output: string; lexiconWarnings?: any[] } | null = null;
-
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
-
-      let statusRes: Response;
-      try {
-        statusRes = await fetch(`/api/generate/status?jobId=${jobId}`, {
-          headers: { Authorization: `Bearer ${session?.access_token}` },
-        });
-      } catch {
-        // Transient network blip — keep polling
-        continue;
-      }
-
-      if (!statusRes.ok) continue;
-
-      const statusData = await statusRes.json();
-
-      if (statusData.status === "error") {
-        setErrorMessage(statusData.error || "Generation failed. Please try again.");
-        setLoading(false);
-        return;
-      }
-
-      if (statusData.status === "done" && statusData.result) {
-        data = statusData.result;
-        break;
-      }
-    }
-
-    if (!data) {
-      setErrorMessage(
-        "Generation is taking longer than expected. Your content may still be processing — check back in a moment or try again with less content."
-      );
-      setLoading(false);
-      return;
-    }
-
-    // Step 3: parse and display the result (same logic as before)
     let jsonString = data.output;
     let finalResponse;
 
