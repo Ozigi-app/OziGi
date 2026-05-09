@@ -46,7 +46,13 @@
       "Bash(Stop-Process -Name node -Force)",
       "Bash(Remove-Item -Path \"node_modules\\\\.package-lock.json\" -ErrorAction SilentlyContinue)",
       "Bash(npm cache *)",
-      "Bash(mkdir -p \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\stripe\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\dodo\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\lemonsqueezy\\\\[userId]\")"
+      "Bash(mkdir -p \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\stripe\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\dodo\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\lemonsqueezy\\\\[userId]\")",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\(JSON.stringify\\(Object.keys\\(p\\), null, 2\\)\\)\")",
+      "Bash(Remove-Item -Path \"package-lock.json\" -ErrorAction SilentlyContinue)",
+      "Bash(pnpm --version)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(Get-ChildItem -Path . -Name)"
     ]
   }
 }

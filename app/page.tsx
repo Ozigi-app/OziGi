@@ -171,7 +171,7 @@ export default function Home() {
         {/* ────────────────────────����────────────────────────────────────── */}
         <section
           ref={heroRef}
-          className="relative overflow-hidden min-h-[100dvh] flex items-center"
+          className="relative overflow-hidden min-h-[100dvh]"
           style={{ background: `linear-gradient(160deg, ${C.navyDeep} 0%, ${C.navy} 55%, ${C.navyMid} 100%)`, color: C.white }}
           onMouseMove={(e) => {
             const r = heroRef.current?.getBoundingClientRect();
@@ -199,40 +199,62 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 flex flex-col items-center text-center gap-8">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-8 md:py-10 flex flex-col gap-4 md:gap-5">
 
-            {/* ── Eyebrow pill ────────────────────────────────────────── */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em]"
-              style={{ background: "rgba(232,50,10,0.08)", color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-              Human-sounding · No AI fluff · Publish anywhere
-            </motion.div>
+            {/* ── TOP: headline + subheadline ─────────────────────────── */}
+            <div className="flex flex-col items-center text-center gap-3">
 
-            {/* ── Demo widget (above headline) ────────────────────────── */}
+              <motion.div style={{ y: heroParallaxY }} className="w-full">
+                <motion.h1
+                  initial={{ opacity: 0, y: 28 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full text-3xl sm:text-4xl md:text-[2.75rem] lg:text-[3rem] xl:text-[3.5rem] 2xl:text-[4rem] font-black italic uppercase tracking-tight leading-[1.05] text-balance"
+                >
+                  <span className="block mb-2">Automate content creation</span>
+                  <span className="relative inline-block">
+                    <span style={{ color: C.red }}>without ChatGPT&apos;s voice.</span>
+                    <motion.span
+                      className="absolute left-0 -bottom-1 h-1 rounded-full origin-left"
+                      style={{ background: C.red }}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
+                    />
+                  </span>
+                </motion.h1>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.3 }}
+                className="text-base md:text-lg font-medium leading-relaxed max-w-2xl text-pretty"
+                style={{ color: C.muted }}
+              >
+                Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
+              </motion.p>
+            </div>
+
+            {/* ── MIDDLE: wide widget + CTAs ───────────────────────────── */}
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-3xl"
+              transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center gap-3 w-full"
             >
-              <div className="relative">
-                {/* Top-left corner accent lines */}
+              <div className="relative w-full max-w-3xl">
+                {/* Corner accents */}
                 <div className="absolute -top-3 -left-3 w-10 h-10 pointer-events-none">
                   <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, ${C.red}, transparent)` }} />
                   <div className="absolute top-0 left-0 h-full w-px" style={{ background: `linear-gradient(to bottom, ${C.red}, transparent)` }} />
                 </div>
-                {/* Bottom-right corner accent lines */}
                 <div className="absolute -bottom-3 -right-3 w-10 h-10 pointer-events-none">
                   <div className="absolute bottom-0 right-0 w-full h-px" style={{ background: `linear-gradient(to left, ${C.red}, transparent)` }} />
                   <div className="absolute bottom-0 right-0 h-full w-px" style={{ background: `linear-gradient(to top, ${C.red}, transparent)` }} />
                 </div>
 
-                <div className="flex items-center justify-center gap-2 mb-3">
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
                   <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: C.red }}>
                     Try it now — live demo
@@ -241,154 +263,98 @@ export default function Home() {
 
                 <LandingDemoWidget />
 
-                <p className="text-center text-[10px] font-medium mt-3" style={{ color: C.dim }}>
+                <p className="text-center text-[10px] font-medium mt-2" style={{ color: C.dim }}>
                   No credit card · No account · Free to try
                 </p>
               </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
+                  Get started free →
+                </MagneticBtn>
+                <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
+                  Sign in
+                </MagneticBtn>
+              </div>
             </motion.div>
 
-            {/* ── Full-width headline ─────────────────────────────────── */}
-            <motion.div style={{ y: heroParallaxY }} className="w-full">
-              <motion.h1
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] 2xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.05] text-balance"
-              >
-                Automate content creation{" "}
-                <span className="relative inline-block">
-                  <span style={{ color: C.red }}>without ChatGPT&apos;s voice.</span>
-                  <motion.span
-                    className="absolute left-0 -bottom-1 h-1 rounded-full origin-left"
-                    style={{ background: C.red }}
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-                  />
-                </span>
-              </motion.h1>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.38 }}
-              className="text-base md:text-lg font-medium leading-relaxed max-w-xl text-pretty"
-              style={{ color: C.muted }}
-            >
-              Blog posts, newsletters, LinkedIn, X threads — in your voice, not AI&apos;s.
-            </motion.p>
-
+            {/* ── BOTTOM: product video — full width, scaled to fit ────── */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="flex flex-wrap items-center justify-center gap-3"
+              transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full"
             >
-              <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
-                Get started free →
-              </MagneticBtn>
-              <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
-                Sign in
-              </MagneticBtn>
+              <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: C.dim }}>
+                See what gets generated
+              </p>
+              <div style={{ zoom: 0.8 }} className="w-full origin-top">
+                <DashboardPreview />
+              </div>
             </motion.div>
 
-            {/* Launch badges — horizontal scroll */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.65 }}
-              className="w-full overflow-x-auto scrollbar-hide mt-2"
-            >
-              <div className="flex items-center justify-center gap-6 pb-2 w-fit mx-auto">
-                  <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
-                    target="_blank" rel="noopener noreferrer"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Featured on Peerlist">
-                    <img
-                      src="https://peerlist.io/api/v1/projects/embed/PRJHBARJ6AKQ7AG6MFPMRJPBREPQBN?showUpvote=false&theme=light"
-                      alt="AI Content Generator That Sounds Human on Peerlist"
-                      className="h-7 w-auto"
-                    />
-                  </a>
-                  <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Featured on Better Launch">
-                    <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} className="h-7 w-auto" />
-                  </a>
-                  <a href="https://www.scrolllaunch.com/products/ozigi?utm_source=badge&utm_medium=embed&utm_campaign=ozigi&ref=scrolllaunch"
-                    target="_blank" rel="noopener noreferrer"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-                    <img src="https://www.scrolllaunch.com/api/badge/ozigi" alt="Featured on ScrollLaunch" width={220} height={48} loading="lazy" className="h-7 w-auto" />
-                  </a>
-                  <a href="https://uno.directory" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Listed on Uno Directory">
-                    <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width={120} height={30} className="h-7 w-auto" />
-                  </a>
-                  <a href="https://wired.business" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Featured on Wired Business">
-                    <img src="https://wired.business/badge1-white.svg" alt="Featured on Wired Business" width={200} height={54} className="h-7 w-auto" />
-                  </a>
-                  <a href="https://www.superlaun.ch/products/2365" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Featured on Super Launch">
-                    <img src="https://www.superlaun.ch/badge.png" alt="Featured on Super Launch" width={140} height={32} className="h-7 w-auto" />
-                  </a>
-                  <a href="https://goodaitools.com/ai/ozigi-app" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Featured on Good AI Tools">
-                    <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Badge" height={54} className="h-7 w-auto" />
-                  </a>
-                  <a href="https://www.sideprojectors.com/project/79347/ozigi-ai-content-generator-that-sounds-human" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
-                    aria-label="Check out Ozigi on SideProjectors">
-                    <img src="https://www.sideprojectors.com/img/badges/badge_show_black.png" alt="Check out Ozigi — AI Content Generator That Sounds Human at @SideProjectors" className="h-7 w-auto" />
-                  </a>
-                  <a href="https://navs.site" target="_blank" rel="noopener"
-                    className="opacity-30 hover:opacity-70 transition-opacity duration-300 text-sm px-3 py-1 rounded-md border border-current flex-shrink-0"
-                    title="AI Sites | 2026">
-                    AI Nav Site
-                  </a>
-                  <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank"><img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Ozigi - Featured on Startup Fame" width="224" height="36" />
-                  </a>
-                </div>
-              </motion.div>
           </div>
         </section>
 
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* DASHBOARD PREVIEW — what a completed generation looks like      */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section
-          className="relative overflow-hidden py-20 md:py-28"
-          style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}
-        >
-          <DotGrid id="preview-dots" opacity={0.05} />
-          <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={fadeUp}
-              className="text-center mb-12 md:mb-14"
-            >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-3" style={{ color: C.red }}>
-                Inside the dashboard
-              </p>
-              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.98] max-w-3xl mx-auto">
-                One input. Five channels. <span style={{ color: C.muted }}>Plus a long-form draft.</span>
-              </h2>
-              <p className="text-sm md:text-base font-medium mt-4 max-w-xl mx-auto" style={{ color: C.muted }}>
-                Drop raw context. Get scheduled-ready drafts for X, LinkedIn, Discord, Email and Slack &mdash;
-                then watch a full long-form article slide in next, all in your voice.
-              </p>
-            </motion.div>
-
-            <DashboardPreview />
+        {/* ── Launch badges strip ──────────────────────────────────────── */}
+        <div className="w-full overflow-x-auto scrollbar-hide py-5 border-b"
+          style={{ background: C.navyDeep, borderColor: C.border }}>
+          <div className="flex items-center justify-center gap-6 px-6 w-fit mx-auto">
+            <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
+              target="_blank" rel="noopener noreferrer"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Featured on Peerlist">
+              <img
+                src="https://peerlist.io/api/v1/projects/embed/PRJHBARJ6AKQ7AG6MFPMRJPBREPQBN?showUpvote=false&theme=light"
+                alt="AI Content Generator That Sounds Human on Peerlist"
+                className="h-7 w-auto"
+              />
+            </a>
+            <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Featured on Better Launch">
+              <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} className="h-7 w-auto" />
+            </a>
+            <a href="https://www.scrolllaunch.com/products/ozigi?utm_source=badge&utm_medium=embed&utm_campaign=ozigi&ref=scrolllaunch"
+              target="_blank" rel="noopener noreferrer"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
+              <img src="https://www.scrolllaunch.com/api/badge/ozigi" alt="Featured on ScrollLaunch" width={220} height={48} loading="lazy" className="h-7 w-auto" />
+            </a>
+            <a href="https://uno.directory" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Listed on Uno Directory">
+              <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width={120} height={30} className="h-7 w-auto" />
+            </a>
+            <a href="https://wired.business" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Featured on Wired Business">
+              <img src="https://wired.business/badge1-white.svg" alt="Featured on Wired Business" width={200} height={54} className="h-7 w-auto" />
+            </a>
+            <a href="https://www.superlaun.ch/products/2365" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Featured on Super Launch">
+              <img src="https://www.superlaun.ch/badge.png" alt="Featured on Super Launch" width={140} height={32} className="h-7 w-auto" />
+            </a>
+            <a href="https://goodaitools.com/ai/ozigi-app" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Featured on Good AI Tools">
+              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Badge" height={54} className="h-7 w-auto" />
+            </a>
+            <a href="https://www.sideprojectors.com/project/79347/ozigi-ai-content-generator-that-sounds-human" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
+              aria-label="Check out Ozigi on SideProjectors">
+              <img src="https://www.sideprojectors.com/img/badges/badge_show_black.png" alt="Check out Ozigi — AI Content Generator That Sounds Human at @SideProjectors" className="h-7 w-auto" />
+            </a>
+            <a href="https://navs.site" target="_blank" rel="noopener"
+              className="opacity-30 hover:opacity-70 transition-opacity duration-300 text-sm px-3 py-1 rounded-md border border-current flex-shrink-0"
+              title="AI Sites | 2026">
+              AI Nav Site
+            </a>
+            <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank">
+              <img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Ozigi - Featured on Startup Fame" width="224" height="36" className="h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
+            </a>
           </div>
-        </section>
+        </div>
 
         {/* ─────────────────────────────────────────────────────────────── */}
         {/* HOW IT WORKS — dot pattern, 3-col cards                        */}
