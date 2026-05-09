@@ -116,3 +116,44 @@ export async function verifyQStashRequest(
     return false;
   }
 }
+
+/**
+ * Create a recurring QStash schedule that fires the promotional cron daily at 10am UTC.
+ * Returns the QStash scheduleId — store this if you need to delete it later.
+ */
+export async function createPromoSchedule(): Promise<string> {
+  const appUrl = process.env.APP_URL;
+  if (!appUrl || appUrl.includes("localhost")) {
+    throw new Error(
+      "APP_URL must be a public URL. QStash cannot deliver webhooks to localhost."
+    );
+  }
+
+  const response = await qstashClient.schedules.create({
+    destination: `${appUrl}/api/cron/promotional`,
+    cron: "0 10 * * *",
+    retries: 3,
+    headers: {
+      Authorization: `Bearer ${process.env.CRON_SECRET}`,
+      "Upstash-Method": "GET",
+    },
+  });
+
+  console.log(`[QStash] Created promo schedule: ${response.scheduleId}`);
+  return response.scheduleId;
+}
+
+/**
+ * Delete a QStash schedule by ID.
+ */
+export async function deletePromoSchedule(scheduleId: string): Promise<void> {
+  await qstashClient.schedules.delete(scheduleId);
+  console.log(`[QStash] Deleted promo schedule: ${scheduleId}`);
+}
+
+/**
+ * List all QStash schedules (useful for finding the current promo schedule ID).
+ */
+export async function listSchedules() {
+  return qstashClient.schedules.list();
+}

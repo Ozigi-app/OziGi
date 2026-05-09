@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
 import { buildPromotionalEmail } from "@/lib/email-templates";
+import { verifyQStashRequest } from "@/lib/qstash";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const APP_URL = process.env.APP_URL || "https://ozigi.app";
@@ -18,22 +19,25 @@ const PROMO_FROM_NAME = process.env.EMAIL_FROM_NAME || "Ozigi";
 /**
  * GET /api/cron/promotional
  *
- * Called automatically by Vercel Cron on the schedule defined in vercel.json.
- * Reads the active promotional campaign from the `promo_queue` table and sends
- * it to all subscribed users, then marks it as sent.
+ * Called daily by QStash (schedule created via POST /api/admin/setup-promo-cron).
+ * Reads the next due campaign from `promo_queue`, sends it to all subscribed
+ * users, then marks it as sent. Campaigns with a future `scheduled_for` are
+ * skipped until their send window arrives.
  *
- * Vercel Cron passes the CRON_SECRET as a Bearer token automatically when the
- * secret is set in the project settings.
- *
- * To change the send frequency edit vercel.json:
- *   Weekly (every Monday 10am UTC):  "0 10 * * 1"
- *   Bi-weekly (every other Monday):  handled by the `interval_weeks` field below
- *   1st & 15th each month:           "0 10 1,15 * *"
+ * Auth: accepts either a QStash upstash-signature header or a Bearer CRON_SECRET.
  */
 export async function GET(req: Request) {
-  // Verify this is called by Vercel Cron (or a trusted admin)
+  // Accept either a QStash signature or the CRON_SECRET Bearer token
+  const qstashSig = req.headers.get("upstash-signature");
   const authHeader = req.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+
+  if (qstashSig) {
+    const rawBody = await req.text();
+    const isValid = await verifyQStashRequest(qstashSig, rawBody);
+    if (!isValid) {
+      return NextResponse.json({ error: "Invalid QStash signature" }, { status: 401 });
+    }
+  } else if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

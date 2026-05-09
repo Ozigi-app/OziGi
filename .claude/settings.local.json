@@ -32,7 +32,21 @@
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
-      "WebFetch(domain:nchiko.ozigi.app)"
+      "WebFetch(domain:nchiko.ozigi.app)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(ls -la \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\\" 2>&1 | head -30)",
+      "Bash(cd '/c/Users/PC/ledger/Expense-Tracker-Pro' && find . -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" -o -name \"*.json\" \\\\\\) 2>/dev/null | head -50)",
+      "Bash(npm install *)",
+      "Bash(findstr /i \"error\")",
+      "Bash(Get-Content \"C:\\\\Users\\\\PC\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\2026-05-09T17_05_22_784Z-debug-0.log\")",
+      "Bash(Select-String \"error\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(Stop-Process -Name node -Force)",
+      "Bash(Remove-Item -Path \"node_modules\\\\.package-lock.json\" -ErrorAction SilentlyContinue)",
+      "Bash(npm cache *)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\stripe\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\dodo\\\\[userId]\" \"C:\\\\Users\\\\PC\\\\ledger\\\\Expense-Tracker-Pro\\\\src\\\\app\\\\api\\\\webhooks\\\\lemonsqueezy\\\\[userId]\")"
     ]
   }
 }
