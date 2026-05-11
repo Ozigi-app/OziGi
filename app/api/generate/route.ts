@@ -8,11 +8,11 @@ import { NextResponse } from 'next/server';
 import { buildGenerationPrompt, containsPromptInjection } from '../../../lib/prompts';
 import {
   validateCampaign,
-  buildRepairDirective,
   summarizeForClient,
   type CampaignShape,
   type ValidationReport,
 } from '@/lib/prompts/lexicon-validator';
+import { repairSurgically } from '@/lib/lexicon-repair';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { PostHog } from 'posthog-node';
@@ -116,14 +116,15 @@ async function generateFromParts(parts: any[]): Promise<string> {
 
 // Hard budget for the entire generation slot, sized for Hobby (60s cap).
 const GENERATION_BUDGET_MS = 55_000;
-// Minimum headroom required before we'll start a repair retry.
-const RETRY_MIN_REMAINING_MS = 25_000;
+// Minimum headroom required to attempt surgical repair (much lower than
+// a full regen — repairs are tiny parallel calls, not a second full generation).
+const REPAIR_MIN_REMAINING_MS = 8_000;
 
 async function generateWithLexiconGuard(
   parts: any[],
-  basePrompt: string,
+  _basePrompt: string,
   startTime: number,
-  hasFiles: boolean = false,
+  _hasFiles: boolean = false,
 ): Promise<{ responseText: string; report: ValidationReport; retried: boolean }> {
   const initial = await generateFromParts(parts);
 
@@ -135,7 +136,7 @@ async function generateWithLexiconGuard(
     return { responseText: initial, report: { violations: [], slopScore: 0, clean: true }, retried: false };
   }
 
-  const report = validateCampaign(parsed);
+  const report = validateCampaign(parsed!);
   const retryWorthy =
     report.slopScore >= 3 ||
     report.violations.some(
@@ -149,55 +150,26 @@ async function generateWithLexiconGuard(
     return { responseText: initial, report, retried: false };
   }
 
-  // Skip retry when files are present — they add time and the first call
-  // already consumed most of the budget.
-  if (hasFiles) {
-    console.warn('[lexicon] skipping repair retry: files in payload');
-    return { responseText: initial, report, retried: false };
-  }
-
   const elapsed = Date.now() - startTime;
   const remaining = GENERATION_BUDGET_MS - elapsed;
-  if (remaining < RETRY_MIN_REMAINING_MS) {
-    console.warn(
-      `[lexicon] skipping repair retry: only ${remaining}ms budget left. Returning original with ${report.violations.length} violation(s).`
-    );
+  if (remaining < REPAIR_MIN_REMAINING_MS) {
+    console.warn(`[lexicon] skipping repair: only ${remaining}ms budget left, returning original with ${report.violations.length} violation(s)`);
     return { responseText: initial, report, retried: false };
   }
 
-  console.log(
-    `[lexicon] ${report.violations.length} violation(s) (slop=${report.slopScore}); retrying (${remaining}ms remaining)`
-  );
+  console.log(`[lexicon] ${report.violations.length} violation(s) (slop=${report.slopScore}); starting surgical repair on ${new Set(report.violations.map(v => v.location).filter(Boolean)).size} field(s)`);
 
-  const repairDirective = buildRepairDirective(report);
-  const repairParts: any[] = [
-    { text: `${basePrompt}\n\n${repairDirective}\n\n## Rejected output (for reference only)\n${initial.slice(0, 4000)}` },
-    ...parts.slice(1),
-  ];
-
-  let retried: string;
   try {
-    retried = await generateFromParts(repairParts);
+    const { result: repaired, repairedCount, finalReport, improved } = await repairSurgically(parsed!, report);
+    console.log(`[lexicon] surgical repair: patched ${repairedCount} field(s) in ${Date.now() - startTime - elapsed}ms, slop ${report.slopScore} → ${finalReport.slopScore}`);
+    if (improved) {
+      return { responseText: JSON.stringify(repaired), report: finalReport, retried: true };
+    }
   } catch (err) {
-    console.error('[lexicon] retry failed, returning original:', err);
-    return { responseText: initial, report, retried: true };
+    console.error('[lexicon] surgical repair failed, returning original:', err);
   }
 
-  let retriedParsed: CampaignShape | null = null;
-  try {
-    retriedParsed = JSON.parse(retried);
-  } catch {
-    console.warn('[lexicon] retried response unparseable, returning original');
-    return { responseText: initial, report, retried: true };
-  }
-
-  const retriedReport = validateCampaign(retriedParsed);
-  console.log(`[lexicon] retry produced ${retriedReport.violations.length} violation(s) (slop=${retriedReport.slopScore})`);
-
-  if (retriedReport.slopScore < report.slopScore) {
-    return { responseText: retried, report: retriedReport, retried: true };
-  }
-  return { responseText: initial, report, retried: true };
+  return { responseText: initial, report, retried: false };
 }
 
 export async function POST(req: Request) {
