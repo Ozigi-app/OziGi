@@ -30,7 +30,7 @@ import {
 import { searchWebWithExa } from '@/lib/exa';
 import { searchWeb as searchTavily } from '@/lib/search';
 import { fetchPageContent } from '@/lib/firecrawl';
-import { runAudit } from '@/lib/longform/audit';
+import { runFastAudit } from '@/lib/longform/audit';
 import type { SourceBudgetEntry } from '@/lib/types/longform';
 
 const redis = new Redis({
@@ -644,11 +644,11 @@ export async function POST(req: Request) {
           .eq('user_id', user.id);
       }
 
-      // Run Stage 4 AUDIT
+      // Run Stage 4 fast audit (pure-JS, <100ms — network link re-fetch happens in the review route)
       const budget = Array.isArray(verifiedSourceBudget)
         ? (verifiedSourceBudget as SourceBudgetEntry[])
         : [];
-      auditReport = await runAudit(savedPostId ?? 'unsaved', planId ?? null, fullContent, budget);
+      auditReport = runFastAudit(savedPostId ?? 'unsaved', planId ?? null, fullContent, budget);
 
       // Persist audit
       if (savedPostId) {

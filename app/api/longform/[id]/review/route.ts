@@ -1,12 +1,19 @@
 /**
  * GET /api/longform/[id]/review
  * Returns the post, its associated plan, and its audit report for the review UI.
+ * Also runs/refreshes the full audit (including network link re-fetch) so the
+ * review page always reflects the current state of all linked URLs.
+ * This route gets its own 60s Vercel budget — the link re-fetch is safe here.
  */
+
+export const maxDuration = 60;
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
+import { runFullAudit } from '@/lib/longform/audit';
+import type { SourceBudgetEntry } from '@/lib/types/longform';
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
@@ -70,14 +77,29 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       plan = planRow;
     }
 
-    // Load audit
-    const { data: audit } = await supabaseAdmin
+    // Run full audit (includes network link re-fetch — safe here, own 60s budget)
+    const budget: SourceBudgetEntry[] = Array.isArray(plan?.source_budget)
+      ? plan.source_budget
+      : [];
+    const freshAudit = await runFullAudit(postId, plan?.id ?? null, post.content, budget);
+
+    // Upsert audit result
+    await supabaseAdmin
       .from('longform_audits')
-      .select('*')
-      .eq('post_id', postId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .upsert(
+        {
+          post_id: postId,
+          plan_id: plan?.id ?? null,
+          flags: freshAudit.flags,
+          dead_link_rate: freshAudit.dead_link_rate,
+          link_audit_passed: freshAudit.link_audit_passed,
+          citation_audit_passed: freshAudit.citation_audit_passed,
+          code_audit_passed: freshAudit.code_audit_passed,
+          prose_audit_score: freshAudit.prose_audit_score,
+          authority_audit_passed: freshAudit.authority_audit_passed,
+        },
+        { onConflict: 'post_id' }
+      );
 
     return NextResponse.json({
       post: {
@@ -96,7 +118,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         },
       },
       plan: plan ?? null,
-      audit: audit ?? null,
+      audit: freshAudit,
     });
   } catch (error: any) {
     console.error('[Review] Error:', error);

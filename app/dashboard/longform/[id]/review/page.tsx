@@ -28,6 +28,7 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "@/components/hooks/useSession";
 import { usePlanStatus } from "@/components/hooks/usePlanStatus";
+import { useStats } from "@/components/hooks/useStats";
 import type { AuditFlag, AuditReport, SourceBudgetEntry, LongformPlan } from "@/lib/types/longform";
 
 interface ReviewData {
@@ -194,7 +195,8 @@ export default function ReviewPage() {
   const params = useParams();
   const postId = params?.id as string;
   const { session, sessionLoading } = useSession();
-  const { planStatus, stats, isLoading: planLoading } = usePlanStatus(session);
+  const { planStatus, loading: planLoading } = usePlanStatus();
+  const { stats, isLoadingStats } = useStats(session?.user?.id);
 
   const [data, setData] = useState<ReviewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -261,8 +263,7 @@ export default function ReviewPage() {
     <div className="min-h-screen flex flex-col bg-bg">
       <Header
         session={session}
-        onOpenSettings={() => {}}
-        onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        onOpenMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
 
       <div className="flex flex-1 relative">
@@ -270,7 +271,7 @@ export default function ReviewPage() {
           navItems={[]}
           stats={stats || { campaignsGenerated: 0, scheduledCount: 0, personasSaved: 0 }}
           planStatus={planStatus}
-          isLoadingStats={planLoading}
+          isLoadingStats={isLoadingStats}
           isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
           isSidebarCollapsed={isSidebarCollapsed}

@@ -492,6 +492,7 @@ useEffect(() => {
         onClose={() => setIsHistoryOpen(false)}
         pastCampaigns={pastCampaigns}
         onRestore={(rec) => restoreCampaign(rec, setInputs, setCampaign)}
+        onOpen={() => session?.user?.id && fetchHistory(session.user.id)}
       />
       <SubscribersModal
         isOpen={isSubscribersOpen}

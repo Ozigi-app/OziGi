@@ -1,13 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
+
 interface HistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   pastCampaigns: any[];
   onRestore: (record: any) => void;
+  onOpen?: () => void;
 }
 
-export default function HistoryModal({ isOpen, onClose, pastCampaigns, onRestore }: HistoryModalProps) {
+export default function HistoryModal({ isOpen, onClose, pastCampaigns, onRestore, onOpen }: HistoryModalProps) {
+  useEffect(() => {
+    if (isOpen && onOpen) onOpen();
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (

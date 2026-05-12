@@ -27,6 +27,7 @@ import Footer from "@/components/Footer";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "@/components/hooks/useSession";
 import { usePlanStatus } from "@/components/hooks/usePlanStatus";
+import { useStats } from "@/components/hooks/useStats";
 import { usePersonas } from "@/components/hooks/usePersonas";
 import { CopilotKit, useCopilotChatInternal, useCopilotReadable, useCopilotAdditionalInstructions } from "@copilotkit/react-core";
 import { TextMessage, Role } from "@copilotkit/runtime-client-gql";
@@ -86,8 +87,62 @@ const DEPTH_OPTIONS = [
   { value: "advanced", label: "Advanced", desc: "Internals, edge cases, primary sources" },
 ];
 
-// Gold-standard example injected as additional instructions for the brief agent
-const BRIEF_GOLD_STANDARD = `Here is your GOLD STANDARD example of the exact tone, depth, and structure you must follow:
+// ---------------------------------------------------------------------------
+// Brief agent instructions — two separate blocks injected via
+// useCopilotAdditionalInstructions. Keep them split so they're easier to
+// audit independently.
+// ---------------------------------------------------------------------------
+
+// 1. Discipline rules: what the brief must NOT do (framing, evidence, URLs)
+const BRIEF_DISCIPLINE_RULES = `
+## BRIEF WRITER'S DISCIPLINE (non-negotiable)
+
+You are writing for the ARTICLE AUTHOR, not for the product vendor or the client commissioning the piece.
+Your job is to help the writer produce credible, defensible journalism — not to make a product look good.
+Apply these rules without exception:
+
+### 1. No sponsored framing
+If you find yourself writing prose that a vendor's marketing team would approve without edits, stop and rewrite it.
+Banned patterns:
+- Positioning the product as the obvious or inevitable solution
+- Listing competitor weaknesses without listing the product's own weaknesses
+- Describing adoption, growth, or community traction without a primary source
+- Phrases like "uniquely positioned", "purpose-built", "industry-leading", "game-changing", "first-of-its-kind", "pioneering"
+
+### 2. Evidence confidence labels on every Key Argument
+Each Key Argument must end with a confidence marker:
+- [HIGH] — you have a direct primary source URL in the Research Anchors section
+- [MEDIUM] — you have credible secondary coverage (blog post from the maintainer, official changelog, well-sourced news)
+- [LOW] — this is your inference, or you found no primary source
+
+A brief with more than one [LOW] argument is not ready to use. Flag it explicitly.
+
+### 3. Claim attribution hygiene
+Any claim about:
+- a specification gap or missing standard → must cite the spec document, not a blog post about the gap
+- a benchmark or performance characteristic → must name the benchmark, version, and who ran it
+- a security vulnerability → must cite a CVE, advisory, or primary researcher write-up
+- adoption, usage, or market share → must name the source and date
+
+If you cannot cite a primary source, write: "CLAIM NEEDS PRIMARY SOURCE: [your claim here]" so the writer knows to verify before using it.
+
+### 4. Research anchor discipline
+Only include URLs in Research Anchors if you have HIGH confidence they resolve to the correct page.
+If you searched for something but couldn't find a reliable canonical URL, describe the source WITHOUT a link:
+  [Source description — search required] — no URL — what to search for and why it matters
+Never guess a URL. A missing link is far less damaging than a dead or misdirected one.
+
+### 5. Required: Tensions section
+Every brief must include a "## Tensions & Honest Critique" section that surfaces:
+- The strongest objection a skeptical reader will raise against the article's central argument
+- At least one weakness or limitation of the product/approach being covered
+- Any area where the brief's Key Arguments are based on [LOW] or [MEDIUM] evidence
+This section is for the writer's benefit, not for publication. Be candid.
+`.trim();
+
+// 2. Gold standard: positive example of the exact output format and depth
+const BRIEF_GOLD_STANDARD = `
+## GOLD STANDARD EXAMPLE — match this level of specificity, evidence labeling, and candor:
 
 --- START GOLD STANDARD ---
 ## Audience
@@ -100,11 +155,11 @@ By the end, readers will understand why feature flags break Playwright's isolati
 
 ## Key Arguments
 
-1. Playwright isolates browser context, not external flag state — treating them as equivalent is the root cause of flag-induced flakiness.
-2. API-level flag mutation under parallelism is an anti-pattern; fixture-level injection is the correct primitive.
-3. Flag state must be declared like auth state — deterministic and scoped — not read reactively from the environment.
-4. Worker-scoped fixtures are faster but require all co-located tests to share identical flag configurations.
-5. Cross-run observability (not just test isolation) is required to diagnose flag-induced regressions reliably.
+1. Playwright isolates browser context, not external flag state — treating them as equivalent is the root cause of flag-induced flakiness. [HIGH — documented in Playwright architecture docs]
+2. API-level flag mutation under parallelism is an anti-pattern; fixture-level injection is the correct primitive. [HIGH — Playwright fixture scoping docs + multiple postmortems]
+3. Flag state must be declared like auth state — deterministic and scoped — not read reactively from the environment. [MEDIUM — well-established pattern in Playwright community, no single canonical source]
+4. Worker-scoped fixtures are faster but require all co-located tests to share identical flag configurations. [HIGH — Playwright worker model docs]
+5. Cross-run observability (not just test isolation) is required to diagnose flag-induced regressions reliably. [MEDIUM — supported by incident reports but no primary benchmark]
 
 ## Suggested Structure
 
@@ -113,7 +168,6 @@ By the end, readers will understand why feature flags break Playwright's isolati
 - Playwright isolates browser contexts (cookies, localStorage, sessions), but feature flags are evaluated outside that boundary — often via backend services or SDKs. This creates hidden shared state across tests.
 - Example: a beforeAll mutating a flag via an API in Worker 1 can affect what Worker 3 sees mid-test.
 - Acknowledge the common initial response: hardcoding flag state in environments, conditional test logic. Explain why these break under parallelism.
-- [Internal link: Playwright adoption guide]
 
 ## H2: Why Feature Flags Break Playwright's Isolation Model
 - Clarify that Playwright isolation is not broken, but limited to browser context. Feature flags introduce state outside that boundary.
@@ -122,13 +176,10 @@ By the end, readers will understand why feature flags break Playwright's isolati
 ### H3: The Shared Environment Problem
 - In shared environments, flag state is effectively global unless scoped per user. Parallel workers operate as the same user, hit the same endpoints, and share flag state.
 - [Code example: beforeAll API mutation creating cross-worker race condition]
-- [Internal link: Debugging Playwright timeouts]
-- [External link: https://currents.dev/posts/debugging-playwright-timeouts]
 
 ### H3: Conditional Test Logic as a Code Smell
 - Critique: if (featureEnabled) { … } else { test.skip() }
 - Principle: Flag state should be declared like auth state, not read reactively.
-- [Internal link: Building reliable Playwright tests]
 
 ## H2: A Taxonomy of Flag Integration Patterns
 - Live SDK: No isolation, only for smoke tests validating real production config.
@@ -146,14 +197,22 @@ By the end, readers will understand why feature flags break Playwright's isolati
 - Test-scoped: full isolation; higher overhead.
 - Worker-scoped: faster; safe only when all tests share the same flag config.
 
-## H2: Research Anchors
+## Tensions & Honest Critique
 
-[Playwright Fixtures Docs] — https://playwright.dev/docs/test-fixtures — Official guide to fixture scoping; essential for understanding worker vs test scope
-[LaunchDarkly Playwright Integration] — https://docs.launchdarkly.com — SDK evaluation model and override patterns
-[Currents.dev Playwright Blog] — https://currents.dev/posts — Observability patterns for parallel Playwright runs
+- The central argument (fixture injection > API mutation) is strong for client-side flags. For server-side evaluated flags, the pattern requires the test to mock the evaluation endpoint, which can drift from production behavior. The article must acknowledge this.
+- LaunchDarkly's Playwright integration guide recommends a different pattern. The article should address why it disagrees, or the argument will look under-researched to LaunchDarkly users.
+- Argument 5 (observability) has only [MEDIUM] evidence. It should be framed as a recommendation, not a hard requirement, or the writer needs to find a primary source.
+
+## Research Anchors
+
+[Playwright Fixtures Docs] — https://playwright.dev/docs/test-fixtures — Official guide to fixture scoping; essential for understanding worker vs test scope [HIGH confidence URL]
+[LaunchDarkly Playwright Integration] — https://docs.launchdarkly.com/sdk/client-side/javascript/playwright — SDK evaluation model and override patterns [MEDIUM confidence — verify this path]
+[Currents.dev Playwright Blog] — https://currents.dev/posts/debugging-playwright-timeouts — Observability patterns for parallel Playwright runs [HIGH confidence URL]
 --- END GOLD STANDARD ---
 
-Always output all five sections: Audience, Outcome, Key Arguments, Suggested Structure, Research Anchors. Match this level of specificity and depth.`;
+Always output all six sections: Audience, Outcome, Key Arguments, Suggested Structure, Tensions & Honest Critique, Research Anchors.
+Match the specificity, the evidence labels on Key Arguments, and the candor in Tensions. A brief without Tensions is incomplete.
+`.trim();
 
 export default function LongFormPage() {
   return (
@@ -166,7 +225,8 @@ export default function LongFormPage() {
 function LongFormContent() {
   const router = useRouter();
   const { session, sessionLoading } = useSession();
-  const { planStatus, stats, isLoading: planLoading } = usePlanStatus(session);
+  const { planStatus, loading: planLoading } = usePlanStatus();
+  const { stats, isLoadingStats } = useStats(session?.user?.id);
   const { personas } = usePersonas(session?.user?.id);
 
   // Form state
@@ -202,6 +262,9 @@ function LongFormContent() {
   const [verifyGateReport, setVerifyGateReport] = useState<{
     dead_count: number; total_count: number; dead_rate: number;
   } | null>(null);
+  // Derived: any active processing (avoids TypeScript narrowing issues inside JSX guards)
+  const isPipelineRunning = pipelineStage !== "idle" && pipelineStage !== "plan-review";
+  const isPlanReview = pipelineStage === "plan-review";
 
   const hasAccess = planStatus?.plan === "organization" || planStatus?.plan === "enterprise";
 
@@ -257,6 +320,71 @@ function LongFormContent() {
       return;
     }
 
+    // Stage 1: PLAN
+    setPipelineStage("planning");
+    try {
+      const planResp = await fetch("/api/longform/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brief: context.trim() }),
+      });
+      const planJson = await planResp.json();
+      if (!planResp.ok) throw new Error(planJson.error || "Planning failed");
+      setPlanData({
+        plan_id: planJson.plan_id ?? null,
+        outline: planJson.outline ?? [],
+        source_budget: planJson.source_budget ?? [],
+      });
+      setPipelineStage("plan-review");
+    } catch (err: any) {
+      console.error("[LongForm][plan]", err);
+      toast.error(err.message || "Planning step failed — generating without plan");
+      setPlanData(null);
+      await runGenerate(null, []);
+    }
+  };
+
+  const handleProceedFromPlan = async () => {
+    if (!planData) { await runGenerate(null, []); return; }
+
+    // Stage 2: VERIFY
+    setPipelineStage("verifying");
+    try {
+      const verifyResp = await fetch("/api/longform/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan_id: planData.plan_id,
+          source_budget: planData.plan_id ? undefined : planData.source_budget,
+        }),
+      });
+      const verifyJson = await verifyResp.json();
+      if (!verifyResp.ok) throw new Error(verifyJson.error || "Verification failed");
+
+      if (verifyJson.gate_triggered) {
+        setVerifyGateReport({
+          dead_count: verifyJson.dead_count,
+          total_count: verifyJson.total_count,
+          dead_rate: verifyJson.dead_rate,
+        });
+        setPipelineStage("plan-review");
+        toast.error(`Source gate triggered: ${verifyJson.dead_count}/${verifyJson.total_count} sources dead or unsupporting. Review before proceeding.`);
+        return;
+      }
+
+      const budget = verifyJson.annotated_budget ?? [];
+      setVerifiedBudget(budget);
+      setVerifyGateReport(null);
+      await runGenerate(planData.plan_id, budget);
+    } catch (err: any) {
+      console.error("[LongForm][verify]", err);
+      toast.error(err.message || "Verification failed — proceeding without verified budget");
+      await runGenerate(planData.plan_id, []);
+    }
+  };
+
+  const runGenerate = async (planId: string | null, budget: SourceBudgetEntry[]) => {
+    setPipelineStage("generating");
     setIsGenerating(true);
     try {
       let personaVoice: string | undefined;
@@ -277,6 +405,8 @@ function LongFormContent() {
           depth,
           enableWebResearch,
           additionalInstructions: additionalInstructions.trim() || undefined,
+          planId,
+          verifiedSourceBudget: budget.length > 0 ? budget : undefined,
         }),
       });
 
@@ -284,6 +414,7 @@ function LongFormContent() {
       if (!response.ok) throw new Error(data.error || "Failed to generate article");
 
       setArticle(data.article);
+      setSavedPostId(data.post_id ?? null);
       setActiveTab("output");
       toast.success("Article generated successfully!");
       fetchHistory();
@@ -292,6 +423,7 @@ function LongFormContent() {
       toast.error(error.message || "Failed to generate article");
     } finally {
       setIsGenerating(false);
+      setPipelineStage("idle");
     }
   };
 
@@ -344,8 +476,7 @@ function LongFormContent() {
     <div className="min-h-screen flex flex-col bg-bg">
       <Header
         session={session}
-        onOpenSettings={() => {}}
-        onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        onOpenMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
 
       <div className="flex flex-1 relative">
@@ -353,7 +484,7 @@ function LongFormContent() {
           navItems={[]}
           stats={stats || { campaignsGenerated: 0, scheduledCount: 0, personasSaved: 0 }}
           planStatus={planStatus}
-          isLoadingStats={planLoading}
+          isLoadingStats={isLoadingStats}
           isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
           isSidebarCollapsed={isSidebarCollapsed}
@@ -423,8 +554,107 @@ function LongFormContent() {
                 ))}
               </div>
 
+              {/* Plan Review Step — shown between input submission and generation */}
+              {pipelineStage === "plan-review" && planData && (
+                <div className="bg-surface border-4 border-border rounded-2xl p-6 space-y-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Article Plan</h2>
+                      <p className="text-sm text-foreground-muted mt-1">
+                        Review the outline and source budget before drafting. Most users can proceed directly.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => { setPipelineStage("idle"); setPlanData(null); setVerifyGateReport(null); }}
+                      className="text-xs text-foreground-muted hover:text-accent transition-colors flex-shrink-0"
+                    >
+                      ← Back to input
+                    </button>
+                  </div>
+
+                  {verifyGateReport && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
+                      <p className="font-bold mb-1">⚠ Source gate triggered</p>
+                      <p>
+                        {verifyGateReport.dead_count} of {verifyGateReport.total_count} sources ({Math.round(verifyGateReport.dead_rate * 100)}%) are dead or don&apos;t support their claims — above the 20% threshold.
+                        Review and remove dead sources below, or proceed anyway.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Outline */}
+                  {planData.outline.length > 0 && (
+                    <div>
+                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle mb-3">Outline</h3>
+                      <ol className="space-y-2">
+                        {planData.outline.map((section, i) => (
+                          <li key={i} className="flex gap-3 p-3 bg-bg border border-border rounded-lg">
+                            <span className="text-xs font-bold text-foreground-subtle mt-0.5 flex-shrink-0">{i + 1}.</span>
+                            <div>
+                              <p className="text-sm font-bold text-foreground">{section.heading}</p>
+                              <p className="text-xs text-foreground-muted mt-0.5">{section.summary}</p>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+
+                  {/* Source budget preview */}
+                  {planData.source_budget.length > 0 && (
+                    <div>
+                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle mb-3">
+                        Source Budget ({planData.source_budget.length})
+                      </h3>
+                      <div className="space-y-2">
+                        {planData.source_budget.map((entry, i) => (
+                          <div key={i} className="p-3 bg-bg border border-border rounded-lg text-xs">
+                            <a
+                              href={entry.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-accent hover:underline break-all font-medium"
+                            >
+                              {entry.url}
+                            </a>
+                            <p className="text-foreground-muted mt-0.5">{entry.justification}</p>
+                            {entry.from_brief && (
+                              <span className="inline-block mt-1 text-[10px] font-bold uppercase bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
+                                From brief
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleProceedFromPlan}
+                      disabled={isPipelineRunning}
+                      className="flex-1 bg-accent text-white py-3.5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isPipelineRunning ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" />Working...</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4" />Verify &amp; Generate Draft</>
+                      )}
+                    </button>
+                    {verifyGateReport && !isPipelineRunning && (
+                      <button
+                        onClick={() => runGenerate(planData.plan_id, [])}
+                        className="px-4 py-3.5 border-2 border-border-strong hover:border-accent rounded-xl text-foreground-muted hover:text-accent transition-colors font-bold text-sm"
+                      >
+                        Skip verify &amp; draft anyway
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Input Tab */}
-              {activeTab === "input" && (
+              {activeTab === "input" && !isPlanReview && (
                 <div className="bg-surface border-4 border-border rounded-2xl p-6 space-y-6">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-foreground-subtle mb-2">
@@ -599,27 +829,17 @@ function LongFormContent() {
 
                   <button
                     onClick={handleGenerate}
-                    disabled={isGenerating || context.length < 50}
+                    disabled={isPipelineRunning || context.length < 50}
                     className="w-full bg-accent text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        {enableWebResearch
-                          ? "Researching the web & writing..."
-                          : "Writing your article..."}
-                      </>
+                    {isPipelineRunning ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" />Working...</>
                     ) : (
-                      <>
-                        <Sparkles className="w-5 h-5" />
-                        Generate Blog Post
-                      </>
+                      <><Sparkles className="w-5 h-5" />Generate Blog Post</>
                     )}
                   </button>
                   <p className="text-xs text-foreground-subtle text-center -mt-2 leading-relaxed">
-                    {enableWebResearch
-                      ? "Web research adds ~10-30 seconds. Every draft also runs through the slop validator and may regenerate once if AI tells slip through."
-                      : "Every draft runs through the slop validator. If AI tells slip through, we regenerate once before showing it to you."}
+                    Pipeline: Plan → Verify sources → Draft → Audit → Review. Every article runs through the slop validator.
                   </p>
                 </div>
               )}
@@ -635,13 +855,24 @@ function LongFormContent() {
                           <p className="text-foreground-muted">{article.subtitle}</p>
                         )}
                       </div>
-                      <button
-                        onClick={handleCopyAll}
-                        className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors flex-shrink-0"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy All
-                      </button>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {savedPostId && (
+                          <button
+                            onClick={() => router.push(`/dashboard/longform/${savedPostId}/review`)}
+                            className="flex items-center gap-2 px-4 py-2 bg-surface-2 hover:bg-surface-3 text-foreground rounded-lg text-sm font-bold transition-colors border border-border"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Review
+                          </button>
+                        )}
+                        <button
+                          onClick={handleCopyAll}
+                          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors"
+                        >
+                          <Copy className="w-4 h-4" />
+                          Copy All
+                        </button>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs">
                       <span className="px-2 py-1 rounded-md bg-surface-2 text-foreground font-medium">
@@ -816,7 +1047,7 @@ function LongFormContent() {
 
               {/* Technical Brief Tab */}
               {activeTab === "brief" && (
-                <BriefTab />
+                <BriefTab session={session} />
               )}
             </>
           )}
@@ -929,9 +1160,13 @@ function ArticleMarkdown({ content }: { content: string }) {
 // ---------------------------------------------------------------------------
 // Technical Brief Tab — powered by CopilotKit agent with Google Search
 // ---------------------------------------------------------------------------
-function BriefTab() {
+function BriefTab({ session }: { session: any }) {
   const [topic, setTopic] = useState("");
   const [copiedBrief, setCopiedBrief] = useState(false);
+  const [anchorResults, setAnchorResults] = useState<Array<{
+    url: string; status: string; claim_support?: string;
+  }> | null>(null);
+  const [isVerifyingAnchors, setIsVerifyingAnchors] = useState(false);
 
   // In CopilotKit v1.56.5 there is a type/runtime mismatch:
   //   • TS type says useCopilotChatInternal returns `visibleMessages`
@@ -951,7 +1186,12 @@ function BriefTab() {
     value: topic,
   });
 
-  // Inject the gold-standard example so the agent knows the exact output format
+  // Discipline rules first — what NOT to do (framing, evidence, URL hygiene)
+  useCopilotAdditionalInstructions({
+    instructions: BRIEF_DISCIPLINE_RULES,
+  });
+
+  // Gold-standard example — what the output format and depth should look like
   useCopilotAdditionalInstructions({
     instructions: BRIEF_GOLD_STANDARD,
   });
@@ -993,6 +1233,54 @@ function BriefTab() {
     toast.success("Brief copied to clipboard");
     setTimeout(() => setCopiedBrief(false), 2000);
   }, [briefText]);
+
+  const handleVerifyAnchors = useCallback(async () => {
+    if (!briefText || !session) return;
+    // Extract all https URLs from the brief text
+    const urls = [...new Set(
+      [...briefText.matchAll(/https?:\/\/[^\s\)\]"']+/g)].map(m => m[0].replace(/[.,;:]+$/, ""))
+    )];
+    if (urls.length === 0) { toast.error("No URLs found in brief"); return; }
+
+    setIsVerifyingAnchors(true);
+    setAnchorResults(null);
+    try {
+      const resp = await fetch("/api/longform/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          source_budget: urls.map(url => ({
+            url,
+            justification: "Research anchor from brief",
+            from_brief: true,
+            supports_claims: [],
+          })),
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Verification failed");
+      setAnchorResults(
+        (data.annotated_budget ?? []).map((e: any) => ({
+          url: e.url,
+          status: e.status ?? "unknown",
+          claim_support: e.claim_support,
+        }))
+      );
+      const deadCount = (data.annotated_budget ?? []).filter((e: any) => e.status === "dead").length;
+      if (deadCount > 0) {
+        toast.error(`${deadCount} of ${urls.length} research anchor${urls.length !== 1 ? "s" : ""} are dead or unreachable`);
+      } else {
+        toast.success(`All ${urls.length} research anchors resolved`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Anchor verification failed");
+    } finally {
+      setIsVerifyingAnchors(false);
+    }
+  }, [briefText, session]);
 
   return (
     <div className="space-y-6">
@@ -1077,13 +1365,26 @@ function BriefTab() {
               )}
             </div>
             {briefText && !isLoading && (
-              <button
-                onClick={handleCopyBrief}
-                className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors"
-              >
-                <Copy className="w-4 h-4" />
-                Copy All
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleVerifyAnchors}
+                  disabled={isVerifyingAnchors}
+                  className="flex items-center gap-2 px-4 py-2 bg-surface-2 hover:bg-surface-3 border border-border text-foreground rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                >
+                  {isVerifyingAnchors ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" />Verifying...</>
+                  ) : (
+                    <><Link2 className="w-4 h-4" />Verify Anchors</>
+                  )}
+                </button>
+                <button
+                  onClick={handleCopyBrief}
+                  className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-strong text-accent-foreground rounded-lg text-sm font-bold transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy All
+                </button>
+              </div>
             )}
           </div>
 
@@ -1103,6 +1404,45 @@ function BriefTab() {
               {briefText}
             </ReactMarkdown>
           </div>
+
+          {/* Anchor verification results */}
+          {anchorResults && (
+            <div className="mx-6 mb-4 border border-border rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-surface border-b border-border flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-foreground-muted" />
+                <span className="text-xs font-black uppercase tracking-widest text-foreground">
+                  Research Anchor Verification ({anchorResults.length})
+                </span>
+                {anchorResults.some(r => r.status === "dead") && (
+                  <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-800 ml-auto">
+                    {anchorResults.filter(r => r.status === "dead").length} dead
+                  </span>
+                )}
+              </div>
+              <div className="divide-y divide-border">
+                {anchorResults.map((result, i) => (
+                  <div key={i} className={`px-4 py-2.5 flex items-start gap-3 text-xs ${result.status === "dead" ? "bg-red-50" : "bg-bg"}`}>
+                    <span className={`font-bold uppercase px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5 ${
+                      result.status === "resolved" ? "bg-green-100 text-green-800" :
+                      result.status === "redirected" ? "bg-blue-100 text-blue-800" :
+                      result.status === "paywalled" ? "bg-amber-100 text-amber-800" :
+                      "bg-red-100 text-red-800"
+                    }`}>
+                      {result.status}
+                    </span>
+                    <a
+                      href={result.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`break-all hover:underline flex-1 ${result.status === "dead" ? "text-red-700 line-through" : "text-accent"}`}
+                    >
+                      {result.url}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Footer copy button (repeated for convenience on long briefs) */}
           {briefText && !isLoading && (

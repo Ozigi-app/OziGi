@@ -39,7 +39,12 @@ export function useCampaignHistory(userId?: string) {
       additionalInfo: "",
       personaId: "default",
     });
-    setCampaign(record.generated_content);
+    const content = Array.isArray(record.generated_content)
+      ? record.generated_content
+      : typeof record.generated_content === "string"
+      ? (() => { try { const p = JSON.parse(record.generated_content); return Array.isArray(p) ? p : []; } catch { return []; } })()
+      : [];
+    setCampaign(content);
   };
 
   return { pastCampaigns, loading, fetchHistory, restoreCampaign };
