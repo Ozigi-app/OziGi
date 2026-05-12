@@ -1,4 +1,5 @@
 import { ANTI_AI_RULES_LONGFORM } from "./anti-ai";
+import type { SourceBudgetEntry } from '@/lib/types/longform';
 
 /**
  * Long-form content generation prompt builder
@@ -43,6 +44,10 @@ export interface LongFormParams {
   research?: WebResearchBundle;
   /** Reader expertise level - drives depth and assumed knowledge. */
   depth?: LongFormDepth;
+  /** Verified source budget from Stage 2 — when present, Stage 3 constraints are injected. */
+  verifiedSourceBudget?: SourceBudgetEntry[];
+  /** Plan ID linking this draft to a Stage 1 plan. */
+  planId?: string;
 }
 
 export interface LongFormCodeBlock {
@@ -261,6 +266,45 @@ Order them in the rough order they first appear in the article.
 If no external sources were used, return references as an empty array.
 `.trim();
 
+/** Stage 3 constraints injected when a verified source budget is available. */
+function buildStage3Constraints(budget: SourceBudgetEntry[]): string {
+  const budgetLines = budget
+    .filter((e) => e.status === 'resolved' || e.status === 'redirected')
+    .map(
+      (e) =>
+        `  { "url": "${e.url}", "status": "${e.status}", "supports_claims": ${JSON.stringify(e.supports_claims)} }`
+    )
+    .join(',\n');
+
+  return `
+## Stage 3 Citation Constraints (enforced — do not override)
+
+You are writing from a verified source budget. The following rules are absolute:
+
+1. CITATION CLOSURE. You may ONLY cite URLs present in the verified source budget below.
+   If a claim cannot be supported by a budget source, write it as an unsourced opinion in
+   the author's voice or omit it. Do NOT invent URLs, authors, or institutions.
+
+2. AUTHORITY APPEAL BAN. Do not refer to named individuals as authorities
+   ("the work of X", "according to Y", "as Z explains") unless that individual's name or
+   website appears explicitly in the source budget. Generic appeals ("industry analysts",
+   "security researchers") are acceptable.
+
+3. CODE-BLOCK DISCIPLINE. Any code block must be either:
+   (a) A verbatim copy from a source in the budget, or
+   (b) Authored by you — preceded by a \`<!-- AUTHORED -->\` comment on the line before the fence.
+   For authored code: do NOT include cryptographic hashes, HMAC signatures, JWT tokens, or
+   any value that requires computation. Use the literal placeholder \`<COMPUTED_AT_VALIDATION>\`
+   instead. These will be reviewed and replaced before publication.
+
+4. VERIFIED SOURCE BUDGET (inject inline citations only from this list):
+
+[
+${budgetLines}
+]
+`.trim();
+}
+
 export function buildLongFormPrompt({
   context,
   personaVoice,
@@ -270,11 +314,15 @@ export function buildLongFormPrompt({
   additionalInstructions,
   research,
   depth = 'intermediate',
+  verifiedSourceBudget,
 }: LongFormParams): string {
   const toneInstructions = TONE_INSTRUCTIONS[tone];
   const structureInstructions = STRUCTURE_INSTRUCTIONS[structure];
   const depthInstructions = DEPTH_INSTRUCTIONS[depth];
   const researchBlock = research ? formatResearchBlock(research) : '';
+  const stage3Block = verifiedSourceBudget?.length
+    ? buildStage3Constraints(verifiedSourceBudget)
+    : '';
 
   const personaSection = personaVoice
     ? `## Voice / Persona\nWrite in the voice of: ${personaVoice.substring(0, 400)}\nMatch their cadence and characteristic phrasing without parodying them.`
@@ -292,6 +340,8 @@ blocks with syntax highlighting and ASCII diagrams in monospace. Plan accordingl
 ${context}
 
 ${researchBlock}
+
+${stage3Block}
 
 ${personaSection}
 

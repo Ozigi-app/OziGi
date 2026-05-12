@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getAllPosts, getAllSections } from "@/lib/blog";
 import { format } from "date-fns";
+import NewsletterSection from "@/components/NewsletterSection";
 
 export default async function BlogPage() {
   const posts = await getAllPosts();
@@ -92,6 +93,7 @@ export default async function BlogPage() {
           </div>
         </div>
       </div>
+      <NewsletterSection />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import type { SourceBudgetEntry } from "@/lib/types/longform";
 import { toast } from "sonner";
 import {
   FileText,
@@ -181,12 +182,26 @@ function LongFormContent() {
   // UI state
   const [isGenerating, setIsGenerating] = useState(false);
   const [article, setArticle] = useState<LongFormArticle | null>(null);
+  const [savedPostId, setSavedPostId] = useState<string | null>(null);
   const [copiedSection, setCopiedSection] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"input" | "output" | "history" | "brief">("input");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+  // Pipeline state
+  type PipelineStage = "idle" | "planning" | "plan-review" | "verifying" | "generating";
+  const [pipelineStage, setPipelineStage] = useState<PipelineStage>("idle");
+  const [planData, setPlanData] = useState<{
+    plan_id: string | null;
+    outline: Array<{ heading: string; summary: string }>;
+    source_budget: SourceBudgetEntry[];
+  } | null>(null);
+  const [verifiedBudget, setVerifiedBudget] = useState<SourceBudgetEntry[]>([]);
+  const [verifyGateReport, setVerifyGateReport] = useState<{
+    dead_count: number; total_count: number; dead_rate: number;
+  } | null>(null);
 
   const hasAccess = planStatus?.plan === "organization" || planStatus?.plan === "enterprise";
 
@@ -849,13 +864,12 @@ function ArticleMarkdown({ content }: { content: string }) {
             </a>
           ),
           code({ className, children, ...props }: any) {
-            const inline = (props as any).inline as boolean | undefined;
             const match = /language-(\w+)/.exec(className || "");
             const lang = (match?.[1] || "").toLowerCase();
             const codeStr = String(children).replace(/\n$/, "");
 
-            // Inline code: leave to prose styling
-            if (inline) {
+            // No language class = inline code — react-markdown v10 dropped the inline prop
+            if (!match) {
               return (
                 <code className={className} {...props}>
                   {children}
@@ -872,7 +886,7 @@ function ArticleMarkdown({ content }: { content: string }) {
                       {lang === "diagram" ? "Diagram" : lang || "Text"}
                     </span>
                   </div>
-                  <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono text-foreground whitespace-pre">
+                  <pre className="p-4 overflow-x-auto text-sm leading-none font-mono text-foreground whitespace-pre">
                     <code>{codeStr}</code>
                   </pre>
                 </div>

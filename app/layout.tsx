@@ -108,6 +108,7 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta property="og:image" content="https://ozigi.app/og-image.png" />
+        <link rel="me" href="https://mastodon.social/@Dumebi" />
               <script src="https://analytics.ahrefs.com/analytics.js" data-key="MhdBfYlV5PLcSxQWguZYSQ" async></script>
       </head>
 

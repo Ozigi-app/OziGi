@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="357" viewBox="0 0 680 357">
+  <defs>
+    <linearGradient id="bgL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1628"/>
+    </linearGradient>
+    <linearGradient id="bgR" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F1E35"/>
+      <stop offset="100%" stop-color="#152440"/>
+    </linearGradient>
+    <radialGradient id="glowL" cx="25%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="75%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Left half bg -->
+  <rect width="340" height="357" fill="url(#bgL)"/>
+  <!-- Right half bg -->
+  <rect x="340" width="340" height="357" fill="url(#bgR)"/>
+  <!-- Glows -->
+  <rect width="680" height="357" fill="url(#glowL)"/>
+  <rect width="680" height="357" fill="url(#glowR)"/>
+
+  <!-- Subtle grid left -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="0"   y1="60"  x2="320" y2="60"/>
+    <line x1="0"   y1="120" x2="320" y2="120"/>
+    <line x1="0"   y1="180" x2="320" y2="180"/>
+    <line x1="0"   y1="240" x2="320" y2="240"/>
+    <line x1="0"   y1="300" x2="320" y2="300"/>
+    <line x1="60"  y1="0"   x2="60"  y2="357"/>
+    <line x1="120" y1="0"   x2="120" y2="357"/>
+    <line x1="180" y1="0"   x2="180" y2="357"/>
+    <line x1="240" y1="0"   x2="240" y2="357"/>
+    <line x1="300" y1="0"   x2="300" y2="357"/>
+  </g>
+  <!-- Subtle grid right -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="360" y1="60"  x2="680" y2="60"/>
+    <line x1="360" y1="120" x2="680" y2="120"/>
+    <line x1="360" y1="180" x2="680" y2="180"/>
+    <line x1="360" y1="240" x2="680" y2="240"/>
+    <line x1="360" y1="300" x2="680" y2="300"/>
+    <line x1="400" y1="0"   x2="400" y2="357"/>
+    <line x1="460" y1="0"   x2="460" y2="357"/>
+    <line x1="520" y1="0"   x2="520" y2="357"/>
+    <line x1="580" y1="0"   x2="580" y2="357"/>
+    <line x1="640" y1="0"   x2="640" y2="357"/>
+  </g>
+
+  <!-- Centre divider -->
+  <line x1="340" y1="0" x2="340" y2="357" stroke="#1E293B" stroke-width="2"/>
+
+  <!-- VS badge -->
+  <circle cx="340" cy="178" r="26" fill="#0A1628" stroke="#1E293B" stroke-width="2"/>
+  <text x="340" y="184" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="800" fill="#94A3B8">VS</text>
+
+  <!-- LEFT: Bruno -->
+  <!-- Name -->
+  <text x="170" y="80" text-anchor="middle" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">Bruno</text>
+  <!-- Tagline -->
+  <text x="170" y="104" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#10B981" letter-spacing="2">LOCAL  ·  FREE  ·  GIT-NATIVE</text>
+
+  <!-- Pills -->
+  <rect x="56"  y="116" width="88" height="24" rx="12" fill="none" stroke="#10B981" stroke-width="1.5"/>
+  <text x="100" y="132" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#10B981">Open source</text>
+
+  <rect x="154" y="116" width="76" height="24" rx="12" fill="none" stroke="#10B981" stroke-width="1.5"/>
+  <text x="192" y="132" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#10B981">50k stars</text>
+
+  <!-- Price -->
+  <text x="170" y="210" text-anchor="middle" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="64" font-weight="800" fill="#10B981">Free</text>
+  <text x="170" y="234" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="2">FOREVER  ·  MIT LICENSE</text>
+
+  <!-- RIGHT: Postman -->
+  <text x="510" y="80" text-anchor="middle" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">Postman</text>
+  <text x="510" y="104" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="2">CLOUD  ·  TEAMS  ·  PLATFORM</text>
+
+  <!-- Pills -->
+  <rect x="388" y="116" width="94" height="24" rx="12" fill="none" stroke="#94A3B8" stroke-width="1"/>
+  <text x="435" y="132" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Mock servers</text>
+
+  <rect x="492" y="116" width="80" height="24" rx="12" fill="none" stroke="#94A3B8" stroke-width="1"/>
+  <text x="532" y="132" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">30M users</text>
+
+  <!-- Price -->
+  <text x="510" y="210" text-anchor="middle" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="52" font-weight="800" fill="#E8320A">$19–$49</text>
+  <text x="510" y="232" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">PER USER / MONTH</text>
+  <text x="510" y="250" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A" letter-spacing="1">FREE TEAMS DISCONTINUED</text>
+
+  <!-- Bottom caption bar -->
+  <rect x="0" y="317" width="680" height="40" fill="#1E293B"/>
+  <text x="340" y="342" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Bruno vs Postman in 2026  ·  Why developers are quietly switching (and who should)</text>
+
+  <!-- Ozigi wordmark -->
+  <text x="656" y="308" text-anchor="end" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#E8320A" letter-spacing="2" opacity="0.7">OZIGI</text>
+
+  <!-- Left red accent bar -->
+  <rect x="0" y="0" width="5" height="317" fill="#10B981"/>
+  <rect x="675" y="0" width="5" height="317" fill="#E8320A"/>
+</svg>

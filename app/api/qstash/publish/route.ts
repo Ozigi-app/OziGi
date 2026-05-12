@@ -137,7 +137,7 @@ export async function POST(req: Request) {
         for (const subscriber of subscribers) {
           const unsubscribeLink = unsubscribeUrlBase + subscriber.token;
           const replyToInfo = profile?.reply_to_email || profile?.email;
-          const htmlBody = buildNewsletterEmail(finalBody, unsubscribeLink, replyToInfo, senderName, false, post.id);
+          const htmlBody = buildNewsletterEmail(finalBody, unsubscribeLink, replyToInfo, senderName, false, `${APP_URL}/email/${post.id}`);
 
           try {
             await mailClient.sendMail({

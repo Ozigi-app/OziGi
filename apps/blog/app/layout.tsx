@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import NewsletterPopup from "@/components/NewsletterPopup";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
@@ -78,12 +79,14 @@ export default function RootLayout({
       <head>
         <link rel="alternate" type="application/rss+xml" href="https://blog.ozigi.app/feed.xml" title="Ozigi Blog RSS Feed" />
         <link rel="alternate" type="application/atom+xml" href="https://blog.ozigi.app/feed.xml" title="Ozigi Blog Atom Feed" />
+        <link rel="me" href="https://mastodon.social/@Dumebi" />
       </head>
       <body className="bg-[#fafafa] font-sans text-slate-900 min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
         <Analytics />
+        <NewsletterPopup />
       </body>
     </html>
   );

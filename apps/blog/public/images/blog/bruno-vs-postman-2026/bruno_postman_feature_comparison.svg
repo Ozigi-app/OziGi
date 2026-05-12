@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="430" viewBox="0 0 680 430">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1628"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="680" height="430" fill="url(#bg)"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.3">
+    <line x1="0"   y1="55"  x2="680" y2="55"/>
+    <line x1="0"   y1="110" x2="680" y2="110"/>
+    <line x1="0"   y1="165" x2="680" y2="165"/>
+    <line x1="0"   y1="220" x2="680" y2="220"/>
+    <line x1="0"   y1="275" x2="680" y2="275"/>
+    <line x1="0"   y1="330" x2="680" y2="330"/>
+  </g>
+
+  <!-- Header row -->
+  <!-- Feature column header -->
+  <text x="140" y="26" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8" letter-spacing="1">FEATURE</text>
+
+  <!-- Bruno header -->
+  <rect x="282" y="8" width="166" height="34" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+  <text x="365" y="29" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#10B981">Bruno</text>
+
+  <!-- Postman header -->
+  <rect x="460" y="8" width="200" height="34" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <text x="560" y="29" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A">Postman</text>
+
+  <!-- Column dividers -->
+  <line x1="280" y1="0"   x2="280" y2="390" stroke="#1E293B" stroke-width="1"/>
+  <line x1="458" y1="0"   x2="458" y2="390" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- ── ROW 1: Pricing ── -->
+  <text x="16"  y="72" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Pricing</text>
+  <text x="16"  y="88" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">What you pay</text>
+  <!-- Bruno: advantage -->
+  <rect x="290" y="57" width="150" height="44" rx="6" fill="#10B981" opacity="0.15"/>
+  <rect x="290" y="57" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="365" y="78" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">Free forever</text>
+  <text x="365" y="93" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">MIT open source</text>
+  <!-- Postman: disadvantage -->
+  <rect x="468" y="57" width="182" height="44" rx="6" fill="#E8320A" opacity="0.1"/>
+  <rect x="468" y="57" width="3"   height="44" rx="1" fill="#E8320A"/>
+  <text x="559" y="78" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#E8320A">$19–$49 / user / mo</text>
+  <text x="559" y="93" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Teams; free tier dropped</text>
+
+  <!-- ── ROW 2: Startup time ── -->
+  <line x1="0" y1="110" x2="680" y2="110" stroke="#1E293B" stroke-width="1"/>
+  <text x="16"  y="127" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Startup time</text>
+  <text x="16"  y="143" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Cold open</text>
+  <rect x="290" y="113" width="150" height="44" rx="6" fill="#10B981" opacity="0.15"/>
+  <rect x="290" y="113" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="365" y="134" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">~0.8 s</text>
+  <text x="365" y="149" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">80 MB RAM</text>
+  <rect x="468" y="113" width="182" height="44" rx="6" fill="#E8320A" opacity="0.1"/>
+  <rect x="468" y="113" width="3"   height="44" rx="1" fill="#E8320A"/>
+  <text x="559" y="134" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#E8320A">~4.5 s</text>
+  <text x="559" y="149" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">300–600 MB RAM</text>
+
+  <!-- ── ROW 3: Git integration ── -->
+  <line x1="0" y1="165" x2="680" y2="165" stroke="#1E293B" stroke-width="1"/>
+  <text x="16"  y="182" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Git integration</text>
+  <text x="16"  y="198" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Collections in version control</text>
+  <rect x="290" y="168" width="150" height="44" rx="6" fill="#10B981" opacity="0.15"/>
+  <rect x="290" y="168" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="365" y="189" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">Native</text>
+  <text x="365" y="204" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">.bru files in repo</text>
+  <rect x="468" y="168" width="182" height="44" rx="6" fill="#E8320A" opacity="0.1"/>
+  <rect x="468" y="168" width="3"   height="44" rx="1" fill="#E8320A"/>
+  <text x="559" y="189" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#E8320A">JSON export only</text>
+  <text x="559" y="204" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Diffs unreadable at scale</text>
+
+  <!-- ── ROW 4: Mock servers ── -->
+  <line x1="0" y1="220" x2="680" y2="220" stroke="#1E293B" stroke-width="1"/>
+  <text x="16"  y="237" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Mock servers</text>
+  <text x="16"  y="253" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Serve fake responses</text>
+  <!-- Neutral -->
+  <rect x="290" y="223" width="150" height="44" rx="6" fill="#1E293B"/>
+  <rect x="290" y="223" width="3"   height="44" rx="1" fill="#94A3B8"/>
+  <text x="365" y="244" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Not available</text>
+  <text x="365" y="259" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Core gap</text>
+  <!-- Postman advantage -->
+  <rect x="468" y="223" width="182" height="44" rx="6" fill="#10B981" opacity="0.1"/>
+  <rect x="468" y="223" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="559" y="244" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">Full support</text>
+  <text x="559" y="259" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Cloud-hosted</text>
+
+  <!-- ── ROW 5: Docs publishing ── -->
+  <line x1="0" y1="275" x2="680" y2="275" stroke="#1E293B" stroke-width="1"/>
+  <text x="16"  y="292" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Docs publishing</text>
+  <text x="16"  y="308" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Hosted API docs</text>
+  <rect x="290" y="278" width="150" height="44" rx="6" fill="#1E293B"/>
+  <rect x="290" y="278" width="3"   height="44" rx="1" fill="#94A3B8"/>
+  <text x="365" y="299" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Not built in</text>
+  <text x="365" y="314" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Export and host yourself</text>
+  <rect x="468" y="278" width="182" height="44" rx="6" fill="#10B981" opacity="0.1"/>
+  <rect x="468" y="278" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="559" y="299" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">Built in</text>
+  <text x="559" y="314" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Polished public pages</text>
+
+  <!-- ── ROW 6: Data residency ── -->
+  <line x1="0" y1="330" x2="680" y2="330" stroke="#1E293B" stroke-width="1"/>
+  <text x="16"  y="347" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Data residency</text>
+  <text x="16"  y="363" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Where requests travel</text>
+  <rect x="290" y="333" width="150" height="44" rx="6" fill="#10B981" opacity="0.15"/>
+  <rect x="290" y="333" width="3"   height="44" rx="1" fill="#10B981"/>
+  <text x="365" y="354" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#10B981">Your machine only</text>
+  <text x="365" y="369" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">No proxy, no account</text>
+  <rect x="468" y="333" width="182" height="44" rx="6" fill="#E8320A" opacity="0.1"/>
+  <rect x="468" y="333" width="3"   height="44" rx="1" fill="#E8320A"/>
+  <text x="559" y="354" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#E8320A">Postman servers</text>
+  <text x="559" y="369" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Default proxy routing</text>
+
+  <!-- Legend bar -->
+  <rect x="0" y="390" width="680" height="40" fill="#1E293B"/>
+  <!-- Legend items -->
+  <rect x="16"  y="403" width="12" height="12" rx="3" fill="#10B981"/>
+  <text x="34"  y="414" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Bruno advantage</text>
+  <rect x="168" y="403" width="12" height="12" rx="3" fill="#E8320A"/>
+  <text x="186" y="414" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Postman advantage</text>
+  <rect x="352" y="403" width="12" height="12" rx="3" fill="#94A3B8"/>
+  <text x="370" y="414" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Neither / neutral</text>
+  <text x="660" y="414" text-anchor="end" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#E8320A" letter-spacing="2" opacity="0.7">OZIGI</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="4" height="390" fill="#E8320A"/>
+</svg>

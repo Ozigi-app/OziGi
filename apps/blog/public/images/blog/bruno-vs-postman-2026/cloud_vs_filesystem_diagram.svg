@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="420" viewBox="0 0 680 420">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1628"/>
+    </linearGradient>
+    <radialGradient id="glowL" cx="25%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="75%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrowGrey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M2 2L8 5L2 8" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M2 2L8 5L2 8" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="680" height="420" fill="url(#bg)"/>
+  <rect width="680" height="420" fill="url(#glowL)"/>
+  <rect width="680" height="420" fill="url(#glowR)"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.35">
+    <line x1="0"   y1="70"  x2="680" y2="70"/>
+    <line x1="0"   y1="140" x2="680" y2="140"/>
+    <line x1="0"   y1="210" x2="680" y2="210"/>
+    <line x1="0"   y1="280" x2="680" y2="280"/>
+    <line x1="0"   y1="350" x2="680" y2="350"/>
+    <line x1="68"  y1="0"   x2="68"  y2="420"/>
+    <line x1="136" y1="0"   x2="136" y2="420"/>
+    <line x1="204" y1="0"   x2="204" y2="420"/>
+    <line x1="272" y1="0"   x2="272" y2="420"/>
+    <line x1="408" y1="0"   x2="408" y2="420"/>
+    <line x1="476" y1="0"   x2="476" y2="420"/>
+    <line x1="544" y1="0"   x2="544" y2="420"/>
+    <line x1="612" y1="0"   x2="612" y2="420"/>
+  </g>
+
+  <!-- Centre VS divider -->
+  <line x1="340" y1="30" x2="340" y2="390" stroke="#1E293B" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <circle cx="340" cy="210" r="18" fill="#0A1628" stroke="#1E293B" stroke-width="1.5"/>
+  <text x="340" y="215" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8">VS</text>
+
+  <!-- ══════ LEFT: Postman ══════ -->
+  <text x="170" y="34" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">Postman</text>
+  <text x="170" y="52" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#E8320A">Cloud-first storage</text>
+
+  <!-- Machine box -->
+  <rect x="30" y="72" width="120" height="52" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <text x="90" y="96" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">Your machine</text>
+  <text x="90" y="113" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Electron app</text>
+
+  <!-- Teammate box -->
+  <rect x="168" y="72" width="120" height="52" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <text x="228" y="96" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">Teammate</text>
+  <text x="228" y="113" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Web UI</text>
+
+  <!-- Arrows down to cloud -->
+  <line x1="90"  y1="124" x2="90"  y2="176" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+  <line x1="228" y1="124" x2="228" y2="176" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+  <!-- Postman cloud box -->
+  <rect x="30" y="180" width="258" height="68" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="30" y="180" width="258" height="5" rx="2" fill="#E8320A"/>
+  <text x="159" y="214" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Postman cloud</text>
+  <text x="159" y="234" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Collections, secrets, history</text>
+
+  <!-- Warning label -->
+  <rect x="60" y="268" width="198" height="28" rx="6" fill="#1E293B" stroke="#E8320A" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="159" y="286" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A">Data leaves your network</text>
+
+  <!-- ══════ RIGHT: Bruno ══════ -->
+  <text x="510" y="34" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">Bruno</text>
+  <text x="510" y="52" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#10B981">Filesystem-first storage</text>
+
+  <!-- Project repo box -->
+  <rect x="362" y="72" width="296" height="72" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+  <rect x="362" y="72" width="296" height="5" rx="2" fill="#10B981"/>
+  <text x="510" y="104" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Your project repo</text>
+  <text x="510" y="122" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="10" fill="#94A3B8">/api-tests/get-user.bru</text>
+  <text x="510" y="136" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="10" fill="#94A3B8">/api-tests/create-order.bru</text>
+
+  <!-- Arrows down to two branches -->
+  <line x1="438" y1="144" x2="438" y2="182" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <line x1="582" y1="144" x2="582" y2="182" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Git / PR box -->
+  <rect x="362" y="186" width="130" height="56" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <text x="427" y="210" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">Git / PR</text>
+  <text x="427" y="228" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#10B981">Diff = readable</text>
+
+  <!-- Teammate box -->
+  <rect x="506" y="186" width="152" height="56" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <text x="582" y="210" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">Teammate</text>
+  <text x="582" y="228" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#10B981">git clone</text>
+
+  <!-- Safe label -->
+  <rect x="380" y="262" width="258" height="28" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="509" y="280" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#10B981">Data never leaves your machine</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="390" width="680" height="30" fill="#1E293B"/>
+  <text x="340" y="409" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Storage architecture comparison  ·  blog.ozigi.app</text>
+
+  <!-- Ozigi mark -->
+  <text x="660" y="382" text-anchor="end" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#E8320A" letter-spacing="2" opacity="0.7">OZIGI</text>
+
+  <!-- Side accent bars -->
+  <rect x="0"   y="0" width="4" height="390" fill="#E8320A"/>
+  <rect x="676" y="0" width="4" height="390" fill="#10B981"/>
+</svg>

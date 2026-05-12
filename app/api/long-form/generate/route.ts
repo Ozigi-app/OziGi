@@ -30,6 +30,8 @@ import {
 import { searchWebWithExa } from '@/lib/exa';
 import { searchWeb as searchTavily } from '@/lib/search';
 import { fetchPageContent } from '@/lib/firecrawl';
+import { runAudit } from '@/lib/longform/audit';
+import type { SourceBudgetEntry } from '@/lib/types/longform';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -319,6 +321,8 @@ export async function POST(req: Request) {
       additionalInstructions,
       enableWebResearch = false,
       depth = 'intermediate',
+      planId,
+      verifiedSourceBudget,
     } = body;
 
     if (!context || typeof context !== 'string' || context.trim().length < 50) {
@@ -389,6 +393,7 @@ export async function POST(req: Request) {
       additionalInstructions: additionalInstructions?.trim() || undefined,
       research: research ?? undefined,
       depth: depth as LongFormDepth,
+      verifiedSourceBudget: Array.isArray(verifiedSourceBudget) ? verifiedSourceBudget as SourceBudgetEntry[] : undefined,
     });
 
     console.log(
@@ -573,8 +578,11 @@ export async function POST(req: Request) {
     const lexiconWarnings = summarizeForClient(lexiconReport);
 
     // ---------------------------------------------------------------------
-    // Persist to history
+    // Persist to history + run audit
     // ---------------------------------------------------------------------
+    let savedPostId: string | null = null;
+    let auditReport = null;
+
     try {
       const fullContent = parsed.sections
         .map((s) => `## ${s.heading}\n\n${s.content}`)
@@ -591,13 +599,14 @@ export async function POST(req: Request) {
           webResearch: !!research,
           references: parsed.references ?? [],
           researchQueries: research?.queries ?? [],
+          planId: planId ?? null,
         },
         ...parsed.sections,
       ];
 
       const insertPayload: Record<string, any> = {
         user_id: user.id,
-        platform: 'email', // 'long-form' is not in the platform check constraint
+        platform: 'email',
         content: fullContent,
         subject: parsed.title,
         status: 'published',
@@ -622,15 +631,64 @@ export async function POST(req: Request) {
           lexiconRetried,
         });
       }
-      console.log('[LongForm] Saved to database, id:', savedRow?.id);
+
+      savedPostId = savedRow?.id ?? null;
+      console.log('[LongForm] Saved to database, id:', savedPostId);
+
+      // Link plan to this post if we have one
+      if (planId && savedPostId) {
+        await supabaseAdmin
+          .from('longform_plans')
+          .update({ post_id: savedPostId })
+          .eq('id', planId)
+          .eq('user_id', user.id);
+      }
+
+      // Run Stage 4 AUDIT
+      const budget = Array.isArray(verifiedSourceBudget)
+        ? (verifiedSourceBudget as SourceBudgetEntry[])
+        : [];
+      auditReport = await runAudit(savedPostId ?? 'unsaved', planId ?? null, fullContent, budget);
+
+      // Persist audit
+      if (savedPostId) {
+        const { error: auditSaveError } = await supabaseAdmin
+          .from('longform_audits')
+          .insert({
+            post_id: savedPostId,
+            plan_id: planId ?? null,
+            flags: auditReport.flags,
+            dead_link_rate: auditReport.dead_link_rate,
+            link_audit_passed: auditReport.link_audit_passed,
+            citation_audit_passed: auditReport.citation_audit_passed,
+            code_audit_passed: auditReport.code_audit_passed,
+            prose_audit_score: auditReport.prose_audit_score,
+            authority_audit_passed: auditReport.authority_audit_passed,
+          });
+        if (auditSaveError) {
+          console.error('[LongForm] Failed to save audit:', JSON.stringify(auditSaveError));
+        } else {
+          console.log('[LongForm] Audit saved, flags:', auditReport.flags.length);
+        }
+      }
     } catch (saveErr) {
-      console.error('[LongForm] Database save error:', saveErr);
-      // Continue — generation success should not be blocked by save failure
+      console.error('[LongForm] Database save/audit error:', saveErr);
     }
 
     return NextResponse.json({
       success: true,
       article: parsed,
+      post_id: savedPostId,
+      audit: auditReport
+        ? {
+            flags: auditReport.flags,
+            prose_audit_score: auditReport.prose_audit_score,
+            link_audit_passed: auditReport.link_audit_passed,
+            citation_audit_passed: auditReport.citation_audit_passed,
+            code_audit_passed: auditReport.code_audit_passed,
+            authority_audit_passed: auditReport.authority_audit_passed,
+          }
+        : null,
       lexiconWarnings,
       lexiconRetried,
     });

@@ -1,0 +1,26 @@
+{
+  "description": "Known trivial/empty-input cryptographic hashes that indicate placeholder or fabricated values in generated code samples. Used by audit-code.ts at build time to avoid computing hashes on every run.",
+  "hashes": [
+    { "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "algorithm": "SHA-256", "input": "" },
+    { "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709", "algorithm": "SHA-1", "input": "" },
+    { "hash": "d41d8cd98f00b204e9800998ecf8427e", "algorithm": "MD5", "input": "" },
+    { "hash": "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e", "algorithm": "SHA-512", "input": "" },
+    { "hash": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824", "algorithm": "SHA-256", "input": "hello" },
+    { "hash": "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d", "algorithm": "SHA-1", "input": "hello" },
+    { "hash": "5d41402abc4b2a76b9719d911017c592", "algorithm": "MD5", "input": "hello" },
+    { "hash": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", "algorithm": "SHA-256", "input": "foo" },
+    { "hash": "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33", "algorithm": "SHA-1", "input": "foo" },
+    { "hash": "acbd18db4cc2f85cedef654fccc4a4d8", "algorithm": "MD5", "input": "foo" },
+    { "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", "algorithm": "SHA-256", "input": "test" },
+    { "hash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "algorithm": "SHA-1", "input": "test" },
+    { "hash": "098f6bcd4621d373cade4e832627b4f6", "algorithm": "MD5", "input": "test" },
+    { "hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", "algorithm": "SHA-256", "input": "password" },
+    { "hash": "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", "algorithm": "SHA-1", "input": "password" },
+    { "hash": "5f4dcc3b5aa765d61d8327deb882cf99", "algorithm": "MD5", "input": "password" },
+    { "hash": "b94f6f125c79e3a5ffaa826f584c10d52ada669e6762051b826b55776d05a8d7", "algorithm": "SHA-256", "input": "bar" },
+    { "hash": "62cdb7020ff920e5aa642c3d4066950dd1f01f4d", "algorithm": "SHA-1", "input": "bar" },
+    { "hash": "37b51d194a7513e45b56f6524f2d51f2", "algorithm": "MD5", "input": "bar" },
+    { "hash": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b", "algorithm": "SHA-256", "input": "1" },
+    { "hash": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986", "algorithm": "SHA-256", "input": "0" }
+  ]
+}

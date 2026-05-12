@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glowC" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowL" cx="10%" cy="30%" r="30%">
+      <stop offset="0%" stop-color="#1E293B" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowC)"/>
+  <rect width="1200" height="630" fill="url(#glowL)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="0"    y1="90"  x2="1200" y2="90"/>
+    <line x1="0"    y1="180" x2="1200" y2="180"/>
+    <line x1="0"    y1="270" x2="1200" y2="270"/>
+    <line x1="0"    y1="360" x2="1200" y2="360"/>
+    <line x1="0"    y1="450" x2="1200" y2="450"/>
+    <line x1="0"    y1="540" x2="1200" y2="540"/>
+    <line x1="100"  y1="0"   x2="100"  y2="630"/>
+    <line x1="300"  y1="0"   x2="300"  y2="630"/>
+    <line x1="500"  y1="0"   x2="500"  y2="630"/>
+    <line x1="700"  y1="0"   x2="700"  y2="630"/>
+    <line x1="900"  y1="0"   x2="900"  y2="630"/>
+    <line x1="1100" y1="0"   x2="1100" y2="630"/>
+  </g>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M900 90 L900 180 L1000 180 L1000 270"/>
+    <path d="M1100 90 L1100 180"/>
+    <path d="M700 270 L700 360 L800 360"/>
+    <path d="M1000 360 L1100 360 L1100 450"/>
+    <path d="M700 450 L700 540 L800 540"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="900"  cy="180" r="4"/>
+    <circle cx="1000" cy="270" r="4"/>
+    <circle cx="800"  cy="360" r="4"/>
+    <circle cx="800"  cy="540" r="4"/>
+  </g>
+  <g fill="#E8320A" opacity="0.8">
+    <circle cx="1100" cy="180" r="5"/>
+    <circle cx="1100" cy="450" r="5"/>
+    <circle cx="1000" cy="360" r="5"/>
+  </g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.25">
+    <circle cx="1100" cy="180" r="13"/>
+    <circle cx="1100" cy="450" r="13"/>
+    <circle cx="1000" cy="360" r="13"/>
+  </g>
+
+  <!-- Challenger name badges — muted, crossed out feel -->
+  <!-- Jasper -->
+  <rect x="660" y="100" width="110" height="36" rx="8" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="715" y="123" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#94A3B8">Jasper</text>
+  <line x1="672" y1="118" x2="758" y2="118" stroke="#94A3B8" stroke-width="1" opacity="0.4"/>
+
+  <!-- Copy.ai -->
+  <rect x="790" y="100" width="110" height="36" rx="8" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="845" y="123" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#94A3B8">Copy.ai</text>
+  <line x1="802" y1="118" x2="888" y2="118" stroke="#94A3B8" stroke-width="1" opacity="0.4"/>
+
+  <!-- Writesonic -->
+  <rect x="920" y="100" width="130" height="36" rx="8" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="985" y="123" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#94A3B8">Writesonic</text>
+  <line x1="932" y1="118" x2="1038" y2="118" stroke="#94A3B8" stroke-width="1" opacity="0.4"/>
+
+  <!-- VS label connecting them to Ozigi -->
+  <text x="1080" y="154" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1" opacity="0.7">VS</text>
+
+  <!-- Ozigi winner badge -->
+  <rect x="660" y="180" width="500" height="72" rx="10" fill="#1E293B" stroke="#E8320A" stroke-width="2"/>
+  <rect x="660" y="180" width="6"   height="72" rx="3" fill="#E8320A"/>
+  <text x="820" y="212" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="1">OZIGI</text>
+  <text x="820" y="234" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Writes longform that doesn't read like AI.</text>
+  <text x="820" y="252" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Built-in banned lexicon  ·  Technical brief-ready  ·  No slop</text>
+
+  <!-- Capability comparison rows -->
+  <!-- Row: Slop filter -->
+  <rect x="660" y="270" width="500" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="287" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">SLOP FILTER</text>
+  <text x="676" y="303" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Jasper / Copy.ai / Writesonic</text>
+  <rect x="940" y="276" width="94" height="24" rx="6" fill="#1E293B"/>
+  <text x="987" y="292" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Prompt-only</text>
+  <rect x="1046" y="276" width="100" height="24" rx="6" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="292" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A">Ozigi: Code-side</text>
+
+  <!-- Row: Technical briefs -->
+  <rect x="660" y="322" width="500" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="339" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">TECHNICAL BRIEFS</text>
+  <text x="676" y="355" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Jasper / Copy.ai / Writesonic</text>
+  <rect x="940" y="328" width="94" height="24" rx="6" fill="#1E293B"/>
+  <text x="987" y="344" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Generic output</text>
+  <rect x="1046" y="328" width="100" height="24" rx="6" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="344" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A">Ozigi: Structured</text>
+
+  <!-- Row: Git-native -->
+  <rect x="660" y="374" width="500" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="391" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">RETRY REPAIR LOOP</text>
+  <text x="676" y="407" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Jasper / Copy.ai / Writesonic</text>
+  <rect x="940" y="380" width="94" height="24" rx="6" fill="#1E293B"/>
+  <text x="987" y="396" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">None</text>
+  <rect x="1046" y="380" width="100" height="24" rx="6" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="396" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A">Ozigi: 1 bounded</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category -->
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">TOOLS ROUNDUP  ·  2026</text>
+
+  <!-- Title -->
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">Ozigi vs Jasper,</text>
+  <text x="80" y="278" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">Copy.ai &amp;</text>
+  <text x="80" y="346" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#E8320A">Writesonic.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="396" font-family="'DM Sans','Inter',sans-serif" font-size="20" fill="#94A3B8">Which AI tool writes longform</text>
+  <text x="80" y="422" font-family="'DM Sans','Inter',sans-serif" font-size="20" fill="#94A3B8">and technical briefs without the slop?</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="450" x2="480" y2="450" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Pills -->
+  <rect x="80"  y="466" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="140" y="489" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Tools Roundup</text>
+  <rect x="212" y="466" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="277" y="489" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Longform focus</text>
+
+  <!-- Wordmark -->
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

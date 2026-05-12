@@ -63,6 +63,80 @@ function escapeHtml(text: string): string {
     .replace(/'/g, '&#39;');
 }
 
+export function buildFoundersThoughtsWelcomeEmail() {
+  const appUrl = process.env.APP_URL || 'https://ozigi.app';
+  const blogUrl = 'https://blog.ozigi.app';
+  const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe`;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #0f172a;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="background: #1e293b; border-radius: 16px; overflow: hidden;">
+
+          <!-- Red accent bar -->
+          <div style="height: 3px; background: linear-gradient(to right, #E8320A, #c52000);"></div>
+
+          <!-- Header -->
+          <div style="padding: 36px 40px 0;">
+            <p style="margin: 0 0 28px 0; font-size: 10px; font-weight: 900; letter-spacing: 0.22em; text-transform: uppercase; color: #E8320A;">
+              Founder&rsquo;s Thoughts
+            </p>
+            <h1 style="margin: 0 0 8px 0; font-size: 30px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; color: #f8fafc;">
+              You&rsquo;re in.
+            </h1>
+          </div>
+
+          <!-- Body -->
+          <div style="padding: 28px 40px 36px;">
+            <p style="font-size: 16px; color: #cbd5e1; line-height: 1.7; margin: 0 0 20px 0;">
+              Hey &mdash; thanks for subscribing.
+            </p>
+            <p style="font-size: 16px; color: #cbd5e1; line-height: 1.7; margin: 0 0 20px 0;">
+              I&rsquo;m Dumebi, founder of Ozigi. Once or twice a week I send a short note about what we&rsquo;re building, how we&rsquo;re thinking about content and AI, and the occasional personal observation from running a product company.
+            </p>
+            <p style="font-size: 16px; color: #cbd5e1; line-height: 1.7; margin: 0 0 20px 0;">
+              No summaries of AI news you&rsquo;ve already seen. No growth-hacking tactics. Just honest writing about what&rsquo;s actually happening inside a team building in this space.
+            </p>
+            <p style="font-size: 16px; color: #cbd5e1; line-height: 1.7; margin: 0 0 32px 0;">
+              If you ever want to reply and tell me what you think, what you&rsquo;re working on, or what you&rsquo;d like me to write about &mdash; go ahead. I read every reply.
+            </p>
+
+            <!-- CTA -->
+            <div style="margin: 0 0 32px 0;">
+              <a href="${blogUrl}" style="display: inline-block; background: linear-gradient(135deg, #E8320A 0%, #c52000 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-size: 12px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;">
+                Read the Blog &rarr;
+              </a>
+            </div>
+
+            <p style="font-size: 15px; color: #94a3b8; line-height: 1.6; margin: 0;">
+              Talk soon,<br>
+              <strong style="color: #f1f5f9;">Dumebi</strong><br>
+              <span style="font-size: 13px;">Founder, Ozigi</span>
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div style="background: #0f172a; padding: 20px 40px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <p style="color: #475569; font-size: 11px; margin: 0; line-height: 1.6;">
+              You&rsquo;re receiving this because you subscribed to Founder&rsquo;s Thoughts on ozigi.app.<br>
+              &copy; ${new Date().getFullYear()} Ozigi &nbsp;&middot;&nbsp;
+              <a href="${unsubscribeUrl}" style="color: #475569; text-decoration: underline;">Unsubscribe</a>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function buildWelcomeEmail(userName?: string) {
   const displayName = userName || 'there';
   const appUrl = process.env.APP_URL || 'https://ozigi.app';

@@ -18,6 +18,7 @@ import PricingCards from "../components/PricingCards";
 import { LandingDemoWidget } from "../components/LandingDemoWidget";
 import SocialProof from "../components/SocialProof";
 import PeerlistReviews from "../components/PeerlistReviews";
+import NewsletterPopup from "../components/NewsletterPopup";
 import { supabase } from "@/lib/supabase/client";
 
 /* ─── Palette — light slate base with brand navy + red ────────────────── */
@@ -144,6 +145,8 @@ function MagneticBtn({ onClick, children, variant = "red" }: {
 export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [nlEmail, setNlEmail] = useState("");
+  const [nlStatus, setNlStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   /* Cursor spotlight */
   const heroRef = useRef<HTMLElement>(null);
@@ -160,6 +163,20 @@ export default function Home() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
+
+  async function subscribeNewsletter(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nlEmail) return;
+    setNlStatus("loading");
+    const res = await fetch("/api/newsletter/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: nlEmail.trim().toLowerCase() }),
+    });
+    if (res.ok) {
+      setNlStatus("success");
+    }
+  }
 
   return (
     <div className="font-sans min-h-[100dvh] flex flex-col" style={{ background: C.navy, color: C.white }}>
@@ -659,10 +676,76 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* NEWSLETTER — Founder's Thoughts                                  */}
+        {/* ─────────────────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden py-20 md:py-28"
+          style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
+          <DotGrid id="nl-dots" opacity={0.04} />
+          <div className="relative z-10 max-w-2xl mx-auto px-8 md:px-14 text-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp}>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>
+                Newsletter
+              </p>
+              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-5">
+                Founder&apos;s<br />Thoughts
+              </h2>
+              <p className="text-base font-medium mb-8 max-w-md mx-auto" style={{ color: C.muted }}>
+                Founder insights, product thinking, and what we&apos;re building — straight to your inbox. No noise, no fluff.
+              </p>
+
+              {nlStatus === "success" ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="inline-flex flex-col items-center gap-2 px-8 py-5 rounded-2xl"
+                  style={{ background: C.cardG, border: `1px solid ${C.border}` }}
+                >
+                  <p className="text-lg font-black uppercase tracking-tight" style={{ color: C.white }}>You&apos;re in!</p>
+                  <p className="text-sm" style={{ color: C.muted }}>We&apos;ll be in touch soon.</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={subscribeNewsletter} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={nlEmail}
+                    onChange={(e) => setNlEmail(e.target.value)}
+                    required
+                    className="flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
+                    style={{
+                      background: C.card,
+                      border: `1px solid ${C.borderHi}`,
+                      color: C.white,
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = C.red)}
+                    onBlur={(e) => (e.target.style.borderColor = C.borderHi)}
+                  />
+                  <button
+                    type="submit"
+                    disabled={nlStatus === "loading"}
+                    className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-white transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-60 flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}
+                  >
+                    {nlStatus === "loading" ? "…" : "Subscribe →"}
+                  </button>
+                </form>
+              )}
+
+              {nlStatus === "error" && (
+                <p className="text-xs mt-3" style={{ color: C.red }}>Something went wrong. Please try again.</p>
+              )}
+
+              <p className="text-[10px] mt-4" style={{ color: C.dim }}>No spam. Unsubscribe anytime.</p>
+            </motion.div>
+          </div>
+        </section>
+
       </main>
 
       <Footer />
       {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} />}
+      <NewsletterPopup />
     </div>
   );
 }

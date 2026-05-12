@@ -135,20 +135,32 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     })
     .filter((post): post is BlogPost => post !== null);
 
-  return posts.sort((a, b) => {
-    try {
-      const dateStringA = a.date ? (a.date.includes('T') ? a.date : `${a.date}T00:00:00Z`) : null;
-      const dateStringB = b.date ? (b.date.includes('T') ? b.date : `${b.date}T00:00:00Z`) : null;
-      
-      const dateA = dateStringA ? new Date(dateStringA).getTime() : 0;
-      const dateB = dateStringB ? new Date(dateStringB).getTime() : 0;
-      
-      return dateB - dateA;
-    } catch (error) {
-      console.warn('Error sorting posts by date:', error);
-      return 0;
-    }
-  });
+  const now = Date.now();
+
+  return posts
+    .filter((post) => {
+      if (!post.date) return true;
+      try {
+        const ds = post.date.includes('T') ? post.date : `${post.date}T00:00:00Z`;
+        return new Date(ds).getTime() <= now;
+      } catch {
+        return true;
+      }
+    })
+    .sort((a, b) => {
+      try {
+        const dateStringA = a.date ? (a.date.includes('T') ? a.date : `${a.date}T00:00:00Z`) : null;
+        const dateStringB = b.date ? (b.date.includes('T') ? b.date : `${b.date}T00:00:00Z`) : null;
+
+        const dateA = dateStringA ? new Date(dateStringA).getTime() : 0;
+        const dateB = dateStringB ? new Date(dateStringB).getTime() : 0;
+
+        return dateB - dateA;
+      } catch (error) {
+        console.warn('Error sorting posts by date:', error);
+        return 0;
+      }
+    });
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -156,6 +168,14 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     const filePath = path.join(postsDirectory, `${slug}.mdx`);
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(fileContent);
+
+    // Don't serve posts with a future publish date
+    if (data.date) {
+      try {
+        const ds = String(data.date).includes('T') ? String(data.date) : `${data.date}T00:00:00Z`;
+        if (new Date(ds).getTime() > Date.now()) return null;
+      } catch { /* fall through */ }
+    }
 
     return {
       slug,

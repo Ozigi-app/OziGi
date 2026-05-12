@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glowR" cx="75%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowL" cx="18%" cy="30%" r="30%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowR)"/>
+  <rect width="1200" height="630" fill="url(#glowL)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150"/>
+    <path d="M1000 60 L1000 150 L1090 150 L1090 240"/>
+    <path d="M640 240 L730 240 L730 330"/>
+    <path d="M910 330 L1000 330 L1000 420"/>
+    <path d="M640 420 L640 510 L730 510"/>
+    <path d="M910 420 L910 510 L1000 510"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="730"  cy="330" r="4"/>
+    <circle cx="1000" cy="420" r="4"/>
+    <circle cx="730"  cy="510" r="4"/>
+  </g>
+  <g fill="#3B82F6" opacity="0.85">
+    <circle cx="910"  cy="150" r="5"/>
+    <circle cx="1090" cy="240" r="5"/>
+    <circle cx="1000" cy="510" r="5"/>
+  </g>
+  <g fill="none" stroke="#3B82F6" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="150" r="13"/>
+    <circle cx="1090" cy="240" r="13"/>
+    <circle cx="1000" cy="510" r="13"/>
+  </g>
+
+  <!-- ── THREE AUDIT CARDS (right side) ── -->
+
+  <!-- Card 1: Ghost plugins -->
+  <rect x="640" y="72" width="500" height="76" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="640" y="72" width="6"   height="76" rx="3" fill="#E8320A"/>
+  <text x="662" y="100" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A" letter-spacing="1">AUDIT 1</text>
+  <text x="662" y="120" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">Ghost Plugin Audit</text>
+  <text x="662" y="138" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Deactivated but not deleted — still loading, still breaking things</text>
+
+  <!-- Card 2: Heavy themes -->
+  <rect x="640" y="164" width="500" height="76" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+  <rect x="640" y="164" width="6"   height="76" rx="3" fill="#F59E0B"/>
+  <text x="662" y="192" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#F59E0B" letter-spacing="1">AUDIT 2</text>
+  <text x="662" y="212" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">Theme Bloat &amp; Conflicts</text>
+  <text x="662" y="230" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Multiple inactive themes registered — conflict surface you don't need</text>
+
+  <!-- Card 3: MySQL bloat -->
+  <rect x="640" y="256" width="500" height="76" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+  <rect x="640" y="256" width="6"   height="76" rx="3" fill="#3B82F6"/>
+  <text x="662" y="284" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#3B82F6" letter-spacing="1">AUDIT 3</text>
+  <text x="662" y="304" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">MySQL Database Bloat</text>
+  <text x="662" y="322" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Post revisions, transients, orphaned meta — silent performance drain</text>
+
+  <!-- MySQL query block -->
+  <rect x="640" y="348" width="500" height="80" rx="8" fill="#070E1C" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="372" font-family="'Courier New',Courier,monospace" font-size="12" fill="#94A3B8">DELETE FROM wp_postmeta WHERE</text>
+  <text x="660" y="390" font-family="'Courier New',Courier,monospace" font-size="12" fill="#3B82F6">  post_id NOT IN</text>
+  <text x="660" y="408" font-family="'Courier New',Courier,monospace" font-size="12" fill="#94A3B8">  (SELECT ID FROM wp_posts);</text>
+
+  <!-- SEO note -->
+  <rect x="640" y="444" width="500" height="48" rx="10" fill="#1E293B"/>
+  <text x="890" y="464" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#3B82F6" letter-spacing="1">SEO SAFETY NOTE</text>
+  <text x="890" y="482" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Backup before every database operation — no exceptions</text>
+
+  <!-- Part 2 badge -->
+  <rect x="80" y="88" width="82" height="30" rx="6" fill="#3B82F6"/>
+  <text x="121" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">PART 2</text>
+  <text x="176" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  WORDPRESS  ·  MAY 2026</text>
+
+  <!-- Title -->
+  <text x="80" y="200" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">Fix WordPress</text>
+  <text x="80" y="275" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">Errors</text>
+  <text x="80" y="350" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#3B82F6">Before They Hit.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="398" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">Ghost plugins, bloated themes,</text>
+  <text x="80" y="428" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">and MySQL bloat — cleaned up.</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="456" x2="490" y2="456" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Pills -->
+  <rect x="80"  y="472" width="82"  height="36" rx="18" fill="#1E293B"/>
+  <text x="121" y="495" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Part 2 of 2</text>
+  <rect x="174" y="472" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="234" y="495" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Preventative</text>
+  <rect x="306" y="472" width="100" height="36" rx="18" fill="#1E293B"/>
+  <text x="356" y="495" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">SEO safe</text>
+
+  <!-- Wordmark -->
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>
