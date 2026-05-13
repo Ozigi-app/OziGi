@@ -11,6 +11,9 @@ import CodeBlock from "@/components/blog/CodeBlock";
 
 
 
+// Revalidate every hour so newly published articles appear without a full redeploy
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));

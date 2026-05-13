@@ -59,7 +59,9 @@
       "Bash(gh label *)",
       "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\\\\apps\\\\blog\\\\public\\\\images\\\\blog\\\\wordpress-errors-part2\")",
       "PowerShell(Copy-Item \"C:\\\\Users\\\\PC\\\\Downloads\\\\wordpress-errors-part2.svg\" \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\\\\apps\\\\blog\\\\public\\\\images\\\\blog\\\\wordpress-errors-part2\\\\cover.svg\")",
-      "PowerShell(ls \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\\\\supabase\\\\migrations\\\\\" | ForEach-Object { $_.FullName })"
+      "PowerShell(ls \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\\\\supabase\\\\migrations\\\\\" | ForEach-Object { $_.FullName })",
+      "Bash(ls /mnt/c/Users/PC/fork/OziGi/apps/blog/content/blog/)",
+      "Bash(dir \"C:\\\\Users\\\\PC\\\\fork\\\\OziGi\\\\apps\\\\blog\\\\content\\\\blog\" /b)"
     ]
   }
 }

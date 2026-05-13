@@ -385,13 +385,14 @@ export default function DemoSandbox() {
         );
         setPreviousOutput({ campaign: finalCampaign, email: finalEmail });
 
-        setTimeout(() => {
+        // Snap to campaign immediately — smooth scroll on mobile causes the
+        // page to linger on the input form while the campaign is already ready
+        requestAnimationFrame(() => {
           campaignRef.current?.scrollIntoView({
-            behavior: "smooth",
+            behavior: "instant" as ScrollBehavior,
             block: "start",
           });
-        }, 100);
-        toast.success("Content generated!");
+        });
       }
     } catch (err) {
       console.error(err);

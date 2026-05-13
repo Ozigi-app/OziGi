@@ -4,6 +4,9 @@ import { getAllPosts, getAllSections } from "@/lib/blog";
 import { format } from "date-fns";
 import NewsletterSection from "@/components/NewsletterSection";
 
+// Revalidate every hour so newly published articles appear without a full redeploy
+export const revalidate = 3600;
+
 export default async function BlogPage() {
   const posts = await getAllPosts();
   const sections = getAllSections();

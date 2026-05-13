@@ -3,6 +3,9 @@ import Image from "next/image";
 import { getAllSections, getPostsBySection, SECTION_META } from "@/lib/blog";
 import { format } from "date-fns";
 
+// Revalidate every hour so post counts update without a full redeploy
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const sections = getAllSections();
   return sections.map((section) => ({
