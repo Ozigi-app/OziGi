@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="44%">
+      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#14B8A6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="25%" r="30%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M2 2L8 5L2 8" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150"/>
+    <path d="M1090 60 L1090 150 L1000 150 L1000 240"/>
+    <path d="M640 330 L730 330 L730 240 L820 240"/>
+    <path d="M910 330 L910 240 L1000 240"/>
+    <path d="M640 420 L640 510 L730 510"/>
+    <path d="M1090 420 L1090 510 L1000 510"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="820"  cy="240" r="4"/>
+    <circle cx="730"  cy="510" r="4"/>
+  </g>
+  <g fill="#14B8A6" opacity="0.85">
+    <circle cx="910"  cy="150" r="5"/>
+    <circle cx="1000" cy="240" r="5"/>
+    <circle cx="910"  cy="240" r="5"/>
+    <circle cx="1000" cy="510" r="5"/>
+  </g>
+  <g fill="none" stroke="#14B8A6" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="150" r="13"/>
+    <circle cx="1000" cy="240" r="13"/>
+    <circle cx="1000" cy="510" r="13"/>
+  </g>
+
+  <!-- Step flow — vertical journey on the right -->
+  <!-- Step 1 -->
+  <rect x="640" y="68" width="500" height="60" rx="8" fill="#1E293B" stroke="#14B8A6" stroke-width="1.5"/>
+  <rect x="640" y="68" width="5"   height="60" rx="2" fill="#14B8A6"/>
+  <circle cx="672" cy="98" r="14" fill="#14B8A6"/>
+  <text x="672" y="103" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#070E1C">1</text>
+  <text x="698" y="90" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Pick your niche and format</text>
+  <text x="698" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Weekly digest · Deep dive · Tutorial series · Curated</text>
+
+  <!-- Connector -->
+  <line x1="672" y1="128" x2="672" y2="148" stroke="#14B8A6" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Step 2 -->
+  <rect x="640" y="152" width="500" height="60" rx="8" fill="#1E293B" stroke="#14B8A6" stroke-width="1.5"/>
+  <rect x="640" y="152" width="5"   height="60" rx="2" fill="#14B8A6"/>
+  <circle cx="672" cy="182" r="14" fill="#14B8A6"/>
+  <text x="672" y="187" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#070E1C">2</text>
+  <text x="698" y="174" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Choose your platform</text>
+  <text x="698" y="192" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Beehiiv (growth) · Substack (monetise) · Kit (e-commerce)</text>
+
+  <line x1="672" y1="212" x2="672" y2="232" stroke="#14B8A6" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Step 3 -->
+  <rect x="640" y="236" width="500" height="60" rx="8" fill="#1E293B" stroke="#14B8A6" stroke-width="1.5"/>
+  <rect x="640" y="236" width="5"   height="60" rx="2" fill="#14B8A6"/>
+  <circle cx="672" cy="266" r="14" fill="#14B8A6"/>
+  <text x="672" y="271" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#070E1C">3</text>
+  <text x="698" y="258" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Write your first 3 issues before launch</text>
+  <text x="698" y="276" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Buffer = consistency · Use AI to draft, human to edit</text>
+
+  <line x1="672" y1="296" x2="672" y2="316" stroke="#14B8A6" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Step 4 -->
+  <rect x="640" y="320" width="500" height="60" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <rect x="640" y="320" width="5"   height="60" rx="2" fill="#94A3B8"/>
+  <circle cx="672" cy="350" r="14" fill="#1E293B" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="672" y="355" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#94A3B8">4</text>
+  <text x="698" y="342" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Build your first 100 subscribers</text>
+  <text x="698" y="360" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Cross-post · Referral loop · Personal outreach</text>
+
+  <line x1="672" y1="380" x2="672" y2="400" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Step 5 -->
+  <rect x="640" y="404" width="500" height="60" rx="8" fill="#1E293B" stroke="#94A3B8" stroke-width="1"/>
+  <rect x="640" y="404" width="5"   height="60" rx="2" fill="#94A3B8"/>
+  <circle cx="672" cy="434" r="14" fill="#1E293B" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="672" y="439" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#94A3B8">5</text>
+  <text x="698" y="426" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA">Monetise after 500 subscribers</text>
+  <text x="698" y="444" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Paid tier · Sponsorships · Digital product</text>
+
+  <!-- Callout -->
+  <rect x="640" y="484" width="500" height="44" rx="10" fill="#1E293B"/>
+  <text x="890" y="504" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#14B8A6" letter-spacing="1">2026 REALITY CHECK</text>
+  <text x="890" y="521" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Most newsletters fail at step 3. Consistency beats everything else.</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category -->
+  <text x="80" y="88" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8" letter-spacing="2">NO. 07</text>
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">CONTENT GUIDE  ·  2026</text>
+
+  <!-- Title -->
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#FAFAFA">How to Start</text>
+  <text x="80" y="286" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#FAFAFA">a Newsletter</text>
+  <text x="80" y="362" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#14B8A6">in 2026.</text>
+
+  <text x="80" y="410" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">5 steps. No fluff.</text>
+  <text x="80" y="438" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">From zero to first 100 subscribers.</text>
+
+  <line x1="80" y1="464" x2="460" y2="464" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="480" width="126" height="36" rx="18" fill="#1E293B"/>
+  <text x="143" y="503" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Content Guide</text>
+  <rect x="218" y="480" width="140" height="36" rx="18" fill="#1E293B"/>
+  <text x="288" y="503" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#14B8A6">For beginners</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

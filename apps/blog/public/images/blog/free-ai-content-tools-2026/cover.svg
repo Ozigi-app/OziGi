@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="44%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150 L910 240"/>
+    <path d="M1090 60 L1090 150 L1000 150 L1000 240"/>
+    <path d="M640 330 L730 330 L730 420"/>
+    <path d="M910 330 L910 420 L1000 420"/>
+    <path d="M640 510 L730 510"/>
+    <path d="M1000 510 L1090 510"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="1000" cy="150" r="4"/>
+    <circle cx="730"  cy="420" r="4"/>
+    <circle cx="730"  cy="510" r="4"/>
+  </g>
+  <g fill="#10B981" opacity="0.85">
+    <circle cx="910"  cy="240" r="5"/>
+    <circle cx="1000" cy="240" r="5"/>
+    <circle cx="1000" cy="420" r="5"/>
+    <circle cx="1090" cy="510" r="5"/>
+  </g>
+  <g fill="none" stroke="#10B981" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="240" r="13"/>
+    <circle cx="1000" cy="240" r="13"/>
+    <circle cx="1000" cy="420" r="13"/>
+    <circle cx="1090" cy="510" r="13"/>
+  </g>
+
+  <!-- Tool list — 10 items in two columns -->
+  <!-- Col 1 -->
+  <g font-family="'DM Sans','Inter',sans-serif">
+    <!-- item 1 -->
+    <rect x="640" y="68" width="230" height="34" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <circle cx="659" cy="85" r="5" fill="#10B981"/>
+    <text x="672" y="90" font-size="12" font-weight="600" fill="#FAFAFA">ChatGPT Free</text>
+    <text x="810" y="90" font-size="11" fill="#10B981">Free</text>
+
+    <!-- item 2 -->
+    <rect x="640" y="112" width="230" height="34" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <circle cx="659" cy="129" r="5" fill="#10B981"/>
+    <text x="672" y="134" font-size="12" font-weight="600" fill="#FAFAFA">Claude.ai</text>
+    <text x="810" y="134" font-size="11" fill="#10B981">Free</text>
+
+    <!-- item 3 -->
+    <rect x="640" y="156" width="230" height="34" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <circle cx="659" cy="173" r="5" fill="#10B981"/>
+    <text x="672" y="178" font-size="12" font-weight="600" fill="#FAFAFA">Notion AI</text>
+    <text x="810" y="178" font-size="11" fill="#94A3B8">Free tier</text>
+
+    <!-- item 4 -->
+    <rect x="640" y="200" width="230" height="34" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <circle cx="659" cy="217" r="5" fill="#10B981"/>
+    <text x="672" y="222" font-size="12" font-weight="600" fill="#FAFAFA">Canva AI</text>
+    <text x="810" y="222" font-size="11" fill="#94A3B8">Free tier</text>
+
+    <!-- item 5 -->
+    <rect x="640" y="244" width="230" height="34" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <circle cx="659" cy="261" r="5" fill="#10B981"/>
+    <text x="672" y="266" font-size="12" font-weight="600" fill="#FAFAFA">Perplexity AI</text>
+    <text x="810" y="266" font-size="11" fill="#10B981">Free</text>
+  </g>
+
+  <!-- Col 2 -->
+  <g font-family="'DM Sans','Inter',sans-serif">
+    <!-- item 6 -->
+    <rect x="886" y="68" width="254" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+    <circle cx="905" cy="85" r="5" fill="#94A3B8"/>
+    <text x="918" y="90" font-size="12" font-weight="600" fill="#FAFAFA">Writesonic Free</text>
+    <text x="1096" y="90" font-size="11" fill="#94A3B8">Limits</text>
+
+    <!-- item 7 -->
+    <rect x="886" y="112" width="254" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+    <circle cx="905" cy="129" r="5" fill="#94A3B8"/>
+    <text x="918" y="134" font-size="12" font-weight="600" fill="#FAFAFA">Copy.ai Free</text>
+    <text x="1096" y="134" font-size="11" fill="#94A3B8">Limits</text>
+
+    <!-- item 8 -->
+    <rect x="886" y="156" width="254" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+    <circle cx="905" cy="173" r="5" fill="#94A3B8"/>
+    <text x="918" y="178" font-size="12" font-weight="600" fill="#FAFAFA">Rytr Free</text>
+    <text x="1096" y="178" font-size="11" fill="#94A3B8">Limits</text>
+
+    <!-- item 9 -->
+    <rect x="886" y="200" width="254" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+    <circle cx="905" cy="217" r="5" fill="#94A3B8"/>
+    <text x="918" y="222" font-size="12" font-weight="600" fill="#FAFAFA">Gemini Free</text>
+    <text x="1096" y="222" font-size="11" fill="#10B981">Free</text>
+
+    <!-- item 10 -->
+    <rect x="886" y="244" width="254" height="34" rx="6" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+    <circle cx="905" cy="261" r="5" fill="#E8320A"/>
+    <text x="918" y="266" font-size="12" font-weight="600" fill="#E8320A">Ozigi</text>
+    <text x="1096" y="266" font-size="11" fill="#E8320A">Free beta</text>
+  </g>
+
+  <!-- Callout stat -->
+  <rect x="640" y="296" width="500" height="48" rx="10" fill="#1E293B"/>
+  <text x="890" y="316" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#10B981" letter-spacing="1">WHY THIS LIST EXISTS</text>
+  <text x="890" y="334" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">93% of teams use AI for content — most haven't tried the free tier properly</text>
+
+  <!-- Category comparison rows -->
+  <rect x="640" y="360" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="375" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">BEST FOR LONGFORM</text>
+  <text x="656" y="391" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#10B981">ChatGPT Free  ·  Claude.ai  ·  Ozigi</text>
+
+  <rect x="640" y="408" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="423" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">BEST FOR RESEARCH</text>
+  <text x="656" y="439" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#10B981">Perplexity AI  ·  Gemini Free</text>
+
+  <rect x="640" y="456" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="471" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">BEST FOR SHORT-FORM</text>
+  <text x="656" y="487" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#10B981">Copy.ai Free  ·  Rytr  ·  Writesonic</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category -->
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">TOOLS ROUNDUP  ·  2026</text>
+
+  <!-- Issue number -->
+  <text x="80" y="88" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8" letter-spacing="2">NO. 04</text>
+
+  <!-- Title -->
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#10B981">10 Free</text>
+  <text x="80" y="294" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">AI Content</text>
+  <text x="80" y="378" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">Tools.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="424" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">No credit card. No trial expiry.</text>
+  <text x="80" y="452" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">Just the tools that actually work.</text>
+
+  <line x1="80" y1="478" x2="460" y2="478" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="494" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="145" y="517" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Tools Roundup</text>
+  <rect x="222" y="494" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="282" y="517" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#10B981">All free</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

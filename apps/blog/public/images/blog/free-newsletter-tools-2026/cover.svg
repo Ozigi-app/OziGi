@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="44%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150"/>
+    <path d="M1000 60 L1090 60 L1090 150"/>
+    <path d="M640 240 L730 240 L730 330 L820 330"/>
+    <path d="M910 330 L1000 330 L1000 420 L1090 420"/>
+    <path d="M640 420 L640 510"/>
+    <path d="M820 510 L910 510 L910 420"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="730"  cy="330" r="4"/>
+    <circle cx="820"  cy="330" r="4"/>
+    <circle cx="640"  cy="510" r="4"/>
+  </g>
+  <g fill="#F59E0B" opacity="0.85">
+    <circle cx="910"  cy="150" r="5"/>
+    <circle cx="1090" cy="150" r="5"/>
+    <circle cx="1000" cy="420" r="5"/>
+    <circle cx="910"  cy="420" r="5"/>
+  </g>
+  <g fill="none" stroke="#F59E0B" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="150" r="13"/>
+    <circle cx="1090" cy="150" r="13"/>
+    <circle cx="1000" cy="420" r="13"/>
+  </g>
+
+  <!-- Newsletter tool cards — 3 tiers -->
+  <!-- Tier label: Write + Send -->
+  <text x="640" y="68" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#F59E0B" letter-spacing="2">WRITES + SENDS</text>
+
+  <rect x="640"  y="76" width="150" height="34" rx="6" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="715"  y="97" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#F59E0B">Ozigi</text>
+
+  <rect x="802"  y="76" width="150" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="877"  y="97" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Beehiiv + AI</text>
+
+  <rect x="964"  y="76" width="160" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="1044" y="97" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Substack + AI</text>
+
+  <!-- Tier label: Send only -->
+  <text x="640" y="130" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="2">SENDS ONLY (YOU WRITE)</text>
+
+  <rect x="640"  y="138" width="130" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="705"  y="159" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Mailchimp</text>
+
+  <rect x="782"  y="138" width="100" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="832"  y="159" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Kit</text>
+
+  <rect x="894"  y="138" width="120" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="954"  y="159" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Brevo</text>
+
+  <rect x="1026" y="138" width="110" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="1081" y="159" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Loops</text>
+
+  <!-- Tier label: AI assist -->
+  <text x="640" y="192" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="2">AI ASSIST ONLY</text>
+
+  <rect x="640"  y="200" width="130" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="705"  y="221" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Notion AI</text>
+
+  <rect x="782"  y="200" width="130" height="34" rx="6" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="847"  y="221" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">ChatGPT</text>
+
+  <!-- Comparison matrix -->
+  <!-- Headers -->
+  <line x1="640" y1="252" x2="1160" y2="252" stroke="#1E293B" stroke-width="1"/>
+  <text x="760"  y="270" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">WRITES DRAFT</text>
+  <text x="920"  y="270" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">SENDS EMAIL</text>
+  <text x="1080" y="270" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">SLOP FILTER</text>
+
+  <!-- Ozigi row -->
+  <line x1="640" y1="280" x2="1160" y2="280" stroke="#1E293B" stroke-width="1"/>
+  <rect x="640" y="284" width="90" height="28" rx="5" fill="#1E293B" stroke="#E8320A" stroke-width="1"/>
+  <text x="685"  y="302" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#E8320A">Ozigi</text>
+  <text x="760"  y="302" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#F59E0B">✓</text>
+  <text x="920"  y="302" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Via integration</text>
+  <text x="1080" y="302" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#F59E0B">✓</text>
+
+  <!-- Beehiiv row -->
+  <line x1="640" y1="318" x2="1160" y2="318" stroke="#1E293B" stroke-width="1"/>
+  <text x="685"  y="336" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Beehiiv</text>
+  <text x="760"  y="336" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Limited AI</text>
+  <text x="920"  y="336" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#F59E0B">✓</text>
+  <text x="1080" y="336" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#94A3B8">—</text>
+
+  <!-- Mailchimp row -->
+  <line x1="640" y1="352" x2="1160" y2="352" stroke="#1E293B" stroke-width="1"/>
+  <text x="685"  y="370" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Mailchimp</text>
+  <text x="760"  y="370" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#94A3B8">—</text>
+  <text x="920"  y="370" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#F59E0B">✓</text>
+  <text x="1080" y="370" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="18" fill="#94A3B8">—</text>
+
+  <!-- Callout -->
+  <rect x="640" y="400" width="500" height="44" rx="10" fill="#1E293B"/>
+  <text x="890" y="420" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#F59E0B" letter-spacing="1">THE MISSING PIECE</text>
+  <text x="890" y="436" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Most newsletter tools send well. Almost none write well.</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category -->
+  <text x="80" y="88" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8" letter-spacing="2">NO. 05</text>
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">TOOLS ROUNDUP  ·  2026</text>
+
+  <!-- Title -->
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#F59E0B">9 Free</text>
+  <text x="80" y="294" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">Newsletter</text>
+  <text x="80" y="378" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">Tools.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="424" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">Send, write, or both —</text>
+  <text x="80" y="452" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">the full free-tier breakdown.</text>
+
+  <line x1="80" y1="478" x2="460" y2="478" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="494" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="145" y="517" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Tools Roundup</text>
+  <rect x="222" y="494" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="287" y="517" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#F59E0B">All free</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>
