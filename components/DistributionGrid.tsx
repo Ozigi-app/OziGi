@@ -672,10 +672,19 @@ function LinkedInCarouselBuilder({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to extract slides");
       setSlides(data.slides);
+      // Auto-populate title from the first slide's heading so LinkedIn
+      // displays a meaningful name on the carousel instead of the default.
+      if (data.slides?.[0]?.title) {
+        setDocumentTitle(data.slides[0].title);
+      }
     } catch (err: any) {
       toast.error(`Could not extract slides: ${err.message}`);
       // Fallback to heuristic
-      setSlides(parsePostIntoSlides(postText));
+      const fallbackSlides = parsePostIntoSlides(postText);
+      setSlides(fallbackSlides);
+      if (fallbackSlides[0]?.title) {
+        setDocumentTitle(fallbackSlides[0].title);
+      }
     } finally {
       setPdfDataUri(null);
       setUploadedPdfBase64(null);
@@ -708,13 +717,16 @@ function LinkedInCarouselBuilder({
     }
     const reader = new FileReader();
     reader.onload = (ev) => {
+      const nameFromFile = file.name.replace(/\.pdf$/i, "").trim();
+      const titleToUse = nameFromFile || documentTitle;
       setUploadedPdfBase64(ev.target?.result as string);
       setUploadedFileName(file.name);
+      setDocumentTitle(titleToUse);
       setSlides([]);
       setPdfDataUri(null);
       setStatus("ready");
       if (onCarouselReady) {
-        onCarouselReady({ documentBase64: ev.target?.result as string, documentTitle });
+        onCarouselReady({ documentBase64: ev.target?.result as string, documentTitle: titleToUse });
       }
     };
     reader.readAsDataURL(file);
@@ -778,7 +790,7 @@ function LinkedInCarouselBuilder({
         <div className="border-t border-[#0A66C2]/10 px-3 py-3 space-y-3">
           {/* Title input */}
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600 mb-1">Title</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-600 mb-1">Carousel Title <span className="normal-case font-medium tracking-normal">(shown on LinkedIn)</span></label>
             <input
               type="text"
               value={documentTitle}
