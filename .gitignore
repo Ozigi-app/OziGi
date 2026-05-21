@@ -55,3 +55,19 @@ send_apollo_outreach.py
 send_batch3.py
 send_batch3_retry.py
 send_tomorrow.py
+
+# Development and testing
+emails/
+playwright-report/
+playwright-reports/
+test-results/
+tests/
+
+# Scripts and automation
+scripts/
+
+# Database migrations
+supabase/migrations/
+
+# Worker configurations
+worker/

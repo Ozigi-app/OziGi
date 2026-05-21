@@ -327,6 +327,9 @@ export default function Home() {
                 className="h-7 w-auto"
               />
             </a>
+            <a href="https://theresanaiforthat.com/ai/ozigi/?ref=featured&v=10684552" target="_blank" rel="nofollow">
+              <img width="300" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600" alt="Featured on There's An AI For That" />
+            </a>
             <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0"
               aria-label="Featured on Better Launch">
