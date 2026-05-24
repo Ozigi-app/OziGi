@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="44%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="30%" r="30%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150"/>
+    <path d="M1090 60 L1090 150 L1000 150"/>
+    <path d="M640 240 L730 240 L730 330 L820 330"/>
+    <path d="M1000 330 L1090 330 L1090 420"/>
+    <path d="M640 510 L730 510 L730 420 L820 420"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820" cy="150" r="4"/>
+    <circle cx="730" cy="330" r="4"/>
+    <circle cx="820" cy="420" r="4"/>
+  </g>
+  <g fill="#3B82F6" opacity="0.85">
+    <circle cx="910"  cy="150" r="5"/>
+    <circle cx="1090" cy="150" r="5"/>
+    <circle cx="1090" cy="420" r="5"/>
+    <circle cx="820"  cy="330" r="5"/>
+  </g>
+  <g fill="none" stroke="#3B82F6" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="150" r="13"/>
+    <circle cx="1090" cy="420" r="13"/>
+    <circle cx="820"  cy="330" r="13"/>
+  </g>
+  <!-- Provider layer -->
+  <rect x="640" y="68" width="500" height="52" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+  <rect x="640" y="68" width="6" height="52" rx="3" fill="#3B82F6"/>
+  <text x="662" y="90" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1">CLOUD PROVIDER OWNS</text>
+  <text x="662" y="110" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Physical infra  ·  Network  ·  Hypervisor  ·  Hardware security</text>
+  <text x="1108" y="98" text-anchor="end" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#3B82F6">AWS / GCP / Azure</text>
+  <!-- Shared layer -->
+  <rect x="640" y="132" width="500" height="52" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <rect x="640" y="132" width="6" height="52" rx="3" fill="#F59E0B"/>
+  <text x="662" y="154" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="1">SHARED ZONE  ·  WHERE BREACHES HAPPEN</text>
+  <text x="662" y="174" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">OS patches  ·  Middleware config  ·  Network controls</text>
+  <!-- Customer layer -->
+  <rect x="640" y="196" width="500" height="52" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="640" y="196" width="6" height="52" rx="3" fill="#E8320A"/>
+  <text x="662" y="218" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">YOU OWN</text>
+  <text x="662" y="238" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Data  ·  IAM  ·  App code  ·  Encryption  ·  Endpoints</text>
+  <text x="1108" y="226" text-anchor="end" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A">Your team</text>
+  <!-- Callout -->
+  <rect x="640" y="266" width="500" height="48" rx="10" fill="#1E293B"/>
+  <text x="890" y="286" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A" letter-spacing="1">MOST COMMON BREACH CAUSE</text>
+  <text x="890" y="304" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Teams assume the cloud provider owns more than they do.</text>
+  <!-- IaaS PaaS SaaS breakdown -->
+  <line x1="640" y1="332" x2="1140" y2="332" stroke="#1E293B" stroke-width="1"/>
+  <text x="747" y="352" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">IaaS</text>
+  <text x="890"  y="352" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">PaaS</text>
+  <text x="1060" y="352" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">SaaS</text>
+  <line x1="640" y1="360" x2="1140" y2="360" stroke="#1E293B" stroke-width="1"/>
+  <line x1="810" y1="332" x2="810" y2="520" stroke="#1E293B" stroke-width="1"/>
+  <line x1="980" y1="332" x2="980" y2="520" stroke="#1E293B" stroke-width="1"/>
+  <text x="747" y="384" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#E8320A">You own most</text>
+  <text x="890"  y="384" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#F59E0B">Shared evenly</text>
+  <text x="1060" y="384" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#3B82F6">Provider owns most</text>
+  <text x="747" y="408" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">EC2  ·  GCE  ·  VMs</text>
+  <text x="890"  y="408" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">App Engine  ·  Heroku</text>
+  <text x="1060" y="408" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Gmail  ·  Slack  ·  Notion</text>
+  <text x="747" y="432" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Patch OS yourself</text>
+  <text x="890"  y="432" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Runtime shared</text>
+  <text x="1060" y="432" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Data still yours</text>
+  <text x="747" y="456" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#E8320A">Max control</text>
+  <text x="890"  y="456" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#F59E0B">Balanced risk</text>
+  <text x="1060" y="456" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#3B82F6">Min overhead</text>
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">ENGINEERING  ·  MAY 2026</text>
+  <text x="80" y="205" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">The Shared</text>
+  <text x="80" y="273" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#FAFAFA">Responsibility</text>
+  <text x="80" y="341" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="56" font-weight="800" fill="#3B82F6">Model.</text>
+  <text x="80" y="390" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">Cloud security is not the provider's</text>
+  <text x="80" y="418" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">problem. Here's exactly what is yours.</text>
+  <line x1="80" y1="444" x2="460" y2="444" stroke="#1E293B" stroke-width="1"/>
+  <rect x="80"  y="460" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="140" y="483" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Engineering</text>
+  <rect x="212" y="460" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="277" y="483" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#3B82F6">Cloud security</text>
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

@@ -1,0 +1,1651 @@
+Loaded 351 existing leads from C:\Users\PC\fork\OziGi\github_leads.csv
+
+
+------------------------------------------------------------
+Query: "developer advocate" in:bio followers:>200
+Found 143 users
+  FOUND Esther Agbaje <folasadeagbaje@gmail.com> [commit] (413 followers)
+  FOUND Jay Miller <kjaymiller@gmail.com> [profile] (350 followers)
+  FOUND Darko Mesaros <darko.subotica@gmail.com> [commit] (430 followers)
+  FOUND Brittany Walker <breneewalker572@gmail.com> [commit] (277 followers)
+  FOUND Shengyou Fan <shengyoufan@gmail.com> [profile] (395 followers)
+  FOUND Ihor Dvoretskyi <ihor@linux.com> [profile] (492 followers)
+  FOUND Corbin Davenport <corbindavenport@outlook.com> [profile] (327 followers)
+  SKIP anacunha -- no email found
+  SKIP LisaHJung -- no email found
+  FOUND Petr Broz <petr.broz@autodesk.com> [commit] (349 followers)
+  SKIP scubaninja -- no email found
+  FOUND Joel Lord <joelphy@gmail.com> [profile] (238 followers)
+  FOUND Mohith Shrivastava <msrivastav13@gmail.com> [profile] (377 followers)
+  FOUND Wojtek Gawroński <wgawronski@white-rook.pl> [commit] (282 followers)
+  FOUND Confidence Okoghenun <cokoghenun@gmail.com> [commit] (256 followers)
+  FOUND Romin Irani <romin.k.irani@gmail.com> [commit] (283 followers)
+  FOUND SrishAkaTux <srishakatux@gmail.com> [profile] (217 followers)
+  FOUND Will Russell <will@wrussell.co.uk> [profile] (342 followers)
+  FOUND Vasiliy Kirochka <vasiliy@cromewar.com> [profile] (242 followers)
+  FOUND Rory Preddy <rorypreddy@gmail.com> [commit] (237 followers)
+  FOUND Justin Chau <justin@chaucodes.com> [profile] (465 followers)
+  SKIP ZackAkil -- no email found
+  FOUND Aleks Volochnev <a.volochnev@gmail.com> [profile] (220 followers)
+  FOUND Edidiong Asikpo (Didi) <edidiongasikpo@gmail.com> [commit] (308 followers)
+  FOUND James Read <contact@jread.com> [profile] (231 followers)
+  FOUND Enes Fehmi Manan <enesmanan768@gmail.com> [profile] (304 followers)
+  FOUND Augusto Goncalves <augusto.goncalves@autodesk.com> [profile] (205 followers)
+  FOUND BekahHW <rhawrot@gmail.com> [commit] (411 followers)
+  FOUND Ekaterina Petrova <91kathrin@gmail.com> [profile] (439 followers)
+  FOUND Hugh Rawlinson <hughr2005@gmail.com> [commit] (311 followers)
+  FOUND Mete Atamel <atamel@gmail.com> [profile] (428 followers)
+  SKIP labeveryday -- no email found
+  SKIP pavanbelagatti -- no email found
+  FOUND tiffany jernigan <tiffany@grafana.com> [commit] (270 followers)
+  FOUND Lizzie Siegle <lizzie.siegle@gmail.com> [profile] (468 followers)
+  FOUND DaShaun <dashaun@dashaun.com> [commit] (408 followers)
+  SKIP jcstein -- no email found
+  Network error (SSLError) — retrying in 3s...
+  SKIP Sumanth077 -- no email found
+  FOUND Eric Johnson <ericj@singledigit.net> [profile] (307 followers)
+  FOUND Alyssa Michelle Nicoll <mail@alyssanicoll.com> [profile] (257 followers)
+  FOUND Ian Barker <ian@checkdigits.com> [profile] (255 followers)
+  Network error (SSLError) — retrying in 3s...
+  Network error (SSLError) — retrying in 6s...
+  FOUND Kerim Satirli <k.satirli@gmail.com> [commit] (244 followers)
+  Network error (SSLError) — retrying in 3s...
+  Network error (SSLError) — retrying in 6s...
+  Network error (SSLError) — retrying in 12s...
+  FOUND Yoshi Yamaguchi <ymotongpoo@gmail.com> [commit] (388 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Michael Friedrich <mfriedrich@gitlab.com> [commit] (302 followers)
+  FOUND Marcel Ribeiro-Dantas <mribeirodantas@seqera.io> [profile] (211 followers)
+  FOUND Kaz Sato <kazunori279@gmail.com> [profile] (477 followers)
+  SKIP LadyKerr -- no email found
+  FOUND Sean Chen <seanchen11235@gmail.com> [profile] (220 followers)
+  SKIP dataprofessor -- no email found
+  SKIP nomisRev -- no email found
+  SKIP ckdevrel -- no email found
+  FOUND Alina Yurenko <alina.yurenko@gmail.com> [commit] (353 followers)
+  FOUND Ivar Grimstad <ivar.grimstad@gmail.com> [profile] (373 followers)
+  FOUND Ben Greenberg <ben@yalladevrel.com> [commit] (226 followers)
+  FOUND Ali Mustufa <alimustafaats24@gmail.com> [profile] (257 followers)
+  FOUND Kartikey Rawat <rawatkari554@gmail.com> [commit] (370 followers)
+  FOUND Hugo Baraúna <hugo.barauna@gmail.com> [commit] (311 followers)
+  SKIP SebastianAigner -- no email found
+  SKIP aycabas -- no email found
+  FOUND Fokke Zandbergen <mail@fokkezb.nl> [commit] (418 followers)
+  FOUND Dillion Megida <dillionmegida@gmail.com> [commit] (315 followers)
+  SKIP clarkio -- no email found
+  FOUND Thorsten Hans <thans@akamai.com> [profile] (385 followers)
+  FOUND Laurent Bugnion <lbugnion@outlook.com> [profile] (404 followers)
+  FOUND Sergio GAMA <sergiogama@hotmail.com> [profile] (411 followers)
+  FOUND Sarah Kaiser <sckaiser@sckaiser.com> [commit] (319 followers)
+  FOUND Mark Mandel <mark@compoundtheory.com> [profile] (478 followers)
+  SKIP bigevilbeard -- no email found
+  SKIP tunetheweb -- no email found
+  FOUND Maximillian Arruda <dearrudam@gmail.com> [profile] (259 followers)
+  FOUND haimantika mitra <hmitra@digitalocean.com> [commit] (342 followers)
+  FOUND Marie Cruz <marie.descruz@gmail.com> [commit] (294 followers)
+  FOUND Alba Rivas <arivas@salesforce.com> [profile] (415 followers)
+  FOUND Hugh McKee <mckeeh3@gmail.com> [commit] (231 followers)
+  SKIP anushka23g -- no email found
+  FOUND Melvin Ng, RPh 黄成伟东奕 <melvincwng@u.nus.edu> [profile] (387 followers)
+  FOUND Kamesh Sampath <kamesh.sampath@hotmail.com> [commit] (326 followers)
+  FOUND Joel Marcey <joelmarcey@rustfoundation.org> [profile] (294 followers)
+  FOUND Isaac Levin <isaac.r.levin@gmail.com> [commit] (227 followers)
+  FOUND Xudong Guo <guoxudong.dev@gmail.com> [profile] (217 followers)
+  FOUND Diego Freniche <diego@freniche.com> [commit] (254 followers)
+  FOUND Jules S. Damji <dmatrix@comcast.net> [commit] (272 followers)
+  FOUND Cecelia Martinez <ceceliacreates@gmail.com> [commit] (232 followers)
+  FOUND Jakub Chrzanowski <jakub@chrzanowski.info> [commit] (241 followers)
+  FOUND javier ramírez <javier@formatinternet.com> [profile] (228 followers)
+  FOUND Guillaume Vernade <guillaume.vernade__github@normalesup.org> [commit] (242 followers)
+  FOUND wesley chun <wescpy@gmail.com> [commit] (217 followers)
+
+------------------------------------------------------------
+Query: "devrel" in:bio followers:>200
+Found 105 users
+  FOUND Tuana Çelik <tuanacelik95@gmail.com> [profile] (481 followers)
+  FOUND Manas Chopra <manaschopra95826@gmail.com> [commit] (238 followers)
+  FOUND Ayush Bherwani <ayush.bherwani1998@gmail.com> [profile] (447 followers)
+  FOUND Nick <handnf@gmail.com> [profile] (326 followers)
+  FOUND Sarah Guthals <sarah@guthals.com> [commit] (359 followers)
+  FOUND Eric ShangKuan <ericsk@gmail.com> [profile] (287 followers)
+  SKIP mvkaran -- no email found
+  FOUND Francesco <francesco.andreoli@hotmail.com> [commit] (213 followers)
+  FOUND Roie Schwaber-Cohen <roie.cohen@gmail.com> [profile] (219 followers)
+  FOUND Jack Wotherspoon <jackwoth@google.com> [commit] (245 followers)
+  FOUND Daniel Madalitso Phiri <malgamves@gmail.com> [profile] (428 followers)
+  FOUND Mahmoud Abdelwahab <m@mahmoudw.com> [commit] (394 followers)
+  FOUND Cat McGee <hello@mcgee.cat> [profile] (204 followers)
+  FOUND Dylan Ebert <dylan.ebert@gmail.com> [commit] (246 followers)
+  FOUND BoxChen <box@monad.foundation> [profile] (345 followers)
+  FOUND Joshua Mo <joshua.mo.876@gmail.com> [commit] (239 followers)
+  FOUND Ziad Saab <ziad.saab@gmail.com> [profile] (217 followers)
+  FOUND Jon Meyers <jonathon.d.meyers@gmail.com> [commit] (463 followers)
+  FOUND Ari V <github@ariv.se> [profile] (322 followers)
+  FOUND Progress Ochuko Eyaadah <devkoxy@gmail.com> [commit] (223 followers)
+  FOUND Baruch Sadogursky <jbaruch@sadogursky.com> [profile] (445 followers)
+  FOUND Alex Merced <alex@alexmerced.dev> [profile] (311 followers)
+  SKIP dcodesdev -- no email found
+  FOUND Leonardo Montini <lion.48m@gmail.com> [commit] (469 followers)
+  SKIP rohitg00 -- no email found
+  FOUND Serkan Alc <aserkanalic@trakya.edu.tr> [commit] (367 followers)
+  FOUND Steph <so.orpilla@gmail.com> [commit] (236 followers)
+  FOUND Luc van Kampen <luc@lucemans.nl> [commit] (298 followers)
+  FOUND Gabriel Nunes <gabriel@codecon.dev> [profile] (205 followers)
+  SKIP wojtek-kalicinski -- no email found
+  FOUND Abhinav Rajesh <abhinavrajesh49@gmail.com> [profile] (276 followers)
+  FOUND Trecia Kat <tksekgalo@gmail.com> [commit] (315 followers)
+  FOUND Prathik Shetty <prathikkshetty15@gmail.com> [commit] (324 followers)
+  SKIP jeroenjanssens -- no email found
+  FOUND Horacio Gonzalez <horacio.gonzalez@gmail.com> [profile] (330 followers)
+  FOUND Ekaansh Arora <ekaansh68@gmail.com> [profile] (201 followers)
+  FOUND Mx. Kassian Rosner Wren <the@nodebotani.st> [profile] (308 followers)
+  FOUND Michael Irwin <mikesir87@gmail.com> [profile] (400 followers)
+  FOUND Julia Furst Morgado <juliafmorgado@gmail.com> [commit] (283 followers)
+  FOUND Pulkit Midha <midhapulkit28@gmail.com> [profile] (297 followers)
+  FOUND Charly Wargnier <cwar05@gmail.com> [commit] (325 followers)
+  FOUND Morganna <morgcontato@gmail.com> [commit] (425 followers)
+  FOUND Siddharth Dayalwal <siddharthdayalwal2000@gmail.com> [profile] (449 followers)
+  FOUND Khushi <khushipanwar26@gmail.com> [commit] (249 followers)
+  FOUND Sneha Mishra <snehamishra.bb@gmail.com> [commit] (273 followers)
+  FOUND David Berenstein <david.m.berenstein@gmail.com> [profile] (330 followers)
+  FOUND Ahmad Bilal <ahmadbilaldev@gmail.com> [profile] (259 followers)
+  FOUND Adrian Mouat <adrian@adrianmouat.com> [profile] (205 followers)
+  FOUND Abdelrahman Omran <me@omranic.com> [profile] (435 followers)
+  FOUND Elian <hello@elian.codes> [profile] (399 followers)
+  FOUND Ayush Soni <ayushsoni1010.work@gmail.com> [profile] (329 followers)
+  FOUND Mohammad Imran <iimran2508@gmail.com> [commit] (242 followers)
+  FOUND James Thomas <james@jamesthom.as> [profile] (224 followers)
+  FOUND HardikBandhiya <bandhiya.hardik1905@gmail.com> [profile] (272 followers)
+  SKIP robhawkes -- no email found
+  SKIP rubymorillo -- no email found
+  FOUND Kyler Middleton <kymidd@gmail.com> [commit] (237 followers)
+  SKIP chrisreddington -- no email found
+
+------------------------------------------------------------
+Query: "developer evangelist" in:bio followers:>200
+Found 6 users
+  SKIP mishmanners -- no email found
+  SKIP tpiros -- no email found
+  FOUND Jesse Freeman <jessefreeman@gmail.com> [profile] (320 followers)
+
+------------------------------------------------------------
+Query: "developer relations" in:bio followers:>200
+Found 75 users
+  SKIP JoseAlcerreca -- no email found
+  FOUND Pedro Minatel <pminatel@gmail.com> [profile] (218 followers)
+  FOUND Bruno Germano <bruno.germano@gmail.com> [commit] (335 followers)
+  FOUND Emma Twersky <pokepsi@gmail.com> [commit] (454 followers)
+  FOUND Brooks Lybrand <brookslybrand@gmail.com> [profile] (212 followers)
+  FOUND Phil Leggetter <phil@leggetter.co.uk> [commit] (289 followers)
+  FOUND Naiyarah Hussain <naiyarah.h@gmail.com> [profile] (220 followers)
+  FOUND Anders Eknert <anders@eknert.com> [profile] (249 followers)
+  SKIP JolandaVerhoef -- no email found
+  FOUND Kristopher Overholt <koverholt@gmail.com> [commit] (321 followers)
+  FOUND Thor 雷神 <thorsten@stripe.com> [commit] (337 followers)
+  FOUND Rahat Chowdhury <rahat.chowdhury@moveindustries.xyz> [commit] (227 followers)
+  FOUND armlynobinguar <aemyobinguar@gmail.com> [commit] (241 followers)
+  FOUND Yashraj Nayak <yashrajnayak@live.com> [commit] (202 followers)
+  FOUND Ben Trengrove <bentrengrove@google.com> [commit] (308 followers)
+  FOUND Rowan Merewood <rowan@merewood.org> [profile] (333 followers)
+  FOUND David Smith <davidsmi@microsoft.com> [profile] (268 followers)
+  FOUND Ankur Oberoi <aoberoi@gmail.com> [commit] (236 followers)
+  FOUND Oliver Dunk <oliver@oliverdunk.com> [profile] (316 followers)
+  FOUND Bhavya Sachdeva <bhavya.sachdeva.58@gmail.com> [profile] (420 followers)
+  FOUND Adam Silverstein <adam@earthbound.com> [profile] (248 followers)
+  SKIP jwill -- no email found
+  FOUND Simona <anomis@google.com> [commit] (326 followers)
+  FOUND Alejandro Duarte <alejandro.d.a@gmail.com> [profile] (257 followers)
+  FOUND Ibrahim Ulukaya <ulukaya@gmail.com> [commit] (470 followers)
+  FOUND Gordon <pggordonhayes@gmail.com> [profile] (240 followers)
+  SKIP PaulTR -- no email found
+  FOUND Alco <alco@ricardoalcocer.com> [commit] (335 followers)
+  FOUND Tyler Erickson <tylerickson@gmail.com> [commit] (437 followers)
+  SKIP martinwoodward -- no email found
+  FOUND Ryan Welcher <ryan.welcher@automattic.com> [profile] (300 followers)
+  FOUND Josh Cirre <joshcirre@gmail.com> [profile] (354 followers)
+  FOUND Adnan Rahić <adnan.rahic@observiq.com> [commit] (382 followers)
+  FOUND Oleg Šelajev <shelajev@gmail.com> [profile] (381 followers)
+  FOUND Sam Julien <spjulien@gmail.com> [commit] (226 followers)
+  FOUND Simon Prickett <simon@crudworks.org> [profile] (201 followers)
+  SKIP muenzpraeger -- no email found
+  FOUND Frédéric Harper <hi@fred.dev> [profile] (220 followers)
+
+------------------------------------------------------------
+Query: "developer experience" in:bio followers:>200
+Found 45 users
+  FOUND Kazuhiro Sera <seratch@gmail.com> [profile] (1591 followers)
+  SKIP ykdojo -- no email found
+  FOUND Sébastien Stormacq <sebastien.stormacq@gmail.com> [profile] (564 followers)
+  SKIP marcosgriselli -- no email found
+  FOUND Nicolas Charpentier <nicolas.charpentier079@gmail.com> [profile] (410 followers)
+  SKIP marcusolsson -- no email found
+  FOUND Geunhyeok LEE <dev.ghlee@gmail.com> [profile] (360 followers)
+  SKIP jongio -- no email found
+  FOUND Josh Friend <josh@fueledbycaffeine.com> [commit] (253 followers)
+  FOUND Ben Hong <ben@bencodezen.io> [profile] (2226 followers)
+  FOUND Dominik Kundel <hi@dominik.dev> [profile] (534 followers)
+  FOUND Philipp Schmid <schmidphilipp1995@gmail.com> [commit] (3841 followers)
+  SKIP gabrtv -- no email found
+  FOUND Patrick Balestra <me@patrickbalestra.com> [profile] (840 followers)
+  FOUND Shayne Boyer <spboyer@live.com> [commit] (488 followers)
+  FOUND Eugene Petrenko <me@jonnyzzz.com> [profile] (238 followers)
+  FOUND Anton Malinski <anton@malinskiy.com> [profile] (482 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Romain Huet <romain.huet@gmail.com> [profile] (765 followers)
+  FOUND Thomas Ricouard <hello@dimillian.app> [profile] (4191 followers)
+  SKIP Baraka-Mulumia -- no email found
+  FOUND Chris Nicholas <ctnicholasdev@gmail.com> [commit] (243 followers)
+  FOUND RiN <hi@rin.rocks> [profile] (852 followers)
+  FOUND Yonel Ceruto <yonelceruto@gmail.com> [commit] (265 followers)
+  FOUND Wesley Beary <geemus+github@gmail.com> [profile] (531 followers)
+  FOUND somethings <l.apple@shopware.com> [commit] (447 followers)
+  FOUND Thibaut Mattio <thibaut.mattio@gmail.com> [profile] (204 followers)
+  FOUND Paige Bailey <paige.bailey@alumni.rice.edu> [profile] (2356 followers)
+  FOUND Isaias Santana dos Santos <isaiassantanadossantos@hotmail.com> [commit] (223 followers)
+  FOUND Giuseppe Scaramuzzino <giuse.scara@gmail.com> [commit] (246 followers)
+  SKIP ThomasVitale -- no email found
+  FOUND Siddharth Singha Roy <siddharthsingharoy@gmail.com> [profile] (245 followers)
+  FOUND Mager <andrew.mager@gmail.com> [profile] (264 followers)
+  FOUND Daniel Krook <krook@linux.com> [commit] (364 followers)
+  FOUND Shenal D <shenalmohsl@gmail.com> [profile] (561 followers)
+  FOUND Zack Proser <zackproser@gmail.com> [profile] (218 followers)
+
+------------------------------------------------------------
+Query: "technical writer" in:bio followers:>100
+Found 137 users
+  SKIP CBID2 -- no email found
+  SKIP scottamain -- no email found
+  FOUND Achilleas Pipinellis <axil@gitlab.com> [commit] (152 followers)
+  SKIP sofiayem -- no email found
+  FOUND Hulya Masharipov <hulyakarakayaa06@gmail.com> [profile] (185 followers)
+  FOUND Zubair Idris Aweda <zubairidrisaweda@gmail.com> [profile] (167 followers)
+  SKIP VeronicaWasson -- no email found
+  FOUND Divine Orji <dpkreativ@gmail.com> [profile] (152 followers)
+  SKIP Anmol-Baranwal -- no email found
+  FOUND Samson Adesanoye <adesanoye.samson1@gmail.com> [profile] (111 followers)
+  FOUND Michael Tsai <huanlin.tsai@gmail.com> [profile] (114 followers)
+  FOUND Mary Mbaoma <mmaryraphaella@gmail.com> [commit] (154 followers)
+  SKIP sarahmaddox -- no email found
+  FOUND Francesco Domenico Servidio <francesco.servidio@nordicsemi.no> [commit] (160 followers)
+  FOUND Paschal <okwuosahpaschal@gmail.com> [commit] (143 followers)
+  FOUND Dipika Bhattacharya <dipika@foss-community.org> [commit] (154 followers)
+  FOUND Cherrypick14 <cherrypicklet@gmail.com> [commit] (130 followers)
+  FOUND Bonaventure Ogeto <bonaogeto1@gmail.com> [commit] (180 followers)
+  FOUND F Sipiano <fayesipiano@outlook.com> [commit] (107 followers)
+  FOUND José Renato Montagnana Leite Perez <jrenato78@gmail.com> [profile] (173 followers)
+  SKIP guntrip -- no email found
+  FOUND Ige Adetokunbo Temitayo <igeadetokunbo@gmail.com> [profile] (126 followers)
+  FOUND Lewis Thagichu <lewisthagichu254@gmail.com> [commit] (115 followers)
+  FOUND Lennex Zinyando <brizdigital@gmail.com> [profile] (115 followers)
+  FOUND Assis Zang <assiszang@gmail.com> [profile] (127 followers)
+  FOUND Paula Isabel Signo <picsigno@gmail.com> [commit] (190 followers)
+  FOUND Mrinal Walia <waliamrinal@gmail.com> [profile] (172 followers)
+  FOUND Sam Patterson <git@sampatt.com> [profile] (165 followers)
+  FOUND Abiola <farounbiabiola@gmail.com> [commit] (138 followers)
+  SKIP annwoj -- no email found
+  FOUND  William Achuchi <archywilliams2@gmail.com> [commit] (185 followers)
+  FOUND Zaid Ahmed Soomro <zaid3614@gmail.com> [profile] (137 followers)
+  FOUND S.Mojtaba Banaie <mojtaba.banaie@gmail.com> [profile] (127 followers)
+  FOUND Ali Azaz Alam <ali.azaz.alam@hotmail.com> [commit] (136 followers)
+  SKIP kmhmubin -- no email found
+  FOUND Kate Tungusova <ktungusova@cloudflare.com> [commit] (182 followers)
+  FOUND Tarun Singh <tarunsinghwap7@gmail.com> [commit] (111 followers)
+  FOUND Favour Chukwuedo <fchukwuedo@gmail.com> [commit] (170 followers)
+  FOUND Daniel Diaz <danieldiazgonza52@gmail.com> [commit] (105 followers)
+  FOUND Rahul Khinchi <rahulkhinchirk7@gmail.com> [commit] (197 followers)
+  FOUND Vikalp Kaushik <vikalpkaushik97@gmail.com> [commit] (110 followers)
+  SKIP Haleshot -- no email found
+  FOUND  Isaiah Clifford Opoku <opokuisaiahclifford123@gmail.com> [commit] (183 followers)
+  FOUND Aseem Wangoo <aseemwangoo@gmail.com> [commit] (188 followers)
+  FOUND Israel Mitolu <israelmitolu@gmail.com> [profile] (159 followers)
+  FOUND Michelle Sanseverino <mello.de.michelle@gmail.com> [commit] (112 followers)
+  FOUND Snoopie <elzucky@gmail.com> [commit] (144 followers)
+  FOUND Mbaziira Ronald <mbaziraug@gmail.com> [commit] (162 followers)
+  FOUND Swapnoneel Saha <swapnoneelsaha111@gmail.com> [commit] (105 followers)
+  FOUND Davis David <davisdavid179@gmail.com> [profile] (140 followers)
+  FOUND Happy Singh <happysingh23828@gmail.com> [profile] (118 followers)
+  FOUND Saeed Zarinfam <zarinfam.s@gmail.com> [profile] (148 followers)
+  FOUND AEK <anicetkeric@outlook.com> [profile] (101 followers)
+  SKIP larymak -- no email found
+  FOUND Anne Bonner <bonn0062@yahoo.com> [commit] (192 followers)
+  FOUND Victor Ikechukwu <vickyikechukwu13@gmail.com> [profile] (127 followers)
+  FOUND Patrick Cyubahiro  <ampatrickcyubahiro@gmail.com> [profile] (163 followers)
+  FOUND Pratim <pratim.bhosale@gmail.com> [profile] (121 followers)
+  SKIP pedrosousa -- no email found
+  FOUND Nwokocha Wisdom Maduabuchi <wise4rmgod@gmail.com> [profile] (154 followers)
+  FOUND Ξunit <eunithelp@gmail.com> [profile] (101 followers)
+  FOUND Promise Amadi <amadipromise07@gmail.com> [profile] (115 followers)
+  FOUND Aayush Gupta <guptaaayush432@gmail.com> [commit] (163 followers)
+  SKIP kullb3rg -- no email found
+  FOUND Anita-ihuman <charlesanita403@gmail.com> [commit] (156 followers)
+  FOUND Tiffany Brown <tiffany@webinista.com> [commit] (153 followers)
+  FOUND Hadil Ben Abdallah <hadilbenabdallah111@gmail.com> [commit] (128 followers)
+  FOUND Yuntech <bayoolayiwola0@gmail.com> [commit] (112 followers)
+  FOUND Sachin Chaurasiya <sachinchaurasiya.dev@gmail.com> [profile] (175 followers)
+  SKIP mikefrobbins -- no email found
+  FOUND Andisi Ambuku <roselandambuku@gmail.com> [commit] (174 followers)
+  FOUND Lilian Lee <lilin@pingcap.com> [commit] (164 followers)
+  FOUND Ejineroz <ejirouweghrepha@gmail.com> [commit] (117 followers)
+  FOUND Hritik Jaiswal <hritik.dj2000@gmail.com> [commit] (175 followers)
+  FOUND Frank Delporte <frank@webtechie.be> [profile] (173 followers)
+  FOUND Leodanis Pozo Ramos <lpozor78@gmail.com> [profile] (124 followers)
+  SKIP dr-mushtaq -- no email found
+  FOUND Asim Zahid <asimzahid02@gmail.com> [profile] (104 followers)
+  FOUND Deborah Emeni <deborahemeni@gmail.com> [commit] (102 followers)
+  SKIP aczechowski -- no email found
+  FOUND JasperEssien <Jasperessien2@gmail.com> [profile] (108 followers)
+  FOUND Sharif Salah <sharif.salah@gmail.com> [commit] (117 followers)
+
+------------------------------------------------------------
+Query: "tech writer" in:bio followers:>100
+Found 27 users
+  FOUND Aman Mittal <amandeepmittal@live.com> [profile] (1416 followers)
+  FOUND shijun <wangshijun2010@gmail.com> [profile] (516 followers)
+  SKIP felicitymay -- no email found
+  FOUND Dev Prakash Sharma <idevprakaash@gmail.com> [profile] (857 followers)
+  SKIP miyoungc -- no email found
+  SKIP Bobmaintain -- no email found
+  FOUND Nairi Harutyunyan <nairi.haroutiounian@gmail.com> [profile] (142 followers)
+  FOUND Ana Silveira <ana.ccord@gmail.com> [commit] (375 followers)
+  FOUND Sylwia Vargas <sylwia.vargas@gmail.com> [commit] (440 followers)
+  FOUND Thomas Ingram <thomasingram@vertx.xyz> [commit] (158 followers)
+  FOUND Sumana Harihareswara <sh@changeset.nyc> [profile] (327 followers)
+  FOUND Nabil Mohammed <nabil.alanssi19@gmail.com> [profile] (114 followers)
+  FOUND kilama Elie <elijahkilama14@gmail.com> [commit] (224 followers)
+  FOUND Chilezie Reginald Unachukwu  <iamchilas@gmail.com> [profile] (131 followers)
+  FOUND Chris Mills <chrisdavidmills@gmail.com> [profile] (1316 followers)
+  FOUND Matías Hernández Arellano <matiasfh@gmail.com> [profile] (184 followers)
+  FOUND Sarthak Makhija <sarthak.makhija@gmail.com> [profile] (112 followers)
+  FOUND Marcus Bointon <marcus@synchromedia.co.uk> [profile] (816 followers)
+  FOUND Bumblefudge <bumblefudge@learningproof.xyz> [commit] (141 followers)
+  FOUND Reactive Fox <hr@thekiba.io> [profile] (427 followers)
+  SKIP waynewbishop -- no email found
+  FOUND Joe Attardi <jattardi@gmail.com> [profile] (130 followers)
+  FOUND Kiran Naragund <kirannaragund197@gmail.com> [profile] (156 followers)
+  FOUND Hazel Virdó <github@virdo.name> [profile] (246 followers)
+  FOUND Eros Zhao <zyeros1991@gmail.com> [profile] (366 followers)
+  FOUND June Blender <juneblender@gmail.com> [commit] (175 followers)
+  FOUND Coco Yee <yicoco17@gmail.com> [commit] (102 followers)
+
+------------------------------------------------------------
+Query: "documentation" "writer" in:bio followers:>100
+Found 2 users
+  FOUND Sharra-writes <slsilsbee@gmail.com> [commit] (108 followers)
+  FOUND Drew Jaynes <xoodrew@gmail.com> [commit] (316 followers)
+
+------------------------------------------------------------
+Query: "docs" "writer" in:bio followers:>100
+Found 10 users
+  FOUND Ryan Weaver <ryan@symfonycasts.com> [commit] (2043 followers)
+  FOUND Jürgen Hermann <jh@web.de> [profile] (239 followers)
+
+------------------------------------------------------------
+Query: "newsletter" "developer" in:bio followers:>200
+Found 8 users
+  FOUND Louis Lazaris <lazaris@impressivewebs.com> [commit] (276 followers)
+  FOUND Alex Kallaway <kallaway@me.com> [commit] (3077 followers)
+  FOUND Stefan Judis <stefanjudis@gmail.com> [commit] (1227 followers)
+  FOUND Andrzej Mazur <andrzej.mazur@end3r.com> [profile] (656 followers)
+  FOUND Ankita Kulkarni <kulkarni.ankita09@gmail.com> [profile] (714 followers)
+  FOUND Alex Jover <alexjovermorales@gmail.com> [profile] (455 followers)
+  FOUND Jorge Sánchez Fernández <xurxosf@gmail.com> [commit] (280 followers)
+
+------------------------------------------------------------
+Query: "newsletter" "engineers" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "substack" in:bio followers:>200
+Found 4 users
+  FOUND sam bacha <sam@manifoldfinance.com> [commit] (719 followers)
+  FOUND misakar <neo1218@yeah.net> [commit] (281 followers)
+  FOUND Ryan McBeth <ryan.mcbeth@gmail.com> [commit] (785 followers)
+  FOUND Davi Marcondes Moreira <davi.marcondes.moreira@gmail.com> [profile] (405 followers)
+
+------------------------------------------------------------
+Query: "weekly newsletter" in:bio followers:>100
+Found 2 users
+
+------------------------------------------------------------
+Query: "dev newsletter" in:bio followers:>100
+Found 2 users
+  FOUND Silvestar Bistrović <me@silvestar.codes> [profile] (106 followers)
+  FOUND Petar Ivaylov Ivanov <pepincho95@gmail.com> [profile] (168 followers)
+
+------------------------------------------------------------
+Query: "writing about" "software" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "youtuber" in:bio followers:>200
+Found 160 users
+  FOUND Ben Awad <benawad97@gmail.com> [commit] (29012 followers)
+  SKIP youtuberscafe -- no email found
+  FOUND Johannes Milke <hello@johannesmilke.com> [profile] (4906 followers)
+  SKIP yonggekkk -- no email found
+  FOUND David Bombal <davidbombal@gmail.com> [commit] (8172 followers)
+  FOUND Florin Pop <popflorin1705@yahoo.com> [profile] (15680 followers)
+  FOUND Daito Manabe <daitolicense@gmail.com> [profile] (609 followers)
+  FOUND 조코딩 JoCoding <business@jocoding.net> [commit] (816 followers)
+  SKIP campusx-official -- no email found
+  SKIP kiransagar1 -- no email found
+  FOUND Hussein Nasser <hus.mhd@gmail.com> [commit] (2795 followers)
+  FOUND Leon van Zyl <leon.vanzyl@gmail.com> [commit] (664 followers)
+  FOUND Bilal Shahzad <bilal.shahzad@yahoo.com> [commit] (214 followers)
+  FOUND Stewart Lynch <slynch@createchsol.com> [profile] (968 followers)
+  FOUND Techinfo YT <rktechnicalplus@gmail.com> [commit] (862 followers)
+  FOUND Abu Anwar <abuanwar072@gmail.com> [profile] (13318 followers)
+  FOUND Nikhil Tomar <nikhilroxtomar@gmail.com> [profile] (496 followers)
+  FOUND Arjun Gautam <arjungautam5431@gmail.com> [commit] (282 followers)
+  FOUND Milan Jovanović <milannis.995@gmail.com> [commit] (4976 followers)
+  FOUND Selman Kahya <selmankahya@hotmail.com> [commit] (3207 followers)
+  FOUND Vivek Verma <vivekverma@berkeley.edu> [profile] (547 followers)
+  FOUND Vinod Bahadur Thapa <vbthapa55@gmail.com> [commit] (5221 followers)
+  FOUND ilya sheprut <optozorax@gmail.com> [profile] (407 followers)
+  FOUND Phil Tabor <ptabor@gmail.com> [profile] (1738 followers)
+  FOUND Gustavo Neitzke <gutoneitzke12345@gmail.com> [commit] (974 followers)
+  FOUND @gotbletu <gotbletu@gmail.com> [commit] (523 followers)
+  FOUND Yogesh Patel <yogeshp614@gmail.com> [profile] (431 followers)
+  FOUND Emily Bache <emily@bacheconsulting.com> [profile] (3188 followers)
+  FOUND Code A Program <iamsmartsri@gmail.com> [commit] (431 followers)
+  FOUND KOBA789 <kobahide789@gmail.com> [profile] (511 followers)
+  FOUND Christopher <christopher.okhravi@gmail.com> [commit] (356 followers)
+  FOUND Iman <imanghafoori1@gmail.com> [profile] (1053 followers)
+  SKIP psygreg -- no email found
+  FOUND Giuliana Silva Bezerra <giu.drawer@gmail.com> [profile] (1255 followers)
+  FOUND Michael Sambol <sambol.michael@gmail.com> [profile] (731 followers)
+  FOUND Emran Khandaker Evan <evanemran007@gmail.com> [profile] (344 followers)
+  FOUND Anshu Raj <anshusopinion@gmail.com> [commit] (1352 followers)
+  FOUND Irene Nafula <herdataproject@gmail.com> [commit] (341 followers)
+  SKIP alipyth -- no email found
+  SKIP harshibar -- no email found
+  SKIP guillaumeduhan -- no email found
+  FOUND Piyush Agarwal (Roadside Coder) <piyushagarwalvo@gmail.com> [commit] (3269 followers)
+  FOUND Mehedi Shakeel <contact@mehedishakeel.com> [profile] (847 followers)
+  FOUND Mehtab Alam <mehtaba728@gmail.com> [commit] (232 followers)
+  FOUND Prince Kumar <princekumarrpcsvm10@gmail.com> [commit] (820 followers)
+  SKIP pirate-kiiiing -- no email found
+  FOUND V2F <iv2fi.pro@gmail.com> [commit] (422 followers)
+  FOUND Jacob <aarthificial@gmail.com> [commit] (1663 followers)
+  FOUND Angélica Weiler (Javanauta) <angelicaweilerw@gmail.com> [commit] (971 followers)
+  FOUND Alireza Aghamohammadi <al.aghamohammadi@gmail.com> [profile] (256 followers)
+  SKIP DynamicCodingWithAmit -- no email found
+  FOUND Bushan Sirgur <sc.bushan.05@gmail.com> [profile] (734 followers)
+  FOUND Andres Vidoza <andresvidoza@gmail.com> [commit] (1231 followers)
+  FOUND Umang Ahuja <umangahuja1@gmail.com> [profile] (232 followers)
+  FOUND Charly Cimino <carlosecimino@gmail.com> [commit] (624 followers)
+  FOUND Durgesh Sahani <dsahani.dev@gmail.com> [commit] (435 followers)
+  FOUND Promode <pramoddutta_96@yahoo.com> [profile] (1739 followers)
+  SKIP darshilparmar -- no email found
+  FOUND Kishan Kumar Rai <kishan.rai99693@gmail.com> [profile] (842 followers)
+  SKIP erdongchanyo -- no email found
+  FOUND Hakan Yalcinkaya <hakanyalcinkaya@gmail.com> [profile] (4845 followers)
+  FOUND Jake Wright <jake@jakewright.net> [commit] (1231 followers)
+  FOUND Koushik Chatterjee <koushik350@gmail.com> [profile] (652 followers)
+  FOUND Ayushi Rawat <ayushi7rawat@gmail.com> [profile] (2237 followers)
+  FOUND Ken <me163@mac.com> [commit] (279 followers)
+  FOUND taimoorshahzada <m.ts131941@gmail.com> [commit] (210 followers)
+  SKIP Gauravbhadauria -- no email found
+  FOUND Muhammad Rehan Saeed <rehansaeed@gmail.com> [commit] (777 followers)
+  FOUND Jonah <jbro129fan@gmail.com> [commit] (246 followers)
+  FOUND Michal Hucko <hucko.miso@gmail.com> [profile] (517 followers)
+  FOUND Smitha Kolan <smitkolan@gmail.com> [commit] (400 followers)
+  FOUND Becky Smethurst <rjsmethurst@gmail.com> [commit] (360 followers)
+  FOUND Lsec <lsecqt@gmail.com> [commit] (440 followers)
+  FOUND anil sidhu <webanilsidhu@gmail.com> [profile] (2693 followers)
+  FOUND Bilal Khan <bilalkhanrecovered@gmail.com> [commit] (308 followers)
+  FOUND Etisha Garg <gargetisha@gmail.com> [profile] (480 followers)
+  FOUND Matthew Freire <matt@justdjango.com> [profile] (416 followers)
+  FOUND Tek Kshetri <teksondada@gmail.com> [commit] (913 followers)
+  FOUND Imran Sayed <imranhsayed@gmail.com> [commit] (2332 followers)
+  SKIP DataThinkers -- no email found
+  FOUND Sun Knudsen <hello@sunknudsen.com> [commit] (659 followers)
+  FOUND Chensokheng <chensokheng6@gmail.com> [commit] (979 followers)
+  FOUND Emeka boris ama <borisphilosophy@gmail.com> [profile] (225 followers)
+  FOUND Pradip Debnath <itzpradip@gmail.com> [profile] (2308 followers)
+  FOUND bitbrain <miguel-gonzalez@gmx.de> [profile] (678 followers)
+  FOUND Rahul Malhotra <rahulmalhotra9620@yahoo.in> [commit] (223 followers)
+  FOUND Luis Serrano <luisgui.serrano@gmail.com> [profile] (1398 followers)
+  FOUND Subroto Biswas  <smartcoder500@gmail.com> [commit] (226 followers)
+  FOUND ARYAN MITTAL <aryan_007@mnnit.ac.in> [profile] (860 followers)
+  FOUND Santos Enoque <santosenoque.ss@gmail.com> [commit] (1753 followers)
+  FOUND Paulo Rogério Martins Marques <paulo.analista@outlook.com> [profile] (325 followers)
+  FOUND Davide Benvegnù aka CoderDave <davide.benvegnu@outlook.com> [commit] (592 followers)
+  FOUND Balram Rathore <balram0698@gmail.com> [commit] (534 followers)
+  SKIP Endermanch -- no email found
+  FOUND Asadullah Dal <asadullah.dal17@gmail.com> [commit] (283 followers)
+  FOUND The Morpheus Tutorials <hallo@bootstrap.academy> [commit] (1552 followers)
+  FOUND Aarzoo Islam <iaarzoo40@gmail.com> [commit] (292 followers)
+  FOUND Muhammad Naga <codeawy@gmail.com> [commit] (434 followers)
+  FOUND Besthor <igbebestor7@gmail.com> [commit] (339 followers)
+  FOUND Dariusz Pawlukiewicz <foreverframenet@gmail.com> [commit] (559 followers)
+  FOUND Mohamed Elsherif <bashmohandes@live.com> [profile] (1199 followers)
+  FOUND Elias Bachaalany <elias.bachaalany@gmail.com> [commit] (684 followers)
+  SKIP TCNOco -- no email found
+  FOUND Rodrigo Kulb <rodrigo.kulb@varapido.com.br> [profile] (220 followers)
+  FOUND Wiwi Kuan <wiwikuan@gmail.com> [profile] (571 followers)
+  SKIP Ayush7-BIT -- no email found
+  SKIP doctor4t -- no email found
+  FOUND Nji Daniel  <njid18753@gmail.com> [profile] (226 followers)
+  FOUND Rinku Verma <rinkuv37@gmail.com> [commit] (316 followers)
+  SKIP noob-hackers -- no email found
+  FOUND Anson  <ansfoong@gmail.com> [profile] (1877 followers)
+  SKIP DiscoDurodeRoer -- no email found
+  FOUND Ben Davis <davis.benjamin41902@gmail.com> [commit] (944 followers)
+  FOUND Oshada Eranga <mindartlk010@gmail.com> [profile] (364 followers)
+  SKIP milwad-dev -- no email found
+  SKIP upiir -- no email found
+  FOUND Aidan <aidan.ouckama@gmail.com> [commit] (309 followers)
+  SKIP Maxnegrao33 -- no email found
+  FOUND Dipesh Malvia <cs.dipeshmalvia@gmail.com> [profile] (875 followers)
+  SKIP kurone-kito -- no email found
+  FOUND Mohit Kumar <mks.djcet@gmail.com> [commit] (216 followers)
+  FOUND Danilo Aparecido dos Santos <didox_59@yahoo.com.br> [commit] (633 followers)
+  FOUND Jermaine Oppong <jermaine@creativebracket.com> [commit] (218 followers)
+  FOUND Thorsten Müller <MrThorstenM@gmx.net> [commit] (231 followers)
+  FOUND Seema Saharan <seema.saharan@autodesk.com> [commit] (322 followers)
+  FOUND Elliott Chong <elliottchong16@gmail.com> [commit] (1195 followers)
+  SKIP debs-obrien -- no email found
+  FOUND Joel Yliluoma <bisqwit@iki.fi> [profile] (3067 followers)
+  FOUND Anshita Bhasin <anshita.bhasin@gmail.com> [profile] (257 followers)
+  FOUND Bhargav Bachina <bhargavbachina@yahoo.com> [commit] (461 followers)
+  FOUND Walmyr <wlsf82@gmail.com> [profile] (1310 followers)
+  FOUND AJ <alvaro.meireles@live.com> [commit] (310 followers)
+  FOUND Kushal Vijay <vijaykushal8118@gmail.com> [profile] (1538 followers)
+  FOUND Jesse Showalter <hello@jesseshowalter.com> [commit] (209 followers)
+  FOUND Hasan Aboul Hasan <hasan@learnwithhasan.com> [profile] (501 followers)
+  FOUND Somanath Goudar <somugowda8050@gmail.com> [commit] (338 followers)
+  FOUND Suboptimal Engineer <suboptimaleng@gmail.com> [commit] (546 followers)
+  FOUND Louis CAD <louis.cognault@gmail.com> [profile] (987 followers)
+  FOUND HOSHIYAR SINGH JYANI <hoshiyarjyani@gmail.com> [commit] (325 followers)
+  FOUND RetroNick's Youtube Channel <nickshardware2020@gmail.com> [profile] (422 followers)
+  FOUND Aarohi Singla <aarohisingla1987@gmail.com> [profile] (1624 followers)
+  FOUND Stephen Chapman <dsasmblr@gmail.com> [profile] (852 followers)
+  FOUND Muhammad Zeeshan Khan <muhammadzeeshan12378@gmail.com> [commit] (306 followers)
+  FOUND Ben Bk <bbrucher@gmail.com> [commit] (244 followers)
+  SKIP DoingFedTime -- no email found
+  FOUND Khalid Elshafie <abolkog@gmail.com> [commit] (512 followers)
+  FOUND Tushar Verma <connect@tusharsoni.com> [profile] (231 followers)
+  FOUND Oliver Otchere <oliverotchere4@gmail.com> [commit] (289 followers)
+  FOUND Cristian David Henao Hoyos <cdhenao@gmail.com> [profile] (622 followers)
+  FOUND Budi Rahardjo <rahard@gmail.com> [commit] (261 followers)
+  FOUND Bobby Roe <bobbyroe@gmail.com> [commit] (415 followers)
+  FOUND Cuynu <cuynu@proton.me> [profile] (536 followers)
+  FOUND Mr Morsalin <codemi692@gmail.com> [profile] (235 followers)
+  FOUND Seito <seito.horiguchi@gmail.com> [commit] (202 followers)
+  FOUND Carrie Anne Philbin <misscphilbin@gmail.com> [commit] (616 followers)
+  FOUND Code My Hobby <alhassandamilola16@gmail.com> [commit] (315 followers)
+
+------------------------------------------------------------
+Query: "youtube" "tutorials" in:bio followers:>200
+Found 17 users
+  FOUND Part Time Larry <parttimelarry@gmail.com> [commit] (6481 followers)
+  FOUND OpenFOAM Tutorials <openfoamtutorials@gmail.com> [commit] (357 followers)
+  SKIP Godot-Tutorials -- no email found
+  SKIP mavi888 -- no email found
+  FOUND Nishant Kumar <nishants440@gmail.com> [commit] (434 followers)
+  SKIP thecodercoder -- no email found
+  FOUND Nachiketa Hebbar <nachihebbar@gmail.com> [commit] (391 followers)
+  FOUND Code Explained <contact@codeexplained.org> [profile] (1191 followers)
+  FOUND Gavin Lon <gavinlondee@gmail.com> [commit] (900 followers)
+  FOUND FollowAndrew <wilsmex@yahoo.com> [commit] (311 followers)
+  FOUND Johannes Schiel <j.schiel@unleashed-design.de> [profile] (309 followers)
+  SKIP KunaalNaik -- no email found
+  FOUND John Komarnicki <komarnickij@yahoo.com> [commit] (505 followers)
+  FOUND TeknoTrek <teknotrek52@gmail.com> [profile] (229 followers)
+  SKIP code-of-the-future -- no email found
+  FOUND techschool <techschool.guru@gmail.com> [commit] (746 followers)
+
+------------------------------------------------------------
+Query: "content creator" in:bio followers:>200
+Found 160 users
+  FOUND Chris Titus <contact@christitus.com> [commit] (15263 followers)
+  FOUND Keith Galli <k.galli603@gmail.com> [commit] (6469 followers)
+  FOUND Nick Chapsas <nick@nickchapsas.com> [profile] (11859 followers)
+  SKIP scarletquasar -- no email found
+  FOUND Alex Booker <booker@booker.codes> [profile] (1299 followers)
+  FOUND Usman Sabuwala <maxprogramming05@gmail.com> [commit] (494 followers)
+  SKIP mochen862 -- no email found
+  FOUND AJ (@techfren) <yspdev@gmail.com> [commit] (302 followers)
+  SKIP coffinxp -- no email found
+  FOUND Programming di Rumahrafif <dirumahrafif@gmail.com> [commit] (592 followers)
+  FOUND Luciano dii Souza <lucianodiisouza@hotmail.com> [commit] (704 followers)
+  FOUND Alex Felipe <alexfelipevieira@gmail.com> [profile] (885 followers)
+  FOUND Evan Zhou <evanzhoudev@gmail.com> [profile] (471 followers)
+  FOUND Hamed Bahram <hamed.bahram@gmail.com> [commit] (666 followers)
+  FOUND Christian Lempa <christian.lempa@clcreative.de> [profile] (11532 followers)
+  FOUND Ewomazino Akpareva <zinotrust@gmail.com> [commit] (572 followers)
+  FOUND Muhibur Rahman <Muhib5532@gmail.com> [commit] (914 followers)
+  FOUND Caio André <caioandresgit@outlook.com> [commit] (786 followers)
+  FOUND Nabin paudyal <nabinpaudyal2057@gmail.com> [commit] (564 followers)
+  FOUND Matin Afzal <contact.matin@yahoo.com> [profile] (484 followers)
+  FOUND Matheus Castiglioni <matheushcastiglioni@gmail.com> [commit] (796 followers)
+  SKIP AzharRivaldi -- no email found
+  FOUND Mina Pêcheux <mina.pecheux@gmail.com> [profile] (412 followers)
+  FOUND Aleksander Lamkov <aleksanderlamkov@gmail.com> [commit] (519 followers)
+  FOUND Diago Dryson <contact@diagodryson.com> [profile] (541 followers)
+  FOUND Bryan Veloso <bryan@velo.so> [profile] (716 followers)
+  FOUND Alex <mobiledevelopercourse@gmail.com> [commit] (565 followers)
+  FOUND Low Level TV <lowlevellearning@gmail.com> [profile] (1137 followers)
+  FOUND Tom Looman <tomlooman89@gmail.com> [commit] (3329 followers)
+  FOUND Scott Bromander <scottbromander@gmail.com> [profile] (221 followers)
+  FOUND Stefan Đokić <stefan.djokic1995@gmail.com> [commit] (720 followers)
+  FOUND Michael <MICHAELWILLIAMSPERSONAL@gmail.com> [commit] (365 followers)
+  FOUND theodevoid <voidfnc9@gmail.com> [profile] (1248 followers)
+  FOUND Mauro Di Pietro <m.dipietro09@gmail.com> [commit] (354 followers)
+  FOUND Matias Coletta <webcarpi@gmail.com> [commit] (571 followers)
+  FOUND Mateus Muller <mateusmuller2@gmail.com> [commit] (848 followers)
+  FOUND Kevin Chromik <chromik.kevin@gmail.com> [commit] (314 followers)
+  FOUND Ravindra Devrani <ravindra.devrani003@gmail.com> [profile] (336 followers)
+  FOUND Matt Williams <m@technovangelist.com> [profile] (902 followers)
+  FOUND Muhammad Tayyab <mtayyabawan1918@gmail.com> [commit] (459 followers)
+  FOUND Sastra Nababan <sastranababan@yahoo.com> [profile] (344 followers)
+  FOUND Syed Noman <syednomishah001@gmail.com> [commit] (801 followers)
+  FOUND RNDr. Simon Toth <dev@simontoth.eu> [commit] (490 followers)
+  FOUND Sam <enquiry.conaticus@gmail.com> [commit] (1033 followers)
+  FOUND Jesús T. <jesustellez.contacto@gmail.com> [commit] (432 followers)
+  SKIP AvenCores -- no email found
+  FOUND Marco du Plessis <contact.memstech@gmail.com> [commit] (763 followers)
+  FOUND Josh Stroschein <josh@m9cyber.com> [commit] (1054 followers)
+  FOUND Kevin Degila <kayveendegila@gmail.com> [commit] (335 followers)
+  FOUND ArtemKirsanov <ArtemKirsanov2606@gmail.com> [commit] (863 followers)
+  FOUND Lex "IT Beard" Kartynnik <iamitbeard@gmail.com> [profile] (434 followers)
+  FOUND Alex Bieber <ambarsingh979889@gmail.com> [commit] (258 followers)
+  FOUND Javohir Hakimov <uzwebprogrammer@gmail.com> [commit] (322 followers)
+  FOUND Dmytro Mezhenskyi <dmytro@decodedfrontend.io> [profile] (765 followers)
+  FOUND Tarun Kaushik <codingmaster52@gmail.com> [profile] (406 followers)
+  FOUND Bruna Ferreira <bferreira.slv@gmail.com> [commit] (303 followers)
+  FOUND Stefan Natter <stefan@natter.at> [commit] (360 followers)
+  FOUND Jelle Vermandere <jelle.vermandere@gmail.com> [commit] (210 followers)
+  FOUND Rychillie <rychillie@rychillie.net> [commit] (575 followers)
+  FOUND Christian Oliveira Coelho <oc.chris@hotmail.com> [commit] (332 followers)
+  FOUND Burak Demir <buraknasifdemir123@gmail.com> [commit] (241 followers)
+  SKIP DouglasFreshHabian -- no email found
+  FOUND Márk Sági-Kazár <mark@sagikazarmark.com> [profile] (1373 followers)
+  FOUND Vijay Thapa <hi@vijaythapa.com> [profile] (947 followers)
+  FOUND nuno maduro <enunomaduro@gmail.com> [profile] (9146 followers)
+  FOUND Jess Ramos <jessmwill2@gmail.com> [commit] (929 followers)
+  FOUND Asabeneh <asabeneh@gmail.com> [profile] (21289 followers)
+  FOUND TheCodeholic <zurasekhniashvili@gmail.com> [commit] (3754 followers)
+  FOUND Tim Nelson <traveltimn@gmail.com> [commit] (381 followers)
+  FOUND Yanina Trekhleb <yanisavchenko@gmail.com> [commit] (237 followers)
+  FOUND Hamza Ali <hamza54834@gmail.com> [commit] (1266 followers)
+  FOUND Tobi Mey <tobias.meyhoefer02@gmail.com> [commit] (323 followers)
+  FOUND Aditya Thakur <adityathakurxd@gmail.com> [profile] (414 followers)
+  FOUND Mangirdas Kazlauskas <mangirdas@kazlauskas.dev> [profile] (839 followers)
+  FOUND Ehoneah Obed <ehoneahobed@hotmail.com> [commit] (1410 followers)
+  FOUND Daniel Jesus <djesus.net@gmail.com> [commit] (217 followers)
+  FOUND Abdullah Uğraşkan <ugraskan@gmail.com> [profile] (282 followers)
+  FOUND Josh Medeski <josh.medeski@gmail.com> [commit] (603 followers)
+  FOUND Waine Junior <waine@aerosim.io> [commit] (305 followers)
+  FOUND Berta Matuliauskiene <info.berta@gmail.com> [commit] (538 followers)
+  FOUND Mohamed Abusrea <mohamedabusrea@gmail.com> [profile] (1011 followers)
+  SKIP a-a-ron -- no email found
+  FOUND Pedro Rojas <pedro.rojaslo50@gmail.com> [profile] (288 followers)
+  FOUND Filipe Cruz <psenough@gmail.com> [profile] (255 followers)
+  FOUND Tibor Bödecs <mail.tib@gmail.com> [profile] (519 followers)
+  FOUND Greg L. Turnquist <Greg.L.Turnquist@gmail.com> [commit] (982 followers)
+  FOUND Vijay R <calico.takeoff_01@icloud.com> [profile] (275 followers)
+  FOUND Sergie Code <sergiosnsdk@gmail.com> [commit] (2402 followers)
+  FOUND Setia Budi <boedy.bios@gmail.com> [profile] (400 followers)
+  FOUND Stephen G. Pope <stephengpope@gmail.com> [commit] (484 followers)
+  FOUND Bruno Rana <brunogarciarana@gmail.com> [commit] (233 followers)
+  FOUND Gerald Versluis <gerald.versluis@microsoft.com> [profile] (1907 followers)
+  FOUND Vladyslav Pekker <agilesteel@gmail.com> [profile] (208 followers)
+  FOUND luca mezzalira <mezzalab@gmail.com> [profile] (553 followers)
+  FOUND Isaac Harris-Holt <isaac@harris-holt.com> [commit] (207 followers)
+  FOUND Celenny Sousa <celennycs@gmail.com> [commit] (209 followers)
+  FOUND Akhilesh Mishra <akhileshmishrabiz@gmail.com> [commit] (555 followers)
+  FOUND Mehmet Tahir Aslan <mtahiraslan23@gmail.com> [profile] (302 followers)
+  FOUND Bruno Pulis <brunopulis@protonmail.com> [commit] (466 followers)
+  FOUND Mili Pernia Gonzalez <starrymiracles@gmail.com> [commit] (619 followers)
+  FOUND Angel Uriot <angel.uriot@gmail.com> [profile] (746 followers)
+  FOUND Vilson Blanco Dauinheimer (Bwolf) <Bwolfnoob@gmail.com> [profile] (512 followers)
+  FOUND Nick Cosentino <n.b.cosentino@gmail.com> [profile] (271 followers)
+  FOUND Alex Wolf <alexrudiwolf@gmail.com> [commit] (323 followers)
+  FOUND Michele Saba <pymike00@gmail.com> [commit] (543 followers)
+  FOUND Ishraq Haider Chowdhury <ishraq.h.c@gmail.com> [commit] (238 followers)
+  FOUND Mustafa Gurkan Canakci <m.gurkan.canakci@gmail.com> [commit] (223 followers)
+  FOUND Sourav Mandal <souravmandal909p@gmail.com> [commit] (227 followers)
+  SKIP koltigin -- no email found
+  FOUND Vaidehi Shah <vaidehi2701@gmail.com> [commit] (306 followers)
+  FOUND Subham Ranjan <subhamranjanhalo@gmail.com> [profile] (229 followers)
+  FOUND Tarek Alabd <tarekalabd1@gmail.com> [profile] (562 followers)
+  FOUND Milton Mújica <ivam3.bh@gmail.com> [profile] (498 followers)
+  FOUND M.Taghizadeh <taghizadeh.mhmd@gmail.com> [commit] (267 followers)
+  FOUND AG <github@muirlandoracle.co.uk> [commit] (435 followers)
+  FOUND Paolo Perego <paolo.perego@konghq.com> [profile] (371 followers)
+  FOUND James Eastham <dev@jameseastham.co.uk> [profile] (284 followers)
+  FOUND Maks <magerkocs@gmail.com> [commit] (335 followers)
+  FOUND Justin Schwartzenberger <schwarty@gmail.com> [commit] (341 followers)
+  SKIP retroportalstudio -- no email found
+  FOUND Vladimír Gorej <vladimir.gorej@gmail.com> [profile] (260 followers)
+  FOUND MOHAMMED IMRAN <amohammedimran.11@gmail.com> [commit] (242 followers)
+  FOUND Héndrick Ströngreên <strongreen@live.com> [profile] (330 followers)
+  FOUND Ardha <ardhasemaranatha@gmail.com> [commit] (277 followers)
+  FOUND Ankit Gupta <ankitgupta3150@gmail.com> [profile] (446 followers)
+  SKIP micro-joan -- no email found
+  FOUND James <james@cookiehome.co.uk> [commit] (250 followers)
+  FOUND Hussein Nasser <hnasser@esri.com> [commit] (290 followers)
+  SKIP Guedesou -- no email found
+  FOUND Sufyan shaikh <shaikhsufyan1811@gmail.com> [commit] (245 followers)
+  FOUND Meligy <eng.meligy@gmail.com> [profile] (214 followers)
+  SKIP ChiefGyk3D -- no email found
+  SKIP christencodes -- no email found
+  SKIP Alexejhero -- no email found
+  FOUND Mauro Vera <maurovera069@gmail.com> [commit] (209 followers)
+  FOUND Richard Topchii <topchiy@protonmail.ch> [commit] (219 followers)
+
+------------------------------------------------------------
+Query: "tech blogger" in:bio followers:>150
+Found 12 users
+  SKIP AyeshaSahar -- no email found
+  FOUND Peyman Majidi <Peyman.majidi@outlook.com> [commit] (154 followers)
+  FOUND Fatbobman(东坡肘子) <xuyang@me.com> [commit] (958 followers)
+  FOUND Nabendu  <nabendu.biswas@gmail.com> [profile] (198 followers)
+  FOUND Andrei Pechkurov <apechkurov@gmail.com> [commit] (421 followers)
+  FOUND Shreyas Patil <shreyaspatilg@gmail.com> [commit] (2540 followers)
+  FOUND Bhanu Teja Pachipulusu <pbteja1998@gmail.com> [profile] (287 followers)
+  FOUND Ayu Adiati <retno.ayu98@gmail.com> [commit] (234 followers)
+  FOUND Bibin Wilson <bibinwilsonn@gmail.com> [profile] (253 followers)
+  FOUND Vinay Somawat <vinaysomawat40@gmail.com> [profile] (255 followers)
+  FOUND Mike Kanakos <mkanakos@gmail.com> [profile] (169 followers)
+
+------------------------------------------------------------
+Query: "developer blogger" in:bio followers:>150
+Found 9 users
+  FOUND Valeri Karpov <val@karpov.io> [profile] (1723 followers)
+  FOUND Abdurrahman Fadhil <rhmnfadhil@gmail.com> [commit] (206 followers)
+  FOUND Leo <leomobiledeveloper@gmail.com> [commit] (1350 followers)
+  FOUND Anurag Sharma <anurag30671371@gmail.com> [profile] (222 followers)
+  FOUND Moisés Macero <moises.macero@gmail.com> [commit] (279 followers)
+  SKIP hasankucuk -- no email found
+  FOUND Jan-Lukas Else <mail@jlelse.de> [commit] (155 followers)
+  FOUND Soham Shah <sohamshah456@gmail.com> [commit] (370 followers)
+  SKIP andyyhope -- no email found
+
+------------------------------------------------------------
+Query: "educator" in:bio followers:>150
+Found 188 users
+  FOUND Adrian Hajdin - JS Mastery <contact@jsmastery.pro> [profile] (36871 followers)
+  FOUND Vishwas <vishwas.g5@gmail.com> [commit] (15747 followers)
+  FOUND Chris Fritz <chrisvfritz@gmail.com> [commit] (4047 followers)
+  FOUND Brian Yu <brian@brianyu.me> [profile] (14005 followers)
+  SKIP jamezmca -- no email found
+  SKIP PatrickAlphaC -- no email found
+  FOUND Julián Duque <julianduquej@gmail.com> [profile] (1975 followers)
+  FOUND Murtaza Hassan <mhpr@live.co.uk> [commit] (5576 followers)
+  FOUND Divyansh Bhardwaj (DBC) <divyanshb22@gmail.com> [profile] (866 followers)
+  FOUND Johnny Boursiquot <jboursiquot@gmail.com> [commit] (812 followers)
+  FOUND Erick Wendel <erick.workspace@gmail.com> [profile] (10944 followers)
+  FOUND jorge jacinto gutarra <jorgejacinto9701@gmail.com> [profile] (315 followers)
+  SKIP rzfeeser -- no email found
+  FOUND Adam <adam@charming-data.com> [profile] (1144 followers)
+  FOUND Gaston Sanchez <gaston.stat@gmail.com> [commit] (716 followers)
+  FOUND Shruti Kapoor <shruti.kapoor08@gmail.com> [profile] (1612 followers)
+  FOUND Alex Honchar <alexandr.honchar@gmail.com> [commit] (890 followers)
+  SKIP veriqta -- no email found
+  FOUND Daisuke Masuhara <info@masuhara.net> [profile] (356 followers)
+  FOUND Cezanne Camacho <cezannec@alumni.stanford.edu> [profile] (1799 followers)
+  FOUND Kostiantyn Kriuchkov <latand666@gmail.com> [commit] (743 followers)
+  SKIP damithc -- no email found
+  FOUND 0xAA <d0u.gie@hotmail.com> [profile] (2222 followers)
+  FOUND Lauren Lee McCarthy <laurenleemccarthy@gmail.com> [profile] (2172 followers)
+  FOUND Nic Barker <contact+github@nicbarker.com> [commit] (1188 followers)
+  FOUND Suhyeon Kim <wisemuji@gmail.com> [profile] (400 followers)
+  FOUND EasyCode Sardar <hardeepphp@yahoo.com> [profile] (252 followers)
+  FOUND Dong-Young Kim <31337.persona@gmail.com> [profile] (162 followers)
+  FOUND Zac Gordon <email@zacgordon.com> [commit] (689 followers)
+  FOUND Treasure Porth <treasure.rose@gmail.com> [profile] (202 followers)
+  FOUND Adfar Rashid <adfarrasheed136@gmail.com> [commit] (169 followers)
+  FOUND Adam Scott <ascott1@gmail.com> [commit] (207 followers)
+  FOUND Mandeep Singh <mandeepsinghshekhawat95@gmail.com> [commit] (226 followers)
+  FOUND Eddie Antonio Santos <eddie.santos@ucdconnect.ie> [commit] (161 followers)
+  FOUND Daxeel Soni <daxeelsoni44@gmail.com> [profile] (185 followers)
+  FOUND Nate Barbettini <nathanaelb@gmail.com> [profile] (766 followers)
+  FOUND Jannik Buhr <jannik.m.buhr@gmail.com> [commit] (204 followers)
+  SKIP ShawnHymel -- no email found
+  FOUND Jason Liu <jason@jxnl.co> [commit] (1981 followers)
+  FOUND Abhishek Rathore <rathore.abhishek87@gmail.com> [profile] (242 followers)
+  FOUND Andy Teucher <andy.teucher@gmail.com> [profile] (213 followers)
+  FOUND Brian Spiering <bspiering@gmail.com> [profile] (364 followers)
+  FOUND Khurram Virani (KV) <kvirani@gmail.com> [commit] (333 followers)
+  FOUND Danilo Vesovic <vesovicdanilo@gmail.com> [commit] (365 followers)
+  FOUND Andy Bell <andy@set.studio> [profile] (1423 followers)
+  FOUND Mrinal Bhattacharya <iammrinalkc@gmail.com> [profile] (510 followers)
+  FOUND coder2k <michael.gerhold@web.de> [commit] (162 followers)
+  FOUND Lup Yuen Lee <luppy@appkaki.com> [commit] (881 followers)
+  FOUND Rajesh Hadiya <hadiarajesh007@gmail.com> [commit] (164 followers)
+  FOUND Thomas J Bradley <hey@thomasjbradley.ca> [profile] (432 followers)
+  FOUND Michael Hadley <michaelwesthadley@gmail.com> [commit] (259 followers)
+  SKIP Nemeswat -- no email found
+  FOUND alex <alex@dytry.ch> [profile] (198 followers)
+  Network error (ReadTimeout) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  FOUND jfullstackdev <jfullstackdev.io@gmail.com> [commit] (8365 followers)
+  FOUND Jayakumar Sadhasivam <iamjayakumars@gmail.com> [profile] (243 followers)
+  FOUND Nour Mostafa <nourmk.business@gmail.com> [profile] (522 followers)
+  FOUND Bryce Boe <bbzbryce@gmail.com> [profile] (221 followers)
+  FOUND James Willett <james.willett58@gmail.com> [commit] (211 followers)
+  FOUND Andre Alves Garzia <contato@andregarzia.com> [profile] (404 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Ritik Prasad <rv724405@gmail.com> [commit] (366 followers)
+  FOUND Ben Taylor <me@taybenlor.com> [profile] (168 followers)
+  FOUND Joshua Wright <jwright@willhackforsushi.com> [profile] (486 followers)
+  FOUND Mark Bates <mark@markbates.com> [commit] (1626 followers)
+  FOUND Aline Antunes <alinebdantunes@gmail.com> [commit] (633 followers)
+  FOUND Arvic S. Babol <arvicbabol@kulotsystems.tech> [profile] (227 followers)
+  FOUND Juan Andrés Núñez <juan@wmedia.es> [commit] (762 followers)
+  FOUND Panda Sai Sankara Kesava Nath <sai.panda2000@gmail.com> [commit] (285 followers)
+  FOUND Kent C. Dodds <me+github@kentcdodds.com> [profile] (34804 followers)
+  SKIP AhsanAyaz -- no email found
+  FOUND Esterling Accime <accimeesterlin@yahoo.com> [commit] (404 followers)
+  FOUND Yoni Nazarathy <yoninazarathy@gmail.com> [commit] (185 followers)
+  FOUND Bram Vanbilsen <bramvbilsen@gmail.com> [profile] (304 followers)
+  FOUND Uma Abu <umaabu@yahoo.co.uk> [profile] (193 followers)
+  SKIP rctatman -- no email found
+  FOUND Roy Vanegas <roy@thecodeeducators.com> [commit] (269 followers)
+  FOUND Rishabh sharma <rishabhpep@gmail.com> [commit] (203 followers)
+  SKIP remkus -- no email found
+  FOUND Thushan Ganegedara <thushv@gmail.com> [commit] (341 followers)
+  FOUND Silvia Canelón <sp.canelon@protonmail.com> [commit] (214 followers)
+  FOUND Ifeoluwa Olukayode <ifeoluwa.olukayode@outlook.com> [profile] (686 followers)
+  FOUND Oleksandr Zahoruiko <sunmeatrich@gmail.com> [profile] (214 followers)
+  SKIP Surfndez -- no email found
+  FOUND Aaron Francis <Aarondfrancis@gmail.com> [profile] (1565 followers)
+  FOUND Dáviny Letícia Vidal <hello@vidal.press> [profile] (572 followers)
+  FOUND Jeremy Ellis <keyfreemusic@gmail.com> [commit] (287 followers)
+  FOUND Dr. Vás <dr.teresavasquez@gmail.com> [commit] (185 followers)
+  FOUND SortedCoding <rautx158@gmail.com> [profile] (153 followers)
+  SKIP elemuje -- no email found
+  FOUND Logan Ward <ward.logan.t@gmail.com> [commit] (174 followers)
+  FOUND Henrik Joreteg <henrik@joreteg.com> [profile] (1635 followers)
+  FOUND oluiscabral <oluiscabral@hotmail.com> [commit] (6004 followers)
+  FOUND Donya Quick <donyaquick@gmail.com> [profile] (164 followers)
+  FOUND Raghav Pal <automation.devops@gmail.com> [commit] (1231 followers)
+  FOUND John Britton <public@johndbritton.com> [profile] (1460 followers)
+  FOUND Richard Oliver Bray <richardbray89@gmail.com> [commit] (292 followers)
+  FOUND Jen Looper <jen.looper@gmail.com> [commit] (3491 followers)
+  FOUND Igor Babko <i.i.babko@gmail.com> [profile] (259 followers)
+  FOUND Nick Briz <nickbriz@protonmail.com> [profile] (295 followers)
+  FOUND Martin O'Hanlon <martin.ohanlon@neo4j.com> [commit] (288 followers)
+  FOUND Boris Paskhaver <boris.paskhaver@nyu.edu> [profile] (273 followers)
+  FOUND Stephen Ulibarri <druidmech@gmail.com> [commit] (1785 followers)
+  SKIP nitya -- no email found
+  SKIP boytchev -- no email found
+  FOUND Samuel Adekunle <samuelbeebest@gmail.com> [profile] (157 followers)
+  FOUND Konstantin Läufer <laufer@cs.luc.edu> [commit] (167 followers)
+  FOUND Jimmy Song <jimmy@jimmysong.org> [commit] (1154 followers)
+  FOUND Rebecca Barter <rlbarter@gmail.com> [profile] (365 followers)
+  FOUND Ashique Bin Iqbal <ananda.rcbu@gmail.com> [commit] (224 followers)
+  FOUND Brandon Minnick <brandon.r.minnick@gmail.com> [commit] (1202 followers)
+  FOUND Matthew Setter <matthew@matthewsetter.com> [profile] (225 followers)
+  FOUND Bradley Boehmke <bradleyboehmke@gmail.com> [profile] (641 followers)
+  FOUND Nipun Ramakrishnan <nipun.ramk@gmail.com> [commit] (223 followers)
+  SKIP soumilshah1995 -- no email found
+  SKIP sethforprivacy -- no email found
+  FOUND Michael Thiessen <michael.t@getjobber.com> [commit] (255 followers)
+  FOUND Ahmad Othman Ammar Adi. <github_me@outlook.de> [commit] (678 followers)
+  FOUND Brooks Patton <brooks@brookzerker.com> [commit] (258 followers)
+  FOUND Navaneeth Malingan <navneetnivu07@gmail.com> [profile] (266 followers)
+  FOUND Henrikki Tenkanen <henrikki.tenkanen@aalto.fi> [commit] (254 followers)
+  FOUND Mykhailo "Ninin" Velykoselskyi <unibreakfast1@gmail.com> [commit] (369 followers)
+  FOUND Mark Mercer <13375x1llz@gmail.com> [profile] (465 followers)
+  FOUND Benjamin Kampmann <ben@gnunicorn.org> [profile] (225 followers)
+  FOUND Mohammed Elzanaty <mohammedelzanaty129@gmail.com> [profile] (446 followers)
+  FOUND Harris Raftopoulos <harrisrafto@gmail.com> [commit] (181 followers)
+  SKIP gokulsan -- no email found
+  FOUND Jonathan Lee Martin <hello@jonathanleemartin.com> [commit] (162 followers)
+  FOUND Katie Bell <katie.bell@mongodb.com> [commit] (233 followers)
+  Network error (ConnectionError) — retrying in 3s...
+  FOUND Sangam Mukherjee <sangamukherjee@gmail.com> [commit] (1109 followers)
+  FOUND Wambui <rosemwangiee@gmail.com> [profile] (277 followers)
+  FOUND Makeblock <info@makeblock.cc> [commit] (973 followers)
+  FOUND Simon Späti <simon@ssp.sh> [commit] (844 followers)
+  FOUND Timo <info@timohoogland.com> [profile] (456 followers)
+  FOUND Ian Darwin <ian@darwinsys.com> [commit] (501 followers)
+  FOUND Peter Dalmaris <peter@txplore.com> [profile] (696 followers)
+  FOUND Pablo Pazos Gutiérrez <pablo.pazos@cabolabs.com> [profile] (194 followers)
+  FOUND Leif Azzopardi <leifos@acm.org> [profile] (235 followers)
+  FOUND Amit Patel <redblobgames@gmail.com> [profile] (1104 followers)
+  FOUND Ben Evans <benjamin.john.evans@gmail.com> [commit] (537 followers)
+  FOUND Arun Prasaad Gunasekaran <arunprasaad2711@gmail.com> [commit] (263 followers)
+  FOUND Fabian Morón Zirfas <hash@ff6347.email> [commit] (467 followers)
+  FOUND Ali Karbassi <ali@karbassi.com> [profile] (179 followers)
+  FOUND Balbino Aylagas <balbino_a@hotmail.com> [commit] (185 followers)
+  SKIP Dhghomon -- no email found
+  FOUND Prashant Yadav <prashant.yadav@apollo.io> [profile] (154 followers)
+  FOUND Benjamin Obi Tayo <benjaminobi@gmail.com> [commit] (176 followers)
+  FOUND Dipendra Bahadur Chand <chand.dipendra19@gmail.com> [profile] (157 followers)
+  SKIP jwagemann -- no email found
+  FOUND Nizar Khalife <k.halife.n.izar@gmail.com> [profile] (180 followers)
+  FOUND Daniel P. Clark <6ftdan@gmail.com> [profile] (190 followers)
+  FOUND Ivan Arkhipov <arkhipov.iv99@mail.ru> [profile] (169 followers)
+  FOUND Ufuk <ufukcemilasik@gmail.com> [commit] (170 followers)
+  FOUND Zafar Ali Khan <zakonweb@gmail.com> [commit] (362 followers)
+  SKIP ivangrov -- no email found
+  FOUND Mair Swartz <mair.swartz@live.com> [profile] (227 followers)
+
+------------------------------------------------------------
+Query: "instructor" in:bio followers:>150
+Found 272 users
+  FOUND Atıl Samancıoğlu <samancioglu.atil@gmail.com> [commit] (17142 followers)
+  FOUND Brian "Beej Jorgensen" Hall  <beej@beej.us> [profile] (2663 followers)
+  FOUND Mahmoud Ahmed <pythondeveloper6@gmail.com> [profile] (3654 followers)
+  FOUND Mehmet Seven <mehmetseven0@gmail.com> [profile] (2131 followers)
+  FOUND Chen the Instructor <chenb@sunysuffolk.edu> [commit] (351 followers)
+  FOUND Mayk Brito <maykbrito@gmail.com> [commit] (16612 followers)
+  FOUND Bishworaj Poudel <iambrp.tech@gmail.com> [commit] (1020 followers)
+  FOUND Piotr Jura <piotr.jura.udemy@gmail.com> [commit] (922 followers)
+  FOUND Andrei Neagoie <aneagoie1@gmail.com> [commit] (10724 followers)
+  FOUND Jhankar Programming Hero <jhankar.mahbub1@gmail.com> [profile] (1271 followers)
+  FOUND Juan Gabriel Gomila <juangabriel@frogames.es> [profile] (2491 followers)
+  FOUND Yuri Oliveira <yuri.professionalcontact@gmail.com> [profile] (484 followers)
+  SKIP acetinkaya -- no email found
+  FOUND Kalob Taulien <kalob.taulien@gmail.com> [commit] (937 followers)
+  FOUND Prateek Narang <prateeknarang111@gmail.com> [profile] (3147 followers)
+  FOUND Burak Kalaycı <kalayciburak1996@gmail.com> [profile] (283 followers)
+  FOUND Bogdan Stashchuk <bstashchuk@gmail.com> [commit] (2355 followers)
+  SKIP maxschwarzmueller -- no email found
+  FOUND Ramazan Sakin <ramazansakin63@gmail.com> [commit] (2579 followers)
+  SKIP siddhardhan23 -- no email found
+  FOUND Minjie Zhu, Ph.D. <zhum@oregonstate.edu> [commit] (299 followers)
+  FOUND Burak <burakk.ylmaz@outlook.com> [profile] (277 followers)
+  FOUND Henry Doan <henrydoan96@gmail.com> [commit] (249 followers)
+  FOUND Murat Baseren <muratbaseren@gmail.com> [commit] (669 followers)
+  FOUND abdulrahim Ramadan <abdalrhim19991@gmail.com> [commit] (317 followers)
+  FOUND Haider Malik <haidermalik504@gmail.com> [profile] (290 followers)
+  SKIP estefaniacn -- no email found
+  FOUND Ron Zacharski <ron.zacharski@gmail.com> [profile] (287 followers)
+  FOUND Cássia Sampaio <cassiasampaios@gmail.com> [commit] (303 followers)
+  FOUND Rafael Queiróz <rafaelproinfo@gmail.com> [commit] (1103 followers)
+  FOUND Elias Gabriel <eliasgabrielcf@gmail.com> [commit] (1336 followers)
+  FOUND Abraham E. Tavarez <abeincwireless@gmail.com> [commit] (198 followers)
+  SKIP samarbadriddin0v -- no email found
+  FOUND Donovan Brown <browncdonovan@gmail.com> [commit] (271 followers)
+  FOUND Mo Binni <mo@binni.io> [commit] (566 followers)
+  FOUND Patrick K Long <Patrickklong@gmail.com> [commit] (241 followers)
+  FOUND Mehmet Ozkaya <mehmetozkaya@gmail.com> [profile] (2827 followers)
+  FOUND Andy Lindsay <andydlindsay@gmail.com> [profile] (293 followers)
+  FOUND Tony Grimes <acidtone@tonygrimes.com> [commit] (170 followers)
+  FOUND Mustafa Murat Coşkun <coskun.m.murat@gmail.com> [profile] (7051 followers)
+  FOUND Rohan Sharma <rohans0501@gmail.com> [commit] (165 followers)
+  FOUND Chakin Kim <ckchakin0@gmail.com> [commit] (367 followers)
+  FOUND AJ ONeal <aj@therootcompany.com> [profile] (1128 followers)
+  FOUND hue (hubert) <hweng@acme-nyc.com> [commit] (293 followers)
+  FOUND Ata Özarslan <ataozarslan@hotmail.com> [profile] (242 followers)
+  FOUND Data Science with Harshit <datasciencewithharshit@gmail.com> [commit] (432 followers)
+  FOUND Pyae Phyo <pyaephyo.jdc@gmail.com> [profile] (292 followers)
+  FOUND Clément Jean <clement.jean@epitech.eu> [profile] (316 followers)
+  FOUND Zouambia Sohaib <js_zouambia@esi.dz> [commit] (619 followers)
+  FOUND Julien Truffaut <julien@fp-tower.com> [profile] (303 followers)
+  FOUND Ervis Trupja <ervistrupja@outlook.com> [profile] (927 followers)
+  FOUND Saac <sornchai.la@ku.th> [commit] (269 followers)
+  FOUND Eduardo José Medina Alfaro <emedinaa@gmail.com> [profile] (506 followers)
+  FOUND Mahmud Al Hakim <mahmud.al-hakim@arbetsformedlingen.se> [commit] (161 followers)
+  FOUND miler <misterpatipan123@gmail.com> [profile] (899 followers)
+  FOUND Monica Hillman <mmhillman1@ucs.br> [commit] (3144 followers)
+  FOUND Batuhan Düzgün <batuhan.duzgun@std.yeditepe.edu.tr> [profile] (363 followers)
+  FOUND Brad Traversy <traversymedia@gmail.com> [profile] (75888 followers)
+  SKIP smahesh29 -- no email found
+  FOUND Alejandro Ñáñez Ortiz <git@alejandro.dev> [profile] (442 followers)
+  FOUND Ricardo Martins <ricardo@ricardomartins.net.br> [commit] (173 followers)
+  FOUND Mike North <michael.l.north@gmail.com> [commit] (2005 followers)
+  SKIP simplesteph -- no email found
+  FOUND Cédric Scherer <cedricphilippscherer@gmail.com> [commit] (1993 followers)
+  FOUND Masood <masood222@gmail.com> [commit] (240 followers)
+  FOUND Germán Ezequiel Scarafilo <gscarafilo@fra.utn.edu.ar> [profile] (209 followers)
+  FOUND GIGO <gospelin.gi@gmail.com> [profile] (164 followers)
+  SKIP Shahzaib-D-Memon -- no email found
+  FOUND Ghulam Abbas <ghulamabbas258@gmail.com> [commit] (446 followers)
+  FOUND Jessica M. Bentes <jessie.moura19@gmail.com> [profile] (305 followers)
+  FOUND Fatih Çakıroğlu <f-cakiroglu@outlook.com> [commit] (1917 followers)
+  FOUND Mike Clark <mike@clarkware.com> [profile] (239 followers)
+  FOUND Brad Simpson <bradsimpson@icloud.com> [commit] (155 followers)
+  FOUND Rokibul Hasan Rokib <rokibulhasan.ph@gmail.com> [commit] (688 followers)
+  FOUND Carolzita Dev <contatocarolinebs@gmail.com> [commit] (441 followers)
+  FOUND Milad Azami <miladazami120@gmail.com> [profile] (1524 followers)
+  FOUND Fabio Biondi <info@fabiobiondi.com> [commit] (532 followers)
+  FOUND Juan Diego Pérez <pekechis@gmail.com> [commit] (359 followers)
+  FOUND Alex Kim <alex000kim@gmail.com> [profile] (748 followers)
+  FOUND Zoaib <consult@zoaibkhan.com> [profile] (240 followers)
+  FOUND Daniel Hinojosa <dhinojosa@evolutionnext.com> [profile] (386 followers)
+  FOUND Haris Iftikhar <harisiftikhar109@gmail.com> [commit] (158 followers)
+  FOUND Henrylle Maia <henryllemaia@gmail.com> [commit] (281 followers)
+  FOUND Indrajith Bandara <indrajithbandarasl@gmail.com> [profile] (1490 followers)
+  FOUND Sajal Sharma <contact@sajalsharma.com> [profile] (1021 followers)
+  SKIP Tayesne -- no email found
+  FOUND Vish Kannan <vishnuk@google.com> [profile] (269 followers)
+  FOUND John Rovie Balingbing <balingbing.johnrovie20@gmail.com> [profile] (298 followers)
+  FOUND Patrick Walls <patrick.j.walls@gmail.com> [commit] (234 followers)
+  FOUND SULEYMAN ALPTEKIN <SLPTKN@YAHOO.COM> [profile] (702 followers)
+  FOUND ARIJIT PARIA <arijitparia2020@gmail.com> [commit] (523 followers)
+  FOUND Erhan Gündüz <erhangndz@live.com> [commit] (255 followers)
+  FOUND Rob Merrill <robgmerrill@gmail.com> [commit] (166 followers)
+  FOUND Otávio Reis <otaviocha@gmail.com> [profile] (2205 followers)
+  FOUND Sergey Romanenko <awilum@msn.com> [profile] (234 followers)
+  FOUND Chris Oakman <chris@oakmac.com> [profile] (318 followers)
+  FOUND David R. Pugh <david.pugh@kaust.edu.sa> [profile] (456 followers)
+  FOUND Md Abdullah All Naim <naim1823007@stud.kuet.ac.bd> [profile] (219 followers)
+  FOUND Thibault Houdon <hello@docstring.fr> [profile] (301 followers)
+  SKIP samirkarimov -- no email found
+  FOUND Zeal Vora <instructors@kplabs.in> [profile] (1711 followers)
+  FOUND Jan Schaffranek <schaffranek.jan@web.de> [commit] (920 followers)
+  SKIP leemcpeters -- no email found
+  FOUND Zia Shahid <ziagaggoo@gmail.com> [profile] (168 followers)
+  FOUND Gabriel Taveira <gabrielstaveira@gmail.com> [profile] (198 followers)
+  FOUND Kyle Schaub <kylejschaub@gmail.com> [commit] (759 followers)
+  FOUND Alex Marin Mendez <alexmarinmendez@gmail.com> [profile] (175 followers)
+  FOUND Jarrian Gojar (0x00474B4A) <glorianagojar@gmail.com> [commit] (1067 followers)
+  FOUND Antonio Brandi <antonio.brandi@outlook.it> [commit] (370 followers)
+  SKIP EnginAlpman -- no email found
+  FOUND Răzvan Cîrlugea <razvan.cirlugea@gmail.com> [profile] (234 followers)
+  FOUND Pablo Sirera <psirera4@gmail.com> [profile] (299 followers)
+  FOUND Ana Luisa Santos <analuisavidal89@gmail.com> [commit] (166 followers)
+  FOUND Cheolkie Kim <ckiekim@naver.com> [profile] (308 followers)
+  FOUND Christopher Rackauckas <accounts@chrisrackauckas.com> [profile] (2516 followers)
+  FOUND Gorka Villar <gorkavillara@gmail.com> [commit] (191 followers)
+  FOUND Elisa Cabana <ecab.estadistica@gmail.com> [profile] (337 followers)
+  FOUND Vinícius Fraga Modesto <vinifragam@gmail.com> [profile] (842 followers)
+  FOUND Ryo Yamamoto <yamamoto@lifeistech.co.jp> [commit] (215 followers)
+  SKIP akashpadhiyar -- no email found
+  FOUND Stephanie Eckles <thinkdobecreate@gmail.com> [commit] (2220 followers)
+  FOUND Sajjad "JJ" Arshad <sajjad.jj.arshad@gmail.com> [profile] (263 followers)
+  FOUND Bassir Jafarzadeh <basir.jafarzadeh@gmail.com> [commit] (2351 followers)
+  FOUND Marluan Espiritusanto <marluan@refactoring.do> [profile] (313 followers)
+  FOUND Pragy Agarwal <agar.pragy@gmail.com> [profile] (561 followers)
+  FOUND Mohamed Tamer <mt4452242@gmail.com> [commit] (1064 followers)
+  FOUND Data Science With Shikhar <kumarshikhar597@gmail.com> [commit] (678 followers)
+  SKIP magee -- no email found
+  FOUND Selim Horri <horri.slim@gmail.com> [profile] (2297 followers)
+  SKIP riccihenrique -- no email found
+  FOUND Yasin Ugurlu <yasinugurlu51@gmail.com> [profile] (163 followers)
+  FOUND Joe Maddalone <joe.maddalone@gmail.com> [commit] (252 followers)
+  FOUND Gavin Stark <gavin@gstark.com> [profile] (172 followers)
+  FOUND Vusal Huseynov <vslh333222111@gmail.com> [commit] (183 followers)
+  FOUND Arun Kudiyal <arunkudiyal@icloud.com> [commit] (397 followers)
+  FOUND Kostas Minaidis <minaidisk@gmail.com> [profile] (582 followers)
+  FOUND Eddie Kao 高見龍 <eddie@5xcampus.com> [profile] (1590 followers)
+  FOUND Rachel Thomas <racheltho@gmail.com> [commit] (2219 followers)
+  FOUND Xavier Mertens <xavier@rootshell.be> [commit] (455 followers)
+  FOUND Akira Hanashiro - 花城 明 <felipeaah@gmail.com> [commit] (192 followers)
+  FOUND Radovan Kavicky <radovan.kavicky@gmail.com> [profile] (444 followers)
+  FOUND Luis Felipe de Oliveira <luisfelipekai@gmail.com> [commit] (725 followers)
+  FOUND Mehmet Beydogan <mehmet.beydogan@gmail.com> [profile] (154 followers)
+  FOUND Felix Zumstein <felix.zumstein@zoomeranalytics.com> [profile] (417 followers)
+  FOUND Maaz Aftab <themaaz32@gmail.com> [commit] (512 followers)
+  FOUND Andrew Trask <andrew@openmined.org> [commit] (4471 followers)
+  FOUND STACKSIMPLIFY <stacksimplify@gmail.com> [profile] (3973 followers)
+  FOUND Brandon Greenwell <greenwell.brandon@gmail.com> [profile] (393 followers)
+  FOUND Francisco <franciscopugh01@gmail.com> [profile] (278 followers)
+  FOUND wh01s17 <jor.perezo@hotmail.com> [commit] (192 followers)
+  FOUND Marc Lamberti <marclamberti.ml@gmail.com> [commit] (619 followers)
+  FOUND Mark Veltzer <mark.veltzer@gmail.com> [profile] (157 followers)
+  FOUND Andy Van Slaars <avanslaars@gmail.com> [commit] (272 followers)
+  FOUND Elvin Taghizade <elvintaghiyev184@gmail.com> [commit] (161 followers)
+  SKIP ecapuano -- no email found
+  FOUND Moriam Akter Swarna <moriam15-12880@diu.edu.bd> [profile] (175 followers)
+  SKIP rickdavidson -- no email found
+  SKIP JuanDMeGon -- no email found
+  FOUND Jason Ostrom <jpo@pobox.com> [commit] (471 followers)
+  FOUND Károly Nyisztor <nyisztorkaroly@gmail.com> [profile] (170 followers)
+  SKIP KidiIT -- no email found
+  FOUND Filipe Névola <filipe@quave.com.br> [profile] (276 followers)
+  FOUND Simone Carletti <weppos@weppos.net> [commit] (634 followers)
+  FOUND Nada Badawy <nadabadawy60@gmail.com> [commit] (221 followers)
+  FOUND Nathan Thomas <nwthomas@me.com> [commit] (222 followers)
+  SKIP necatiergin -- no email found
+  FOUND Dhruvin Parikh <imsilent93@gmail.com> [commit] (171 followers)
+  FOUND Junyu Chen <jchen245@jhmi.edu> [profile] (207 followers)
+  FOUND Renata Andrade <raptatinha@gmail.com> [profile] (243 followers)
+  FOUND Mehmet Can Seyhan <mehmet.can.seyhan1@gmail.com> [profile] (843 followers)
+  FOUND Victor Gonzalez <victor@coderstape.com> [profile] (758 followers)
+  FOUND Beeno Tung <aabbcc1241@yahoo.com.hk> [commit] (176 followers)
+  FOUND Ahmed Hafez <Ahmedtronic@gmail.com> [commit] (385 followers)
+  SKIP filipi86 -- no email found
+  FOUND Morten Rand-Hendriksen <morten@pinkandyellow.com> [profile] (1791 followers)
+  FOUND Juri Strumpflohner <juri.strumpflohner@gmail.com> [profile] (1027 followers)
+  FOUND Quan Wang <quanw@google.com> [profile] (478 followers)
+  FOUND Janzen Faidiban <janzenfaidiban@gmail.com> [commit] (221 followers)
+  FOUND Pranav khandelwal <khandelwalpranav1996@gmail.com> [profile] (169 followers)
+  FOUND Sergio Brito <sergiobritor@gmail.com> [profile] (367 followers)
+  FOUND Edison UWIHANGANYE <edsnkvn@gmail.com> [commit] (1029 followers)
+  FOUND Sia <sia@clioandcalliope.com> [profile] (407 followers)
+  FOUND Laurence Svekis <lassvekis@gmail.com> [profile] (215 followers)
+  FOUND Levent Erguder   <erguder.levent@gmail.com> [profile] (556 followers)
+  FOUND Sangeetha Shanmugam <sanjuriya22@gmail.com> [commit] (378 followers)
+  FOUND Mohammad Azam <azamsharp@gmail.com> [profile] (852 followers)
+  FOUND Des_Abd_Wis <destiniyabidingwisdom@gmail.com> [commit] (277 followers)
+  FOUND Ben Collins <ben@benlcollins.com> [commit] (408 followers)
+  FOUND Marten Deinum <mdeinum@gmail.com> [profile] (180 followers)
+  FOUND Kyle Geske <stungeye@gmail.com> [commit] (223 followers)
+  FOUND Soledad Galli <solegalli@protonmail.com> [commit] (1398 followers)
+  FOUND Jordi Garcia Castillon <info@jordigarcia.eu> [profile] (157 followers)
+  FOUND Samin Israr Ravi <saminravi.ph@gmail.com> [profile] (169 followers)
+  FOUND Valdir Cezar <valdircezar312@gmail.com> [commit] (931 followers)
+  FOUND Aditya Joshi <adityaprakashjoshi1@gmail.com> [profile] (202 followers)
+  FOUND Scott J. Roberts <scott.roberts@gmail.com> [commit] (754 followers)
+  FOUND Ivan Leo <ivanleomk@gmail.com> [profile] (197 followers)
+  FOUND Daniel Artine <dan.artine@gmail.com> [commit] (241 followers)
+  FOUND Abedalraheem <asaqa001@gmail.com> [commit] (736 followers)
+  FOUND Alexsandro Souza <apssouza22@gmail.com> [profile] (212 followers)
+  FOUND Emerson Paduan <emerson@paduan.dev.br> [profile] (213 followers)
+  FOUND Justin Henderson <jhenderson@tekrefresh.com> [profile] (315 followers)
+  FOUND Jimmy Oty <jimmytron17@gmail.com> [profile] (151 followers)
+  FOUND Alice Zhao <alice.x.zhao@gmail.com> [commit] (2517 followers)
+  FOUND Mohamed Elsherbiny <mohamedelsherbinydev@gmail.com> [commit] (165 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Ivan Storck <ivanoats@gmail.com> [commit] (336 followers)
+  FOUND Yusuf YAMAN <yamanyusuf00000@gmail.com> [commit] (232 followers)
+  FOUND John Tsevdos <tsevdosjohn@gmail.com> [profile] (234 followers)
+  FOUND Mahmoud Ben Hassine <mahmoud.benhassine@icloud.com> [commit] (701 followers)
+  SKIP jaydip1235 -- no email found
+  FOUND Alan Davis // Rainbow <neptunius@gmail.com> [commit] (174 followers)
+  FOUND Adam Spannbauer <SpannbauerAdam@gmail.com> [profile] (217 followers)
+  FOUND SD <info.said.dev@gmail.com> [profile] (185 followers)
+  FOUND Joseph Ortiz <joe@speakinginbits.com> [commit] (175 followers)
+  FOUND Carlos Solis <carlos.solis.d@gmail.com> [commit] (485 followers)
+  FOUND Ilkka Kokkarinen <ilkka.kokkarinen@gmail.com> [profile] (157 followers)
+  FOUND Akash Das <mfs.akash@gmail.com> [profile] (292 followers)
+  FOUND Geandro Araújo <geandro_a@hotmail.com> [commit] (194 followers)
+  FOUND Henrique Baeta Leite <hbaetaleite@gmail.com> [commit] (263 followers)
+  FOUND Nathan Stocks <nathan.stocks@gmail.com> [profile] (1107 followers)
+  FOUND Stefano Magni <nori.ste.magni@gmail.com> [profile] (387 followers)
+  FOUND Damien Burks <damien@damienjburks.com> [commit] (162 followers)
+  FOUND Pravin Mishra <mail@pravinmishra.in> [commit] (209 followers)
+  FOUND Viviana Márquez <vivianamarquez305@gmail.com> [commit] (281 followers)
+  FOUND Hunter Chapman <bootcoder@gmail.com> [profile] (154 followers)
+  FOUND thamudi <tamim_hamoudi@outlook.com> [commit] (181 followers)
+  FOUND Marcelo Diament <marcelo@djament.com.br> [profile] (307 followers)
+  FOUND Deepali Srivastava <deepalisriv9@gmail.com> [profile] (258 followers)
+  FOUND Víctor Román Archidona <victor@victorroman.es> [commit] (157 followers)
+  FOUND Amit Srivastava <amit.srivastava4all@gmail.com> [profile] (463 followers)
+  FOUND Kyrillos Maher Fekry Fanous <kyrillosmaherfekri@gmail.com> [profile] (151 followers)
+  FOUND Artem Bondar <artem.bondar@gmail.com> [commit] (272 followers)
+  FOUND Xiaojie Sun <xjsun1221@163.com> [commit] (175 followers)
+  SKIP maximofernandezriera -- no email found
+  FOUND David Revoy <info@davidrevoy.com> [profile] (343 followers)
+  FOUND Gaoxiang Liao <liaogx666@gmail.com> [commit] (245 followers)
+  FOUND Ron Marasigan <h4ckw1z@gmail.com> [commit] (627 followers)
+  FOUND Daniel Mårtensson <daniel.martensson100@outlook.com> [commit] (380 followers)
+  FOUND Jacob Elliott <jacob@jseis.me> [commit] (179 followers)
+  FOUND Rainer Grimm <rainer@grimm-jaud.de> [profile] (464 followers)
+  FOUND John Rofrano <johnnyroy@johnrofrano.com> [commit] (205 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Ismael Valenzuela <ismael.valenzuela@gmail.com> [commit] (313 followers)
+  FOUND Mark Lehr <mlehrjava@gmail.com> [commit] (261 followers)
+  SKIP Da7rkx0 -- no email found
+  FOUND Ray Phan <rphan@ea.com> [profile] (153 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Alda Rocha <mj.coffeeholick@gmail.com> [profile] (308 followers)
+  FOUND jhyago <jaquesantunes@protonmail.com> [commit] (307 followers)
+  FOUND Dirane TAFEN <diranetafen@yahoo.com> [profile] (225 followers)
+  FOUND Radhika Goswami <Radhika.divineCoding@gmail.com> [commit] (169 followers)
+  FOUND Yasemin Arslan <oran.yasemin@gmail.com> [commit] (239 followers)
+  FOUND Gabriel Muñoz <gabriel.munoz@arbusta.net> [commit] (155 followers)
+  FOUND Erik Frits <erikfrits95@gmail.com> [commit] (207 followers)
+  FOUND Joost van Veen <joost@accentinteractive.nl> [profile] (227 followers)
+  FOUND Orkun Durmaz <orkundurmaz90@gmail.com> [commit] (211 followers)
+  Network error (ReadTimeout) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  Network error (ConnectionError) — retrying in 3s...
+  Network error (ConnectionError) — retrying in 6s...
+  Network error (ConnectionError) — retrying in 12s...
+  Network error (ConnectionError) — retrying in 24s...
+  Network error (ConnectionError) — retrying in 48s...
+  SKIP mulaRahul -- no email found
+
+------------------------------------------------------------
+Query: "coding tutorials" in:bio followers:>200
+Found 2 users
+
+------------------------------------------------------------
+Query: "building in public" in:bio followers:>200
+Found 5 users
+  FOUND Matti Nannt <mail@matti.sh> [commit] (248 followers)
+  FOUND Ege Uysal <hi@egeuysal.com> [profile] (267 followers)
+  FOUND Soham Patil <sohamkyo@gmail.com> [profile] (841 followers)
+  FOUND tonbi <tonbistudio@gmail.com> [profile] (233 followers)
+  FOUND ByteBreakeGhost <yasyfinance.9@gmail.com> [profile] (246 followers)
+
+------------------------------------------------------------
+Query: "open source" "maintainer" in:bio followers:>300
+Found 62 users
+  FOUND Stefan Prodan <stefan.prodan@gmail.com> [commit] (8228 followers)
+  FOUND Dirkjan Ochtman <dirkjan@ochtman.nl> [commit] (1517 followers)
+  FOUND Anton Zhiyanov <m@antonz.org> [profile] (1598 followers)
+  SKIP XhmikosR -- no email found
+  FOUND Tobias Preuss <tobias.preuss@googlemail.com> [commit] (331 followers)
+  FOUND Tobiloba Adedeji 🦀 <adedejitobiloba7@gmail.com> [commit] (636 followers)
+  Network error (SSLError) — retrying in 3s...
+  FOUND Abraham Williams <4braham@gmail.com> [commit] (1605 followers)
+  FOUND Richard Littauer <richard+github@burntfen.com> [profile] (3161 followers)
+  FOUND 绅士喵 <contact@hentioe.dev> [profile] (534 followers)
+  FOUND William Woodruff <william@yossarian.net> [profile] (1200 followers)
+  FOUND Claudio Wunder <cwunder@gnome.org> [profile] (942 followers)
+  FOUND Rupali Haldiya <rupali7487@gmail.com> [commit] (732 followers)
+  FOUND Gautam krishna R <hello@gautamkrishnar.com> [profile] (2339 followers)
+  FOUND David <halfpacho@gmail.com> [profile] (1102 followers)
+  FOUND Matt Brictson <hello@mattbrictson.com> [profile] (473 followers)
+  SKIP brc-dd -- no email found
+  FOUND Postmodern <postmodern.mod3@gmail.com> [profile] (1154 followers)
+  FOUND François Voron <me@fvoron.com> [commit] (491 followers)
+  FOUND Andreas Braun <git@alcaeus.org> [commit] (311 followers)
+  FOUND Thibault Malbranche <malbranche.thibault@gmail.com> [commit] (431 followers)
+  FOUND Matt Stauffer <matt@tighten.co> [commit] (2310 followers)
+  FOUND Max Base <MaxBaseCode@Gmail.Com> [profile] (5560 followers)
+  FOUND Dustin Kirkland <dustin.kirkland@gmail.com> [profile] (371 followers)
+  FOUND Aakansha Doshi <aakansha1216@gmail.com> [profile] (1409 followers)
+  FOUND Paolo Rotolo <paolo@rotolo.dev> [commit] (848 followers)
+  FOUND Baptiste Zahnow <baptistezahnow@gmail.com> [commit] (386 followers)
+  FOUND Netanel Basal <netanel7799@gmail.com> [commit] (1606 followers)
+  FOUND Pelle Wessman <pelle@kodfabrik.se> [profile] (595 followers)
+  SKIP NGPixel -- no email found
+  FOUND Hein Rutjes <hrutjes@gmail.com> [profile] (933 followers)
+  FOUND Ben Ramsey <ben@ramsey.dev> [profile] (1699 followers)
+  SKIP p-l- -- no email found
+  FOUND Florian Lefebvre <contact@florian-lefebvre.dev> [profile] (317 followers)
+  FOUND Ralf Gommers <ralf.gommers@gmail.com> [profile] (889 followers)
+  SKIP jorisvandenbossche -- no email found
+  SKIP hugovk -- no email found
+  FOUND Atomys <contact@atomys.fr> [profile] (825 followers)
+  FOUND Rob Larsen <rob@htmlcssjavascript.com> [profile] (543 followers)
+  SKIP TimvdLippe -- no email found
+  FOUND Manuel Gil @imgildev <atencion.ms@outlook.com> [profile] (359 followers)
+  FOUND Hongcai Ren <qdurenhongcai@gmail.com> [profile] (543 followers)
+  SKIP rabernat -- no email found
+  FOUND zoey <zoey.spessanha@zeetech.io> [profile] (399 followers)
+  FOUND Fábio C. Barrionuevo da Luz <bnafta@gmail.com> [profile] (366 followers)
+  FOUND Alexey Pyltsyn <lex@php.net> [profile] (1257 followers)
+  FOUND Lars Gyrup Brink Nielsen <larsbrinknielsen@gmail.com> [profile] (541 followers)
+  SKIP svlandeg -- no email found
+  FOUND Vlad Frangu <me@vladfrangu.dev> [profile] (454 followers)
+  FOUND Adam Sitnik <adam.sitnik@microsoft.com> [profile] (877 followers)
+  FOUND Kevin Wang <kevinwzf0126@gmail.com> [commit] (487 followers)
+  FOUND Jeff Widman <jeff@jeffwidman.com> [profile] (471 followers)
+  FOUND Alexander F. Rødseth <rodseth@gmail.com> [commit] (644 followers)
+  FOUND Stephan Meijer <stephan.meijer@gmail.com> [profile] (324 followers)
+  SKIP wellwelwel -- no email found
+  FOUND Tomas Della Vedova <tommydelved@gmail.com> [commit] (1551 followers)
+  FOUND Francis Gulotta <wizard@roborooter.com> [commit] (478 followers)
+  FOUND Ruchi Pakhle <ruchipakhle@gmail.com> [commit] (384 followers)
+  FOUND Kevin Papst <kevin@kevinpapst.de> [commit] (685 followers)
+
+------------------------------------------------------------
+Query: "oss maintainer" in:bio followers:>200
+Found 11 users
+  FOUND Graham Campbell <hello@gjcampbell.co.uk> [commit] (7071 followers)
+  SKIP jrfnl -- no email found
+  FOUND Thomas G. Lopes <thomasgl@pm.me> [commit] (525 followers)
+  FOUND Murat Mirgün ERCAN <muratmirgunercan225@gmail.com> [commit] (306 followers)
+  FOUND Douglas Nassif Roma Junior <douglas.junior@db1.com.br> [commit] (504 followers)
+  FOUND Koudai Aono <koxudaxi@gmail.com> [profile] (554 followers)
+  FOUND Minseok Song <skytin1004@gmail.com> [commit] (318 followers)
+  FOUND Assah Bismark <assah9799@gmail.com> [commit] (245 followers)
+  FOUND Sacha DSO <sachadso@gmail.com> [profile] (357 followers)
+  FOUND Evan Plaice <evanplaice@gmail.com> [profile] (257 followers)
+  FOUND Kevin Van Cott <kevinvandy656@gmail.com> [commit] (548 followers)
+
+------------------------------------------------------------
+Query: "open source" "creator" in:bio followers:>300
+Found 61 users
+  FOUND Dima Grossman <dima@grossman.io> [profile] (2720 followers)
+  FOUND Federico Zivolo <federico.zivolo@gmail.com> [commit] (2151 followers)
+  FOUND devin ivy <devinivy@gmail.com> [profile] (402 followers)
+  FOUND Barry vd. Heuvel <barry@fruitcake.nl> [commit] (6886 followers)
+  FOUND Aman Karmani <aman@tmm1.net> [profile] (3058 followers)
+  FOUND Martijn van Dijk <mhvdijk@gmail.com> [profile] (818 followers)
+  FOUND Armin Ronacher <armin.ronacher@active-4.com> [profile] (24838 followers)
+  FOUND CosmoX <cosmo.lepton@gmail.com> [profile] (857 followers)
+  FOUND Federico Terzi <federicoterzi96@gmail.com> [commit] (787 followers)
+  FOUND Dav Glass <davglass@gmail.com> [profile] (1097 followers)
+  FOUND Lorenz Meier <lorenz@px4.io> [profile] (1223 followers)
+  FOUND Joel Parker Henderson <joel@joelparkerhenderson.com> [profile] (1695 followers)
+  FOUND Sebastián Ramírez <tiangolo@gmail.com> [profile] (31393 followers)
+  FOUND Bunlong VAN <bunlong.van@gmail.com> [commit] (2120 followers)
+  FOUND Duncan Ogilvie <mr.exodia.tpodt@gmail.com> [commit] (3633 followers)
+  SKIP mrholek -- no email found
+  FOUND Ilya Kreymer <ikreymer@gmail.com> [commit] (507 followers)
+  FOUND Kevin Woblick <mail@woblick.dev> [profile] (346 followers)
+  FOUND Vinicius Stock <vinicius.stock@shopify.com> [commit] (498 followers)
+  FOUND Kévin Dunglas <kevin@dunglas.fr> [profile] (4576 followers)
+  FOUND Sébastien Eustace <sebastien@eustace.io> [profile] (2266 followers)
+  FOUND José Cage  <josejanuario7@gmail.com> [commit] (405 followers)
+  FOUND Radu Matei <radu@fermyon.com> [profile] (628 followers)
+  FOUND Calesthio <celesthioailabs@gmail.com> [profile] (323 followers)
+  FOUND Eduardo Bart <edub4rt@gmail.com> [profile] (750 followers)
+  FOUND Hassan Tahir <info.hassantahir@gmail.com> [profile] (382 followers)
+  SKIP kantorcodes -- no email found
+  FOUND Alexandru Mariuti <alex@mariuti.com> [profile] (311 followers)
+  FOUND Aofei Sheng <aofei@aofeisheng.com> [profile] (589 followers)
+  FOUND Cory Benfield <cory@lukasa.co.uk> [profile] (1386 followers)
+  FOUND Milad Akarie <milad.akarie@gmail.com> [commit] (674 followers)
+  FOUND Terence Parr <parrt@antlr.org> [profile] (2412 followers)
+  FOUND Fernando Pérez <fernando.perez@berkeley.edu> [profile] (1563 followers)
+  FOUND Christoffer Niska <christofferniska@gmail.com> [commit] (313 followers)
+  SKIP tw4 -- no email found
+  FOUND Hung Viet Nguyen <nguyenviethunghl00@gmail.com> [commit] (689 followers)
+  FOUND Ryan Nowak <nowakra@gmail.com> [commit] (783 followers)
+  FOUND Antony Jones <antony@beyonk.com> [commit] (381 followers)
+  FOUND Ione Souza Junior <junior@ionixjunior.com.br> [profile] (445 followers)
+  FOUND Steve Richert <steve.richert@hey.com> [profile] (344 followers)
+  FOUND vongosling <vongosling@apache.org> [profile] (575 followers)
+  FOUND Eric Amodio <eamodio@gmail.com> [commit] (883 followers)
+  FOUND Phil Ewels <phil.ewels@seqera.io> [profile] (875 followers)
+  FOUND Aral Roca Gomez <contact@aralroca.com> [profile] (406 followers)
+  SKIP milla-jovovich -- no email found
+  SKIP gerivanc -- no email found
+  FOUND J.D Nicholls <jdnichollsc@hotmail.com> [profile] (592 followers)
+  FOUND Michael Kühnel <mail@michael-kuehnel.de> [commit] (460 followers)
+  FOUND Mike Fix <mrfix84@gmail.com> [profile] (607 followers)
+  FOUND Michael R Sweet <msweet@msweet.org> [commit] (404 followers)
+
+------------------------------------------------------------
+Query: "founder" "building" in:bio followers:>200
+Found 87 users
+  FOUND Sunil Sandhu <hello@sunilsandhu.com> [profile] (269 followers)
+  FOUND Tao Wu <wutao.as.neverchanje@gmail.com> [profile] (274 followers)
+  FOUND Andrew Gerst <gerst20051@gmail.com> [profile] (202 followers)
+  SKIP M0nica -- no email found
+  FOUND Salih <contact@salih.guru> [profile] (285 followers)
+  FOUND Syed Fazle Rahman <fazle@hashnode.com> [profile] (260 followers)
+  FOUND Manuel Ernesto Garcia <contact.manuelernestog@gmail.com> [profile] (378 followers)
+  FOUND Olaf Alders <olaf@wundersolutions.com> [profile] (273 followers)
+  FOUND Shahid Shaikh <hello@shaikhshahid.com> [profile] (244 followers)
+  FOUND Rotem Weiss <rotem@tavily.com> [profile] (202 followers)
+  FOUND Han Ngo <nntruonghan@gmail.com> [commit] (224 followers)
+  FOUND Sanket Sahu <sanket@geekyants.com> [commit] (355 followers)
+  FOUND Siddhant Goswami <goswami.siddh@gmail.com> [profile] (479 followers)
+  FOUND Matt Baer <matt@write.as> [commit] (308 followers)
+  FOUND Jake Klinker <jklinker1@gmail.com> [profile] (406 followers)
+  FOUND Victor Castell <0x@vcastellm.xyz> [commit] (239 followers)
+  FOUND Debanjum <debanjum@gmail.com> [commit] (308 followers)
+  FOUND Yuri Pereira <yuri.pramos@gmail.com> [profile] (231 followers)
+  FOUND Areski Belaid <areski@gmail.com> [profile] (279 followers)
+  FOUND Jaber Jaber <jaberib647@gmail.com> [commit] (409 followers)
+  FOUND Peter Bull <peter@drivendata.org> [commit] (410 followers)
+  FOUND Terry Zhang <terryzhang@llamagen.ai> [profile] (365 followers)
+  FOUND Conor Svensson <conor10@gmail.com> [commit] (248 followers)
+  FOUND Maksym Bezditko <mb.preply.1@gmail.com> [commit] (294 followers)
+  SKIP omeraplak -- no email found
+  SKIP AgriciDaniel -- no email found
+  FOUND Moinul Moin <contact@moinulmoin.com> [profile] (218 followers)
+  SKIP missinglink -- no email found
+  SKIP Joeysantoro -- no email found
+  FOUND Chita John  <onyedikachi.john.chita1@gmail.com> [commit] (479 followers)
+  SKIP LuD1161 -- no email found
+  FOUND Agro <agen.traveloku@gmail.com> [commit] (225 followers)
+  SKIP zeroc0d3 -- no email found
+  FOUND Adhithi Ravichandran <adhithiravi@gmail.com> [commit] (390 followers)
+  SKIP shuvonsec -- no email found
+  SKIP rahuloraj -- no email found
+  FOUND Micah Rich <micah@micahrich.com> [profile] (203 followers)
+  FOUND Suren Atoyan <contact@surenatoyan.com> [profile] (330 followers)
+  FOUND Aljaz <aljaz@ceru.si> [commit] (247 followers)
+  FOUND Darlington Gospel <darlingtongospel@gmail.com> [profile] (355 followers)
+  FOUND Naresh <ghostwriternr@gmail.com> [profile] (467 followers)
+  FOUND Yuri Astrakhan <yuriastrakhan@gmail.com> [profile] (427 followers)
+  FOUND Mickaël Rémond <mremond@process-one.net> [profile] (238 followers)
+  SKIP zinkxx -- no email found
+  FOUND Shawn Yang <shawn.ck.yang@gmail.com> [profile] (407 followers)
+  SKIP JustinArenstein -- no email found
+  FOUND Dmitriy Akulov <dakulovgr@gmail.com> [profile] (246 followers)
+  FOUND David  Mugambi <davidmugambi104@gmail.com> [commit] (216 followers)
+  FOUND Ayush Bhardwaj <classicayush@gmail.com> [profile] (335 followers)
+  FOUND Nikita Karaev <nikita@robots.ox.ac.uk> [profile] (208 followers)
+  FOUND Samuel Alayande <samuelkunle316@gmail.com> [commit] (363 followers)
+  FOUND Debjoty Mitra <debjotyms@gmail.com> [commit] (214 followers)
+  FOUND serafim <serafimcloud@gmail.com> [commit] (330 followers)
+  FOUND patrick szymkowiak <patrick.szymkowiak@innovtech.eu> [commit] (221 followers)
+  FOUND Martin Vigo <martin@martinvigo.com> [profile] (483 followers)
+  FOUND DalleFX <cryptodai3@gmail.com> [commit] (215 followers)
+  SKIP RyanBlundell -- no email found
+  FOUND 科技lion <kejilion@gmail.com> [commit] (421 followers)
+
+------------------------------------------------------------
+Query: "co-founder" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "ceo" "founder" in:bio followers:>200
+Found 224 users
+  SKIP ceoguy -- no email found
+  FOUND Niall Crosby <niall.crosby@gmail.com> [commit] (251 followers)
+  FOUND AngularNinja.com <born2net@gmail.com> [profile] (322 followers)
+  FOUND Fika Ridaul Maulayya <ridaulmaulayya@gmail.com> [profile] (308 followers)
+  SKIP ddneves -- no email found
+  FOUND Alexander Gallego <gallego.alexx@gmail.com> [commit] (322 followers)
+  FOUND Jonathan Vukovich <jonathan@eivo.fr> [commit] (357 followers)
+  FOUND Mark Fisher <markfisher@vmware.com> [commit] (334 followers)
+  FOUND Felipe Oliveira <fpo@felipeweb.dev> [profile] (314 followers)
+  FOUND Jack Cable <jackhcable@gmail.com> [commit] (304 followers)
+  FOUND Sara Itani <itani@outlook.com> [profile] (234 followers)
+  SKIP alvin-kiveu -- no email found
+  SKIP pethers -- no email found
+  FOUND Ronit Mevada <ronitmevadawork@gmail.com> [commit] (288 followers)
+  FOUND Greg Osuri <me@gregosuri.com> [commit] (471 followers)
+  SKIP liroyleshed -- no email found
+  FOUND Romaric Philogène <evoxmusic@gmail.com> [profile] (202 followers)
+  FOUND Paul Stovell <paul.stovell@octopus.com> [profile] (263 followers)
+  FOUND Tom Wilson <twilson63@gmail.com> [commit] (481 followers)
+  FOUND Guy Korland <gkorland@gmail.com> [profile] (262 followers)
+  FOUND Boris Tane <boris.tane@gmail.com> [commit] (205 followers)
+  FOUND Jonathan Schnéider <jkschneider@gmail.com> [profile] (346 followers)
+  FOUND Pierre Burgy <pierre@strapi.io> [commit] (250 followers)
+  FOUND Jared <jaredbroad@gmail.com> [commit] (420 followers)
+  FOUND Jake Hoffner <jake.hoffner@gmail.com> [commit] (384 followers)
+  FOUND Yuval Hazaz <yuval@overcut.ai> [profile] (214 followers)
+  SKIP qingyun-wu -- no email found
+  SKIP nimrodkra -- no email found
+  FOUND Stevie Graham <sg@teller.io> [profile] (276 followers)
+  FOUND Koichi NAKAMURA <koichi@idein.jp> [profile] (356 followers)
+  FOUND azul <azul.garza.r@gmail.com> [profile] (489 followers)
+  SKIP emirhanai -- no email found
+  FOUND Abhijit Tripathy <abhijittripathy99@gmail.com> [profile] (318 followers)
+  FOUND Marcin Warpechowski <warpech@gmail.com> [commit] (225 followers)
+  FOUND Jan Paepke <e-mail@janpaepke.de> [profile] (429 followers)
+  FOUND bst04 <bruno.salvateich@gmail.com> [commit] (255 followers)
+  FOUND Simone Rizzo <official.simone.rizzo@gmail.com> [commit] (351 followers)
+  FOUND Jesus Manuel Olivas <jesus.olivas@gmail.com> [profile] (315 followers)
+  SKIP oliviertassinari -- no email found
+  FOUND Automatic-House.ro <simedruflorin@yahoo.com> [profile] (414 followers)
+  FOUND Ren Kimura <renk@ricsec.co.jp> [profile] (342 followers)
+  FOUND Yu-An Chan <scya597@gmail.com> [profile] (214 followers)
+  FOUND Varun Chitre <varun.chitre15@gmail.com> [commit] (330 followers)
+  SKIP pfankhauser -- no email found
+  SKIP NagliNagli -- no email found
+  FOUND Dickens odera <dickensodera9@gmail.com> [profile] (309 followers)
+  FOUND Werner Robitza <werner.robitza@gmail.com> [commit] (333 followers)
+  FOUND Ryan Schmukler <rschmukler@gmail.com> [commit] (366 followers)
+  SKIP striver79 -- no email found
+  SKIP chalasr -- no email found
+  FOUND Kazuki Ohta <kazuki.ohta@gmail.com> [profile] (275 followers)
+  FOUND Robert Moss <rmoss92@gmail.com> [commit] (283 followers)
+  FOUND Alexander Dean <alex@snowplowanalytics.com> [profile] (227 followers)
+  FOUND Mohab Mohammed <mohab.moh7000@gmail.com> [commit] (270 followers)
+  FOUND Doug Burks <doug.burks@securityonionsolutions.com> [profile] (270 followers)
+  FOUND Joe Doliner <jdoliner@gmail.com> [commit] (204 followers)
+  SKIP reinpk -- no email found
+  FOUND Lalith Suresh <lalith@feldera.com> [commit] (201 followers)
+  FOUND Salman Ahmad <sheikhsalmanahmedofficial@gmail.com> [commit] (269 followers)
+  FOUND Yilei <hi@mangoumbrella.com> [profile] (320 followers)
+  FOUND Shun Lin <linshun.amoy@gmail.com> [profile] (207 followers)
+  FOUND Luffy Yu <sy679@cornell.edu> [profile] (222 followers)
+  FOUND Yves Junqueira <yves.junqueira@gmail.com> [commit] (242 followers)
+  FOUND Fouad Matin <m@fouad.org> [profile] (228 followers)
+  FOUND Nikola Hristov <Nikola@PlayForm.Cloud> [profile] (233 followers)
+  FOUND Tom Lehman <tom.s.lehman@gmail.com> [commit] (216 followers)
+  SKIP parano -- no email found
+  FOUND gyyang <gyyang.neuro@gmail.com> [commit] (260 followers)
+  FOUND AGD <agdholo@outlook.com> [profile] (382 followers)
+  FOUND Samuel Hassine <samuel.hassine@filigran.io> [profile] (227 followers)
+  FOUND Beenu Arora <beenu.a.arora@gmail.com> [commit] (290 followers)
+  FOUND Justin Duke <justin@buttondown.email> [profile] (242 followers)
+  FOUND DominikAngerer <da@storyblok.com> [profile] (216 followers)
+  FOUND Peter Rotich <peter@rotich.com> [profile] (208 followers)
+  FOUND Adam Yala <yala@berkeley.edu> [profile] (201 followers)
+  FOUND Marc Laventure <marc@scalar.com> [profile] (321 followers)
+  SKIP pventuzelo -- no email found
+  SKIP albertvillanova -- no email found
+  SKIP anurag -- no email found
+  SKIP 0xNyk -- no email found
+  SKIP ayyucekizrak -- no email found
+  FOUND Reyk Floeter <contact@reykfloeter.com> [commit] (388 followers)
+  FOUND Remi_IO <remi@kig.land> [profile] (468 followers)
+  SKIP hoffmang9 -- no email found
+  FOUND DEVANG SHARMA <devshu25@gmail.com> [profile] (378 followers)
+  FOUND Pascal Borreli <pascal@borreli.com> [profile] (426 followers)
+  FOUND imran parray <parrayimran5@gmail.com> [commit] (325 followers)
+  FOUND Wei-Ning Huang <aitjcize@gmail.com> [profile] (308 followers)
+  FOUND David Vavra <david.vavra@greencode.cz> [profile] (229 followers)
+  FOUND Andrew Ikenberry <andrew@qubitelectronix.com> [profile] (201 followers)
+  FOUND Blandskron <bastianlandskronfreelancer@gmail.com> [commit] (473 followers)
+  FOUND Douwe Maan <hi@douwe.me> [profile] (471 followers)
+  FOUND Sabuj Kundu <sabuj@codeboxr.com> [profile] (216 followers)
+  FOUND Manu Sporny <msporny@digitalbazaar.com> [profile] (422 followers)
+  FOUND Irene Alvarado <ire.alvarado@gmail.com> [commit] (463 followers)
+  FOUND Tatsuya Shiozawa <shio.tatsu99@gmail.com> [profile] (241 followers)
+  SKIP qinxuye -- no email found
+  FOUND Jeff Sagal <jeff@springloaded.co> [profile] (340 followers)
+  FOUND Samuel Sutch <sam@sutch.net> [profile] (201 followers)
+  FOUND Ilya Kuzovkin <ilya.kuzovkin@gmail.com> [profile] (290 followers)
+  FOUND Vivek Prakash <vivek.cs.iitr@gmail.com> [profile] (249 followers)
+  FOUND Sam Lanning <sam@samlanning.com> [profile] (216 followers)
+  SKIP Jhoel777ar -- no email found
+  FOUND Imtiaz Ahmed <ia64744@gmail.com> [profile] (334 followers)
+  FOUND Nate Smith <nate@nateps.com> [commit] (390 followers)
+  FOUND Tobi Knaup <tobi@knaup.me> [commit] (227 followers)
+  FOUND Herman Zvonimir Došilović <hermanz.dosilovic@gmail.com> [commit] (283 followers)
+  FOUND Vinay Uday Prabhu <vinayup@gmail.com> [commit] (237 followers)
+  FOUND Francisco Gonzalez-Longatt <fglongatt@fglongatt.org> [profile] (303 followers)
+  FOUND Eduardo Silva Pereira <eduardo@chronosphere.io> [profile] (277 followers)
+  FOUND Justin Gordon <justin@shakacode.com> [profile] (432 followers)
+  FOUND Amor <amor90s.zhang@gmail.com> [profile] (412 followers)
+  SKIP Keller-Michael -- no email found
+  FOUND Ville Tuulos <tuulos@gmail.com> [profile] (262 followers)
+  FOUND rabble <evan@protest.net> [profile] (406 followers)
+  FOUND Tony Holdstock-Brown <tonyhb@gmail.com> [commit] (246 followers)
+  SKIP ifpdz -- no email found
+  FOUND Anh Tran <rilwis@gmail.com> [commit] (262 followers)
+  FOUND Aapo Kyrola <aapo@timeatlaslabs.com> [profile] (264 followers)
+  SKIP yanokwa -- no email found
+  SKIP mattab -- no email found
+  FOUND Takuya Tejima <tejitak@hotmail.com> [profile] (206 followers)
+  FOUND Jon <jon.jones.home@gmail.com> [commit] (290 followers)
+  SKIP udidahan -- no email found
+  SKIP Sk1er -- no email found
+
+------------------------------------------------------------
+Query: "indie hacker" in:bio followers:>200
+Found 22 users
+  FOUND Manh Nguyen <nguyenmanhdung1710@gmail.com> [commit] (221 followers)
+  FOUND kk <guyskk@qq.com> [profile] (361 followers)
+  FOUND Suman Sharma <me8848you@gmail.com> [commit] (386 followers)
+  FOUND 阿基米东 <luhuadong@163.com> [profile] (204 followers)
+  FOUND johackim <contact@johackim.com> [profile] (221 followers)
+  FOUND wyuhuan <shouheng2022@gmail.com> [profile] (352 followers)
+  FOUND Vinoth <vinothvino42@gmail.com> [profile] (258 followers)
+  FOUND Adeen Shukla <adeen@adeen.me> [profile] (281 followers)
+  FOUND Mark <shawninjuly@gmail.com> [profile] (240 followers)
+  FOUND Xiaoyun Yang <yangx232@gmail.com> [profile] (211 followers)
+  SKIP mymadhavyadav07 -- no email found
+  FOUND Kavin Liu <kavin.c.liu@gmail.com> [profile] (247 followers)
+
+------------------------------------------------------------
+Query: "indie maker" in:bio followers:>200
+Found 8 users
+  SKIP wslyvh -- no email found
+  FOUND Jun Lin <linjunpop@gmail.com> [profile] (311 followers)
+  FOUND Burak Tokak <iletisim@buraktokak.com> [commit] (233 followers)
+  FOUND Sasha Koss <koss@nocorp.me> [profile] (783 followers)
+  FOUND 嚴肅遊戲 <kussssss@outlook.com> [profile] (210 followers)
+  FOUND Soheil Rashidi <contact@soheilrashidi.com> [commit] (273 followers)
+
+------------------------------------------------------------
+Query: "bootstrapped" in:bio followers:>150
+Found 2 users
+
+------------------------------------------------------------
+Query: "solopreneur" in:bio followers:>150
+Found 10 users
+  FOUND Csaba Kissi <ckissi@gmail.com> [commit] (280 followers)
+  SKIP ai-ml-architect -- no email found
+  SKIP amankharwal -- no email found
+  FOUND Martin Barreto <mtn.barreto@gmail.com> [commit] (206 followers)
+
+------------------------------------------------------------
+Query: "making" "indie" in:bio followers:>200
+Found 7 users
+  FOUND Ovilia <me@zhangwenli.com> [profile] (16054 followers)
+  FOUND Endel Dreyer <endel.dreyer@gmail.com> [commit] (914 followers)
+  FOUND 钰猫 <yuzhang.lille@gmail.com> [profile] (496 followers)
+  FOUND vijay verma <hi@vjy.me> [profile] (493 followers)
+  FOUND Justin Miller <incanus@codesorcery.net> [profile] (404 followers)
+  FOUND Joe Fabisevich <joe@fabisevi.ch> [commit] (518 followers)
+
+------------------------------------------------------------
+Query: "head of marketing" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "vp of marketing" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "growth marketing" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "content marketing" in:bio followers:>200
+Found 1 users
+
+------------------------------------------------------------
+Query: "growth hacker" in:bio followers:>200
+Found 0 users
+
+------------------------------------------------------------
+Query: "product marketing" in:bio followers:>200
+Found 8 users
+  SKIP kmruddy -- no email found
+
+============================================================
+Done. 1204 new leads saved to C:\Users\PC\fork\OziGi\github_leads.csv

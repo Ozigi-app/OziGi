@@ -42,8 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: post.date,
       modifiedTime: post.modifiedTime || post.date,
       authors: post.author ? [post.author] : [],
-      // images omitted — opengraph-image.tsx in this segment generates
-      // a branded PNG per post, which Next.js registers automatically
+      images: [{ url: `https://blog.ozigi.app/blog/${slug}/opengraph-image`, width: 1200, height: 630, alt: post.title }],
       section: post.section || "Blog",
       tags: post.keywords || post.categories || [],
     },
@@ -51,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       card: "summary_large_image",
       title: post.title,
       description: post.description || post.excerpt || "",
-      // images omitted — resolved from opengraph-image.tsx
+      images: [`https://blog.ozigi.app/blog/${slug}/opengraph-image`],
       creator: post.authorHandle || "@ozigi_app",
       site: "@ozigi_app",
     },

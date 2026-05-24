@@ -1,0 +1,1059 @@
+Loaded 351 leads from CSV.
+
+[1/351] Viktor Farcic <viktor@farcic.com>
+  Lead ID: 7425995000000712001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[2/351] James Ward <james@jamesward.com>
+  Lead ID: 7425995000000697005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[3/351] Gift Egwuenu <laurandidi21@gmail.com>
+  Lead ID: 7425995000000714001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[4/351] Yusuke Wada <yusuke@kamawada.com>
+  Lead ID: 7425995000000715001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[5/351] Anton Arhipov <ant.arhipov@gmail.com>
+  Lead ID: 7425995000000697007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[6/351] ちょまど | Madoka Chiyoda <chomado@gmail.com>
+  Lead ID: 7425995000000717001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[7/351] chris <noringc@gmail.com>
+  Lead ID: 7425995000000709007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[8/351] Trisha Gee <trisha.gee@gmail.com>
+  Lead ID: 7425995000000709009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[9/351] Jim Bennett <jimbobbennett@mac.com>
+  Lead ID: 7425995000000708005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[10/351] Bolaji Ayodeji <sirbeejay1@gmail.com>
+  Lead ID: 7425995000000706005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[11/351] Jecelyn Yeen <jec@google.com>
+  Lead ID: 7425995000000714003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[12/351] Holt Skinner <holtskinner@google.com>
+  Lead ID: 7425995000000712003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[13/351] Dennis Ivy <ivanovsin11@gmail.com>
+  Lead ID: 7425995000000713003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[14/351] Christian Nwamba <nwambachristian@gmail.com>
+  Lead ID: 7425995000000715003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[15/351] Mitch Koko <mitchell.h.koh@gmail.com>
+  Lead ID: 7425995000000697011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[16/351] Peter Friese <peter@peterfriese.de>
+  Lead ID: 7425995000000698007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[17/351] Yashovardhan Agrawal <yashovardhan.agrawal@gmail.com>
+  Lead ID: 7425995000000702005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[18/351] Amos Gyamfi <amosgyamfi.fi@gmail.com>
+  Lead ID: 7425995000000710007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[19/351] Nina Zakharenko <nzakharenko@gmail.com>
+  Lead ID: 7425995000000721001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[20/351] Yacine Rezgui <rezgui.y@gmail.com>
+  Lead ID: 7425995000000696005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[21/351] Danny Dainton <dannydainton@gmail.com>
+  Lead ID: 7425995000000704005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[22/351] Matt Soucoup <msoucoup@codemilltech.com>
+  Lead ID: 7425995000000696007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[23/351] Diego De Granda <degranda@gmail.com>
+  Lead ID: 7425995000000723001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[24/351] Burr Sutter <burrsutter@gmail.com>
+  Lead ID: 7425995000000712007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[25/351] Márton Braun <marton.braun@jetbrains.com>
+  Lead ID: 7425995000000697015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[26/351] Fatih Kadir Akın <fka@fka.dev>
+  Lead ID: 7425995000000716005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[27/351] Jordan Schuetz <ninjapig123@gmail.com>
+  Lead ID: 7425995000000725001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[28/351] Angie Jones <jones.angie@gmail.com>
+  Lead ID: 7425995000000718003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[29/351] TJ VanToll <tj.vantoll@gmail.com>
+  Lead ID: 7425995000000708007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[30/351] James Le <jl1165@rit.edu>
+  Lead ID: 7425995000000725005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[31/351] Rody Davis <rody.davis.jr@gmail.com>
+  Lead ID: 7425995000000722003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[32/351] Josh Long <josh@joshlong.com>
+  Lead ID: 7425995000000709013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[33/351] Viktor Gamov <gamussa@gmail.com>
+  Lead ID: 7425995000000698011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[34/351] Jessica Deen <jessicadeen@me.com>
+  Lead ID: 7425995000000719003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[35/351] Marlene  <marlenemhangami@gmail.com>
+  Lead ID: 7425995000000698013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[36/351] Matti Tahvonen <matti@vaadin.com>
+  Lead ID: 7425995000000712011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[37/351] Nicholas Jackson <jackson.nic@gmail.com>
+  Lead ID: 7425995000000715009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[38/351] Philippe Ozil <philippe.ozil@gmail.com>
+  Lead ID: 7425995000000710009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[39/351] Igor Wojda <igor.wojda@gmail.com>
+  Lead ID: 7425995000000718005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[40/351] Amagash <tiffanysouterre@gmail.com>
+  Lead ID: 7425995000000720003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[41/351] Alex Casalboni <alex@alexcasalboni.com>
+  Lead ID: 7425995000000723003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[42/351] Justin Yoo <justin.yoojh@gmail.com>
+  Lead ID: 7425995000000711007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[43/351] Naomi Carrigan <commits@nhcarrigan.com>
+  Lead ID: 7425995000000721005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[44/351] Guillaume Laforge <glaforge@gmail.com>
+  Lead ID: 7425995000000723007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[45/351] Dan Vega <danvega@gmail.com>
+  Lead ID: 7425995000000719005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[46/351] Deepu K Sasidharan <deepu.k.sasidharan@gmail.com>
+  Lead ID: 7425995000000712013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[47/351] Sam Dutton <dutton@google.com>
+  Lead ID: 7425995000000721007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[48/351] Nicolai Parlog <nicolai@nipafx.dev>
+  Lead ID: 7425995000000700007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[49/351] Kayla Cinnamon <cinnamon@microsoft.com>
+  Lead ID: 7425995000000725007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[50/351] Dmitri Soshnikov <dmitri@soshnikov.com>
+  Lead ID: 7425995000000711009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[51/351] Daniel Cranney <hello@danielcranney.com>
+  Lead ID: 7425995000000699007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[52/351] Ed Charbeneau <ed.charbeneau@gmail.com>
+  Lead ID: 7425995000000695011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[53/351] Aniket Pal <aniketindian8@gmail.com>
+  Lead ID: 7425995000000726003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[54/351] Liz Fong-Jones <lizf@honeycomb.io>
+  Lead ID: 7425995000000704007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[55/351] Pete LePage <pete.lepage@pobox.com>
+  Lead ID: 7425995000000715011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[56/351] Justin Tadlock <justintadlock@gmail.com>
+  Lead ID: 7425995000000716007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[57/351] Ashley Willis <ashleymcnamara1@gmail.com>
+  Lead ID: 7425995000000710013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[58/351] Anuj Garg <anujgargcse@gmail.com>
+  Lead ID: 7425995000000720005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[59/351] Sam Stern <samstern@google.com>
+  Lead ID: 7425995000000717005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[60/351] Idris Olubisi <heedris2olubisi@gmail.com>
+  Lead ID: 7425995000000701009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[61/351] Daniela Petruzalek <daniela.petruzalek@gmail.com>
+  Lead ID: 7425995000000704009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[62/351] Alan Pope <alan@popey.com>
+  Lead ID: 7425995000000708009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[63/351] Bramus <bramus@bram.us>
+  Lead ID: 7425995000000721009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[64/351] Phil Hawksworth <phawksworth@gmail.com>
+  Lead ID: 7425995000000710015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[65/351] Don Turner <donturner@google.com>
+  Lead ID: 7425995000000713009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[66/351] Aditya Oberai <adityaoberai1@gmail.com>
+  Lead ID: 7425995000000701011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[67/351] Kristian Freeman <kristian@kristianfreeman.com>
+  Lead ID: 7425995000000717007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[68/351] Shodipo Ayomide <me@shodipoayomide.com>
+  Lead ID: 7425995000000721011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[69/351] Rebecca Franks <riggaroo@google.com>
+  Lead ID: 7425995000000726005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[70/351] Andrew Brogdon <brogdon@gmail.com>
+  Lead ID: 7425995000000725009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[71/351] Paul Kinlan <paul.kinlan@gmail.com>
+  Lead ID: 7425995000000727001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[72/351] Saurabh Rai <srbh077@gmail.com>
+  Lead ID: 7425995000000707005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[73/351] Deven Joshi <deven9852@gmail.com>
+  Lead ID: 7425995000000722007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[74/351] Una Kravets <una.kravets@gmail.com>
+  Lead ID: 7425995000000714007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[75/351] Julien Dubois <julien.dubois@gmail.com>
+  Lead ID: 7425995000000712015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[76/351] Jaewoong Eum <skydoves2@gmail.com>
+  Lead ID: 7425995000000699009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[77/351] Pachi Parra <pachicodes@gmail.com>
+  Lead ID: 7425995000000702009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[78/351] Justin Braaten <braaten@google.com>
+  Lead ID: 7425995000000713011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[79/351] Phil Nash <philnash@gmail.com>
+  Lead ID: 7425995000000695013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[80/351] Jorge O. Castro <jorge.castro@gmail.com>
+  Lead ID: 7425995000000697017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[81/351] Mark McDonald <macd@google.com>
+  Lead ID: 7425995000000720007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[82/351] Edson Yanaga <edson@yanaga.io>
+  Lead ID: 7425995000000722009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[83/351] Thomas Steiner <tomac@google.com>
+  Lead ID: 7425995000000725011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[84/351] Luís Leão <eu@leao.dev>
+  Lead ID: 7425995000000714009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[85/351] Kurtis Kemple <kkemple@slack-corp.com>
+  Lead ID: 7425995000000722011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[86/351] Dan Wahlin <dwahlin@xmlforasp.net>
+  Lead ID: 7425995000000706009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[87/351] José Paumard <Jose.Paumard@gmail.com>
+  Lead ID: 7425995000000727003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[88/351] Akshit Madan <akmadan1717@gmail.com>
+  Lead ID: 7425995000000724005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[89/351] Justina Petraityte <justina.petraityte@gmail.com>
+  Lead ID: 7425995000000720009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[90/351] Justin Dorfman <justindorfman@gmail.com>
+  Lead ID: 7425995000000699011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[91/351] Erika Heidi <erika@erikaheidi.com>
+  Lead ID: 7425995000000701013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[92/351] Alex Albert <alexalbert@anthropic.com>
+  Lead ID: 7425995000000695015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[93/351] Islem Maboud <islem.maboud@gmail.com>
+  Lead ID: 7425995000000702011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[94/351] Pooja Bhaumik <pbhaumik26@gmail.com>
+  Lead ID: 7425995000000723011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[95/351] Geoffrey Logovi <geoffreylogovi2@gmail.com>
+  Lead ID: 7425995000000728001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[96/351] Rosário P. Fernandes <rosariofernandes51@gmail.com>
+  Lead ID: 7425995000000706011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[97/351] Alexander Lichter <github@lichter.io>
+  Lead ID: 7425995000000729001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[98/351] Kunal Verma <kverma.main@gmail.com>
+  Lead ID: 7425995000000704011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[99/351] paco xander nathan <ceteri@gmail.com>
+  Lead ID: 7425995000000701015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[100/351] Evan Lin <evanslin@gmail.com>
+  Lead ID: 7425995000000733001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[101/351] Eser Ozvataf <eser@acikyazilim.com>
+  Lead ID: 7425995000000706013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[102/351] José Dimas Luján Castillo <josedlujan@hotmail.com>
+  Lead ID: 7425995000000729005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[103/351] Wassim SAMAD <wass08@gmail.com>
+  Lead ID: 7425995000000722014
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[104/351] Geoffrey Grosenbach <boss@topfunky.com>
+  Lead ID: 7425995000000699013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[105/351] swyx.io <shawnthe1@gmail.com>
+  Lead ID: 7425995000000701019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[106/351] Felix-Ayush <ayushknj3@gmail.com>
+  Lead ID: 7425995000000706015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[107/351] Bruno Borges <brborges@microsoft.com>
+  Lead ID: 7425995000000701021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[108/351] Aaron Turner <aaron@aaronthedev.com>
+  Lead ID: 7425995000000704013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[109/351] Diogo Moretti <diogo.pearljam@gmail.com>
+  Lead ID: 7425995000000697019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[110/351] Liran Tal <liran.tal@gmail.com>
+  Lead ID: 7425995000000735001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[111/351] Cynthia Zanoni <cynthiazanoni@gmail.com>
+  Lead ID: 7425995000000720011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[112/351] Tim Berglund <tlberglund@gmail.com>
+  Lead ID: 7425995000000737001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[113/351] Joselito <eu@joseli.to>
+  Lead ID: 7425995000000704015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[114/351] lestrrat <lestrrat+github@gmail.com>
+  Lead ID: 7425995000000725015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[115/351] Natália F. Dev <natalia-321s@outlook.com>
+  Lead ID: 7425995000000735003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[116/351] Rob Conery <rob@conery.io>
+  Lead ID: 7425995000000704017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[117/351] David Pilato <david@pilato.fr>
+  Lead ID: 7425995000000706019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[118/351] Raymond Camden <raymondcamden@gmail.com>
+  Lead ID: 7425995000000723015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[119/351] Shahed Nasser <shahednasser@gmail.com>
+  Lead ID: 7425995000000728003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[120/351] wbamberg <will@openwebdocs.org>
+  Lead ID: 7425995000000735005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[121/351] Alex <blackanger.z@gmail.com>
+  Lead ID: 7425995000000739001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[122/351] Equan P. <dev@junwatu.com>
+  Lead ID: 7425995000000735007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[123/351] Votez <votesdw@yahoo.com>
+  Lead ID: 7425995000000728005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[124/351] Cynthia Peter <cynthiapeterpearl@gmail.com>
+  Lead ID: 7425995000000733005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[125/351] Jeremy Wagner <jeremy.l.wagner@gmail.com>
+  Lead ID: 7425995000000732003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[126/351] Rachel Andrew <rachelandrew@google.com>
+  Lead ID: 7425995000000704019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[127/351] deji adesoga <done2stay@gmail.com>
+  Lead ID: 7425995000000700009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[128/351] Jung Hyun Nam <rkttu@rkttu.com>
+  Lead ID: 7425995000000737003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[129/351] Jesús Rodríguez <Foxandxss@gmail.com>
+  Lead ID: 7425995000000710019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[130/351] Vedant Chainani <vedantchainani1084@gmail.com>
+  Lead ID: 7425995000000727007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[131/351] Stephen kihuni <stephenkihuni55@gmail.com>
+  Lead ID: 7425995000000733007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[132/351] Ömer Gülçiçek <iletisim@omergulcicek.com>
+  Lead ID: 7425995000000708011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[133/351] Grigory Petrov <grigoryvp@gmail.com>
+  Lead ID: 7425995000000728007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[134/351] Shefali <connect@shefali.dev>
+  Lead ID: 7425995000000733011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[135/351] Hécate <hecate+github@glitchbra.in>
+  Lead ID: 7425995000000729007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[136/351] Ayush Thakur <tsayush2390@gmail.com>
+  Lead ID: 7425995000000721013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[137/351] Renato Groffe <renato.groffe@yahoo.com.br>
+  Lead ID: 7425995000000743001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[138/351] Issa Vejdani <issavejdani@gmail.com>
+  Lead ID: 7425995000000728009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[139/351] Emmanuel O. Eboh <ecolejnr007@gmail.com>
+  Lead ID: 7425995000000727011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[140/351] Laura Coursen <lecoursen@gmail.com>
+  Lead ID: 7425995000000743003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[141/351] Mohammad Faisal <mohammadfaisal1011@gmail.com>
+  Lead ID: 7425995000000737005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[142/351] Youssif Shaaban Alsager <contact@yshalsager.com>
+  Lead ID: 7425995000000727013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[143/351] Joel Olawanle <info4tobest2@gmail.com>
+  Lead ID: 7425995000000732005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[144/351] David Amos <somacdivad@gmail.com>
+  Lead ID: 7425995000000744001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[145/351] Nitin Aggarwal <nitinagam17@gmail.com>
+  Lead ID: 7425995000000745001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[146/351] Rodrigo Oler <roodrigoprogrammer@gmail.com>
+  Lead ID: 7425995000000744003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[147/351] Sadra Yahyapour <lnxpylnxpy@gmail.com>
+  Lead ID: 7425995000000727015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[148/351] Oyinkansola Shoroye <oyinkansolashoroye@gmail.com>
+  Lead ID: 7425995000000746001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[149/351] Alexandra Klepper <alexandra.n.white@gmail.com>
+  Lead ID: 7425995000000746003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[150/351] Haesun Park <roadhome@gmail.com>
+  Lead ID: 7425995000000732007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[151/351] David Herbert <daviehert@gmail.com>
+  Lead ID: 7425995000000747001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[152/351] Fabrizio Ferri-Benedetti <algernon@fastmail.com>
+  Lead ID: 7425995000000725019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[153/351] Ben Hoyt <benhoyt@gmail.com>
+  Lead ID: 7425995000000747003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[154/351] Tom Johnson <tomjoht@gmail.com>
+  Lead ID: 7425995000000737007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[155/351] Jessica Wilkins  <jwilkin4@hotmail.com>
+  Lead ID: 7425995000000746005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[156/351] Vadim Makeev <hi@pepelsbey.dev>
+  Lead ID: 7425995000000749001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[157/351] Shalaby <shalaby.vbs@gmail.com>
+    Lead create failed: {'data': [{'code': 'INVALID_DATA', 'details': {'expected_data_type': 'website', 'api_name': 'Website'}, 'message': 'invalid data', 'status': 'error'}]}
+  FAIL -- could not create lead
+[158/351] Victory Nnaji (3rdSon) <3rdson.ai@gmail.com>
+  Lead ID: 7425995000000746007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[159/351] HIMANSHU SHARMA <himanshu.sharma1@freshworks.com>
+  Lead ID: 7425995000000749003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[160/351] Yuri <yuricodesbot@gmail.com>
+  Lead ID: 7425995000000738003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[161/351] Jean-Yves Perrier <jypenator@gmail.com>
+  Lead ID: 7425995000000740003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[162/351] Vanshika Arora <vanshika.17JE003035@am.iitism.ac.in>
+  Lead ID: 7425995000000752001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[163/351] Muhammad Rizwan Munawar <muhammadrizwanmunawar123@gmail.com>
+  Lead ID: 7425995000000746009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[164/351] Nick Koshlensky <spellbinderrus@gmail.com>
+  Lead ID: 7425995000000734003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[165/351] Pinkesh Darji <pinkesh.earth@gmail.com>
+  Lead ID: 7425995000000738005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[166/351] Asfak Ahmed ( rahi ) <asfakahmed680@gmail.com>
+  Lead ID: 7425995000000735011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[167/351] Fortune Ikechi  <ikechifortune@gmail.com>
+  Lead ID: 7425995000000750003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[168/351] Qianqian Fang <fangqq@gmail.com>
+  Lead ID: 7425995000000739009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[169/351] Mihalis Tsoukalos <mihalistsoukalos@gmail.com>
+  Lead ID: 7425995000000737009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[170/351] Kostis (Octopus Deploy) <kostis.kapelonis@octopus.com>
+  Lead ID: 7425995000000741005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[171/351] Mehedi Hassan Piash <piash599@gmail.com>
+  Lead ID: 7425995000000756001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[172/351] Dave Gray <dave@davegray.codes>
+  Lead ID: 7425995000000757001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[173/351] Anjana Vakil <contact@anjana.dev>
+  Lead ID: 7425995000000744005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[174/351] Craig Dennis <craigsdennis@gmail.com>
+  Lead ID: 7425995000000749005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[175/351] Gursimar Singh <gursimarh@rocketmail.com>
+  Lead ID: 7425995000000727019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[176/351] Shubham Sarda <shubhamsarda99@yahoo.com>
+  Lead ID: 7425995000000750005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[177/351] dino <sjjeong1225@gmail.com>
+  Lead ID: 7425995000000740007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[178/351] Fayaz Ahmed <fayazara@gmail.com>
+  Lead ID: 7425995000000734005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[179/351] Mine Cetinkaya-Rundel <cetinkaya.mine@gmail.com>
+  Lead ID: 7425995000000758001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[180/351] Elmer Thomas <github@elmerthomas.com>
+  Lead ID: 7425995000000742003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[181/351] Brent Yorgey <byorgey@gmail.com>
+  Lead ID: 7425995000000733013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[182/351] Code With Dary <info@codewithdary.com>
+  Lead ID: 7425995000000744007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[183/351] CJ <cj@null.computer>
+  Lead ID: 7425995000000745007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[184/351] Mohamud Osman <mchamuuda@gmail.com>
+  Lead ID: 7425995000000739011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[185/351] Salma Alam-Naylor <whitep4nth3r@gmail.com>
+  Lead ID: 7425995000000746011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[186/351] HuXn-WebDev <webdevacademy6@gmail.com>
+  Lead ID: 7425995000000751005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[187/351] Stefan Jovanovic <stefan.jovanavich@gmail.com>
+  Lead ID: 7425995000000739013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[188/351] Fazt <fazt@faztweb.com>
+  Lead ID: 7425995000000758003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[189/351] David Choi <choi.david4@gmail.com>
+  Lead ID: 7425995000000752003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[190/351] Rajesh Kumar <geekyshows@gmail.com>
+  Lead ID: 7425995000000735013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[191/351] Deborah Kurata <deborahk@insteptech.com>
+  Lead ID: 7425995000000749007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[192/351] Mir Hussain <mirhussainmurtaza@gmail.com>
+  Lead ID: 7425995000000759001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[193/351] Mariya <mariyasha432@protonmail.com>
+  Lead ID: 7425995000000754005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[194/351] Samarth Agarwal <samarthagarwal@live.com>
+  Lead ID: 7425995000000748003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[195/351] Wesley Willians <wesleywillians@gmail.com>
+  Lead ID: 7425995000000749009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[196/351] Heath Dutton🕴️ <heathdutton@linux.com>
+  Lead ID: 7425995000000758005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[197/351] Stargirl Flowers <me@thea.codes>
+  Lead ID: 7425995000000748005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[198/351] Lawrence Systems <tom@lawrencesystems.com>
+  Lead ID: 7425995000000750007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[199/351] Christian Bromann <git@bromann.dev>
+  Lead ID: 7425995000000745009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[200/351] Aparna Soneja <learnwithaparna450@gmail.com>
+  Lead ID: 7425995000000752007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[201/351] Stefan Thomas <justmoon@members.fsf.org>
+  Lead ID: 7425995000000749011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[202/351] Fernando Cejas <android10@fernandocejas.com>
+  Lead ID: 7425995000000733015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[203/351] Sanyam Khurana <sanyam.khurana01@gmail.com>
+  Lead ID: 7425995000000752009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[204/351] Cheuk Ting Ho <cheukting.ho@gmail.com>
+  Lead ID: 7425995000000733017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[205/351] Matthew J. McCullough <m@matthewjmccullough.com>
+  Lead ID: 7425995000000727021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[206/351] TheAssassin <theassassin@assassinate-you.net>
+  Lead ID: 7425995000000732009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[207/351] Nicolas Widart <n.widart@gmail.com>
+  Lead ID: 7425995000000755005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[208/351] Camilo Cunha de Azevedo <camilotk@gmail.com>
+  Lead ID: 7425995000000757003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[209/351] raf <raf@notashelf.dev>
+  Lead ID: 7425995000000746013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[210/351] Dunsin <jesudunsinfaiye@gmail.com>
+  Lead ID: 7425995000000739015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[211/351] Christian Heimes <christian@python.org>
+  Lead ID: 7425995000000732011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[212/351] Bu Kinoshita <bukinoshita@gmail.com>
+  Lead ID: 7425995000000746015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[213/351] Mike Bostock <mike@ocks.org>
+  Lead ID: 7425995000000760001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[214/351] Zayn Hao <eryouhao@gmail.com>
+  Lead ID: 7425995000000750009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[215/351] Anton Osika <anton.osika@gmail.com>
+  Lead ID: 7425995000000752013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[216/351] Santiago Fernández de Valderrama <santiago@me.com>
+  Lead ID: 7425995000000746017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[217/351] Charles Packer <contact@charlespacker.com>
+  Lead ID: 7425995000000739017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[218/351] Priyanka Dwivedi <priyanka.kochhar3@gmail.com>
+  Lead ID: 7425995000000748007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[219/351] Danny van Kooten <hi@dvk.co>
+  Lead ID: 7425995000000733019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[220/351] Piotr Gankiewicz <piotr.gankiewicz@gmail.com>
+  Lead ID: 7425995000000741009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[221/351] Kiran Shams <kiranshamsdhiloo@gmail.com>
+  Lead ID: 7425995000000732013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[222/351] Randy Olson <randal.s.olson@gmail.com>
+  Lead ID: 7425995000000727025
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[223/351] Destiny Franks <desphixs@gmail.com>
+  Lead ID: 7425995000000755009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[224/351] Jakob Wolitzki <wolitzki@deltologic.com>
+  Lead ID: 7425995000000758009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[225/351] Neevash Ramdial (Nash) <mail@neevash.com>
+  Lead ID: 7425995000000754007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[226/351] @BrianChege <chegephil24@gmail.com>
+  Lead ID: 7425995000000746019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[227/351] Nicolas <nicolascamara29@gmail.com>
+  Lead ID: 7425995000000756005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[228/351] David Boyne <boyneyy123@gmail.com>
+  Lead ID: 7425995000000747005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[229/351] Joe <demaagro@hotmail.com>
+  Lead ID: 7425995000000727027
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[230/351] 苍何 <canghe0818@gmail.com>
+  Lead ID: 7425995000000734009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[231/351] Héctor Ramos <hector@wallfacer.ai>
+  Lead ID: 7425995000000759003
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[232/351] Rakesh K <codersgyan@gmail.com>
+  Lead ID: 7425995000000743011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[233/351] Sujeet Kumar <sujeetkumaryadav202020@gmail.com>
+  Lead ID: 7425995000000741011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[234/351] Noah Gift <noah.gift@gmail.com>
+  Lead ID: 7425995000000738007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[235/351] Alan Hamlett <alan.hamlett@gmail.com>
+  Lead ID: 7425995000000743013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[236/351] Tareq Hasan <tareq1988@gmail.com>
+  Lead ID: 7425995000000738009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[237/351] Salman Qureshi <isalmanqureshi@gmail.com>
+  Lead ID: 7425995000000757005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[238/351] Sarthak Shrivastava <bitfumes@gmail.com>
+  Lead ID: 7425995000000740013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[239/351] Seyhun Akyürek <seyhunak@gmail.com>
+  Lead ID: 7425995000000753009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[240/351] Zeno Rocha <zno.rocha@gmail.com>
+  Lead ID: 7425995000000747007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[241/351] Steve Ruiz <steve@tldraw.com>
+  Lead ID: 7425995000000751009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[242/351] Simon Eskildsen <sirup@sirupsen.com>
+  Lead ID: 7425995000000745011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[243/351] Ben Schwarz <ben@calibreapp.com>
+  Lead ID: 7425995000000759005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[244/351] Steve Sewell <steve@builder.io>
+  Lead ID: 7425995000000753011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[245/351] SP Mohanty <spmohanty91@gmail.com>
+  Lead ID: 7425995000000748009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[246/351] Saoud Rizwan <saoudrizwan@gmail.com>
+  Lead ID: 7425995000000755011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[247/351] DidierRLopes <didierrlopes@gmail.com>
+  Lead ID: 7425995000000756009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[248/351] Anvar Narzullaev <anvarbek@gmail.com>
+  Lead ID: 7425995000000755013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[249/351] Brandon Kelly <brandon@pixelandtonic.com>
+  Lead ID: 7425995000000741013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[250/351] John O'Nolan <john@onolan.org>
+  Lead ID: 7425995000000753013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[251/351] Jeremy Howard <github@jhoward.fastmail.fm>
+  Lead ID: 7425995000000751011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[252/351] Yichun Zhang <agentzh@gmail.com>
+  Lead ID: 7425995000000758011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[253/351] Amir Salihefendic <amix@doist.com>
+  Lead ID: 7425995000000733021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[254/351] Han Xiao <han.xiao@jina.ai>
+  Lead ID: 7425995000000748011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[255/351] Gavin Li <lyo.gavin@gmail.com>
+  Lead ID: 7425995000000756011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[256/351] Chaitanya <ichaithu@gmail.com>
+  Lead ID: 7425995000000753015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[257/351] Cali Castle <hi@cali.so>
+  Lead ID: 7425995000000743015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[258/351] Pippin Williamson <pippin@sandhillsdev.com>
+  Lead ID: 7425995000000757007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[259/351] Jacob Moura <jacobaraujo7@gmail.com>
+  Lead ID: 7425995000000757009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[260/351] Cristóbal Valenzuela <cris@runwayml.com>
+  Lead ID: 7425995000000734011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[261/351] Alejandro Sanchez <aalejo@gmail.com>
+  Lead ID: 7425995000000754013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[262/351] Bryan Helmkamp <bryan@brynary.com>
+  Lead ID: 7425995000000746021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[263/351] Anoop M D <anoop.md1421@gmail.com>
+  Lead ID: 7425995000000734013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[264/351] Costa Tsaousis <costa@netdata.cloud>
+  Lead ID: 7425995000000753017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[265/351] Prabhash Kumar Jha <prabhashj07@gmail.com>
+  Lead ID: 7425995000000735019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[266/351] Mufeed VH <mufeed@winfunc.com>
+  Lead ID: 7425995000000751013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[267/351] Gabriel Engel <gabriel.engel@rocket.chat>
+  Lead ID: 7425995000000746023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[268/351] Ce Gao <cegao@tensorchord.ai>
+  Lead ID: 7425995000000741015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[269/351] Hans-Kristian Arntzen <post@arntzen-software.no>
+  Lead ID: 7425995000000737017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[270/351] Junseong Kim <codertimo@gmail.com>
+  Lead ID: 7425995000000744011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[271/351] Clem <clementdelangue@gmail.Com>
+  Lead ID: 7425995000000743017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[272/351] dennis zhuang <killme2008@gmail.com>
+  Lead ID: 7425995000000752015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[273/351] David Zhang <dzz0615@gmail.com>
+  Lead ID: 7425995000000746027
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[274/351] Clément Mihailescu <clementmihailescu@gmail.com>
+  Lead ID: 7425995000000753019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[275/351] James Mikrut <james@payloadcms.com>
+  Lead ID: 7425995000000760005
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[276/351] Freddy Vega <freddier@gmail.com>
+  Lead ID: 7425995000000734015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[277/351] Ryan Carson <ryan+github@ryancarson.com>
+  Lead ID: 7425995000000756013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[278/351] Max Stoiber <contact@mxstbr.com>
+  Lead ID: 7425995000000745013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[279/351] Mohammad Abdorrahmani <mohammad02abdorrahmani@gmail.com>
+  Lead ID: 7425995000000739019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[280/351] Arthur Mensch <arthur.mensch@gmail.com>
+  Lead ID: 7425995000000732015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[281/351] David Crawshaw <david@zentus.com>
+  Lead ID: 7425995000000740015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[282/351] Alex Atallah <alex@openrouter.ai>
+  Lead ID: 7425995000000743021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[283/351] Brendan Eich <brendan@mozilla.org>
+  Lead ID: 7425995000000751015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[284/351] Nick Rout <nicholasrout@gmail.com>
+  Lead ID: 7425995000000733023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[285/351] Sijie Guo <sg@streamnative.io>
+  Lead ID: 7425995000000729013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[286/351] Austin <amcdaniel2@gmail.com>
+  Lead ID: 7425995000000749017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[287/351] Vladimir Iglovikov <iglovikov@gmail.com>
+  Lead ID: 7425995000000749019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[288/351] Yoshifumi Kawai <ils@neue.cc>
+  Lead ID: 7425995000000745017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[289/351] Jeffrey Wilcke <jeff@grid-games.com>
+  Lead ID: 7425995000000750013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[290/351] moxiaoxi <momomomoxiaoxi@gmail.com>
+  Lead ID: 7425995000000756015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[291/351] Junior Garcia <jrgarciadev@gmail.com>
+  Lead ID: 7425995000000737019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[292/351] Yuanlin Lin <yuanlin@zeabur.com>
+  Lead ID: 7425995000000759007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[293/351] Feross Aboukhadijeh <feross@feross.org>
+  Lead ID: 7425995000000732017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[294/351] Christian Rocha <christian@charm.land>
+  Lead ID: 7425995000000729015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[295/351] Gregory M. Kurtzer <gmk@hushmail.com>
+  Lead ID: 7425995000000728015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[296/351] Geoff Greer <geoff@greer.fm>
+  Lead ID: 7425995000000742007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[297/351] Joe Duffy <joe@pulumi.com>
+  Lead ID: 7425995000000740017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[298/351] Ben Vinegar <ben@benv.ca>
+  Lead ID: 7425995000000759009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[299/351] Paresh Mayani <paresh@solguruz.com>
+  Lead ID: 7425995000000738013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[300/351] William Falcon <waf2107@columbia.edu>
+  Lead ID: 7425995000000750015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[301/351] CodeMaster7000 <CodeMaster7K@gmail.com>
+  Lead ID: 7425995000000743023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[302/351] Ivaylo Kenov <ivaylo.kenov@gmail.com>
+  Lead ID: 7425995000000742009
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[303/351] Anthony Sistilli <sistillianthony@gmail.com>
+  Lead ID: 7425995000000753021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[304/351] Luke Hinds <lukehinds@gmail.com>
+  Lead ID: 7425995000000744013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[305/351] Dominik Schürmann <dominik@heylogin.com>
+  Lead ID: 7425995000000751017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[306/351] David Kennedy <david.kennedy@trustedsec.com>
+  Lead ID: 7425995000000748013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[307/351] Rod Johnson <johnsonroda@gmail.com>
+  Lead ID: 7425995000000741019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[308/351] Ameen Alam <ameenalam202@gmail.com>
+  Lead ID: 7425995000000753023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[309/351] Yury Selivanov <yury@vercel.com>
+  Lead ID: 7425995000000739023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[310/351] Deepak Pathak <deepak.pathak2206@gmail.com>
+  Lead ID: 7425995000000757011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[311/351] Glauber Costa <glommer@gmail.com>
+  Lead ID: 7425995000000746031
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[312/351] Viral B. Shah <viral@mayin.org>
+  Lead ID: 7425995000000757013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[313/351] Hans-Kristian Arntzen <post@themaister.net>
+  Lead ID: 7425995000000757015
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[314/351] Duy /zuey/ <duy@wearetopgroup.com>
+  Lead ID: 7425995000000749021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[315/351] Chandrakant Bobade <cakant70@gmail.com>
+  Lead ID: 7425995000000735021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[316/351] lijiarui <ruiruibupt@gmail.com>
+  Lead ID: 7425995000000761001
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[317/351] Eric Dobbertin <eric@dairystatedesigns.com>
+  Lead ID: 7425995000000727033
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[318/351] Curtis G. Northcutt <cgn@mit.edu>
+  Lead ID: 7425995000000742011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[319/351] Kenji Hiranabe <kenji.hiranabe@change-vision.com>
+  Lead ID: 7425995000000740019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[320/351] Joe Onwe <joe2sure1@gmail.com>
+  Lead ID: 7425995000000728017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[321/351] Rayyan <smashedfrenzy16@gmail.com>
+  Lead ID: 7425995000000752017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[322/351] Leah Silber <LeahSilber@gmail.com>
+  Lead ID: 7425995000000753025
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[323/351] Joran Dirk Greef <joran@tigerbeetle.com>
+  Lead ID: 7425995000000759011
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[324/351] 李婷婷 Lee Ting Ting <tleeae@connect.ust.hk>
+  Lead ID: 7425995000000746033
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[325/351] Juha Lindstedt <juha@pakastin.fi>
+  Lead ID: 7425995000000741021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[326/351] Davies Liu <davies@juicedata.io>
+  Lead ID: 7425995000000737021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[327/351] Dat Tran <datitran@gmail.com>
+  Lead ID: 7425995000000744017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[328/351] Hawstein <tomhawstein@gmail.com>
+  Lead ID: 7425995000000740021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[329/351] Megatron King <1256980529@qq.com>
+    Lead create failed: {'data': [{'code': 'INVALID_DATA', 'details': {'expected_data_type': 'website', 'api_name': 'Website'}, 'message': 'invalid data', 'status': 'error'}]}
+  FAIL -- could not create lead
+[330/351] Fan Kai <fankai@gmail.com>
+  Lead ID: 7425995000000743025
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[331/351] Minh-Phuc Tran <phuctm97@gmail.com>
+  Lead ID: 7425995000000752019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[332/351] Dakota Minu <minu.dakota+dakota@gmail.com>
+  Lead ID: 7425995000000743027
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[333/351] Vishwa Gaurav <itsvgin@gmail.com>
+  Lead ID: 7425995000000742013
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[334/351] Dara <dara.zadeh@gmail.com>
+  Lead ID: 7425995000000760007
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[335/351] Dinudsi <dpanchal.fullstack@gmail.com>
+  Lead ID: 7425995000000741023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[336/351] Corey Chiu <iamcoreychiu@gmail.com>
+  Lead ID: 7425995000000749023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[337/351] Mohd Danish <mddanishyusuf@gmail.com>
+  Lead ID: 7425995000000728021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[338/351] Andrew Ayer <agwa@andrewayer.name>
+  Lead ID: 7425995000000733025
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[339/351] Naoki Shibuya <naokishibuya@me.com>
+  Lead ID: 7425995000000739025
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[340/351] Shivam Vatshayan <vatshayan007@gmail.com>
+  Lead ID: 7425995000000733027
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[341/351] Doug Stevenson <doug@hyper-aware.com>
+  Lead ID: 7425995000000740023
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[342/351] 王福强 <fujohnwang@gmail.com>
+  Lead ID: 7425995000000745019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[343/351] Lilith River <lilith@imazen.io>
+  Lead ID: 7425995000000743029
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[344/351] Alper Tunga <alper.tunga@oricin.com>
+  Lead ID: 7425995000000758019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[345/351] David Dennison <david@daviddennison.com>
+  Lead ID: 7425995000000739027
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[346/351] Mark Needham <m.h.needham@gmail.com>
+  Lead ID: 7425995000000744019
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[347/351] Paul <pauliescanlon@gmail.com>
+  Lead ID: 7425995000000744021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[348/351] Ruchi Bhatia <ruchisbhatia@gmail.com>
+  Lead ID: 7425995000000751021
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[349/351] Chuck Reynolds <chuck@vuurr.com>
+  Lead ID: 7425995000000727035
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[350/351] Ken Collins <ken@metaskills.net>
+  Lead ID: 7425995000000755017
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+[351/351] Lisa Dziuba <yelyzavetadziuba@gmail.com>
+  Lead ID: 7425995000000739029
+  FAIL -- 401: {'code': 'OAUTH_SCOPE_MISMATCH', 'details': {}, 'message': 'invalid oauth scope to access this URL', 'status': 'error'}
+
+--- Done ---
+Sent:   0
+Failed: 351

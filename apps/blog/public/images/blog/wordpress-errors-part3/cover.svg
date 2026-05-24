@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glowR" cx="75%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowL" cx="18%" cy="30%" r="30%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowR)"/>
+  <rect width="1200" height="630" fill="url(#glowL)"/>
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150"/>
+    <path d="M1000 60 L1000 150 L1090 150 L1090 240"/>
+    <path d="M640 240 L730 240 L730 330"/>
+    <path d="M910 330 L1000 330 L1000 420"/>
+    <path d="M640 420 L640 510 L730 510"/>
+    <path d="M910 420 L910 510 L1000 510"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="730"  cy="330" r="4"/>
+    <circle cx="1000" cy="420" r="4"/>
+    <circle cx="730"  cy="510" r="4"/>
+  </g>
+  <g fill="#3B82F6" opacity="0.85">
+    <circle cx="910"  cy="150" r="5"/>
+    <circle cx="1090" cy="240" r="5"/>
+    <circle cx="1000" cy="510" r="5"/>
+  </g>
+  <g fill="none" stroke="#3B82F6" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="150" r="13"/>
+    <circle cx="1090" cy="240" r="13"/>
+    <circle cx="1000" cy="510" r="13"/>
+  </g>
+
+  <!-- Part 3 badge -->
+  <rect x="80" y="88" width="82" height="30" rx="6" fill="#3B82F6"/>
+  <text x="121" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">PART 3</text>
+  <text x="176" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  WORDPRESS  ·  JUNE 2026</text>
+
+  <!-- Error cards -->
+  <!-- Card 1: 404 Permalink -->
+  <rect x="640" y="72" width="500" height="68" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="640" y="72" width="6" height="68" rx="3" fill="#E8320A"/>
+  <text x="662" y="96" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A" letter-spacing="1">ACTIVE ROADBLOCK 1</text>
+  <text x="662" y="116" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">404 Permalink Error</text>
+  <text x="662" y="133" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Corrupted .htaccess · flush permalinks · server-level reset</text>
+
+  <!-- Card 2: HTTP Image Upload -->
+  <rect x="640" y="152" width="500" height="68" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+  <rect x="640" y="152" width="6" height="68" rx="3" fill="#3B82F6"/>
+  <text x="662" y="176" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#3B82F6" letter-spacing="1">ACTIVE ROADBLOCK 2</text>
+  <text x="662" y="196" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="700" fill="#FAFAFA">HTTP Image Upload Error</text>
+  <text x="662" y="213" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">File permissions 755 · WP_MEMORY_LIMIT 256M · wp-config fix</text>
+
+  <!-- .htaccess code block -->
+  <rect x="640" y="232" width="500" height="100" rx="8" fill="#070E1C" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="256" font-family="'Courier New',Courier,monospace" font-size="11" fill="#94A3B8"># BEGIN WordPress</text>
+  <text x="660" y="274" font-family="'Courier New',Courier,monospace" font-size="11" fill="#94A3B8">&lt;IfModule mod_rewrite.c&gt;</text>
+  <text x="660" y="292" font-family="'Courier New',Courier,monospace" font-size="11" fill="#3B82F6">  RewriteEngine On</text>
+  <text x="660" y="310" font-family="'Courier New',Courier,monospace" font-size="11" fill="#3B82F6">  RewriteRule . /index.php [L]</text>
+  <text x="660" y="325" font-family="'Courier New',Courier,monospace" font-size="11" fill="#94A3B8"># END WordPress</text>
+
+  <!-- wp-config line -->
+  <rect x="640" y="344" width="500" height="48" rx="8" fill="#070E1C" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="364" font-family="'Courier New',Courier,monospace" font-size="11" fill="#94A3B8">// wp-config.php</text>
+  <text x="660" y="382" font-family="'Courier New',Courier,monospace" font-size="11" fill="#3B82F6">define( 'WP_MEMORY_LIMIT', '256M' );</text>
+
+  <!-- Impact note -->
+  <rect x="640" y="408" width="500" height="48" rx="10" fill="#1E293B" stroke="#E8320A" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="890" y="428" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A" letter-spacing="1">WHY THIS DESTROYS CONVERSIONS</text>
+  <text x="890" y="446" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">User hits 404 on product link → trust gone. No image → content stalls.</text>
+
+  <!-- Series badge -->
+  <rect x="640" y="472" width="500" height="40" rx="8" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="487" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">PART OF THE WORDPRESS ERROR MASTERCLASS</text>
+  <text x="656" y="503" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#3B82F6">Part 1: Loud Errors  ·  Part 2: Silent Errors  ·  Part 3: Active Roadblocks</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <text x="80" y="200" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">Fix WordPress</text>
+  <text x="80" y="275" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">Errors</text>
+  <text x="80" y="350" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="50" font-weight="800" fill="#3B82F6">Part 3.</text>
+  <text x="80" y="398" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">404 permalink breaks and</text>
+  <text x="80" y="426" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">HTTP media upload failures.</text>
+  <line x1="80" y1="452" x2="460" y2="452" stroke="#1E293B" stroke-width="1"/>
+  <rect x="80"  y="468" width="90"  height="36" rx="18" fill="#1E293B"/>
+  <text x="125" y="491" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Part 3 of 5</text>
+  <rect x="182" y="468" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="247" y="491" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Active Roadblocks</text>
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

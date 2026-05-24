@@ -1,0 +1,57 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Inter', 'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <!-- Accent strip -->
+  <rect x="0" y="0" width="1200" height="6" fill="#3b82f6"/>
+  <!-- Tag -->
+  <rect x="60" y="64" width="160" height="30" rx="6" fill="#3b82f622"/>
+  <text x="140" y="84" fill="#3b82f6" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1.5">TOOL COMPARISON</text>
+  <!-- Headline -->
+  <text x="60" y="158" fill="#ffffff" font-size="58" font-weight="800" dominant-baseline="middle">Rytr vs Ozigi</text>
+  <text x="60" y="222" fill="#94a3b8" font-size="28" font-weight="500" dominant-baseline="middle">An Honest 2026 Comparison</text>
+  <text x="60" y="268" fill="#94a3b8" font-size="22" font-weight="400" dominant-baseline="middle">for Human-Sounding AI Content</text>
+  <!-- Comparison cards -->
+  <g transform="translate(60, 320)">
+    <!-- Rytr card -->
+    <rect x="0" y="0" width="330" height="240" rx="14" fill="#1e293b"/>
+    <rect x="0" y="0" width="330" height="5" rx="3" fill="#64748b"/>
+    <text x="165" y="40" fill="#94a3b8" font-size="20" font-weight="800" text-anchor="middle">Rytr</text>
+    <line x1="24" y1="56" x2="306" y2="56" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="82" fill="#94a3b8" font-size="12" font-weight="600">✓  Template-driven</text>
+    <text x="24" y="108" fill="#94a3b8" font-size="12" font-weight="600">✓  Fast for short copy</text>
+    <text x="24" y="134" fill="#94a3b8" font-size="12" font-weight="600">✓  Free tier available</text>
+    <text x="24" y="160" fill="#64748b" font-size="12">✗  No banned-word guardrail</text>
+    <text x="24" y="184" fill="#64748b" font-size="12">✗  Tone slider, not your voice</text>
+    <text x="24" y="210" fill="#64748b" font-size="12">✗  Short-form focus</text>
+  </g>
+  <!-- VS label -->
+  <text x="425" y="450" fill="#475569" font-size="22" font-weight="800" text-anchor="middle">VS</text>
+  <g transform="translate(460, 320)">
+    <!-- Ozigi card -->
+    <rect x="0" y="0" width="330" height="240" rx="14" fill="#1e293b"/>
+    <rect x="0" y="0" width="330" height="5" rx="3" fill="#3b82f6"/>
+    <text x="165" y="40" fill="#3b82f6" font-size="20" font-weight="800" text-anchor="middle">Ozigi</text>
+    <line x1="24" y1="56" x2="306" y2="56" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="82" fill="#e2e8f0" font-size="12" font-weight="600">✓  Learns from your raw material</text>
+    <text x="24" y="108" fill="#e2e8f0" font-size="12" font-weight="600">✓  Banned lexicon guardrail</text>
+    <text x="24" y="134" fill="#e2e8f0" font-size="12" font-weight="600">✓  Long-form voice consistency</text>
+    <text x="24" y="160" fill="#e2e8f0" font-size="12" font-weight="600">✓  Direct publish to LinkedIn, X</text>
+    <text x="24" y="184" fill="#e2e8f0" font-size="12" font-weight="600">✓  Reusable personas</text>
+    <text x="24" y="210" fill="#3b82f6" font-size="12" font-weight="600">✓  Free tier · no credit card</text>
+  </g>
+  <!-- Key differentiator -->
+  <g transform="translate(840, 320)">
+    <rect width="300" height="240" rx="14" fill="#1e3a5f"/>
+    <text x="150" y="38" fill="#3b82f6" font-size="13" font-weight="700" text-anchor="middle">KEY DIFFERENTIATOR</text>
+    <line x1="24" y1="52" x2="276" y2="52" stroke="#2d5a9e" stroke-width="1"/>
+    <text x="24" y="82" fill="#93c5fd" font-size="12">Input approach:</text>
+    <text x="24" y="104" fill="#e2e8f0" font-size="11">Rytr → blank canvas</text>
+    <text x="24" y="124" fill="#e2e8f0" font-size="11">  + tone selector</text>
+    <text x="24" y="154" fill="#e2e8f0" font-size="11">Ozigi → your existing</text>
+    <text x="24" y="174" fill="#e2e8f0" font-size="11">  content as the source</text>
+    <line x1="24" y1="194" x2="276" y2="194" stroke="#2d5a9e" stroke-width="1"/>
+    <text x="24" y="220" fill="#3b82f6" font-size="12" font-weight="600">Voice, not templates.</text>
+  </g>
+  <!-- Ozigi brand -->
+  <text x="1140" y="596" fill="#64748b" font-size="13" font-weight="600" text-anchor="end">blog.ozigi.app</text>
+</svg>

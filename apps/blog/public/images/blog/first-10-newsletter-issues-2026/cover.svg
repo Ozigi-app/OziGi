@@ -1,0 +1,74 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Inter', 'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <!-- Accent strip -->
+  <rect x="0" y="0" width="1200" height="6" fill="#f59e0b"/>
+  <!-- Tag -->
+  <rect x="60" y="64" width="180" height="30" rx="6" fill="#f59e0b22"/>
+  <text x="150" y="84" fill="#f59e0b" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1.5">NEWSLETTER CONTENT</text>
+  <!-- Headline -->
+  <text x="60" y="158" fill="#ffffff" font-size="54" font-weight="800" dominant-baseline="middle">10 Newsletter</text>
+  <text x="60" y="220" fill="#ffffff" font-size="54" font-weight="800" dominant-baseline="middle">Issue Ideas</text>
+  <text x="60" y="282" fill="#f59e0b" font-size="36" font-weight="700" dominant-baseline="middle">Before You Have Subscribers</text>
+  <text x="60" y="328" fill="#94a3b8" font-size="22" font-weight="400" dominant-baseline="middle">2026 Playbook · Sequence That Makes Cadence Stick</text>
+  <!-- Issue sequence grid -->
+  <g transform="translate(60, 380)">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="12" y="20" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 1</text>
+    <text x="12" y="40" fill="#e2e8f0" font-size="12" font-weight="600">The Why</text>
+
+    <rect x="144" y="0" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="156" y="20" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 2</text>
+    <text x="156" y="40" fill="#e2e8f0" font-size="12" font-weight="600">The Definition</text>
+
+    <rect x="288" y="0" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="300" y="20" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 3</text>
+    <text x="300" y="40" fill="#e2e8f0" font-size="12" font-weight="600">The Mistake</text>
+
+    <rect x="432" y="0" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="444" y="20" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 4</text>
+    <text x="444" y="40" fill="#e2e8f0" font-size="12" font-weight="600">The Reaction</text>
+
+    <rect x="576" y="0" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="588" y="20" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 5</text>
+    <text x="588" y="40" fill="#e2e8f0" font-size="12" font-weight="600">The List</text>
+
+    <!-- Row 2 -->
+    <rect x="0" y="68" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="12" y="88" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 6</text>
+    <text x="12" y="108" fill="#e2e8f0" font-size="12" font-weight="600">Reader Question</text>
+
+    <rect x="144" y="68" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="156" y="88" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 7</text>
+    <text x="156" y="108" fill="#e2e8f0" font-size="12" font-weight="600">Contrarian Take</text>
+
+    <rect x="288" y="68" width="136" height="56" rx="8" fill="#1e293b"/>
+    <text x="300" y="88" fill="#f59e0b" font-size="10" font-weight="700">ISSUE 8</text>
+    <text x="300" y="108" fill="#e2e8f0" font-size="12" font-weight="600">The Teardown</text>
+
+    <rect x="432" y="68" width="136" height="56" rx="8" fill="#284f1c"/>
+    <text x="444" y="88" fill="#4ade80" font-size="10" font-weight="700">ISSUE 9</text>
+    <text x="444" y="108" fill="#e2e8f0" font-size="12" font-weight="600">The Framework</text>
+
+    <rect x="576" y="68" width="136" height="56" rx="8" fill="#284f1c"/>
+    <text x="588" y="88" fill="#4ade80" font-size="10" font-weight="700">ISSUE 10</text>
+    <text x="588" y="108" fill="#e2e8f0" font-size="12" font-weight="600">State of</text>
+  </g>
+  <!-- Energy curve label -->
+  <text x="60" y="576" fill="#64748b" font-size="12" font-weight="500">Easy → Medium → Hard  ·  Energy-matched sequence for sustainable cadence</text>
+  <!-- Ozigi brand -->
+  <text x="1140" y="596" fill="#64748b" font-size="13" font-weight="600" text-anchor="end">blog.ozigi.app</text>
+  <!-- Right illustration -->
+  <rect x="920" y="110" width="220" height="320" rx="16" fill="#1e293b"/>
+  <text x="1030" y="170" fill="#f59e0b" font-size="48" font-weight="800" text-anchor="middle">10</text>
+  <text x="1030" y="200" fill="#94a3b8" font-size="13" font-weight="500" text-anchor="middle">issue ideas</text>
+  <line x1="950" y1="220" x2="1110" y2="220" stroke="#334155" stroke-width="1"/>
+  <text x="950" y="250" fill="#e2e8f0" font-size="11">→ Easy to write first</text>
+  <text x="950" y="274" fill="#e2e8f0" font-size="11">→ Builds reader trust</text>
+  <text x="950" y="298" fill="#e2e8f0" font-size="11">→ Signal before opinions</text>
+  <text x="950" y="322" fill="#e2e8f0" font-size="11">→ Framework as payoff</text>
+  <text x="950" y="346" fill="#4ade80" font-size="11">✓ Cadence that sticks</text>
+  <text x="950" y="380" fill="#64748b" font-size="10">Ozigi handles the drafting.</text>
+  <text x="950" y="396" fill="#64748b" font-size="10">The thinking is yours.</text>
+</svg>

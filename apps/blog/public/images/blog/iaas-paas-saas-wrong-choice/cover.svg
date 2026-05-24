@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0A1A2E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="44%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="30%" r="30%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="60"  x2="1160" y2="60"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="240" x2="1160" y2="240"/>
+    <line x1="580" y1="330" x2="1160" y2="330"/>
+    <line x1="580" y1="420" x2="1160" y2="420"/>
+    <line x1="580" y1="510" x2="1160" y2="510"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="910"  y1="40" x2="910"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.5">
+    <path d="M820 60 L820 150 L910 150 L910 240"/>
+    <path d="M1090 60 L1090 150 L1000 150 L1000 240"/>
+    <path d="M640 330 L730 330 L730 420"/>
+    <path d="M910 330 L1000 330 L1090 330 L1090 420"/>
+    <path d="M640 510 L730 510 L730 420"/>
+    <path d="M910 510 L1000 510 L1000 420"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.8">
+    <circle cx="820"  cy="150" r="4"/>
+    <circle cx="730"  cy="420" r="4"/>
+    <circle cx="1000" cy="240" r="4"/>
+  </g>
+  <g fill="#8B5CF6" opacity="0.85">
+    <circle cx="910"  cy="240" r="5"/>
+    <circle cx="1090" cy="150" r="5"/>
+    <circle cx="1090" cy="420" r="5"/>
+    <circle cx="1000" cy="420" r="5"/>
+  </g>
+  <g fill="none" stroke="#8B5CF6" stroke-width="1" opacity="0.25">
+    <circle cx="910"  cy="240" r="13"/>
+    <circle cx="1090" cy="420" r="13"/>
+  </g>
+
+  <!-- Three model cards side by side -->
+  <!-- IaaS -->
+  <rect x="640" y="68" width="148" height="200" rx="8" fill="#1E293B" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="640" y="68" width="148" height="5" rx="2" fill="#E8320A"/>
+  <text x="714" y="94" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="800" fill="#E8320A">IaaS</text>
+  <text x="714" y="112" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Infrastructure</text>
+  <line x1="652" y1="122" x2="776" y2="122" stroke="#1E293B" stroke-width="1"/>
+  <text x="714" y="142" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">EC2 · GCE</text>
+  <text x="714" y="160" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">DigitalOcean</text>
+  <text x="714" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Azure VMs</text>
+  <line x1="652" y1="190" x2="776" y2="190" stroke="#1E293B" stroke-width="1"/>
+  <text x="714" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#E8320A">Max control</text>
+  <text x="714" y="224" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Patch OS yourself</text>
+  <text x="714" y="256" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8" font-style="italic">Right if: infra team exists</text>
+
+  <!-- PaaS -->
+  <rect x="800" y="68" width="148" height="200" rx="8" fill="#1E293B" stroke="#8B5CF6" stroke-width="1.5"/>
+  <rect x="800" y="68" width="148" height="5" rx="2" fill="#8B5CF6"/>
+  <text x="874" y="94" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="800" fill="#8B5CF6">PaaS</text>
+  <text x="874" y="112" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Platform</text>
+  <line x1="812" y1="122" x2="936" y2="122" stroke="#1E293B" stroke-width="1"/>
+  <text x="874" y="142" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">App Engine</text>
+  <text x="874" y="160" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Heroku · Render</text>
+  <text x="874" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Vercel / Railway</text>
+  <line x1="812" y1="190" x2="936" y2="190" stroke="#1E293B" stroke-width="1"/>
+  <text x="874" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#8B5CF6">Balanced risk</text>
+  <text x="874" y="224" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Runtime shared</text>
+  <text x="874" y="256" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8" font-style="italic">Right if: small dev team</text>
+
+  <!-- SaaS -->
+  <rect x="960" y="68" width="180" height="200" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+  <rect x="960" y="68" width="180" height="5" rx="2" fill="#3B82F6"/>
+  <text x="1050" y="94" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="15" font-weight="800" fill="#3B82F6">SaaS</text>
+  <text x="1050" y="112" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Software</text>
+  <line x1="972" y1="122" x2="1128" y2="122" stroke="#1E293B" stroke-width="1"/>
+  <text x="1050" y="142" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Notion · Slack</text>
+  <text x="1050" y="160" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Gmail · Salesforce</text>
+  <text x="1050" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#FAFAFA">Shopify · Linear</text>
+  <line x1="972" y1="190" x2="1128" y2="190" stroke="#1E293B" stroke-width="1"/>
+  <text x="1050" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#3B82F6">Min overhead</text>
+  <text x="1050" y="224" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Data still yours</text>
+  <text x="1050" y="256" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8" font-style="italic">Right if: no eng overhead</text>
+
+  <!-- Wrong choice warning -->
+  <rect x="640" y="286" width="500" height="52" rx="10" fill="#1E293B" stroke="#E8320A" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="890" y="308" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">WHAT HAPPENS WHEN YOU PICK WRONG</text>
+  <text x="890" y="328" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">IaaS without an infra team = unpatched servers. SaaS when you need control = vendor lock-in.</text>
+
+  <!-- Decision rows -->
+  <rect x="640" y="356" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="371" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">STARTUP, SOLO DEV, SHIPPING FAST</text>
+  <text x="656" y="387" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#8B5CF6">PaaS first. Migrate to IaaS when scale demands it.</text>
+
+  <rect x="640" y="404" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="419" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">REGULATED DATA, CUSTOM NETWORKING</text>
+  <text x="656" y="435" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#E8320A">IaaS only. You need full control.</text>
+
+  <rect x="640" y="452" width="500" height="40" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="656" y="467" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#94A3B8" letter-spacing="1">NON-TECHNICAL TEAM, OPERATIONAL TOOL</text>
+  <text x="656" y="483" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#3B82F6">SaaS. Don't build what you can buy.</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">ENGINEERING  ·  MAY 2026</text>
+  <text x="80" y="205" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">IaaS, PaaS,</text>
+  <text x="80" y="280" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">SaaS.</text>
+  <text x="80" y="346" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="36" font-weight="700" fill="#8B5CF6">Choosing the wrong one.</text>
+  <text x="80" y="398" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">What each model actually means</text>
+  <text x="80" y="426" font-family="'DM Sans','Inter',sans-serif" font-size="21" fill="#94A3B8">and which one fits your team.</text>
+  <line x1="80" y1="452" x2="460" y2="452" stroke="#1E293B" stroke-width="1"/>
+  <rect x="80"  y="468" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="140" y="491" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Engineering</text>
+  <rect x="212" y="468" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="277" y="491" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#8B5CF6">Cloud strategy</text>
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

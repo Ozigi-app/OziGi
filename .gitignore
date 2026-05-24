@@ -51,12 +51,14 @@ next-env.d.ts
 
 # Outreach email scripts
 scrape_github.py
+scrape_devto.py
 github_leads.csv
 send_outreach.py
 send_apollo_outreach.py
 send_batch3.py
 send_batch3_retry.py
 send_tomorrow.py
+zoho_crm_outreach.py
 
 # Development and testing
 emails/

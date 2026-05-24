@@ -1,0 +1,58 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Inter', 'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <!-- Accent strip -->
+  <rect x="0" y="0" width="1200" height="6" fill="#8b5cf6"/>
+  <!-- Tag -->
+  <rect x="60" y="64" width="200" height="30" rx="6" fill="#8b5cf622"/>
+  <text x="160" y="84" fill="#8b5cf6" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1.5">CONTENT REPURPOSING</text>
+  <!-- Headline -->
+  <text x="60" y="158" fill="#ffffff" font-size="50" font-weight="800" dominant-baseline="middle">Turn 1 Newsletter</text>
+  <text x="60" y="218" fill="#ffffff" font-size="50" font-weight="800" dominant-baseline="middle">Into <tspan fill="#8b5cf6">7 Days</tspan> of</text>
+  <text x="60" y="278" fill="#ffffff" font-size="50" font-weight="800" dominant-baseline="middle">Social Content</text>
+  <text x="60" y="326" fill="#94a3b8" font-size="22" font-weight="400" dominant-baseline="middle">2026 Workflow · 15 Minutes After Each Send</text>
+  <!-- 7-day repurposing map -->
+  <g transform="translate(60, 380)">
+    <!-- Newsletter source -->
+    <rect x="0" y="0" width="160" height="76" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="80" y="28" fill="#8b5cf6" font-size="11" font-weight="700" text-anchor="middle">NEWSLETTER</text>
+    <text x="80" y="50" fill="#e2e8f0" font-size="22" font-weight="800" text-anchor="middle">1</text>
+    <text x="80" y="68" fill="#64748b" font-size="10" text-anchor="middle">issue / week</text>
+    <!-- Arrow -->
+    <path d="M 168 38 L 196 38" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrow)"/>
+    <!-- Platform outputs -->
+    <rect x="200" y="0" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="260" y="22" fill="#0ea5e9" font-size="12" font-weight="600" text-anchor="middle">LinkedIn post D1</text>
+    <rect x="200" y="42" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="260" y="64" fill="#0ea5e9" font-size="12" font-weight="600" text-anchor="middle">X post D1</text>
+    <rect x="336" y="0" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="396" y="22" fill="#e2e8f0" font-size="12" font-weight="600" text-anchor="middle">LinkedIn insight D2</text>
+    <rect x="336" y="42" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="396" y="64" fill="#e2e8f0" font-size="12" font-weight="600" text-anchor="middle">X thread D3</text>
+    <rect x="472" y="0" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="532" y="22" fill="#10b981" font-size="12" font-weight="600" text-anchor="middle">Slack / Discord D4</text>
+    <rect x="472" y="42" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="532" y="64" fill="#10b981" font-size="12" font-weight="600" text-anchor="middle">LinkedIn story D5</text>
+    <rect x="608" y="0" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="668" y="22" fill="#f59e0b" font-size="12" font-weight="600" text-anchor="middle">X quote D6</text>
+    <rect x="608" y="42" width="120" height="34" rx="7" fill="#1e293b"/>
+    <text x="668" y="64" fill="#f59e0b" font-size="12" font-weight="600" text-anchor="middle">LinkedIn preview D7</text>
+    <!-- = 7 posts badge -->
+    <rect x="748" y="8" width="110" height="60" rx="10" fill="#8b5cf622"/>
+    <text x="803" y="35" fill="#8b5cf6" font-size="28" font-weight="800" text-anchor="middle">7</text>
+    <text x="803" y="58" fill="#8b5cf6" font-size="11" font-weight="600" text-anchor="middle">posts / week</text>
+  </g>
+  <!-- Time badge -->
+  <g transform="translate(60, 500)">
+    <rect width="240" height="56" rx="10" fill="#1e293b"/>
+    <text x="120" y="24" fill="#64748b" font-size="11" text-anchor="middle">Repurposing time with Ozigi</text>
+    <text x="120" y="46" fill="#8b5cf6" font-size="20" font-weight="800" text-anchor="middle">15 minutes</text>
+  </g>
+  <g transform="translate(316" y="500">
+    <rect width="240" height="56" rx="10" fill="#1e293b"/>
+    <text x="120" y="24" fill="#64748b" font-size="11" text-anchor="middle">Manual repurposing time</text>
+    <text x="120" y="46" fill="#ef4444" font-size="20" font-weight="800" text-anchor="middle">~2 hours</text>
+  </g>
+  <!-- Ozigi brand -->
+  <text x="1140" y="596" fill="#64748b" font-size="13" font-weight="600" text-anchor="end">blog.ozigi.app</text>
+</svg>

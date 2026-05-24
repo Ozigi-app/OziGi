@@ -1,0 +1,156 @@
+Loaded 351 total leads. Sending batch [0:50] = 50 emails.
+
+[1/351] Viktor Farcic <viktor@farcic.com>
+  CRM lead: 7425995000000723013
+  SENT
+[2/351] James Ward <james@jamesward.com>
+  CRM lead: 7425995000000695017
+  SENT
+[3/351] Gift Egwuenu <laurandidi21@gmail.com>
+  CRM lead: 7425995000000733003
+  SENT
+[4/351] Yusuke Wada <yusuke@kamawada.com>
+  CRM lead: 7425995000000701017
+  SENT
+[5/351] Anton Arhipov <ant.arhipov@gmail.com>
+  CRM lead: 7425995000000697021
+  SENT
+[6/351] ちょまど | Madoka Chiyoda <chomado@gmail.com>
+  CRM lead: 7425995000000719007
+  SENT
+[7/351] chris <noringc@gmail.com>
+  CRM lead: 7425995000000740001
+  SENT
+[8/351] Trisha Gee <trisha.gee@gmail.com>
+  CRM lead: 7425995000000727005
+  SENT
+[9/351] Jim Bennett <jimbobbennett@mac.com>
+  CRM lead: 7425995000000725017
+  SENT
+[10/351] Bolaji Ayodeji <sirbeejay1@gmail.com>
+  CRM lead: 7425995000000739005
+  SENT
+[11/351] Jecelyn Yeen <jec@google.com>
+  CRM lead: 7425995000000742001
+  SENT
+[12/351] Holt Skinner <holtskinner@google.com>
+  CRM lead: 7425995000000719009
+  SENT
+[13/351] Dennis Ivy <ivanovsin11@gmail.com>
+  CRM lead: 7425995000000739007
+  SENT
+[14/351] Christian Nwamba <nwambachristian@gmail.com>
+  CRM lead: 7425995000000748001
+  SENT
+[15/351] Mitch Koko <mitchell.h.koh@gmail.com>
+  CRM lead: 7425995000000751001
+  SENT
+[16/351] Peter Friese <peter@peterfriese.de>
+  CRM lead: 7425995000000753001
+  SENT
+[17/351] Yashovardhan Agrawal <yashovardhan.agrawal@gmail.com>
+  CRM lead: 7425995000000754001
+  SENT
+[18/351] Amos Gyamfi <amosgyamfi.fi@gmail.com>
+  CRM lead: 7425995000000755001
+  SENT
+[19/351] Nina Zakharenko <nzakharenko@gmail.com>
+  CRM lead: 7425995000000756003
+  SENT
+[20/351] Yacine Rezgui <rezgui.y@gmail.com>
+  CRM lead: 7425995000000755003
+  SENT
+[21/351] Danny Dainton <dannydainton@gmail.com>
+  CRM lead: 7425995000000745005
+  SENT
+[22/351] Matt Soucoup <msoucoup@codemilltech.com>
+  CRM lead: 7425995000000753005
+  SENT
+[23/351] Diego De Granda <degranda@gmail.com>
+  CRM lead: 7425995000000737011
+  SENT
+[24/351] Burr Sutter <burrsutter@gmail.com>
+  CRM lead: 7425995000000751003
+  SENT
+[25/351] Márton Braun <marton.braun@jetbrains.com>
+  CRM lead: 7425995000000752005
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[26/351] Fatih Kadir Akın <fka@fka.dev>
+  CRM lead: 7425995000000742005
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[27/351] Jordan Schuetz <ninjapig123@gmail.com>
+  CRM lead: 7425995000000727023
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[28/351] Angie Jones <jones.angie@gmail.com>
+  CRM lead: 7425995000000744009
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[29/351] TJ VanToll <tj.vantoll@gmail.com>
+  CRM lead: 7425995000000728011
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[30/351] James Le <jl1165@rit.edu>
+  CRM lead: 7425995000000753007
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[31/351] Rody Davis <rody.davis.jr@gmail.com>
+  CRM lead: 7425995000000743009
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[32/351] Josh Long <josh@joshlong.com>
+  CRM lead: 7425995000000760003
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[33/351] Viktor Gamov <gamussa@gmail.com>
+  CRM lead: 7425995000000749013
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[34/351] Jessica Deen <jessicadeen@me.com>
+  CRM lead: 7425995000000754009
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[35/351] Marlene  <marlenemhangami@gmail.com>
+  CRM lead: 7425995000000749015
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[36/351] Matti Tahvonen <matti@vaadin.com>
+  CRM lead: 7425995000000727029
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[37/351] Nicholas Jackson <jackson.nic@gmail.com>
+  CRM lead: 7425995000000738011
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[38/351] Philippe Ozil <philippe.ozil@gmail.com>
+  CRM lead: 7425995000000750011
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[39/351] Igor Wojda <igor.wojda@gmail.com>
+  CRM lead: 7425995000000746025
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[40/351] Amagash <tiffanysouterre@gmail.com>
+  CRM lead: 7425995000000758013
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[41/351] Alex Casalboni <alex@alexcasalboni.com>
+  CRM lead: 7425995000000739021
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[42/351] Justin Yoo <justin.yoojh@gmail.com>
+  CRM lead: 7425995000000747011
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[43/351] Naomi Carrigan <commits@nhcarrigan.com>
+  CRM lead: 7425995000000741017
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[44/351] Guillaume Laforge <glaforge@gmail.com>
+  CRM lead: 7425995000000746029
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[45/351] Dan Vega <danvega@gmail.com>
+  CRM lead: 7425995000000755015
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[46/351] Deepu K Sasidharan <deepu.k.sasidharan@gmail.com>
+  CRM lead: 7425995000000732019
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[47/351] Sam Dutton <dutton@google.com>
+  CRM lead: 7425995000000728019
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[48/351] Nicolai Parlog <nicolai@nipafx.dev>
+  CRM lead: 7425995000000738015
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[49/351] Kayla Cinnamon <cinnamon@microsoft.com>
+  CRM lead: 7425995000000738017
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+[50/351] Dmitri Soshnikov <dmitri@soshnikov.com>
+  CRM lead: 7425995000000733029
+  FAIL -- 500: {'status': {'code': 500, 'description': 'Internal Error'}, 'data': {'moreInfo': 'Unable to send message;Reason:550 5.4.6 Unusual sending activity detected. Please try after sometime. <a href=https://www.zoho.com/mail/help/usage-policy.html target=_blank>Learn more.</a>'}}
+
+--- Done ---
+Sent:   24
+Failed: 26
