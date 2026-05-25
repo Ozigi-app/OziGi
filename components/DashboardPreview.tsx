@@ -172,8 +172,8 @@ export default function DashboardPreview() {
           <div className="hidden md:block w-[60px]" />
         </div>
 
-        {/* Phase content */}
-        <div className="relative overflow-hidden" style={{ minHeight: 560 }}>
+        {/* Phase content — fixed height so all phases share the same aspect ratio */}
+        <div className="relative overflow-hidden" style={{ height: 560 }}>
           <AnimatePresence mode="wait" initial={false}>
             {previousVisiblePhase === "input" && (
               <motion.div
@@ -600,7 +600,7 @@ function GeneratingOverlay({ elapsed }: { elapsed: number }) {
 
 function InputPhase({ typedInput, buttonPulsing }: { typedInput: string; buttonPulsing: boolean }) {
   return (
-    <div className="flex" style={{ background: C.bg, minHeight: 560 }}>
+    <div className="flex" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
       <Sidebar active="Blog Post" />
       <div className="flex-1 p-5 md:p-7">
         {/* header */}
@@ -785,7 +785,7 @@ const DISTRIBUTIONS: {
 
 function DistributionPhase({ distElapsed }: { distElapsed: number }) {
   return (
-    <div className="flex" style={{ background: C.bg, minHeight: 560 }}>
+    <div className="flex" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
       <Sidebar active="Generation History" />
 
       <div className="flex-1 p-5 md:p-7">
@@ -892,7 +892,7 @@ function ActionPill({ label }: { label: string }) {
 
 function LongFormPhase() {
   return (
-    <div className="p-5 md:p-7" style={{ background: C.bg, minHeight: 560 }}>
+    <div className="p-5 md:p-7" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
       <button className="text-[10px] md:text-xs font-bold inline-flex items-center gap-1.5" style={{ color: C.muted }}>
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5" />
