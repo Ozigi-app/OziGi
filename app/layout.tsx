@@ -124,6 +124,14 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
 
+        {/* Ghostly analytics */}
+        <Script
+          src="https://ghostlyx.com/js/script.min.js"
+          data-domain="ozigi.app"
+          data-site-id="gx_BhB0iLgv5UUc"
+          strategy="afterInteractive"
+        />
+
         {/* Google Ads tag — loads on every page */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}`}

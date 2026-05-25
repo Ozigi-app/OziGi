@@ -52,6 +52,7 @@ next-env.d.ts
 # Outreach email scripts and logs
 scrape_github.py
 scrape_devto.py
+scrape_producthunt.py
 github_leads.csv
 *.log
 send_outreach.py
