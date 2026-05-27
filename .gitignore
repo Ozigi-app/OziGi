@@ -49,7 +49,7 @@ next-env.d.ts
 # Claude Code local settings
 .claude/
 
-# Outreach email scripts and logs
+# Outreach scripts and data (email + LinkedIn — kept local, not committed)
 scrape_github.py
 scrape_devto.py
 scrape_producthunt.py
@@ -61,6 +61,17 @@ send_batch3.py
 send_batch3_retry.py
 send_tomorrow.py
 zoho_crm_outreach.py
+send_sequences.py
+sequence_tracking.csv
+daily_cap.py
+daily_tracker.json
+linkedin_outreach.py
+linkedin_sequences.py
+linkedin_cap.py
+linkedin_tracking.csv
+linkedin_daily_tracker.json
+linkedin_queue_*.txt
+__pycache__/
 
 # Development and testing
 emails/
