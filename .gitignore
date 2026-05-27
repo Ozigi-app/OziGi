@@ -84,5 +84,8 @@ tests/
 # Scripts and automation
 scripts/
 
+# Database migrations (local only - not for public repo)
+supabase/migrations/
+
 # Worker configurations
 worker/
