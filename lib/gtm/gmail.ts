@@ -5,7 +5,10 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 const GMAIL_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GMAIL_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const GMAIL_SEND_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send'
-const SCOPES = ['https://www.googleapis.com/auth/gmail.send'].join(' ')
+const SCOPES = [
+  'https://www.googleapis.com/auth/gmail.send',
+  'https://www.googleapis.com/auth/userinfo.email',  // needed to read the account email address
+].join(' ')
 
 export function getCallbackUrl(origin: string) {
   return `${origin}/api/gtm/gmail/callback`
@@ -153,18 +156,17 @@ export async function sendViaGmail(
   }
 }
 
-// Fetch the authenticated user's email address via the Gmail profile endpoint.
-// Uses gmail.googleapis.com/gmail/v1/users/me/profile which only requires
-// the gmail.send scope — avoids needing userinfo.email scope separately.
+// Fetch the authenticated user's email address via the userinfo endpoint.
+// Requires the userinfo.email scope (included in SCOPES above).
 export async function getGmailAddress(accessToken: string): Promise<string> {
-  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
+  const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo?fields=email', {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`Failed to fetch Gmail profile (${res.status}): ${body}`)
+    throw new Error(`Failed to fetch Gmail user info (${res.status}): ${body}`)
   }
-  const { emailAddress } = await res.json()
-  if (!emailAddress) throw new Error('Gmail profile returned no email address')
-  return emailAddress as string
+  const { email } = await res.json()
+  if (!email) throw new Error('userinfo returned no email address')
+  return email as string
 }
