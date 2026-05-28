@@ -1,0 +1,90 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# Google Cloud Service Account
+gcp-service-account.json
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Claude Code local settings
+.claude/
+
+# Outreach scripts and data (email + LinkedIn — kept local, not committed)
+scrape_github.py
+scrape_devto.py
+scrape_producthunt.py
+github_leads.csv
+*.log
+send_outreach.py
+send_apollo_outreach.py
+send_batch3.py
+send_batch3_retry.py
+send_tomorrow.py
+zoho_crm_outreach.py
+send_sequences.py
+sequence_tracking.csv
+daily_cap.py
+daily_tracker.json
+linkedin_outreach.py
+linkedin_sequences.py
+linkedin_cap.py
+linkedin_tracking.csv
+linkedin_daily_tracker.json
+linkedin_queue_*.txt
+__pycache__/
+
+# Development and testing
+emails/
+playwright-report/
+playwright-reports/
+test-results/
+tests/
+
+# Scripts and automation
+scripts/
+
+# Database migrations
+supabase/migrations/
+
+# Worker configurations
+worker/
