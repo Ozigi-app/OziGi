@@ -81,7 +81,7 @@ export async function loginLinkedIn(userId: string): Promise<void> {
   const password = decrypt(creds.linkedin_password_enc)
 
   // Upsert a session row so we can track status
-  const { data: session } = await supabase
+  const { data: upserted, error: upsertErr } = await supabase
     .from('linkedin_sessions')
     .upsert(
       {
@@ -95,7 +95,30 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     .select('id')
     .single()
 
-  const sessionId = session!.id
+  // Fallback: if upsert didn't return data (conflict row not returned by some
+  // Supabase versions), fetch the existing row directly
+  let sessionId: string
+  if (upserted?.id) {
+    sessionId = upserted.id
+  } else {
+    const { data: existing, error: fetchErr } = await supabase
+      .from('linkedin_sessions')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('linkedin_email', email)
+      .single()
+
+    if (!existing?.id) {
+      throw new Error(`Failed to create session row: ${upsertErr?.message ?? fetchErr?.message ?? 'unknown'}`)
+    }
+
+    sessionId = existing.id
+    // Make sure status is set to logging_in on the existing row
+    await supabase
+      .from('linkedin_sessions')
+      .update({ status: 'logging_in', updated_at: new Date().toISOString() })
+      .eq('id', sessionId)
+  }
 
   const browser = await chromium.launch({
     headless: true,
