@@ -170,6 +170,30 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     if (url.includes('/checkpoint') || url.includes('/challenge') || url.includes('/verify')) {
       console.log(`[login] 2FA required for ${email}`)
 
+      // If LinkedIn is showing "approve on your device", switch to code method
+      // Look for links/buttons that offer an alternative verification method
+      const codeAlternatives = [
+        'text:Use a verification code',
+        'text:Get a code',
+        'text:Send a code',
+        'text:use a one-time code',
+        'a:has-text("verification code")',
+        'button:has-text("verification code")',
+        '[data-litms-control-urn*="code"]',
+      ]
+      for (const selector of codeAlternatives) {
+        try {
+          const el = page.locator(selector).first()
+          const visible = await el.isVisible({ timeout: 2_000 })
+          if (visible) {
+            console.log(`[login] switching to code-based 2FA via: ${selector}`)
+            await el.click()
+            await page.waitForTimeout(2000)
+            break
+          }
+        } catch { continue }
+      }
+
       await setSessionStatus(sessionId, 'pending_2fa', {
         verification_code: null,
         login_error: null,
