@@ -16,14 +16,54 @@ import http from 'http'
 import { createClient } from '@supabase/supabase-js'
 import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './browser'
 import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
+import { loginLinkedIn } from './login'
 import type { BrowserContext, Browser } from 'playwright'
 
-// Minimal HTTP server so Fly.io health checks pass
-http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify({ ok: true, service: 'linkedin-worker' }))
-}).listen(process.env.PORT ?? 8080, () => {
-  console.log(`[worker] health endpoint listening on port ${process.env.PORT ?? 8080}`)
+// HTTP server — health checks + /login endpoint
+const server = http.createServer(async (req, res) => {
+  // Health check
+  if (req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ ok: true, service: 'linkedin-worker' }))
+    return
+  }
+
+  // POST /login — triggered by Ozigi when user connects their LinkedIn account
+  if (req.method === 'POST' && req.url === '/login') {
+    // Verify internal secret
+    const auth = req.headers['authorization']
+    if (auth !== `Bearer ${process.env.WORKER_SECRET}`) {
+      res.writeHead(401)
+      res.end(JSON.stringify({ error: 'Unauthorized' }))
+      return
+    }
+
+    const chunks: Buffer[] = []
+    for await (const chunk of req) chunks.push(chunk as Buffer)
+    const { userId } = JSON.parse(Buffer.concat(chunks).toString())
+
+    if (!userId) {
+      res.writeHead(400)
+      res.end(JSON.stringify({ error: 'userId required' }))
+      return
+    }
+
+    // Acknowledge immediately — login runs async (may wait for 2FA)
+    res.writeHead(202, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ ok: true, message: 'Login started' }))
+
+    loginLinkedIn(userId).catch(err =>
+      console.error(`[worker] loginLinkedIn failed for ${userId}:`, err)
+    )
+    return
+  }
+
+  res.writeHead(404)
+  res.end()
+})
+
+server.listen(process.env.PORT ?? 8080, () => {
+  console.log(`[worker] listening on port ${process.env.PORT ?? 8080}`)
 })
 
 const POLL_INTERVAL_MS = 30_000       // check queue every 30s
