@@ -121,8 +121,15 @@ export async function loginLinkedIn(userId: string): Promise<void> {
   }
 
   const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'],
+    headless: process.env.NODE_ENV === 'production',  // visible in dev so you can see what LinkedIn shows
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-blink-features=AutomationControlled',
+      '--disable-web-security',
+      '--disable-features=IsolateOrigins,site-per-process',
+    ],
+    slowMo: process.env.NODE_ENV === 'production' ? 0 : 50,
   })
 
   const context = await browser.newContext({
@@ -134,13 +141,24 @@ export async function loginLinkedIn(userId: string): Promise<void> {
 
   try {
     // Navigate to login
-    await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 20_000 })
-    await page.waitForTimeout(1000 + Math.random() * 1000)
+    await page.goto('https://www.linkedin.com/login', { waitUntil: 'networkidle', timeout: 30_000 })
+    await page.waitForTimeout(2000 + Math.random() * 1000)
 
-    // Enter credentials
-    await page.fill('#username', email)
+    // LinkedIn uses #username but may differ — try multiple selectors
+    const usernameSelector = await Promise.race([
+      page.waitForSelector('#username', { timeout: 15_000 }).then(() => '#username'),
+      page.waitForSelector('input[name="session_key"]', { timeout: 15_000 }).then(() => 'input[name="session_key"]'),
+      page.waitForSelector('input[autocomplete="username"]', { timeout: 15_000 }).then(() => 'input[autocomplete="username"]'),
+    ])
+
+    await page.fill(usernameSelector, email)
     await page.waitForTimeout(500 + Math.random() * 500)
-    await page.fill('#password', password)
+
+    const passwordSelector = await Promise.race([
+      page.waitForSelector('#password', { timeout: 5_000 }).then(() => '#password'),
+      page.waitForSelector('input[name="session_password"]', { timeout: 5_000 }).then(() => 'input[name="session_password"]'),
+    ])
+    await page.fill(passwordSelector, password)
     await page.waitForTimeout(500 + Math.random() * 800)
     await page.click('[type="submit"]')
 
