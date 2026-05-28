@@ -17,9 +17,6 @@ primary_region = "lax"
   PORT = "8080"
 
 # Keep exactly one instance running at all times — this is a persistent worker
-[mounts]
-  # No volume needed — state lives in Supabase
-
 [[vm]]
   memory = "1gb"     # Playwright/Chromium needs at least 512MB; 1GB is safe
   cpu_kind = "shared"
@@ -33,8 +30,8 @@ primary_region = "lax"
   min_machines_running = 1
 
   [[http_service.checks]]
-    grace_period = "10s"
+    grace_period = "60s"
     interval = "30s"
     method = "GET"
-    timeout = "5s"
+    timeout = "10s"
     path = "/"
