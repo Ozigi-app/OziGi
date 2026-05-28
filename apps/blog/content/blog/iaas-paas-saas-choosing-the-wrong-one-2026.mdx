@@ -37,7 +37,7 @@ The lesson is not that Heroku was wrong. Heroku was exactly right for the first 
 
 The rule of thumb that holds up: when a PaaS bill hits roughly $5,000 per month, it is time to model the IaaS equivalent. The inflection point where IaaS becomes cheaper than PaaS, accounting for operational overhead, typically lands somewhere between $2M and $5M ARR. Missing that window by six months costs more than the migration itself.
 
-![Line chart comparing Heroku and AWS monthly costs over 30 months. Heroku starts at ~$600/month and climbs to $4,200 by month 24. AWS starts high due to migration cost but settles at ~$1,100. The lines cross around month 18 at $2,800. A shaded band marks the optimal migration window.](/images/blog/iaas-paas-saas-wrong-choice/paas-vs-iaas-cost-crossover.png)
+![Line chart comparing Heroku and AWS monthly costs over 30 months. Heroku starts at ~$600/month and climbs to $4,200 by month 24. AWS starts high due to migration cost but settles at ~$1,100. The lines cross around month 18 at $2,800. A shaded band marks the optimal migration window.](/images/blog/iaas-paas-saas-wrong-choice/paas-vs-iaas-cost-crossover%20-%20Samuel%20Thomas.jpg)
 
 **Warning signals this team missed:**
 - Heroku bill crossed $2,000/month with no IaaS cost model on file
@@ -61,8 +61,6 @@ The mistake was applying a solution suited to a 20-person engineering team with 
 
 The signal they missed: if you do not have an engineer whose primary focus can include infrastructure operations, IaaS is probably not the right model yet. The question is not "do we know how to run IaaS?" it is "can we afford the time cost of running it at this stage?"
 
-![Stacked bar chart comparing engineering time allocation for a 2-person team on AWS IaaS versus Railway PaaS over four months. IaaS: 15% spent on infra maintenance, 85% on product. PaaS: near 0% infra, effectively 100% product. Activities lost on IaaS listed below: EC2 patching, RDS tuning, ALB misconfiguration.](/images/blog/iaas-paas-saas-wrong-choice/engineering-time-split-iaas-vs-paas.png)
-
 **Warning signals this team missed:**
 - Team size (2 engineers) had no room to absorb infrastructure incidents without product impact
 - IaaS was chosen based on founder familiarity, not team capacity
@@ -85,7 +83,7 @@ The mistake was calculating the build cost and ignoring the maintenance cost. A 
 
 The signal they missed: when a tool's primary value is operational, handling a workflow, routing communication, tracking tickets, and not a product differentiator, that is a SaaS problem, not an engineering problem. The question is not "can we build this?" Almost always, the answer is yes. The question is "should this be on our engineering roadmap at all?"
 
-![Grouped bar chart showing cumulative cost of building in-house support tooling versus a SaaS subscription over 24 months. Build cost reaches $60k at month 6, $87k at month 12, and exceeds $114k by month 18. SaaS subscription stays flat at $21,600/year. A red marker at month 18 shows when the team finally migrated to Zendesk.](/images/blog/iaas-paas-saas-wrong-choice/build-vs-buy-cost-24-months.png)
+![Grouped bar chart showing cumulative cost of building in-house support tooling versus a SaaS subscription over 24 months. Build cost reaches $60k at month 6, $87k at month 12, and exceeds $114k by month 18. SaaS subscription stays flat at $21,600/year. A red marker at month 18 shows when the team finally migrated to Zendesk.](/images/blog/iaas-paas-saas-wrong-choice/build-vs-buy-cost-24-months%20-%20Samuel%20Thomas.jpg)
 
 **Warning signals this team missed:**
 - Build estimate covered initial development only, ongoing maintenance was never costed

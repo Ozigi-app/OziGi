@@ -31,7 +31,7 @@ You own everything you deploy into that infrastructure. That means identity and 
 
 Where most teams get into trouble is the grey area: managed services. When you run a database on AWS RDS instead of on a self-managed EC2 instance, Amazon handles OS patching and the database engine itself. But you still own the access controls on that database, the encryption key configuration, who has permission to connect, and the network security group rules around it. The shift to a managed service moves some responsibilities to the provider — it does not move all of them.
 
-![AWS shared responsibility model diagram showing the full stack split: the customer owns data, platform, applications, identity, OS, network, firewall configuration, and client-side encryption. AWS owns the software, compute, storage, database, networking, and all hardware and global infrastructure including regions, availability zones, and edge locations](/images/blog/shared-responsibility-model-cloud/shared-responsibility-model.jpeg)
+![AWS shared responsibility model diagram showing the full stack split: the customer owns data, platform, applications, identity, OS, network, firewall configuration, and client-side encryption. AWS owns the software, compute, storage, database, networking, and all hardware and global infrastructure including regions, availability zones, and edge locations](/images/blog/shared-responsibility-model-cloud/shared-responsibility-model%20-%20Samuel%20Thomas.jpeg)
 
 ## How Responsibility Shifts Across Service Types
 
@@ -64,8 +64,6 @@ The tools are not identical across AWS, GCP, and Azure, but the workflow is cons
 **On Azure:** Enable Microsoft Defender for Cloud and work through the Secure Score recommendations — each recommendation maps directly to a misconfiguration category with a remediation path. Review Azure AD Conditional Access policies: MFA enforcement should be applied to all users, not just administrators. Audit storage account access levels; the default setting for new containers is private, but any container set to "Container" or "Blob" access level is publicly readable. Use Azure Policy to enforce guardrails across subscriptions automatically.
 
 **On GCP:** Enable Cloud Audit Logs for Admin Activity and Data Access across all services. Use the Security Command Center to get a continuous view of misconfigurations, public storage buckets, and over-permissive IAM bindings. GCP enables many security defaults that AWS and Azure leave off by default — but defaults only cover what they cover. Review VPC firewall rules for rules that allow ingress from `0.0.0.0/0` on administrative ports (22, 3389). Check that service accounts follow a one-service-account-per-workload pattern rather than shared accounts with broad permissions.
-
-![Per-provider security checklist showing four rows — logging, IAM, network, and encryption — across AWS, Azure, and GCP columns, with the specific first action to take in each category for each provider](/images/blog/shared-responsibility-model-cloud/aws-shared-responsibility-model.jpg)
 
 ## The Misconfiguration Patterns That Keep Appearing
 
