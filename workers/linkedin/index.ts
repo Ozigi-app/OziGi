@@ -12,10 +12,19 @@
  *   SUPABASE_SERVICE_ROLE_KEY
  *   GTM_ENCRYPTION_KEY
  */
+import http from 'http'
 import { createClient } from '@supabase/supabase-js'
 import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './browser'
 import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
 import type { BrowserContext, Browser } from 'playwright'
+
+// Minimal HTTP server so Fly.io health checks pass
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' })
+  res.end(JSON.stringify({ ok: true, service: 'linkedin-worker' }))
+}).listen(process.env.PORT ?? 8080, () => {
+  console.log(`[worker] health endpoint listening on port ${process.env.PORT ?? 8080}`)
+})
 
 const POLL_INTERVAL_MS = 30_000       // check queue every 30s
 const ACTION_DELAY_MS  = [45_000, 90_000] as const  // wait 45–90s between actions (human pacing)
