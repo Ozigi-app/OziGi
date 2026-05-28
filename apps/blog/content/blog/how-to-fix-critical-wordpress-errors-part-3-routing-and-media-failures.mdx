@@ -45,7 +45,7 @@ This often happens entirely by accident. You might have installed a new plugin, 
 
 You do not need to panic or manually recreate your pages. You just need to force WordPress to regenerate your routing rules.
 
-![WordPress Permalinks Dashboard Settings](/images/blog/wordpress-errors-part3/wp-permalink-htaccess-routing%20-%20pawhob.png)
+![WordPress Permalinks Dashboard Settings](/images/blog/wordpress-errors-part3/wp-permalink-htaccess-routing.png)
 
 - **The Dashboard Flush:** Go to your WordPress Dashboard, click on **Settings**, and then **Permalinks**. Do not change any of the actual settings there — leave them exactly as they are. Simply scroll straight to the bottom and click "Save Changes." This simple action forces WordPress to flush its cache and rewrite the `.htaccess` file correctly. This fixes the issue 90% of the time.
 
@@ -85,7 +85,7 @@ Many beginners waste hours compressing the image or changing it from a PNG to a 
 
 To unblock your media library, you need to adjust how your server handles folder permissions and processing memory.
 
-![cPanel File Manager Change Permissions Dashboard](/images/blog/wordpress-errors-part3/wp-media-upload-permissions%20-%20pawhob.png)
+![cPanel File Manager Change Permissions Dashboard](/images/blog/wordpress-errors-part3/wp-media-upload-permissions.png)
 
 - **Adjust File Permissions:** Sometimes, an aggressive WordPress security plugin (which you may have installed unknowingly) will accidentally "lock" your media folders to protect them from hackers, which inadvertently blocks you too. Go to your cPanel File Manager and open the `public_html` folder. Open `wp-content`, right-click on the `uploads` folder, and select **Change Permissions**. Ensure the permission numbers are set exactly to **755**. This specific number tells the server that the owner is legally allowed to write and save new files.
 
