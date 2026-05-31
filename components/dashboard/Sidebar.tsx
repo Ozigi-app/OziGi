@@ -19,15 +19,21 @@ interface SidebarProps {
 }
 
 const TOUR_IDS: Record<string, string> = {
+  "Overview":               "sidebar-overview",
+  "Social Posts":           "sidebar-social",
+  "Newsletter":             "sidebar-newsletter",
+  "Generation History":     "sidebar-history",
   "Scheduled Posts":        "sidebar-scheduled",
   "Subscribers":            "sidebar-subscribers",
   "Personas":               "sidebar-personas",
   "Persona Marketplace":    "sidebar-personas-marketplace",
   "Blog Post":              "sidebar-blog-post",
   "Email Lists":            "sidebar-email-lists",
+  "Email Outreach":         "sidebar-email-outreach",
+  "LinkedIn Outreach":      "sidebar-linkedin-outreach",
+  "Outreach Settings":      "sidebar-outreach-settings",
   "Settings & Integrations":"sidebar-settings",
   "Copilot Settings":       "sidebar-copilot-settings",
-  "Generation History":     "sidebar-history",
 };
 
 function NavButton({

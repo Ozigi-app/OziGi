@@ -294,10 +294,10 @@ export default function Home() {
               initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full mt-10"
+              className="w-full mt-10 max-w-5xl mx-auto"
             >
-              <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: C.dim }}>
-                See the content engine in action
+              <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: C.dim }}>
+                See Ozigi in action
               </p>
               <div style={{ zoom: 0.82 }} className="w-full origin-top">
                 <DashboardPreview />

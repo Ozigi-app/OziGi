@@ -521,7 +521,7 @@ useEffect(() => {
                   ))}
                 </div>
               ) : overviewStats ? (
-                <>
+                <div data-tour="overview-stats">
                   {/* ── Content Studio ──────────────────────────────────────── */}
                   <section>
                     <div className="flex items-center gap-2 mb-3">
@@ -565,7 +565,7 @@ useEffect(() => {
                       ))}
                     </div>
                   </section>
-                </>
+                </div>
               ) : (
                 <p className="text-foreground-subtle text-sm">Could not load stats. Refresh to try again.</p>
               )}
