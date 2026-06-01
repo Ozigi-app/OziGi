@@ -130,12 +130,20 @@ export default function EmailOutreachPage() {
               <p className="text-foreground-subtle text-sm mt-0.5">All outbound emails across campaigns</p>
             </div>
           </div>
-          <button
-            onClick={() => { setComposing(true); setComposeSent(false); setComposeError('') }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors"
-          >
-            <Send size={14} /> Compose Email
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setComposing(true); setComposeSent(false); setComposeError('') }}
+              className="flex items-center gap-2 px-3 py-2 text-foreground-subtle hover:text-foreground border border-border hover:border-border-strong text-xs font-semibold rounded-xl transition-colors"
+            >
+              <Send size={13} /> Compose Email
+            </button>
+            <a
+              href="/dashboard/gtm/new"
+              className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors"
+            >
+              + New Campaign
+            </a>
+          </div>
         </div>
 
         {/* Compose panel */}

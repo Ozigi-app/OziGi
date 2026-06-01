@@ -185,17 +185,20 @@ function DashboardContent() {
       label: "Email Outreach",
       sectionLabel: "Outbound Growth",
       icon: <Send className="w-5 h-5 opacity-70" />,
-      onClick: () => router.push("/dashboard/gtm/outreach"),
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/outreach") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
     },
     {
       label: "LinkedIn Outreach",
       icon: <UserPlus className="w-5 h-5 opacity-70" />,
-      onClick: () => router.push("/dashboard/gtm/linkedin"),
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/linkedin") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
     },
     {
       label: "Outreach Settings",
       icon: <Settings className="w-5 h-5 opacity-70" />,
-      onClick: () => router.push("/dashboard/gtm/settings"),
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/settings") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
     },
     // ── Settings ───────────────────────────────────────────────────────────────
     {
@@ -733,7 +736,7 @@ useEffect(() => {
             <span className="text-2xl">✨</span>
           </button>
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
-            Upgrade to Organization to use Copilot
+            Upgrade to Pro to use Copilot
           </div>
         </div>
       )}
