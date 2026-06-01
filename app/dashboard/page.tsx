@@ -1,7 +1,7 @@
 "use client";
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Sparkles, User, FileText, Store } from "lucide-react";
+import { Mail, Sparkles, User, FileText, Store, LayoutDashboard, Megaphone, ListOrdered, Clock, Settings, Send, UserPlus, AtSign } from "lucide-react";
 import Distillery from "@/components/ContextEngine";
 import DistributionGrid from "@/components/DistributionGrid";
 import GuestModeBanner from "@/components/GuestModeBanner";
@@ -34,6 +34,19 @@ import { incrementCampaignGeneration } from "@/lib/plan";
 import { toast } from "sonner";
 import { PLATFORMS } from "@/lib/platforms";
 import { fireConversion } from "@/lib/gtag";
+
+function StatCard({ label, value, desc }: { label: string; value: string | number; desc: string }) {
+  return (
+    <div className="bg-surface border border-border rounded-xl p-5 group relative overflow-hidden">
+      <div className="text-3xl font-black text-foreground mb-1 tabular-nums">{value}</div>
+      <div className="text-foreground-subtle text-xs font-medium leading-snug">{label}</div>
+      {/* Hover tooltip */}
+      <div className="absolute inset-0 bg-surface-2/95 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center px-4 pointer-events-none">
+        <p className="text-foreground-subtle text-xs text-center leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  )
+}
 
 function DashboardContent() {
   const router = useRouter();
@@ -80,27 +93,80 @@ function DashboardContent() {
   const [isCopilotSettingsOpen, setIsCopilotSettingsOpen] = useState(false);
   const hasCopilot = planStatus?.hasCopilot || false;
 
+  // ── View state ──────────────────────────────────────────────────────────────
+  const [currentView, setCurrentView] = useState<'overview' | 'social' | 'newsletter'>('overview');
+
+  // ── Unified overview stats ───────────────────────────────────────────────────
+  type OverviewStats = {
+    content: {
+      socialCampaigns: number; newslettersGenerated: number; blogPostsWritten: number;
+      postsScheduled: number; personasSaved: number; newsletterSubscribers: number;
+    };
+    outbound: {
+      emailsSent: number; replyRate: string; liConnections: number;
+      liMessages: number; totalLeads: number; emailsScraped: number;
+    };
+  };
+  const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
+  const [overviewLoading, setOverviewLoading] = useState(true);
+
+  const fetchOverviewStats = useCallback(() => {
+    setOverviewLoading(true);
+    fetch('/api/stats/overview')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setOverviewStats(d); })
+      .catch(() => {})
+      .finally(() => setOverviewLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (session?.user) fetchOverviewStats();
+  }, [session?.user, fetchOverviewStats]);
+
   const navItems = [
+    // ── Workspace ──────────────────────────────────────────────────────────────
     {
-      label: "Generation History",
-      icon: (
-        <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      onClick: () => setIsHistoryOpen(true),
+      label: "Overview",
+      sectionLabel: "Workspace",
+      icon: <LayoutDashboard className="w-5 h-5 opacity-70" />,
+      onClick: () => { setCurrentView('overview'); setCampaign([]); },
+    },
+    // ── Content Engine ─────────────────────────────────────────────────────────
+    {
+      label: "Social Posts",
+      sectionLabel: "Content Engine",
+      icon: <Megaphone className="w-5 h-5 opacity-70" />,
+      onClick: () => { setCurrentView('social'); setCampaign([]); },
+      subItems: [
+        {
+          label: "Generation History",
+          icon: <Clock className="w-4 h-4" />,
+          onClick: () => setIsHistoryOpen(true),
+        },
+        {
+          label: "Scheduled Posts",
+          icon: <ListOrdered className="w-4 h-4" />,
+          onClick: () => setIsScheduledOpen(true),
+        },
+      ],
     },
     {
-      label: "Scheduled Posts",
-      icon: (
-        <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-      onClick: () => setIsScheduledOpen(true),
+      label: "Newsletter",
+      icon: <AtSign className="w-5 h-5 opacity-70" />,
+      onClick: () => { setCurrentView('newsletter'); setCampaign([]); },
     },
+    {
+      label: "Blog Post",
+      icon: <FileText className="w-5 h-5 opacity-70" />,
+      onClick: () => planStatus?.hasLongForm
+        ? router.push("/dashboard/long-form")
+        : setIsUpgradeModalOpen(true),
+      locked: !planStatus?.hasLongForm,
+    },
+    // ── Audience ───────────────────────────────────────────────────────────────
     {
       label: "Subscribers",
+      sectionLabel: "Audience",
       icon: <Mail className="w-5 h-5 opacity-70" />,
       onClick: () => setIsSubscribersOpen(true),
     },
@@ -114,26 +180,31 @@ function DashboardContent() {
       icon: <Store className="w-5 h-5 opacity-70" />,
       onClick: () => router.push("/dashboard/personas/marketplace"),
     },
+    // ── Outbound Growth ────────────────────────────────────────────────────────
     {
-      label: "Blog Post",
-      icon: <FileText className="w-5 h-5 opacity-70" />,
-      onClick: () => planStatus?.hasLongForm
-        ? router.push("/dashboard/long-form")
-        : setIsUpgradeModalOpen(true),
-      locked: !planStatus?.hasLongForm,
+      label: "Email Outreach",
+      sectionLabel: "Outbound Growth",
+      icon: <Send className="w-5 h-5 opacity-70" />,
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/outreach") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
     },
     {
+      label: "LinkedIn Outreach",
+      icon: <UserPlus className="w-5 h-5 opacity-70" />,
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/linkedin") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
+    },
+    {
+      label: "Outreach Settings",
+      icon: <Settings className="w-5 h-5 opacity-70" />,
+      onClick: () => planStatus?.hasGtm ? router.push("/dashboard/gtm/settings") : router.push("/pricing"),
+      locked: !planStatus?.hasGtm,
+    },
+    // ── Settings ───────────────────────────────────────────────────────────────
+    {
       label: "Settings & Integrations",
-      icon: (
-        <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
+      sectionLabel: "Settings",
+      icon: <Settings className="w-5 h-5 opacity-70" />,
       onClick: () => setIsSettingsOpen(true),
     },
     {
@@ -263,6 +334,7 @@ const handleGenerate = async () => {
           source_notes: rawText || inputs.fileUrls.join(", "),
           name: inputs.campaignName?.trim() || null,
           generated_content: finalCampaign,
+          type: currentView === 'newsletter' ? 'newsletter' : 'social',
         });
         if (insertError) {
           console.error('Campaign insert error:', insertError);
@@ -270,7 +342,14 @@ const handleGenerate = async () => {
         }
 
         await new Promise((resolve) => setTimeout(resolve, 200));
+        // Increment the right counter based on what was generated
+        fetch('/api/stats/increment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: currentView === 'newsletter' ? 'newsletter' : 'social' }),
+        }).catch(() => {});
         refreshStats();
+        fetchOverviewStats();
         fetchHistory(session.user.id);
       } catch (dbError) {
         console.error('Database operation error:', dbError);
@@ -331,8 +410,16 @@ return () => clearTimeout(t);
 
 // Fire Google Ads conversion when redirected back after a successful checkout
 useEffect(() => {
-  if (searchParams.get("checkout") === "success") {
+  const checkoutParam = searchParams.get("checkout");
+  if (checkoutParam === "success") {
     fireConversion();
+    // Clean the param from the URL so it doesn't re-fire on refresh
+    const url = new URL(window.location.href);
+    url.searchParams.delete("checkout");
+    router.replace(url.pathname + url.search, { scroll: false });
+  } else if (checkoutParam === "credits") {
+    fireConversion();
+    toast.success("Credits added to your account!");
     // Clean the param from the URL so it doesn't re-fire on refresh
     const url = new URL(window.location.href);
     url.searchParams.delete("checkout");
@@ -371,9 +458,6 @@ useEffect(() => {
         isSidebarCollapsed={isSidebarCollapsed}
         setIsSidebarCollapsed={setIsSidebarCollapsed}
         navItems={navItems}
-        stats={stats}
-        planStatus={planStatus}
-        isLoadingStats={isLoadingStats}
       />
 
       {isMobileSidebarOpen && (
@@ -424,52 +508,170 @@ useEffect(() => {
             </div>
           )}
 
-          <div className="bg-surface text-foreground rounded-3xl border border-border shadow-sm p-6 md:p-8 mt-6">
-            {!loading && campaign.length === 0 && (
-              <Distillery
-                session={session}
-                userPersonas={personas}
-                inputs={inputs}
-                setInputs={setInputs}
-                loading={loading}
-                onOpenSettings={() => {
-                  window.dispatchEvent(new Event("openSettingsModal"));
-                  setIsSettingsOpen(true);
-                }}
-                onOpenPersonas={() => setIsPersonasOpen(true)}
-                onGenerate={handleGenerate}
-              />
-            )}
+          {/* ── OVERVIEW VIEW ─────────────────────────────────────────────────── */}
+          {currentView === 'overview' && (
+            <div className="mt-6 space-y-8">
 
-            {loading && (
-              <div className="mt-8">
-                <GeneratingState />
+              <div>
+                <h1 className="text-2xl font-black text-foreground tracking-tight">Overview</h1>
+                <p className="text-foreground-subtle text-sm mt-0.5">Everything you've done on Ozigi, at a glance</p>
               </div>
-            )}
 
-            {!loading && campaign.length > 0 && (
-              <div className="mt-4 animate-in fade-in slide-in-from-bottom-8">
-                <div className="flex justify-between items-center mb-8">
-                  <button
-                    onClick={() => setCampaign([])}
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground-muted hover:text-accent transition-colors bg-surface px-5 py-3 rounded-xl border border-border shadow-sm hover:shadow-md active:scale-95"
-                  >
-                    ← Architect New Campaign
-                  </button>
+              {overviewLoading ? (
+                /* Skeleton */
+                <div className="space-y-6">
+                  {[6, 6].map((cols, si) => (
+                    <div key={si} className={`grid grid-cols-2 md:grid-cols-${cols} gap-3`}>
+                      {Array(cols).fill(0).map((_, i) => (
+                        <div key={i} className="bg-surface border border-border rounded-xl p-5">
+                          <div className="h-8 w-12 bg-surface-2 animate-pulse rounded mb-2" />
+                          <div className="h-3 w-24 bg-surface-2 animate-pulse rounded" />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
                 </div>
-                <div className="scroll-mt-32" id="campaign-cards" ref={campaignRef} data-tour="campaign-cards">
-                  <DistributionGrid
-                    campaign={campaign}
-                    selectedPlatforms={inputs.platforms}
-                    session={session}
-                    emailContent={emailContent}
-                    setEmailContent={setEmailContent}
-                    onStatsChange={refreshStats}
-                  />
+              ) : overviewStats ? (
+                <div data-tour="overview-stats">
+                  {/* ── Content Studio ──────────────────────────────────────── */}
+                  <section>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Megaphone className="w-3.5 h-3.5 text-foreground-subtle" />
+                      <h2 className="text-[10px] font-black uppercase tracking-widest text-foreground-subtle">
+                        Content Studio
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                      {[
+                        { label: 'Social Campaigns',      value: overviewStats.content.socialCampaigns,       desc: 'Social content campaigns generated'    },
+                        { label: 'Newsletters Generated', value: overviewStats.content.newslettersGenerated,  desc: 'Email newsletters drafted and generated' },
+                        { label: 'Blog Posts Written',    value: overviewStats.content.blogPostsWritten,      desc: 'Long-form blog articles generated'       },
+                        { label: 'Posts Scheduled',       value: overviewStats.content.postsScheduled,        desc: 'Posts queued for auto-publishing'        },
+                        { label: 'Subscribers',           value: overviewStats.content.newsletterSubscribers, desc: 'Active newsletter subscribers'           },
+                        { label: 'Personas Saved',        value: overviewStats.content.personasSaved,         desc: 'Custom writing voices created'           },
+                      ].map(s => (
+                        <StatCard key={s.label} label={s.label} value={s.value} desc={s.desc} />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* ── Outbound Growth ─────────────────────────────────────── */}
+                  <section>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Send className="w-3.5 h-3.5 text-foreground-subtle" />
+                      <h2 className="text-[10px] font-black uppercase tracking-widest text-foreground-subtle">
+                        Outbound Growth
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                      {[
+                        { label: 'Outbound Emails Sent',   value: overviewStats.outbound.emailsSent,    desc: 'Cold + follow-up emails sent via Gmail / SMTP' },
+                        { label: 'Emails Scraped',         value: overviewStats.outbound.emailsScraped, desc: 'Lead profiles where an email was found'        },
+                        { label: 'LinkedIn Connections',   value: overviewStats.outbound.liConnections, desc: 'Connection requests sent via LinkedIn'         },
+                        { label: 'LinkedIn Messages Sent', value: overviewStats.outbound.liMessages,    desc: 'DMs and follow-up messages sent via LinkedIn'  },
+                        { label: 'Total Leads Sourced',    value: overviewStats.outbound.totalLeads,    desc: 'Prospect profiles collected across all campaigns' },
+                        { label: 'Reply Rate',             value: overviewStats.outbound.replyRate,     desc: 'Outbound emails that received a reply'         },
+                      ].map(s => (
+                        <StatCard key={s.label} label={s.label} value={s.value} desc={s.desc} />
+                      ))}
+                    </div>
+                  </section>
                 </div>
+              ) : (
+                <p className="text-foreground-subtle text-sm">Could not load stats. Refresh to try again.</p>
+              )}
+
+              {/* ── Plan usage ────────────────────────────────────────────────── */}
+              {planStatus && planStatus.generationsLimit !== -1 && (
+                <div className="bg-surface border border-border rounded-xl p-5">
+                  <div className="flex justify-between text-sm font-semibold text-foreground mb-2">
+                    <span>Generations used this period</span>
+                    <span className="text-foreground-subtle tabular-nums">
+                      {planStatus.generationsUsed} / {planStatus.generationsLimit}
+                    </span>
+                  </div>
+                  <div className="w-full bg-surface-2 rounded-full h-2">
+                    <div
+                      className="bg-accent h-2 rounded-full transition-all"
+                      style={{ width: `${Math.min((planStatus.generationsUsed / planStatus.generationsLimit) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* ── SOCIAL / NEWSLETTER CONTENT VIEWS ────────────────────────────── */}
+          {(currentView === 'social' || currentView === 'newsletter') && (
+            <div className="bg-surface text-foreground rounded-3xl border border-border shadow-sm p-6 md:p-8 mt-6">
+              {/* view label */}
+              <div className="flex items-center gap-2 mb-5">
+                <button
+                  onClick={() => { setCurrentView('overview'); setCampaign([]); }}
+                  className="text-foreground-subtle hover:text-accent text-xs font-medium transition-colors"
+                >
+                  Overview
+                </button>
+                <span className="text-foreground-subtle text-xs">/</span>
+                <span className="text-foreground text-xs font-semibold">
+                  {currentView === 'social' ? 'Social Posts' : 'Newsletter'}
+                </span>
               </div>
-            )}
-          </div>
+
+              {!loading && campaign.length === 0 && (
+                <Distillery
+                  session={session}
+                  userPersonas={personas}
+                  inputs={currentView === 'newsletter'
+                    ? { ...inputs, platforms: [PLATFORMS.EMAIL] }
+                    : { ...inputs, platforms: inputs.platforms.filter(p => p !== PLATFORMS.EMAIL) }
+                  }
+                  setInputs={setInputs}
+                  loading={loading}
+                  lockedPlatforms={currentView === 'newsletter'
+                    ? [PLATFORMS.X, PLATFORMS.LINKEDIN, PLATFORMS.DISCORD, PLATFORMS.SLACK]
+                    : [PLATFORMS.EMAIL]
+                  }
+                  onOpenSettings={() => {
+                    window.dispatchEvent(new Event("openSettingsModal"));
+                    setIsSettingsOpen(true);
+                  }}
+                  onOpenPersonas={() => setIsPersonasOpen(true)}
+                  onGenerate={handleGenerate}
+                />
+              )}
+
+              {loading && (
+                <div className="mt-8">
+                  <GeneratingState />
+                </div>
+              )}
+
+              {!loading && campaign.length > 0 && (
+                <div className="mt-4 animate-in fade-in slide-in-from-bottom-8">
+                  <div className="flex justify-between items-center mb-8">
+                    <button
+                      onClick={() => setCampaign([])}
+                      className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground-muted hover:text-accent transition-colors bg-surface px-5 py-3 rounded-xl border border-border shadow-sm hover:shadow-md active:scale-95"
+                    >
+                      ← New {currentView === 'newsletter' ? 'Newsletter' : 'Campaign'}
+                    </button>
+                  </div>
+                  <div className="scroll-mt-32" id="campaign-cards" ref={campaignRef} data-tour="campaign-cards">
+                    <DistributionGrid
+                      campaign={campaign}
+                      selectedPlatforms={inputs.platforms}
+                      session={session}
+                      emailContent={emailContent}
+                      setEmailContent={setEmailContent}
+                      onStatsChange={refreshStats}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <Footer />
@@ -542,7 +744,7 @@ useEffect(() => {
             <span className="text-2xl">✨</span>
           </button>
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
-            Upgrade to Organization to use Copilot
+            Upgrade to Pro to use Copilot
           </div>
         </div>
       )}

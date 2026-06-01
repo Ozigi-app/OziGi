@@ -1,0 +1,102 @@
+---
+title: "How Do You Warm Up a Sending Domain in 2026?"
+date: "2026-06-10"
+modifiedTime: "2026-06-10"
+description: "Inbox providers decide where your mail lands within hours, so a new domain that blasts cold email on day one ends up in spam before the first reply. This guide covers the authentication you set up first, the four-week warmup ramp, why you should use a separate domain for cold outreach, and the maintenance schedule that keeps the domain healthy."
+coverImage: "/images/blog/warm-up-sending-domain-2026/cover.svg"
+section: "Marketing"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about go-to-market, content strategy, and the tooling small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "9 min read"
+category: "Marketing, GTM, Email"
+keywords: ["how to warm up a sending domain", "email domain warmup 2026", "email warmup schedule", "warm up new email domain", "cold email domain setup", "spf dkim dmarc setup", "sender reputation warmup", "warmup new mailbox"]
+---
+
+> **TL;DR:** Set up SPF, DKIM, and DMARC before you send anything, ideally on a separate domain from your main brand. Then ramp slowly: start around 5 emails a day, send no real cold email for the first two weeks, and build to roughly 40 to 50 a day by week four. Brand-new domains need four to six weeks. Once you launch real campaigns, never turn warmup off; keep a maintenance baseline running so positive signals offset the cold sends that get ignored. Rushing this, or mixing heavy cold volume into a fresh domain, is the single most common reason new campaigns land in spam.
+
+A new sending domain has no reputation, and inbox providers treat no reputation as a reason for suspicion. Send 50 cold emails from a domain registered last week and most of them land in spam before anyone reads them.
+
+Warmup is how you fix that: you teach Gmail, Outlook, and Yahoo that you are a normal sender before you ask them to deliver real outreach. Here is the setup, the schedule, and the mistakes that undo weeks of work.
+
+## What Does It Mean to Warm Up a Sending Domain?
+
+Warming up a domain means gradually increasing send volume from a new mailbox so inbox providers build trust in it. You start with a trickle of well-received mail and ramp up as the domain earns a reputation, rather than starting at full volume and getting flagged.
+
+The reason it works is that providers watch engagement signals: opens, replies, and the absence of spam complaints. A slow ramp gives them a steady stream of positive signals to learn from. A sudden burst of cold email from an unknown domain gives them the opposite, and they react by filtering you out.
+
+Think of it as building credit. Good behavior over time raises your limit. A reckless first month tanks it.
+
+## What Do You Set Up Before You Send Anything?
+
+Before a single email goes out, set up the three authentication records: SPF, DKIM, and DMARC. These prove the mail genuinely comes from your domain, and since 2024 the major providers require them.
+
+- **SPF** lists the servers allowed to send for your domain.
+- **DKIM** cryptographically signs your mail so it cannot be forged in transit.
+- **DMARC** tells providers what to do with mail that fails the first two, starting at a monitoring policy of `p=none`.
+
+All three are required for bulk senders by Gmail and Yahoo, and they are strongly expected of everyone, per [Google's sender guidelines](https://support.google.com/a/answer/14229414). Skipping them is not an option in 2026; mail that fails authentication gets rejected outright. While you are in the DNS settings, also set up a one-click unsubscribe so recipients can opt out without marking you as spam.
+
+## What Does a Four-Week Warmup Schedule Look Like?
+
+A standard warmup ramps from about 5 emails a day in week one to roughly 40 to 50 by week four, with no real cold outreach until around week three. The exact pace depends on whether the domain is brand new or has some history.
+
+A workable schedule:
+
+| Week | Daily volume per inbox | Cold outreach? |
+|---|---|---|
+| 1 | ~5, warmup only | No |
+| 2 | ~10 to 15, warmup only | No |
+| 3 | ~20 to 30 | Start light, ~5 to 10 cold |
+| 4 | ~40 to 50 | Ramp cold toward a 1:1 ratio with warmup |
+
+Through it all, watch the signals. Bounce rates should stay under about 2%, spam complaints near zero. If either climbs, slow down and let warmup do its work for a few more days before pushing volume again. Cold email reply rates during warmup will be modest, and that is normal; you are building trust, not closing deals yet.
+
+## Should You Use a Separate Domain for Cold Outreach?
+
+Yes. Run cold outreach from a domain separate from your primary brand domain, so that if a cold campaign damages a sender reputation, your main email and your customer communication are not caught in the blast.
+
+The common setup is to register one or more lookalike domains for outbound only, for example `getyourapp.com` or `yourapp-team.com` alongside your main `yourapp.com`, and warm those. Your transactional and customer email stays on the protected primary domain. This separation is standard practice for any team doing real outbound volume, and it is cheap insurance against a bad week of deliverability taking down your whole company's email.
+
+## How Long Does Warmup Take, and When Can You Start Real Outreach?
+
+Warmup takes two to four weeks for a domain with some history and four to six weeks for a brand-new one. You can begin light real outreach around week three, then ramp as the reputation holds.
+
+The temptation is always to start sooner, and it is always a mistake. A domain registered within the last 90 days has zero track record, so providers scrutinize it hardest exactly when it is most fragile. Domains recovering from prior reputation damage need even longer, sometimes eight weeks. The volume question that comes next, how many cold emails per day is safe once you launch, is covered in the companion guide on [how many cold emails you can send per day without landing in spam](https://blog.ozigi.app/blog/how-many-cold-emails-per-day-without-spam).
+
+## Do You Ever Stop Warming Up?
+
+No. After you launch real campaigns, keep a warmup baseline running permanently, usually 30 to 40% of your daily volume or roughly 10 to 15 emails a day per inbox. The ongoing positive signal offsets the negative signals that real cold email inevitably produces.
+
+This is the part most people miss. Real cold outreach generates low open rates, ignored messages, and the occasional spam report, all negative signals. Continuous warmup keeps feeding the providers positive engagement to balance that out. Turning warmup off after the initial ramp is like getting in shape and then never exercising again: the reputation you built slowly erodes.
+
+## What Ruins a Warmup?
+
+Three things ruin a warmup: sending too much too fast, mailing a dirty list, and mixing heavy cold volume into a fresh domain. Each one spikes the exact signals providers use to flag you.
+
+Sending too fast is the classic error: a new domain jumping to 50 cold sends on day one. A dirty list is the quiet killer: unverified addresses bounce, and a bounce spike above 3% can set you back weeks. Mixing real cold campaigns into warmup too early floods a domain with low-engagement mail before it has earned any trust. Avoid all three by ramping slowly, verifying every address before it enters a sequence, and keeping warmup and real outreach in the right ratio. Patience here is not optional; it is the whole technique.
+
+## Frequently Asked Questions
+
+**How do you warm up a new email domain?**
+Set up SPF, DKIM, and DMARC first, then ramp send volume slowly: around 5 emails a day in week one, no real cold email for the first two weeks, building to roughly 40 to 50 a day by week four. Watch bounce and spam rates throughout, and slow down if either climbs.
+
+**How long does email domain warmup take?**
+Two to four weeks for a domain with some sending history, and four to six weeks for a brand-new domain registered within the last 90 days. Domains recovering from previous reputation damage can need up to eight weeks. You can start light real outreach around week three and ramp from there.
+
+**Do I need a separate domain for cold email?**
+Yes. Run cold outreach from a domain separate from your main brand domain, so a damaged sender reputation does not take down your customer and transactional email. Register one or more lookalike domains for outbound only, authenticate them, and warm them while your primary domain stays protected.
+
+**What records do I need before sending cold email?**
+SPF, DKIM, and DMARC, all three. SPF lists allowed sending servers, DKIM signs your mail against forgery, and DMARC sets a policy for failures starting at `p=none`. The major providers require these as of 2024, and mail that fails authentication is rejected. Add a one-click unsubscribe as well.
+
+**Should I keep warming up after launching campaigns?**
+Yes. Keep a maintenance warmup running permanently, around 30 to 40% of daily volume or 10 to 15 emails a day per inbox. Real cold outreach produces negative signals like ignored mail and occasional spam reports, and ongoing warmup feeds positive engagement to balance them. Turning it off lets your reputation erode.
+
+**What is the most common warmup mistake?**
+Rushing. Sending too much too soon from a fresh domain, mailing an unverified list, or mixing heavy cold volume into warmup before the domain has earned trust. All three spike the bounce and complaint signals providers use to flag senders. Ramp slowly, verify addresses, and keep the right warmup-to-cold ratio.
+
+---
+
+*[Ozigi](https://ozigi.app) handles the sending side with safe pacing and authenticated delivery, so you can focus on sourcing and outreach rather than babysitting deliverability. Free to start, no credit card.*

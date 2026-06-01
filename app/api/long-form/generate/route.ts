@@ -10,7 +10,7 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { getPlanStatus } from '@/lib/plan';
+import { getPlanStatus, incrementLongFormUsed } from '@/lib/plan';
 import { getVertexAIClient } from '@/lib/genai-client';
 import {
   buildLongFormPrompt,
@@ -283,21 +283,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Plan check - Org/Enterprise only
+    // Plan check — all plans get long-form (1/mo on free/starter/growth, unlimited on pro/enterprise)
     const planStatus = await getPlanStatus(user.id);
-    if (planStatus.plan !== 'organization' && planStatus.plan !== 'enterprise') {
+    if (!planStatus.hasLongForm) {
       return NextResponse.json(
         {
-          error: 'Long-form content generation requires Organization or Enterprise plan',
+          error: 'You have used your long-form article for this month. Upgrade to Pro for unlimited.',
           currentPlan: planStatus.plan,
-          requiredPlan: 'organization',
+          longFormUsed: planStatus.longFormUsed,
+          longFormLimit: planStatus.longFormLimit,
         },
         { status: 403 }
       );
     }
 
-    // Rate limit Org users
-    if (planStatus.plan === 'organization') {
+    // Rate limit Pro users (daily cap to prevent abuse on unlimited tier)
+    if (planStatus.plan === 'pro') {
       const { success, remaining } = await orgRatelimit.limit(user.id);
       if (!success) {
         return NextResponse.json(
@@ -308,7 +309,7 @@ export async function POST(req: Request) {
           { status: 429 }
         );
       }
-      console.log(`[LongForm] Org user ${user.id} has ${remaining} generations remaining today`);
+      console.log(`[LongForm] Pro user ${user.id} has ${remaining} generations remaining today`);
     }
 
     const body = await req.json();
@@ -674,6 +675,9 @@ export async function POST(req: Request) {
     } catch (saveErr) {
       console.error('[LongForm] Database save/audit error:', saveErr);
     }
+
+    // Increment monthly usage counter (fire-and-forget; gate already checked above)
+    incrementLongFormUsed(user.id).catch(() => {});
 
     return NextResponse.json({
       success: true,

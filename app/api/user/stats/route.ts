@@ -29,6 +29,7 @@ export async function GET(req: Request) {
   }
 
   const planStatus = await getPlanStatus(user.id);
+
   const [statsResult, personaResult, scheduledResult] = await Promise.all([
     supabase
       .from("user_stats")
@@ -47,11 +48,8 @@ export async function GET(req: Request) {
   ]);
 
   return NextResponse.json({
-    // Plan & trial info
+    // Plan info
     plan: planStatus.plan,
-    isTrialActive: planStatus.isTrialActive,
-    isTrialExpired: planStatus.isTrialExpired,
-    trialEndsAt: planStatus.trialEndsAt ? planStatus.trialEndsAt.toISOString() : null,
     canGenerate: planStatus.canGenerate,
     generationsUsed: planStatus.generationsUsed,
     generationsLimit: planStatus.generationsLimit,
@@ -61,7 +59,26 @@ export async function GET(req: Request) {
     emailSendsLimit: planStatus.emailSendsLimit,
     hasCopilot: planStatus.hasCopilot,
     hasLongForm: planStatus.hasLongForm,
-    // Stats
+    longFormUsed: planStatus.longFormUsed,
+    longFormLimit: planStatus.longFormLimit,
+    hasScheduling: planStatus.hasScheduling,
+    newsletterSendingEnabled: planStatus.newsletterSendingEnabled,
+    // GTM info
+    hasGtm: planStatus.hasGtm,
+    canRunCampaigns: planStatus.canRunCampaigns,
+    activeCampaignsUsed: planStatus.activeCampaignsUsed,
+    activeCampaignsLimit: planStatus.activeCampaignsLimit,
+    creditsUsed: planStatus.creditsUsed,
+    creditsLimit: planStatus.creditsLimit,
+    creditsBalance: Number.isFinite(planStatus.creditsBalance) ? planStatus.creditsBalance : -1,
+    sequenceSendsUsed: planStatus.sequenceSendsUsed,
+    sequenceSendsLimit: planStatus.sequenceSendsLimit,
+    hasLinkedInOutreach: planStatus.hasLinkedInOutreach,
+    hasCrmSync: planStatus.hasCrmSync,
+    hasMultiInbox: planStatus.hasMultiInbox,
+    hasReplyDetection: planStatus.hasReplyDetection,
+    isEnterprise: planStatus.isEnterprise,
+    // Usage stats
     campaignsGenerated: statsResult.data?.campaigns_generated || 0,
     postsPublished: statsResult.data?.posts_published || 0,
     personasSaved: personaResult.count || 0,

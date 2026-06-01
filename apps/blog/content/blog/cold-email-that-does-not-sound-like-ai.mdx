@@ -1,0 +1,115 @@
+---
+title: "How Do You Write a Cold Email That Does Not Sound Like AI?"
+date: "2026-06-08"
+modifiedTime: "2026-06-08"
+description: "Cold email reply rates are falling partly because years of low-effort AI outreach trained people to delete anything that smells generated. This guide shows what makes an email read as human, the exact words and phrases that give AI away, how to personalize without faking it, and how to keep one voice across every message."
+coverImage: "/images/blog/cold-email-not-sound-like-ai/cover.svg"
+section: "Marketing"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about go-to-market, content strategy, and the tooling small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "9 min read"
+category: "Marketing, GTM, Outreach, Copywriting"
+keywords: ["cold email that does not sound like ai", "human cold email", "ai cold email detection", "cold email personalization", "write better cold email", "cold email copywriting", "avoid ai sounding email", "cold outreach tips"]
+---
+
+> **TL;DR:** A cold email sounds human when it is specific, short, and has one clear reason for existing. It sounds like AI when it leans on generic vocabulary, fake compliments, and filler transitions that no real person uses in a first message. The fix is three things: write from something true about the recipient, ban the words that give a machine away, and keep one consistent voice across every email. The payoff is real. Advanced personalization roughly doubles reply rates compared to generic templates, yet only about 5% of senders personalize every message. This guide shows how to be in that 5%.
+
+Cold email is getting harder, and AI is part of the reason. Not because the tools are bad, but because so many people used them badly that recipients now delete anything that smells generated.
+
+The data backs this up. Average cold email reply rates have drifted down as inboxes fill with low-effort automated outreach, and tighter spam filtering since the 2024 sender rules punishes generic sends. One analysis points to a trust deficit built from years of machine-written messages ([Reachoutly, 2026](https://reachoutly.com/cold-email/response-rate/)). The good news: that same fatigue makes a genuinely human email stand out more than ever. Here is how to write one.
+
+## Why Does AI-Written Cold Email Get Ignored?
+
+AI-written cold email gets ignored because models default to the statistical average of all the marketing copy they were trained on, and that average reads as generic. The recipient has seen a thousand versions of the same email, so the pattern triggers an instant delete.
+
+Three tells give it away. The first is generic vocabulary: words like "robust," "seamless," and "leverage" that sound like a brochure, not a person. The second is the fake compliment: "I came across your impressive work" attached to nothing specific. The third is the filler opener: "I hope this email finds you well," which signals a template before the reader reaches your actual point.
+
+None of these are about grammar. The writing is often clean. The problem is that clean and generic is exactly the signature people now associate with automation, and association is enough to lose them.
+
+## What Makes a Cold Email Sound Human?
+
+A cold email sounds human when it proves you know who you are writing to and respects their time. Four things do most of the work: specificity, brevity, a single ask, and an honest reason for reaching out.
+
+- **Specificity.** Reference something real: a repo they maintain, a post they wrote, a problem they raised. One true detail beats a paragraph of praise.
+- **Brevity.** Three or four short paragraphs. If it looks like a wall of text, it reads as a pitch.
+- **One ask.** Ask for exactly one thing. A reply, a quick call, a yes or no. Multiple asks read as a campaign.
+- **An honest reason.** Say why you are writing to this person, not why your product is great. The reason should be true and specific to them.
+
+The test is simple. Read it out loud. If it sounds like something you would actually say to a stranger you respect, it works. If it sounds like a press release, start over.
+
+## What Words and Phrases Make an Email Sound Like AI?
+
+A recognizable set of words and openers mark an email as machine-written. Cutting them is the fastest single upgrade you can make. At Ozigi we maintain a hard list of these, called the [Banned Lexicon](https://ozigi.app/docs/the-banned-lexicon), and the engine is forbidden from using them.
+
+The repeat offenders:
+
+- Filler vocabulary: "delve," "robust," "seamless," "leverage," "supercharge," "unlock," "tapestry"
+- Template openers: "I hope this email finds you well," "I came across your profile," "I wanted to reach out"
+- Corporate filler: "in today's fast-paced world," "circle back," "synergy," "touch base"
+- Empty intensifiers: "truly," "incredibly," "game-changing"
+
+The reason these matter is mechanical. They are the tokens a model reaches for when it has nothing specific to say. Removing them forces the writing, human or machine, to find a real, precise sentence instead of a filler one. We built a [validator that enforces this in production](https://blog.ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) for exactly this reason.
+
+## How Do You Personalize Without Faking It?
+
+You personalize by referencing real, observed details, not by dropping a first name into a template. A mail merge field is not personalization. A specific observation about the person's actual work is.
+
+The difference shows up in the numbers. Generic cold emails see roughly 9% response rates, while advanced personalization, tailored to the recipient's real context, runs closer to 18%, about double, according to [B2B cold email benchmarks for 2026](https://martal.ca/b2b-cold-email-statistics-lb/). The same data notes only about 5% of senders personalize every message, which is precisely why doing it sets you apart.
+
+For developer outreach, the raw material for real personalization is public: the repo someone maintains, the language they ship, the issue they filed, the tutorial they wrote. This is why sourcing and writing should share context. If your tool knows the lead maintains a TypeScript API client, the email can open on that, not on "I hope you are well." Finding those details is the job covered in [how to find B2B leads on GitHub and Dev.to](https://blog.ozigi.app/blog/how-to-find-b2b-leads-github-devto).
+
+## What Does a Human Rewrite Actually Look Like?
+
+The gap between generated and human is easiest to see side by side. Here is a typical AI-default cold email, then the same intent rewritten to sound like a person.
+
+The generated version:
+
+> Subject: Unlock your team's full potential
+>
+> Hi {{firstName}}, I hope this email finds you well. I came across your impressive profile and was truly amazed by your innovative work. Our robust platform seamlessly empowers teams to supercharge their workflow. I would love to circle back and explore synergies. Best regards.
+
+The human version:
+
+> Subject: your rate-limiting issue on the api client
+>
+> Hi Sam, I saw your open issue about rate limiting on your TypeScript API client. We hit the same wall last year and ended up building a small fix for it. Happy to share what worked, no pitch. Worth a quick look?
+
+The second one is shorter, names a real detail, makes one ask, and carries no filler. It reads like a person who actually looked. That is the entire difference.
+
+## How Do You Keep One Voice Across Every Email?
+
+You keep one voice by defining it once and applying it to every message, instead of letting each email drift toward a default tone. The cold email, the follow-up, and your blog posts should all sound like the same person.
+
+This is what a [System Persona](https://ozigi.app/docs/system-personas) does: it saves who is writing, how they sound, and what they would never say, then applies that to every generation. Pair it with the Banned Lexicon and a [human edit step](https://ozigi.app/docs/human-in-the-loop), and the output stays in character and free of filler without you rewriting from scratch each time. One voice across outreach and content is also what makes the outreach land warmer, a point covered in the [go-to-market playbook for small teams](https://blog.ozigi.app/blog/go-to-market-playbook-solo-founder-technical-team).
+
+## How Do You Do This at Scale Without Writing Each Email by Hand?
+
+You use a tool that grounds each message in the real lead data and enforces your voice, then you spend your time on the edit, not the blank page. Full hand-writing does not scale; full automation produces the generic email this whole article warns against. The middle path is the one that works.
+
+The [Ozigi GTM engine](https://ozigi.app/dashboard/gtm) composes each step of a sequence, the intro, the follow-up, and the breakup, from the lead's actual bio, company, and topics, shaped by your persona and stripped of banned words. The instruction to the model is blunt: short paragraphs, plain tone, no corporate fluff. What you get is a specific, human-sounding draft you can finish in a minute rather than a generic one you have to rewrite. For how that compares to a separate writing tool plus a separate sender, see the [best free GTM tool comparison](https://blog.ozigi.app/blog/best-free-gtm-tool-2026-ozigi-vs-apollo-clay).
+
+## Frequently Asked Questions
+
+**How do you make a cold email not sound like AI?**
+Write from something true about the recipient, keep it to three or four short paragraphs with one clear ask, and cut the filler words that mark machine writing, like "robust," "seamless," and "I hope this email finds you well." Read it aloud; if it sounds like a press release rather than a person, rewrite it.
+
+**Why are AI cold emails getting ignored?**
+Because models default to the generic marketing language they were trained on, and recipients have seen that pattern thousands of times. Years of low-effort automated outreach built a trust deficit, so anything that reads as generated gets deleted fast. Specific, human-sounding emails stand out precisely because so few senders write them.
+
+**Does personalization actually improve reply rates?**
+Yes, substantially. Generic cold emails see around 9% response rates, while advanced personalization tailored to the recipient's real context runs closer to 18%, roughly double. Despite this, only about 5% of senders personalize every message, so doing it consistently is a genuine edge.
+
+**What words make an email sound like AI?**
+Filler vocabulary such as "delve," "robust," "seamless," "leverage," and "unlock," template openers like "I hope this email finds you well" and "I came across your profile," and corporate filler like "circle back" and "synergy." These are the words a model reaches for when it has nothing specific to say.
+
+**Is using AI to write cold email a bad idea?**
+No, using it badly is. Full automation produces generic email; full hand-writing does not scale. The approach that works grounds each message in real lead data, enforces a defined voice, bans filler words, and keeps a human edit step, so the draft is specific and human and you only spend time finishing it.
+
+**How do I keep my emails and content sounding consistent?**
+Define your voice once as a saved persona and apply it to every message and post, rather than letting each tool impose its own tone. A consistent voice across outreach and content makes cold email land warmer, because the recipient recognizes the same person they may have already read.
+
+---
+
+*[Ozigi](https://ozigi.app) writes cold outreach grounded in each lead's real profile, in your voice, with filler words banned at the engine level. Source, score, and send from one place. Free to start.*

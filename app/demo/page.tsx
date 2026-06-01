@@ -3,227 +3,98 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Mail, User, Sparkles, Lock, Zap } from "lucide-react";
+import { Sparkles, Lock, Zap, Send, Users, BarChart3, FileText } from "lucide-react";
 import Distillery from "../../components/ContextEngine";
 import DistributionGrid from "../../components/DistributionGrid";
 import GeneratingState from "../../components/GeneratingState";
-import Footer from "../../components/Footer";
+import DashboardPreview from "../../components/DashboardPreview";
 import AuthModal from "../../components/AuthModal";
 import { PLATFORMS } from "@/lib/platforms";
 
-// Sample content for one-click demos
-const SAMPLE_GITHUB = `We just shipped Ozigi v1.2. Key changes:
-- Added Firecrawl URL scraping for faster context extraction
-- Expanded Banned Lexicon to 8 categories including Gemini-specific patterns
-- Mem0AI persistent memory now saves persona context across sessions
-- Fixed scheduling edge case where X reminders weren't firing at the correct timezone
-- Email newsletter generation now runs independently of campaign posts`;
+const C = {
+  red:     "#E8320A",
+  navy:    "#0A1628",
+  muted:   "rgba(51,65,85,0.85)",
+  border:  "rgba(15,23,42,0.08)",
+  redSoft: "rgba(232,50,10,0.10)",
+  redGlow: "rgba(232,50,10,0.20)",
+};
 
-const SAMPLE_PRODUCT_UPDATE = `Ozigi now supports Slack webhooks. 
-You can publish directly to your Slack workspace the same way Discord works — 
-paste your webhook URL in Settings and your campaign drafts route there automatically. 
-Took us about a day to build. The hardest part was the formatting rules — 
-Slack markdown is different from Discord in a few annoying ways.`;
+/* ─── Sample inputs ──────────────────────────────────────────────── */
+const SAMPLES = [
+  { label: "Product update",    text: `We just shipped Ozigi v3 — the GTM suite. Outbound email sequences, LinkedIn automation, lead scraping from GitHub and Dev.to, CRM sync (HubSpot, Zoho, Salesforce). Plus the content engine you already know. One platform, full pipeline.` },
+  { label: "Release notes",     text: `Ozigi v3 ships with: Gemini-powered ICP scoring on every scraped lead, email sequences with reply detection, LinkedIn DM automation, and a new overview dashboard showing your full GTM stats in one view. Rolling out to all users this week.` },
+  { label: "Founder insight",   text: `Most outbound fails because it's generic. If your cold email could have been sent to 10,000 people, it reads that way. We built Ozigi's outbound engine to personalise every message from the lead's actual GitHub profile — their repos, commit messages, what they're building.` },
+];
 
-const SAMPLE_BLOG_URL = `https://ozigi.app/docs/the-banned-lexicon`;
-
-// Locked sidebar nav items for demo
-const DEMO_NAV_ITEMS = [
+/* ─── GTM feature showcase (non-interactive) ─────────────────────── */
+const GTM_FEATURES = [
   {
-    label: "Generation History",
-    icon: (
-      <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    icon: <Users className="w-5 h-5" />,
+    title: "Lead Scraping",
+    desc: "Gemini scores every lead against your ICP. Only qualified prospects enter your sequence.",
+    note: "Requires sign-up",
+    locked: true,
   },
   {
-    label: "Scheduled Posts",
-    icon: (
-      <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <Send className="w-5 h-5" />,
+    title: "Email Sequences",
+    desc: "Personalised cold intros, follow-ups, and breakup emails — written from the lead's actual profile.",
+    note: "Requires sign-up",
+    locked: true,
   },
   {
-    label: "Subscribers",
-    icon: <Mail className="w-5 h-5 opacity-70" />,
+    icon: <Sparkles className="w-5 h-5" />,
+    title: "LinkedIn Automation",
+    desc: "Connect requests, DMs, and follow-ups — your account, your sequence, running on autopilot.",
+    note: "Requires sign-up",
+    locked: true,
   },
   {
-    label: "Personas",
-    icon: <User className="w-5 h-5 opacity-70" />,
+    icon: <BarChart3 className="w-5 h-5" />,
+    title: "CRM Sync",
+    desc: "HubSpot, Zoho, Salesforce — leads sync automatically on first contact.",
+    note: "Requires sign-up",
+    locked: true,
   },
   {
-    label: "Settings & Integrations",
-    icon: (
-      <svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-        />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: "Copilot Settings",
-    icon: <Sparkles className="w-5 h-5 opacity-70" />,
+    icon: <FileText className="w-5 h-5" />,
+    title: "Content Engine",
+    desc: "Social posts, newsletters, blog articles — in your voice. Try it live below ↓",
+    note: "Live demo below",
+    locked: false,
   },
 ];
 
-// Demo Sidebar Component (locked version)
-function DemoSidebar({
-  isMobileSidebarOpen,
-  setIsMobileSidebarOpen,
-  isSidebarCollapsed,
-  setIsSidebarCollapsed,
-  onSignUp,
-}: {
-  isMobileSidebarOpen: boolean;
-  setIsMobileSidebarOpen: (open: boolean) => void;
-  isSidebarCollapsed: boolean;
-  setIsSidebarCollapsed: (collapsed: boolean) => void;
-  onSignUp: () => void;
-}) {
-  return (
-    <aside
-      className={`
-        ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 transition-all duration-300 ease-in-out
-        fixed md:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col shadow-2xl md:shadow-none
-        ${isSidebarCollapsed ? "w-20" : "w-64 md:w-72"}
-      `}
-    >
-      <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
-        {!isSidebarCollapsed ? (
-          <>
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Ozigi" className="h-8 w-auto logo-spin" />
-            </Link>
-            <Link href="/" className="text-2xl font-black text-brand-navy tracking-tighter">
-              Ozigi
-            </Link>
-          </>
-        ) : (
-          <img src="/logo.png" alt="Ozigi" className="h-8 w-auto logo-spin" />
-        )}
-        <button
-          className="hidden md:block text-slate-400 hover:text-slate-600"
-          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        >
-          {isSidebarCollapsed ? "→" : "←"}
-        </button>
-        <button className="md:hidden text-slate-400" onClick={() => setIsMobileSidebarOpen(false)}>
-          ✕
-        </button>
-      </div>
-
-      <nav className="flex-1 px-2 py-6 space-y-2 overflow-hidden">
-        {DEMO_NAV_ITEMS.map((item) => (
-          <button
-            key={item.label}
-            onClick={onSignUp}
-            className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold text-slate-400 hover:bg-slate-50 rounded-xl transition-colors ${
-              isSidebarCollapsed ? "justify-center" : ""
-            }`}
-          >
-            <span className={`${isSidebarCollapsed ? "mx-auto" : ""} opacity-50`}>{item.icon}</span>
-            {!isSidebarCollapsed && (
-              <>
-                <span className="opacity-50 truncate">{item.label}</span>
-                <Lock size={12} className="ml-auto text-slate-300 shrink-0" />
-              </>
-            )}
-          </button>
-        ))}
-      </nav>
-
-      {/* Demo Stats Widget (locked) */}
-      <div className={`p-4 border-t border-slate-100 ${isSidebarCollapsed ? "hidden" : ""}`}>
-        <div className="bg-slate-50 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Demo Mode</span>
-            <Lock size={12} className="text-slate-300" />
-          </div>
-          <div className="space-y-2 text-xs text-slate-400">
-            <div className="flex justify-between">
-              <span>Campaigns</span>
-              <span className="font-bold text-slate-300">--</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Scheduled</span>
-              <span className="font-bold text-slate-300">--</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Personas</span>
-              <span className="font-bold text-slate-300">--</span>
-            </div>
-          </div>
-          <button
-            onClick={onSignUp}
-            className="w-full mt-4 py-2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#C5280A] transition-colors"
-          >
-            Sign Up Free
-          </button>
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-// Second-generation gate overlay
-function DemoGateOverlay({
-  previousOutput,
-  onSignUp,
-  onViewPrevious,
-}: {
-  previousOutput: any;
-  onSignUp: () => void;
-  onViewPrevious: () => void;
-}) {
+/* ─── Post-generation gate ───────────────────────────────────────── */
+function DemoGate({ onSignUp, onViewPrevious }: { onSignUp: () => void; onViewPrevious: () => void }) {
   return (
     <div className="relative">
-      {/* Blurred previous output */}
-      <div className="opacity-30 blur-[2px] pointer-events-none select-none">
-        <div className="bg-slate-100 rounded-2xl p-8 min-h-[300px] flex items-center justify-center">
-          <p className="text-slate-400 text-sm">Your previous campaign content</p>
-        </div>
-      </div>
-
-      {/* Overlay */}
+      <div className="opacity-20 blur-sm pointer-events-none select-none h-32 bg-slate-100 rounded-2xl" />
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
           className="bg-white rounded-2xl shadow-2xl px-8 py-10 max-w-md w-full text-center"
         >
-          <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center mx-auto mb-5">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5"
+            style={{ background: C.red }}>
             <Zap className="w-6 h-6 text-white" />
           </div>
-
-          <h2 className="text-brand-navy font-black uppercase tracking-tight text-2xl mb-3">
-            That didn't sound like AI. That's the point.
+          <h2 className="font-black uppercase tracking-tight text-2xl mb-3" style={{ color: C.navy }}>
+            That's the content engine.
           </h2>
-
-          <p className="text-slate-500 text-sm leading-relaxed mb-6">
-            Sign up free to save your campaign, run unlimited generations, and publish directly from the dashboard — always in your voice.
+          <p className="text-slate-500 text-sm leading-relaxed mb-2">
+            Sign up free to save your campaign, run unlimited generations, and unlock the full GTM suite — outbound email, LinkedIn sequences, lead scraping, and CRM sync.
           </p>
-
-          <button
-            onClick={onSignUp}
-            className="block w-full bg-brand-red hover:bg-[#C5280A] text-white font-black uppercase tracking-widest text-sm px-6 py-4 rounded-xl transition-all active:scale-[0.98] mb-3"
-          >
-            Sign Up Free — Keep Your Campaign
+          <p className="text-xs text-slate-400 mb-6">7-day full trial. No credit card.</p>
+          <button onClick={onSignUp}
+            className="block w-full text-white font-black uppercase tracking-widest text-sm px-6 py-4 rounded-xl transition-all active:scale-[0.98] mb-3"
+            style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}>
+            Start Free — Get the Full GTM Suite →
           </button>
-
-          <p className="text-slate-400 text-xs">Free plan includes 5 campaigns/month. No credit card required.</p>
-
-          <button
-            onClick={onViewPrevious}
-            className="mt-4 text-sm text-slate-400 hover:text-slate-700 underline underline-offset-2 transition-colors"
-          >
+          <button onClick={onViewPrevious}
+            className="mt-2 text-sm text-slate-400 hover:text-slate-700 underline underline-offset-2 transition-colors">
             View your previous campaign
           </button>
         </motion.div>
@@ -232,48 +103,45 @@ function DemoGateOverlay({
   );
 }
 
-// Post-generation CTA component
-function PostGenerationCTA({ onSignUp }: { onSignUp: () => void }) {
+/* ─── Post-generation CTA strip ─────────────────────────────────── */
+function PostGenCTA({ onSignUp }: { onSignUp: () => void }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      className="mt-8 rounded-2xl bg-brand-navy border-l-4 border-brand-red px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+      className="mt-8 rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+      style={{ background: C.navy, borderLeft: `4px solid ${C.red}` }}
     >
       <div>
         <p className="text-white font-black uppercase tracking-tight text-xl md:text-2xl mb-2">
-          This is what it sounds like when AI doesn't sound like AI.
+          Content engine: done. Now run the outbound side.
         </p>
         <p className="text-slate-300 text-sm leading-relaxed max-w-xl">
-          Sign up free to save this campaign, run unlimited generations, and publish directly to X, LinkedIn, and Discord — always in your voice, never in AI's.
+          Sign up to save this campaign, unlock outbound email sequences, LinkedIn automation, lead scraping, and CRM sync — the full GTM suite.
         </p>
       </div>
-      <div className="flex flex-col gap-3 shrink-0">
-        <button
-          onClick={onSignUp}
-          className="bg-brand-red hover:bg-[#C5280A] text-white font-black uppercase tracking-widest text-sm px-8 py-4 rounded-xl transition-all active:scale-[0.98] text-center whitespace-nowrap"
-        >
-          Sign Up Free →
+      <div className="flex flex-col gap-2 shrink-0">
+        <button onClick={onSignUp}
+          className="text-white font-black uppercase tracking-widest text-sm px-8 py-4 rounded-xl transition-all active:scale-[0.98] whitespace-nowrap"
+          style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}>
+          Start Free →
         </button>
-        <p className="text-slate-500 text-xs text-center">No credit card. 5 campaigns free.</p>
+        <p className="text-slate-500 text-xs text-center">7-day trial · no credit card</p>
       </div>
     </motion.div>
   );
 }
 
-export default function DemoSandbox() {
-  const [loading, setLoading] = useState(false);
-  const [campaign, setCampaign] = useState<any[]>([]);
-  const [emailContent, setEmailContent] = useState<string | null>(null);
+/* ─── Page ───────────────────────────────────────────────────────── */
+export default function DemoPage() {
+  const [loading, setLoading]             = useState(false);
+  const [campaign, setCampaign]           = useState<any[]>([]);
+  const [emailContent, setEmailContent]   = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [hasGeneratedOnce, setHasGeneratedOnce] = useState(false);
-  const [showGate, setShowGate] = useState(false);
+  const [showGate, setShowGate]           = useState(false);
   const [previousOutput, setPreviousOutput] = useState<any>(null);
   const campaignRef = useRef<HTMLDivElement>(null);
-
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   const [inputs, setInputs] = useState({
     url: "",
@@ -286,7 +154,6 @@ export default function DemoSandbox() {
     personaId: "default",
   });
 
-  // Check localStorage for previous demo output on mount
   useEffect(() => {
     const stored = localStorage.getItem("ozigi_demo_last_output");
     if (stored) {
@@ -294,78 +161,34 @@ export default function DemoSandbox() {
         const parsed = JSON.parse(stored);
         setPreviousOutput(parsed);
         setHasGeneratedOnce(true);
-      } catch (e) {
-        // Invalid stored data, ignore
-      }
+      } catch {}
     }
   }, []);
-
-  // Pre-populate from landing page demo widget
-  useEffect(() => {
-    const landingInput = sessionStorage.getItem("ozigi_landing_demo_input");
-    if (landingInput) {
-      setInputs((prev) => ({ ...prev, text: landingInput }));
-      sessionStorage.removeItem("ozigi_landing_demo_input");
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("from") === "landing") {
-        setTimeout(() => {
-          document.getElementById("demo-generate-btn")?.click();
-        }, 400);
-      }
-    }
-  }, []);
-
-  const handleSampleClick = (sample: string) => {
-    setInputs({ ...inputs, text: sample });
-  };
 
   const handleGenerate = async () => {
-    // If user has already generated once, show gate
-    if (hasGeneratedOnce) {
-      setShowGate(true);
-      return;
-    }
-
+    if (hasGeneratedOnce) { setShowGate(true); return; }
     setLoading(true);
     setCampaign([]);
     setEmailContent(null);
-
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Demo-Mode": "true",
-        },
+        headers: { "Content-Type": "application/json", "X-Demo-Mode": "true" },
         body: JSON.stringify({
-          sourceMaterial: {
-            url: inputs.url,
-            rawText: inputs.text,
-            assetUrls: inputs.fileUrls,
-          },
+          sourceMaterial: { url: inputs.url, rawText: inputs.text, assetUrls: inputs.fileUrls },
           campaignDirectives: {
-            platforms: inputs.platforms,
-            tweetFormat: inputs.tweetFormat,
+            platforms: inputs.platforms, tweetFormat: inputs.tweetFormat,
             additionalContext: inputs.additionalInfo,
-            personaVoice: "Expert Social Media Copywriter",
+            personaVoice: "Expert Social Media Copywriter who sounds like a real person, never like AI",
           },
         }),
       });
 
       if (response.status === 403) {
         const data = await response.json();
-        if (data.error === "demo_limit_reached") {
-          setHasGeneratedOnce(true);
-          setShowGate(true);
-          setLoading(false);
-          return;
-        }
+        if (data.error === "demo_limit_reached") { setHasGeneratedOnce(true); setShowGate(true); setLoading(false); return; }
       }
-
-      if (!response.ok) {
-        throw new Error("Generation failed");
-      }
+      if (!response.ok) throw new Error("Generation failed");
 
       const data = await response.json();
       const cleanJson = data.output.replace(/```json/gi, "").replace(/```/gi, "").trim();
@@ -377,25 +200,13 @@ export default function DemoSandbox() {
         setCampaign(finalCampaign);
         setEmailContent(finalEmail);
         setHasGeneratedOnce(true);
-
-        // Store in localStorage for gate screen
-        localStorage.setItem(
-          "ozigi_demo_last_output",
-          JSON.stringify({ campaign: finalCampaign, email: finalEmail })
-        );
+        localStorage.setItem("ozigi_demo_last_output", JSON.stringify({ campaign: finalCampaign, email: finalEmail }));
         setPreviousOutput({ campaign: finalCampaign, email: finalEmail });
-
-        // Snap to campaign immediately — smooth scroll on mobile causes the
-        // page to linger on the input form while the campaign is already ready
         requestAnimationFrame(() => {
-          campaignRef.current?.scrollIntoView({
-            behavior: "instant" as ScrollBehavior,
-            block: "start",
-          });
+          campaignRef.current?.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "start" });
         });
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Generation failed. Please try again.");
     } finally {
       setLoading(false);
@@ -404,168 +215,178 @@ export default function DemoSandbox() {
 
   const handleViewPrevious = () => {
     setShowGate(false);
-    if (previousOutput?.campaign) {
-      setCampaign(previousOutput.campaign);
-      setEmailContent(previousOutput.email || null);
-    }
+    if (previousOutput?.campaign) { setCampaign(previousOutput.campaign); setEmailContent(previousOutput.email || null); }
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Demo Sidebar */}
-      <DemoSidebar
-        isMobileSidebarOpen={isMobileSidebarOpen}
-        setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-        isSidebarCollapsed={isSidebarCollapsed}
-        setIsSidebarCollapsed={setIsSidebarCollapsed}
-        onSignUp={() => setIsAuthModalOpen(true)}
-      />
+    <div className="min-h-screen" style={{ background: "#F8FAFC", color: C.navy }}>
 
-      {/* Mobile sidebar overlay */}
-      {isMobileSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
-          onClick={() => setIsMobileSidebarOpen(false)}
-        />
-      )}
+      {/* ── Top nav ────────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b px-6 py-4 flex items-center justify-between"
+        style={{ borderColor: C.border }}>
+        <Link href="/" className="flex items-center gap-2 group">
+          <img src="/logo.png" alt="Ozigi" className="h-7 w-auto logo-spin" />
+          <span className="text-xl font-black italic uppercase tracking-tighter" style={{ color: C.navy }}>Ozigi</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors hidden sm:block">
+            ← Back to home
+          </Link>
+          <button onClick={() => setIsAuthModalOpen(true)}
+            className="text-xs font-black uppercase tracking-widest text-white px-4 py-2 rounded-xl transition-all active:scale-95"
+            style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}>
+            Sign up free →
+          </button>
+        </div>
+      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 h-full overflow-y-auto relative bg-slate-50">
-        {/* Mobile top bar - only shows hamburger and sign up on mobile */}
-        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 md:hidden">
-          <div className="flex items-center justify-between px-4 py-3">
-            <button
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="p-2 text-slate-600 hover:text-slate-900"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="bg-brand-red hover:bg-[#C5280A] text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-colors"
-            >
-              Sign Up
-            </button>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+
+        {/* ── Hero ─────────────────────────────────────────────────── */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6"
+            style={{ background: C.redSoft, color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
+            Interactive Demo
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter mb-5"
+            style={{ color: C.navy }}>
+            The GTM Suite in action
+          </h1>
+          <p className="text-lg font-medium leading-relaxed max-w-2xl mx-auto" style={{ color: C.muted }}>
+            Watch the full loop — find leads, run outbound sequences, publish content — then try the content engine live yourself.
+          </p>
+        </div>
+
+        {/* ── Animated dashboard demo ───────────────────────────────── */}
+        <div className="mb-6">
+          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center mb-4"
+            style={{ color: "rgba(100,116,139,0.75)" }}>
+            Overview → Outbound Campaign → Content Engine
+          </p>
+          <div style={{ zoom: 0.9 }} className="w-full origin-top">
+            <DashboardPreview />
           </div>
         </div>
 
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-          {/* Page Header - Updated copy */}
-          <div className="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-red transition-colors mb-6"
-            >
-              <span className="text-lg leading-none">←</span> Back to Home
-            </Link>
-            <h1 className="text-4xl md:text-5xl text-brand-navy font-black italic uppercase tracking-tighter mb-4">
-              See What Human Sounds Like
-            </h1>
-            <p className="text-slate-500 font-medium max-w-xl mx-auto">
-              Paste a URL, drop your notes, or upload a file. Get content that sounds like you wrote it, in 20 seconds.
-            </p>
-          </div>
-
-          {/* Show gate if trying to generate again */}
-          {showGate ? (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <DemoGateOverlay
-                previousOutput={previousOutput}
-                onSignUp={() => setIsAuthModalOpen(true)}
-                onViewPrevious={handleViewPrevious}
-              />
+        {/* ── What you saw ─────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-16">
+          {GTM_FEATURES.map((f) => (
+            <div key={f.title}
+              className={`rounded-2xl p-4 flex flex-col gap-2 relative ${f.locked ? "opacity-80" : ""}`}
+              style={{ background: f.locked ? "#F1F5F9" : "#FFF5F3", border: `1px solid ${f.locked ? "rgba(15,23,42,0.08)" : "rgba(232,50,10,0.2)"}` }}>
+              {f.locked && (
+                <Lock size={10} className="absolute top-3 right-3 text-slate-300" />
+              )}
+              <span style={{ color: f.locked ? "#94A3B8" : C.red }}>{f.icon}</span>
+              <h3 className="text-xs font-black uppercase tracking-tight" style={{ color: f.locked ? "#475569" : C.navy }}>
+                {f.title}
+              </h3>
+              <p className="text-[10px] leading-relaxed" style={{ color: f.locked ? "#94A3B8" : C.muted }}>
+                {f.desc}
+              </p>
+              <span className={`text-[8px] font-black uppercase tracking-widest mt-auto px-1.5 py-0.5 rounded w-fit ${
+                f.locked ? "bg-slate-200 text-slate-400" : "text-brand-red bg-red-50"
+              }`}>
+                {f.note}
+              </span>
             </div>
-          ) : (
-            <>
-              {/* Context Engine Card */}
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                {!loading && campaign.length === 0 && (
-                  <>
-                    <Distillery
-                      session={null}
-                      userPersonas={[]}
-                      demoMode
-                      inputs={inputs}
-                      setInputs={setInputs}
-                      loading={loading}
-                      onGenerate={handleGenerate}
-                    />
+          ))}
+        </div>
 
-                    {/* Sample Input Pills - Change 2 */}
-                    <div className="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-slate-100">
-                      <span className="text-xs text-slate-400 font-medium">Try a sample:</span>
-                      <button
-                        onClick={() => handleSampleClick(SAMPLE_GITHUB)}
-                        className="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 rounded-full px-3 py-1.5 transition-colors hover:border-slate-400"
-                      >
-                        GitHub release notes
-                      </button>
-                      <button
-                        onClick={() => handleSampleClick(SAMPLE_PRODUCT_UPDATE)}
-                        className="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 rounded-full px-3 py-1.5 transition-colors hover:border-slate-400"
-                      >
-                        Product update
-                      </button>
-                      <button
-                        onClick={() => handleSampleClick(SAMPLE_BLOG_URL)}
-                        className="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 rounded-full px-3 py-1.5 transition-colors hover:border-slate-400"
-                      >
-                        Blog post URL
-                      </button>
-                    </div>
-                  </>
-                )}
+        {/* ── Live content engine trial ─────────────────────────────── */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-px flex-1" style={{ background: C.border }} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: C.red }}>
+              Try it live
+            </span>
+            <div className="h-px flex-1" style={{ background: C.border }} />
+          </div>
+          <h2 className="text-2xl font-black italic uppercase tracking-tighter text-center mb-1"
+            style={{ color: C.navy }}>
+            Generate a social post right now
+          </h2>
+          <p className="text-sm text-center mb-8" style={{ color: C.muted }}>
+            Paste anything — a URL, product update, or raw notes. Get posts for LinkedIn, X, and Discord.
+          </p>
+        </div>
 
-                {loading && <GeneratingState />}
+        {/* Sample pills */}
+        {!campaign.length && !loading && !showGate && (
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-xs text-slate-400 font-medium">Try a sample:</span>
+            {SAMPLES.map(s => (
+              <button key={s.label}
+                onClick={() => setInputs(i => ({ ...i, text: s.text }))}
+                className="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 rounded-full px-3 py-1.5 transition-colors hover:border-slate-400">
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
 
-                {!loading && campaign.length > 0 && (
-                  <div className="animate-in fade-in slide-in-from-bottom-8">
-                    <div className="flex justify-between items-center mb-8">
-                      <button
-                        onClick={() => setIsAuthModalOpen(true)}
-                        className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-red transition-colors bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md active:scale-95"
-                      >
-                        ← Architect New Campaign
-                      </button>
-                    </div>
+        {/* Generator */}
+        {showGate ? (
+          <DemoGate onSignUp={() => setIsAuthModalOpen(true)} onViewPrevious={handleViewPrevious} />
+        ) : (
+          <div className="bg-white rounded-3xl border shadow-sm p-6 md:p-8" style={{ borderColor: C.border }}>
+            {!loading && campaign.length === 0 && (
+              <Distillery
+                session={null}
+                userPersonas={[]}
+                demoMode
+                inputs={inputs}
+                setInputs={setInputs}
+                loading={loading}
+                onGenerate={handleGenerate}
+              />
+            )}
 
-                    <div className="scroll-mt-32" ref={campaignRef}>
-                      <DistributionGrid
-                        campaign={campaign}
-                        session={null}
-                        selectedPlatforms={inputs.platforms}
-                        emailContent={emailContent}
-                        setEmailContent={setEmailContent}
-                        demoMode
-                      />
-                    </div>
+            {loading && <GeneratingState />}
 
-                    {/* Post-generation CTA - Change 4 */}
-                    <PostGenerationCTA onSignUp={() => setIsAuthModalOpen(true)} />
-                  </div>
-                )}
+            {!loading && campaign.length > 0 && (
+              <div className="animate-in fade-in slide-in-from-bottom-8" ref={campaignRef}>
+                <div className="flex justify-between items-center mb-6">
+                  <button onClick={() => { setCampaign([]); setShowGate(false); }}
+                    className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                    ← Try again
+                  </button>
+                  <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+                    style={{ background: "rgba(34,197,94,0.1)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.25)" }}>
+                    Generated ✓
+                  </span>
+                </div>
+
+                <DistributionGrid
+                  campaign={campaign}
+                  session={null}
+                  selectedPlatforms={inputs.platforms}
+                  emailContent={emailContent}
+                  setEmailContent={setEmailContent}
+                  demoMode
+                />
+
+                <PostGenCTA onSignUp={() => setIsAuthModalOpen(true)} />
               </div>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
-        <Footer />
-      </main>
-
-      {/* Locked Copilot Button */}
-      <div className="fixed bottom-6 right-6 z-40 group">
-        <button
-          onClick={() => setIsAuthModalOpen(true)}
-          className="bg-slate-400 text-white p-4 rounded-full shadow-2xl cursor-pointer flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity"
-          aria-label="Copilot unavailable"
-        >
-          <Sparkles className="w-6 h-6" />
-        </button>
-        <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
-          Sign up to unlock Copilot
-        </div>
+        {/* ── Final CTA ────────────────────────────────────────────── */}
+        {!campaign.length && !loading && (
+          <div className="mt-16 text-center">
+            <p className="text-sm text-slate-400 mb-4">
+              Ready for the full suite — outbound + content together?
+            </p>
+            <button onClick={() => setIsAuthModalOpen(true)}
+              className="inline-flex items-center gap-2 text-white font-black uppercase tracking-widest text-sm px-8 py-4 rounded-xl transition-all active:scale-95 shadow-lg"
+              style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)`, boxShadow: `0 8px 32px ${C.redGlow}` }}>
+              Start free — 7-day trial →
+            </button>
+            <p className="text-xs text-slate-400 mt-3">No credit card required</p>
+          </div>
+        )}
       </div>
 
       {isAuthModalOpen && <AuthModal onClose={() => setIsAuthModalOpen(false)} />}

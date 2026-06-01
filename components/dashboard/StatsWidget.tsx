@@ -16,9 +16,7 @@ export default function StatsWidget({
 }: StatsWidgetProps) {
   const router = useRouter();
 
-  const isTrialActive = planStatus?.isTrialActive && planStatus.trialEndsAt;
-  const trialEndsAt = planStatus?.trialEndsAt ? new Date(planStatus.trialEndsAt) : null;
-  const daysLeft = trialEndsAt ? Math.ceil((trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
+  const showUpgradePrompt = planStatus?.plan === 'free' || planStatus?.plan === 'starter';
 
   return (
     <div className={`p-5 border-t border-slate-100 bg-slate-50/50 ${isSidebarCollapsed ? 'text-center' : ''}`}>
@@ -72,31 +70,18 @@ export default function StatsWidget({
           </div>
         </div>
       )}
-      {!isSidebarCollapsed && planStatus?.plan === 'free' && (
+      {!isSidebarCollapsed && showUpgradePrompt && (
   <div className="mt-4">
     <button
       onClick={() => router.push('/pricing')}
       className="w-full bg-brand-red text-white py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-opacity-90 transition"
     >
-      Upgrade to Team →
+      Upgrade →
     </button>
   </div>
 )}
       {!isLoadingStats && !isSidebarCollapsed && planStatus === null && (
   <div className="mt-4 h-16 bg-slate-100 animate-pulse rounded-xl" />
-)}
-{!isLoadingStats && !isSidebarCollapsed && isTrialActive && daysLeft > 0 && (
-  <div className="mt-4 p-2 bg-blue-50 rounded-lg border border-blue-100 text-center">
-    <p className="text-[10px] font-bold text-blue-700">
-      Trial ends in {daysLeft} day{daysLeft !== 1 ? "s" : ""}
-    </p>
-    <button
-      onClick={() => router.push("/pricing")}
-      className="mt-1 text-[8px] font-black uppercase tracking-widest text-blue-600 hover:underline"
-    >
-      Upgrade
-    </button>
-  </div>
 )}
     </div>
   );

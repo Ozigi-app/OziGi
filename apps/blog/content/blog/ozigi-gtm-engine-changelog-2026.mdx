@@ -1,0 +1,106 @@
+---
+title: "Ozigi GTM Engine — What Shipped in 2026"
+date: "2026-06-01"
+modifiedTime: "2026-06-01"
+description: "The complete technical changelog covering Ozigi's expansion from a content-only tool into a full go-to-market suite: GTM engine, lead sourcing, ICP scoring, email and LinkedIn sequences, CRM sync, new pricing, image generation upgrade, and the credit bundle system."
+coverImage: "/images/blog/ozigi-v2/cover.svg"
+section: "Ozigi Focus"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about go-to-market, content strategy, and the tooling small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "8 min read"
+category: "Ozigi Changelog, GTM, Product"
+keywords: ["ozigi changelog 2026", "ozigi gtm engine", "ozigi product update", "ozigi v3", "lead sourcing tool", "cold email tool", "ozigi pricing", "gemini image generation"]
+---
+
+This is the running changelog for everything Ozigi shipped from Q1 through June 2026. The short version: Ozigi started this year as a content engine and ended Q2 as a full go-to-market suite. Here is what changed, why, and what it meant for the product.
+
+---
+
+## GTM Engine — Lead Sourcing, Scoring, and Outreach
+
+The biggest single expansion in Ozigi's history. The GTM engine ships as a separate product line inside the same dashboard, sharing the same persona voice, the same Banned Lexicon, and the same writing engine as the content side.
+
+**Lead sourcing**
+Campaigns can now source leads from three platforms directly: GitHub, Dev.to, and LinkedIn. For GitHub, the engine runs a user-search query built from your ICP fields (job titles, stack keywords, location, seniority) and extracts matching profiles. When a profile hides its email, the engine reads the author email from the user's public commit history rather than purchasing data. For Dev.to, it pulls authors who write under tags that match your ICP. LinkedIn sourcing runs against your own session.
+
+**ICP scoring**
+Every sourced lead is scored by Gemini against the ICP you define on the campaign — a float from 0.0 to 1.0. Leads below a configurable threshold are dropped before they ever enter a sequence. This replaces the previous approach of sourcing noise and manually filtering.
+
+**Email and LinkedIn sequences**
+Campaigns run multi-step sequences from your own sending account. Steps are spaced on a delay schedule you control, with per-channel daily limits that protect both your domain reputation and your LinkedIn standing. Reply detection pauses the sequence automatically the moment a lead responds on either channel.
+
+**CRM sync**
+Leads push to HubSpot, Zoho, or Salesforce on first contact via a Composio connection. The sync is one-way write-on-first-contact; the CRM remains the source of truth for the pipeline.
+
+---
+
+## New Pricing Architecture
+
+The old tier system (Free · Team · Organization) was replaced entirely.
+
+| Plan | Monthly | Who it is for |
+|---|---|---|
+| Free | $0 | Trying the full product — 50 lead credits, 30 email sends, 3 content pieces |
+| Starter | $19 | Content-only users — 30 campaigns, unlimited personas, image gen, newsletter sending |
+| Growth | $29 | Active outbound — 1,000 credits/mo, unlimited sends, LinkedIn, CRM sync |
+| Pro | $49 | Both engines, no limits — all GTM + all content, Copilot, campaign analytics |
+| Enterprise | Custom | Volume teams — custom credits, SLA, white-label, dedicated onboarding |
+
+Credit bundles were added for Starter users who want outbound without upgrading: 200 credits for $5, 500 for $10, 1,500 for $25. Bundle credits stack on the monthly plan and never expire.
+
+Payments moved to **Dodo Payments**. Subscription and bundle checkout both route through `/api/create-checkout` and `/api/create-bundle-checkout`, hitting the Dodo live API and returning a `checkout_url`. The webhook at `/api/dodo-webhook` processes the resulting subscription events and writes plan state to Supabase.
+
+The Google Ads conversion tag fires on `?checkout=success` (subscription) and `?checkout=credits` (bundle purchase). Both clean the URL param after firing to prevent double-counting on refresh.
+
+---
+
+## Image Generation — Gemini 3.1 Flash Image
+
+Image generation was upgraded from `gemini-3.1-flash-image-preview` to the stable GA model `gemini-3.1-flash-image`. Generated images upload directly from the server-side route to Cloudflare R2 object storage, bypassing any browser CORS restrictions on the R2 endpoint. The public CDN domain is returned as the image URL. This pipeline powers both the campaign image generation and the long-form cover image generation.
+
+---
+
+## Long-Form Content Engine
+
+The long-form engine shipped as a dedicated module at `/dashboard/long-form`. It generates full blog posts, tutorials, and technical documentation in MDX-ready format with proper headings, code blocks, and internal linking. Available on Pro and Enterprise plans. The same Banned Lexicon and persona system apply.
+
+---
+
+## Ozigi Copilot
+
+A context-aware AI assistant built into the dashboard. Copilot has access to your current campaign context, your personas, and optionally the web (live search). It handles ideation, draft refinement, outreach critique, and persona development. Available in full on Pro; basic access on Growth.
+
+---
+
+## TrialBanner and TrialGateModal Removed
+
+The 7-day trial mechanic was removed in favour of the permanent free tier. `TrialBanner` and `TrialGateModal` components were deleted. The `LimitModal` component replaced them as the single gating surface — it fires when a user hits a plan limit and surfaces the relevant upgrade path without the time-pressure framing of a countdown.
+
+---
+
+## Content Engine Improvements
+
+- **Newsletter sending** was moved to Starter and above. The free tier retains newsletter generation but not delivery.
+- **Image generation** (2 per campaign) was added to Starter.
+- **Scheduling** was moved to Starter. The X email reminder was included in Starter and above.
+- **Subscriber list management** was added to Pro and above.
+- **Campaign analytics** was added to Pro and above.
+- The persona count was restructured: 1 on Free, unlimited on Starter and Pro, 2 on Growth.
+
+---
+
+## GTM Blog Series
+
+Eight long-form articles on the go-to-market motion for developer products shipped across June 2026. The series covers the full motion end to end: tool comparison, weekly GTM loop, ICP definition, lead sourcing on GitHub and Dev.to, email vs LinkedIn channel strategy, writing cold email that sounds human, safe daily sending volumes, and domain warmup. All eight articles use the Banned Lexicon in production and were written by Dumebi Okolo.
+
+---
+
+## What Is Next
+
+The compliance layer — CAN-SPAM and GDPR guidance for small teams sending outbound — is the missing piece at the bottom of the sourcing-to-send pipeline. Multi-inbox rotation (currently Pro-only) will be documented and surfaced more clearly for teams running high-volume outbound. The architecture page will keep pace with the product.
+
+---
+
+*Running changelog. Last updated June 2026.*

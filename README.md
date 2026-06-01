@@ -1,77 +1,74 @@
-# ⚡ Ozigi — AI Content That Sounds Human
+# ⚡ Ozigi — AI GTM Suite for Technical Teams
 
-**Turn raw notes, links, and PDFs into platform-ready social posts that sound like you wrote them — not like you prompted a chatbot.**
+**Source leads, run outreach, and publish content that sounds like you — not like a chatbot. One tool, one voice, one pipeline.**
 
 → **[Try it live at ozigi.app](https://ozigi.app)**
 
-![Ozigi Hero](https://ozigi.app/opengraph-image.png)
-
-
+![Ozigi Hero](https://ozigi.app/og-image.png)
 
 ---
 
 ## What is Ozigi?
 
-Ozigi is the AI that makes your content sound like *you* — not like a language model running on average. It's built for technical creators, founders, and builders who have real things to say but find that every AI writing tool strips out the specificity, voice, and credibility that makes content worth reading.
+Ozigi is a go-to-market engine for founders, DevRel teams, and small technical teams. It handles the four jobs that fill pipeline: finding the right people, qualifying them against your ICP, reaching them with outreach that sounds human, and publishing the content that warms the market before the ask lands.
 
-You drop in raw context — a URL, a block of notes, a PDF, an image. Ozigi returns polished, platform-specific drafts for X (Twitter), LinkedIn, Discord, Slack, and email. You edit the 10% only you know. You publish.
-
-The output doesn't sound like it came from ChatGPT. It doesn't open with "In today's fast-paced landscape." It doesn't use "delve" or "robust" or "seamlessly." It sounds like a person who actually built the thing and knows how to explain it.
-
-No prompt engineering. No reformatting for each platform. No AI slop.
+The two engines share one brain. The same persona voice that writes your LinkedIn sequence also writes your blog post. The same Banned Lexicon that keeps your cold email off the spam filter keeps your newsletter from sounding like it was generated. You define your voice once; it applies everywhere.
 
 ---
 
-## The Core Systems
+## The Two Engines
 
-### 1. Multimodal Ingestion
-Drop in a URL, paste raw notes, or upload a PDF/image. Ozigi extracts the core narrative without requiring you to summarise it first. Powered by Gemini 2.5 Flash's massive context window.
+### GTM Engine
 
-### 2. The Banned Lexicon
-The single most important reason Ozigi doesn't sound like AI. A hard-coded blocklist enforced at the API route level — not filtered after generation, blocked *during* it. No "delve", no "robust", no "seamlessly", no "tapestry". The model is penalised for AI-speak vocabulary, which forces every sentence to be constructed from your actual content instead of padded with filler. The output reads like a professional wrote it, because the filler that makes AI sound like AI has been surgically removed.
+**Lead sourcing**
+Source leads directly from GitHub, Dev.to, and LinkedIn based on an ICP you define once. For GitHub, the engine runs a bio-keyword + language + location query against the GitHub user search API and extracts matching profiles. When a profile hides its email, the engine recovers a real address from the user's public commit history. For Dev.to, it pulls authors by tag. For LinkedIn, it searches against your own session.
 
-### 3. System Personas
-Instead of prompting "write a tweet about X", you define *who* the AI is. Personas are saved to a database and applied automatically to every campaign. One persona setup. Consistent voice across every post, forever.
+**ICP scoring**
+Every sourced lead is scored by Gemini against your ICP on a 0.0–1.0 scale. Only leads above your threshold enter the sequence. This keeps your sending lists clean and your reply rates high without manual filtering.
 
-### 4. Human-in-the-Loop (HITL)
-Every generated campaign includes an Edit button. Ozigi handles the 90% — extraction, structure, constraints, platform formatting. You own the 10% — the specific detail, the insider context, the judgment call only a human can make. AI as co-pilot, not replacement.
+**Email + LinkedIn sequences**
+Campaigns run multi-step sequences from your own accounts with delays you control. Per-channel daily limits protect your domain reputation and LinkedIn standing. Reply detection pauses a sequence the moment someone responds on either channel. CRM sync (HubSpot, Zoho, Salesforce) pushes leads on first contact via Composio.
 
-### 5. Native Image Generation
-Generate platform-aware graphics directly inside the engine. Blank field = abstract background. Add text = rendered text graphic. LinkedIn posts auto-attach images via a 3-step OAuth handshake on publish.
+### Content Engine
 
-### 6. Publishing Integrations
-- **X (Twitter):** Web Intents pop open a pre-loaded tweet tab for final review before posting
-- **LinkedIn:** Direct OAuth publishing with image attachment
-- **Discord:** Paste a webhook URL in Settings — campaigns drop straight into your chosen channel
+Drop in a URL, paste raw notes, or upload a PDF or image. Ozigi extracts the core narrative and returns polished, platform-specific drafts for X (Twitter), LinkedIn, Discord, Slack, and email newsletters — all in your voice, with the Banned Lexicon applied.
 
-### 7. Email Newsletters
-Generate a single newsletter email that summarizes your 3‑day campaign. Write in your voice, include images, and schedule for later delivery. Manage your subscriber list from the dashboard and track sending limits.
+Generate full blog posts, tutorials, and technical documentation in MDX-ready format from the long-form module. Write, schedule, and send email newsletters directly from the dashboard. Manage your subscriber list and track delivery.
 
-### 8. Ozigi Copilot
-A built‑in AI assistant that lives in your dashboard. Brainstorm ideas, refine drafts, and get tailored advice – all while keeping your context. Optionally search the web for up‑to‑date information.
+---
 
-### 9. Blog Post Generation
-Generate comprehensive blog posts, tutorials, and technical documentation. Available for Organization and Enterprise tiers. Choose tone, structure, and length – get MDX-ready output with proper headings, code blocks, and formatting.
+## Core Systems
 
-### 10. Persona Marketplace
-Choose from 14 pre-built personas — technical and non-technical — each with a fully structured voice brief covering identity, origin, beliefs, tone, and key messages. Battle-Tested Engineer, DevRel Champion, Technical Founder, Brand & Marketing Manager, Career Coach, and more. Each persona produces meaningfully different output that sounds like a specific type of person, not a generic AI.
+### The Banned Lexicon
+The single most important reason Ozigi doesn't sound like AI. A hard-coded blocklist enforced at the API route level — not filtered after generation, blocked *during* it. No "delve", no "robust", no "seamlessly", no "tapestry", no "game-changing". The model is penalised for AI-speak vocabulary, which forces every sentence to be constructed from your actual content. Applied identically to cold email, blog posts, LinkedIn posts, and newsletter copy.
 
-### 11. Subscription Management
-Full subscription lifecycle support including plan upgrades with tailored welcome emails, and self-service cancellation with reason tracking for compliance.
+### System Personas
+Define who is writing — role, tone, beliefs, things they would never say — and save it once. Every campaign generation, every outreach step, and every content piece applies that persona automatically. One setup, consistent voice forever, across both engines.
 
-### 12. GitHub Context (via Composio)
-Connect your GitHub account once in Settings → Integrations. On every campaign generation and every Copilot conversation, Ozigi pulls context from your 3 most recently active repositories via the GitHub API and includes it silently in the generation prompt. The result: your posts naturally reference what you actually built — repo names, what the project does, recent commits, and your latest release notes.
+### Gemini 3.1 Flash Image Generation
+Generate platform-aware graphics directly inside the engine. Blank field = abstract background matched to the post topic. Add a graphic title = rendered text graphic with clean typography. Generated images upload server-side to Cloudflare R2 storage and return a public CDN URL — no browser CORS issues, no extra pipeline.
 
-What Ozigi reads per repo:
-- Repository name and description
-- README (project overview, stripped of code blocks and markdown)
-- Last 5 commit messages
-- Latest release name and notes (if you publish GitHub releases)
+### Human-in-the-Loop (HITL)
+Ozigi handles the 90% — extraction, structure, constraints, platform formatting. You own the 10% — the specific detail, the insider context, the judgment call only a human can make. Every generated campaign includes an Edit step before it goes anywhere.
 
-Ozigi reads **public repository metadata only** — never source code, private repos, or secrets. The OAuth token is managed entirely by Composio; Ozigi stores only a connection reference ID.
+### Ozigi Copilot
+A context-aware AI assistant built into the dashboard. Copilot has access to your current campaign context, your personas, and optionally the web. It handles ideation, draft refinement, outreach critique, and persona development.
 
-### 13. Pricing & Gating
-Free tier includes 5 campaigns/month. Team ($15/mo) unlocks 30 campaigns, image generation, email newsletter, blog distribution, and more. Organization ($39/mo) removes all limits, adds full Copilot access, and enables blog post generation. Start with a 7‑day trial on the Team plan.
+---
+
+## Pricing
+
+| Plan | Price | What it covers |
+|---|---|---|
+| **Free** | $0, no card | 50 lead credits/mo · 1 campaign · 30 email sends · 3 content pieces · 1 persona |
+| **Starter** | $19/mo | Full content engine · 30 campaigns · image gen · newsletter sending · scheduling |
+| **Growth** | $29/mo | GTM only · 1,000 credits/mo · unlimited sends · LinkedIn · CRM sync |
+| **Pro** | $49/mo | Both engines, no limits · Copilot · long-form · analytics |
+| **Enterprise** | Custom | Custom volume · SLA · white-label · dedicated onboarding |
+
+**Credit bundles** (for Starter users who need outbound without upgrading): 200 credits for $5 · 500 for $10 · 1,500 for $25. Credits stack and never expire.
+
+Payments are processed by **Dodo Payments**. Subscriptions and bundles both go through the Dodo checkout API. The dashboard fires a Google Ads conversion event on successful subscription (`?checkout=success`) and credit bundle (`?checkout=credits`) returns.
 
 ---
 
@@ -81,10 +78,14 @@ Free tier includes 5 campaigns/month. Team ($15/mo) unlocks 30 campaigns, image 
 |---|---|
 | Frontend | Next.js (App Router), React, Tailwind CSS |
 | Backend | Next.js Route Handlers, Vercel Serverless |
-| AI Engine | Google Cloud Vertex AI (Gemini 2.5 Flash) |
-| Database & Auth | Supabase (PostgreSQL) |
+| AI — Text | Google Cloud Vertex AI (Gemini 3.1 Flash) |
+| AI — Image | Gemini 3.1 Flash Image via Vertex AI |
+| Database & Auth | Supabase (PostgreSQL + Auth) |
+| Object Storage | Cloudflare R2 |
 | Rate Limiting & Scheduling | Upstash Redis + QStash |
-| Integrations | Composio (GitHub OAuth) |
+| Payments | Dodo Payments |
+| CRM Integration | Composio (HubSpot · Zoho · Salesforce) |
+| Analytics | Vercel Analytics · Google Ads (AW tag) · Ahrefs · Ghostly |
 | Email | ZeptoMail |
 | Testing | Playwright |
 
@@ -96,7 +97,7 @@ Requires Node.js v18+ and `pnpm`.
 
 ```bash
 # Clone the repo
-git clone https://github.com/Dumebii/OziGi.git
+git clone https://github.com/Ozigi-app/OziGi.git
 cd OziGi
 
 # Install dependencies
@@ -104,26 +105,36 @@ pnpm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Fill in your Supabase and Google Cloud credentials
+# Fill in credentials (see below)
 
-# Start the dev server
+# Start the main app
 pnpm dev
+
+# Start the blog (separate Next.js app)
+cd apps/blog && pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+Open [http://localhost:3000](http://localhost:3000) for the main app, [http://localhost:3001](http://localhost:3001) for the blog.
 
 ### Required Environment Variables
 
-```
+```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# Google Cloud / Vertex AI
+# Google Cloud / Vertex AI (text + image generation)
 GOOGLE_CLOUD_PROJECT_ID=
 GOOGLE_CLOUD_CLIENT_EMAIL=
 GOOGLE_CLOUD_PRIVATE_KEY=
+
+# Cloudflare R2 (image storage)
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+NEXT_PUBLIC_R2_DOMAIN=
 
 # Upstash — rate limiting (Redis) + scheduled posts (QStash)
 UPSTASH_REDIS_REST_URL=
@@ -132,29 +143,35 @@ QSTASH_TOKEN=
 QSTASH_CURRENT_SIGNING_KEY=
 QSTASH_NEXT_SIGNING_KEY=
 
-# Composio — GitHub OAuth context
+# Dodo Payments
+DODO_API_KEY=
+
+# Composio — CRM + GitHub OAuth
 COMPOSIO_API_KEY=
 COMPOSIO_GITHUB_AUTH_CONFIG_ID=
+
+# App URL (used in checkout return URLs)
+NEXT_PUBLIC_APP_URL=
+
+# Google Ads
+NEXT_PUBLIC_GTAG_ID=
 ```
 
 ---
 
 ## Architecture
 
-Curious how the Banned Lexicon works at the API level, or how the multimodal ingestion pipeline processes a PDF?
-
-→ [Read the Architecture Deep Dives at ozigi.app/docs/deep-dives](https://ozigi.app/docs/deep-dives)
+The architecture page at [ozigi.app/architecture](https://ozigi.app/architecture) covers the four live decisions that shaped the engine: LLM selection and why Gemini Flash beats Claude for this pipeline, JSON schema enforcement, the GTM sourcing and scoring architecture, and how the image generation pipeline routes through R2.
 
 ---
 
 ## Contributing
 
-If you have ideas for new integrations (scheduling APIs, Dev.to publishing, Bluesky support), open an issue or submit a PR. The roadmap is public.
-Ozigi was vibe-coded. Vibe-coded contributions are explicitly welcome — bring your instincts, run the tests, and ship the fix. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guidelines.
+Open an issue or submit a PR. The roadmap is public. Vibe-coded contributions are explicitly welcome — bring your instincts, run the tests, and ship the fix. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guidelines.
 
 ---
 
 ## Built by
 
-**Dumebi Okolo** — Documentation Engineer & Builder  
+**Dumebi Okolo** — Founder and CEO of Ozigi  
 [X / Twitter](https://x.com/DumebiTheWriter) · [LinkedIn](https://linkedin.com/in/dumebi-okolo) · [DEV.to](https://dev.to/dumebii)

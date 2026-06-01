@@ -282,7 +282,7 @@ function escapeHtmlSafe(text: string): string {
 
 interface UpgradeEmailConfig {
   userName: string;
-  plan: 'team' | 'organization' | 'enterprise';
+  plan: 'starter' | 'growth' | 'pro' | 'enterprise';
 }
 
 export function buildUpgradeWelcomeEmail({ userName, plan }: UpgradeEmailConfig): string {
@@ -291,30 +291,43 @@ export function buildUpgradeWelcomeEmail({ userName, plan }: UpgradeEmailConfig)
   const displayName = userName || 'there';
 
   const planConfigs = {
-    team: {
-      title: "Welcome to Team!",
-      subtitle: "You've unlocked serious creator tools",
+    starter: {
+      title: "Welcome to Starter!",
+      subtitle: "Your content engine is live",
       color: "#1d4ed8",
       features: [
         { icon: "&#x1F680;", title: "30 campaigns/month", desc: "Create and distribute more content than ever" },
         { icon: "&#x1F465;", title: "Unlimited personas", desc: "Save and switch between multiple voice profiles" },
         { icon: "&#x1F3A8;", title: "Image generation (2/campaign)", desc: "AI-generated visuals for your posts" },
-        { icon: "&#x2709;&#xFE0F;", title: "Email newsletter generation", desc: "Turn your content into beautiful newsletters" },
+        { icon: "&#x2709;&#xFE0F;", title: "Newsletter generation + 500 sends/mo", desc: "Turn your content into beautiful newsletters" },
         { icon: "&#x1F4C5;", title: "Scheduling + X email reminder", desc: "Set it and forget it with smart reminders" },
         { icon: "&#x1F4AC;", title: "Slack integration", desc: "Publish directly to your Slack channels" },
       ],
     },
-    organization: {
-      title: "Welcome to Organization!",
-      subtitle: "Full power, no limits",
+    growth: {
+      title: "Welcome to Growth!",
+      subtitle: "Your outbound pipeline is live",
+      color: "#059669",
+      features: [
+        { icon: "&#x1F3AF;", title: "1,000 credits/mo", desc: "Scrape and score leads with Gemini AI" },
+        { icon: "&#x221E;", title: "Unlimited campaigns + sends", desc: "No caps on outbound sequences" },
+        { icon: "&#x1F517;", title: "Email + LinkedIn outreach", desc: "Reach leads on every channel" },
+        { icon: "&#x1F4CB;", title: "CRM sync (HubSpot, Zoho, Salesforce)", desc: "Keep your CRM updated automatically" },
+        { icon: "&#x1F4CA;", title: "Reply detection", desc: "Know the moment a lead responds" },
+        { icon: "&#x1F4DD;", title: "10 content campaigns/mo", desc: "Stay visible while the pipeline runs" },
+      ],
+    },
+    pro: {
+      title: "Welcome to Pro!",
+      subtitle: "Both engines, no limits",
       color: "#7c3aed",
       features: [
-        { icon: "&#x221E;", title: "Unlimited campaigns", desc: "No caps on your content creation" },
-        { icon: "&#x1F3A8;", title: "Unlimited image generation", desc: "As many AI visuals as you need" },
-        { icon: "&#x2709;&#xFE0F;", title: "Unlimited email sending", desc: "Grow your newsletter without restrictions" },
+        { icon: "&#x221E;", title: "Unlimited GTM credits", desc: "Scrape and score as many leads as you need" },
+        { icon: "&#x1F3A8;", title: "Unlimited content + image generation", desc: "No caps on campaigns or visuals" },
+        { icon: "&#x2709;&#xFE0F;", title: "Unlimited newsletter sending", desc: "Grow your audience without restrictions" },
         { icon: "&#x1F916;", title: "Ozigi Copilot (full context)", desc: "AI assistant with complete conversation memory" },
         { icon: "&#x1F4CA;", title: "Campaign analytics", desc: "Track performance across all platforms" },
-        { icon: "&#x26A1;", title: "Priority model access", desc: "Faster, higher-quality AI generations" },
+        { icon: "&#x26A1;", title: "Priority model access + early access features", desc: "Always on the latest and fastest" },
       ],
     },
     enterprise: {

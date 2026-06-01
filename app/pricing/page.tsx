@@ -49,7 +49,7 @@ export default function PricingPage() {
               Simple, transparent pricing
             </h1>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              No credit card required to start. Upgrade when you're ready to scale.
+              No credit card required to start. Starter users can add GTM credits without upgrading.
             </p>
           </div>
           <PricingCards onOpenAuthModal={() => setIsAuthModalOpen(true)} />

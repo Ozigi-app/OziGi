@@ -2,26 +2,22 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 
 export const metadata = {
-  title: "Ozigi Docs — AI Content Engine for Technical Creators",
-  description: "Learn how to turn raw notes, URLs, and PDFs into platform-ready social posts using Ozigi's context engine. Full documentation for personas, banned lexicon, image generation, and publishing.",
+  title: "Ozigi Docs — GTM Content Suite",
+  description: "Learn how to use Ozigi's GTM suite: outbound email and LinkedIn sequences, lead scraping, content engine (social posts, newsletters, blog), and CRM integrations.",
   alternates: { canonical: "https://ozigi.app/docs" },
 };
 
 export default function DocsPage() {
   return (
-    <div className="bg-[#fafafa] font-sans text-slate-900 min-h-screen flex flex-col scroll-smooth">
+    <div className="bg-[#fafafa] text-slate-900 min-h-screen flex flex-col scroll-smooth">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-4 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center px-4 md:px-8">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-black italic uppercase tracking-tighter text-xl text-slate-900">
-              Ozigi Docs
-            </span>
+          <Link href="/" className="flex items-center gap-2">
+            <span className="font-black italic uppercase tracking-tighter text-xl text-slate-900">Ozigi Docs</span>
           </Link>
-          <Link
-            href="/dashboard"
-            className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-full shadow-sm"
-          >
+          <Link href="/dashboard"
+            className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors bg-white border border-slate-200 px-4 py-2 rounded-full shadow-sm">
             Go to Dashboard →
           </Link>
         </div>
@@ -40,22 +36,17 @@ export default function DocsPage() {
                     Quick Start
                   </a>
                 </li>
-                <li><a href="#getting-started" className="hover:text-slate-900 transition-colors block">1. Getting Started</a></li>
-                <li><a href="#ingestion" className="hover:text-slate-900 transition-colors block">2. Multimodal Ingestion</a></li>
-                <li><a href="#personas" className="hover:text-slate-900 transition-colors block">3. System Personas</a></li>
-                <li><a href="#lexicon" className="hover:text-slate-900 transition-colors block">4. The Banned Lexicon</a></li>
-                <li><a href="#generating" className="hover:text-slate-900 transition-colors block">5. Generating a Campaign</a></li>
-                <li><a href="#human-in-the-loop" className="hover:text-slate-900 transition-colors block">6. Human‑in‑the‑Loop</a></li>
-                <li><a href="#image-gen" className="hover:text-slate-900 transition-colors block">7. Native Image Generation</a></li>
-                <li><a href="#publishing" className="hover:text-slate-900 transition-colors block">8. Publishing Integrations</a></li>
-                <li><a href="#scheduling" className="hover:text-slate-900 transition-colors block">9. Scheduling & Reminders</a></li>
-                <li><a href="#email" className="hover:text-slate-900 transition-colors block">10. Email Newsletters</a></li>
-                <li><a href="#longform" className="hover:text-slate-900 transition-colors block">11. Blog Post Generation</a></li>
-                <li><a href="#copilot" className="hover:text-slate-900 transition-colors block">12. Ozigi Copilot</a></li>
-                <li><a href="#pricing" className="hover:text-slate-900 transition-colors block">13. Pricing & Gating</a></li>
-                <li><a href="#troubleshooting" className="hover:text-slate-900 transition-colors block">14. Troubleshooting</a></li>
-                <li><a href="#integrations" className="hover:text-slate-900 transition-colors block">15. Integration Setup</a></li>
-                <li><a href="#github-context" className="hover:text-slate-900 transition-colors block">16. GitHub Context</a></li>
+                <li><a href="#platform-overview"   className="hover:text-slate-900 transition-colors block">1. Platform Overview</a></li>
+                <li><a href="#content-engine"       className="hover:text-slate-900 transition-colors block">2. Content Engine</a></li>
+                <li><a href="#outbound-growth"      className="hover:text-slate-900 transition-colors block">3. Outbound Growth</a></li>
+                <li><a href="#personas"             className="hover:text-slate-900 transition-colors block">4. Personas</a></li>
+                <li><a href="#email-setup"          className="hover:text-slate-900 transition-colors block">5. Email Setup (Gmail / SMTP)</a></li>
+                <li><a href="#crm"                  className="hover:text-slate-900 transition-colors block">6. CRM Integrations</a></li>
+                <li><a href="#linkedin-setup"       className="hover:text-slate-900 transition-colors block">7. LinkedIn Setup</a></li>
+                <li><a href="#subscribers"          className="hover:text-slate-900 transition-colors block">8. Newsletter Subscribers</a></li>
+                <li><a href="#publishing"           className="hover:text-slate-900 transition-colors block">9. Social Publishing</a></li>
+                <li><a href="#blog"                 className="hover:text-slate-900 transition-colors block">10. Blog Post Generation</a></li>
+                <li><a href="#troubleshooting"      className="hover:text-slate-900 transition-colors block">11. Troubleshooting</a></li>
               </ul>
             </nav>
           </div>
@@ -68,12 +59,13 @@ export default function DocsPage() {
               Platform Documentation
             </h1>
             <p className="text-lg text-slate-600 font-medium leading-relaxed">
-              Ozigi is an intelligent context engine that transforms your raw research—notes, URLs, PDFs—into structured social media campaigns for X, LinkedIn, Discord, Slack, and email. This guide covers everything you need to set up your workspace and start publishing content that sounds like you.
+              Ozigi is a GTM content suite for founders and small teams. Two engines work together: an <strong>Outbound Growth</strong> engine that finds leads and runs personalised email + LinkedIn sequences, and a <strong>Content Engine</strong> that publishes newsletters, social posts, and blog articles in your voice.
             </p>
           </div>
 
           <div className="space-y-20">
-            {/* Quick Start - First thing users see */}
+
+            {/* ── Quick Start ─────────────────────────────────────────── */}
             <section id="quick-start" className="scroll-mt-28">
               <div className="bg-gradient-to-br from-brand-red to-red-700 rounded-3xl p-8 text-white mb-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
@@ -83,806 +75,406 @@ export default function DocsPage() {
                     Quick Start Guide
                   </span>
                   <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter mb-4">
-                    Your First Campaign in 2 Minutes
+                    Running your first GTM campaign
                   </h2>
                   <p className="text-white/80 text-lg max-w-xl">
-                    Go from zero to published content in five simple steps. No setup required for your first generation.
+                    Get outbound running and your first content piece live in under 10 minutes.
                   </p>
                 </div>
               </div>
 
               <div className="grid gap-4">
-                {/* Step 1 */}
-                <div className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
-                  <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">
-                    1
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-slate-900">Create your account</h3>
-                      <span className="text-xs text-slate-400 font-medium">~30 seconds</span>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Sign up with email or connect your X/LinkedIn account. You get 7 days of full access immediately.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step 2 */}
-                <div className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
-                  <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">
-                    2
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-slate-900">Add your content source</h3>
-                      <span className="text-xs text-slate-400 font-medium">~1 minute</span>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Paste a URL, drop in raw notes, or upload a file (PDF, image, audio). The AI reads and understands it automatically.
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="text-xs bg-slate-100 px-2 py-1 rounded font-mono">blog.dev/my-post</span>
-                      <span className="text-xs bg-slate-100 px-2 py-1 rounded">Meeting notes</span>
-                      <span className="text-xs bg-slate-100 px-2 py-1 rounded">whitepaper.pdf</span>
+                {[
+                  { n: 1, t: "Create your account", time: "~30 sec",
+                    body: "Sign up with email. You get a 7-day full-access trial — no credit card required." },
+                  { n: 2, t: "Set up your sending email", time: "~2 min",
+                    body: "Go to Outreach Settings → Gmail or SMTP. Connect the inbox you'll send outbound emails from. This is required before launching any campaign." },
+                  { n: 3, t: "Create a persona", time: "~3 min",
+                    body: "Go to Personas and create a voice profile for yourself. This shapes every email, social post, and newsletter Ozigi writes — be specific about your tone and what you'd never say." },
+                  { n: 4, t: "Launch your first outbound campaign", time: "~3 min",
+                    body: "Go to Email Outreach → New Campaign. Paste your product URL to auto-fill, describe your ICP, and set your email sequence steps. Ozigi scrapes leads and writes personalised emails for each." },
+                  { n: 5, t: "Generate your first social post", time: "~1 min",
+                    body: "Go to Social Posts. Paste a URL or any context, pick your platforms and persona, and hit Generate. Posts for LinkedIn, X, Discord, and email — all at once." },
+                ].map(s => (
+                  <div key={s.n} className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
+                    <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">{s.n}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="font-bold text-slate-900">{s.t}</h3>
+                        <span className="text-xs text-slate-400 font-medium">{s.time}</span>
+                      </div>
+                      <p className="text-sm text-slate-600">{s.body}</p>
                     </div>
                   </div>
-                </div>
-
-                {/* Step 3 */}
-                <div className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
-                  <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-slate-900">Pick a persona (optional)</h3>
-                      <span className="text-xs text-slate-400 font-medium">~10 seconds</span>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Choose from our <Link href="/dashboard/personas/marketplace" className="text-brand-red hover:underline font-medium">Persona Marketplace</Link> or create your own. This defines your writing voice.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step 4 */}
-                <div className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
-                  <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">
-                    4
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-slate-900">Generate your campaign</h3>
-                      <span className="text-xs text-slate-400 font-medium">~30 seconds</span>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Click the big red button. Ozigi creates a 3-day content plan with posts for X, LinkedIn, Discord, Slack, and email.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step 5 */}
-                <div className="flex gap-4 items-start bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-brand-red/30 transition-colors group">
-                  <div className="w-10 h-10 bg-brand-red text-white rounded-full flex items-center justify-center font-black text-lg shrink-0 group-hover:scale-110 transition-transform">
-                    5
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-slate-900">Publish or schedule</h3>
-                      <span className="text-xs text-slate-400 font-medium">~30 seconds</span>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Edit if needed, then publish directly or schedule for later. For X, we send you an email reminder with a one-click post link.
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center">
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center gap-2 bg-brand-red text-white px-6 py-3 rounded-full font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors shadow-lg"
-                >
-                  Start Your First Campaign →
+                <Link href="/dashboard"
+                  className="inline-flex items-center gap-2 bg-brand-red text-white px-6 py-3 rounded-full font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors shadow-lg">
+                  Open Dashboard →
                 </Link>
                 <span className="text-sm text-slate-500">No credit card required for trial</span>
               </div>
             </section>
 
-            {/* 1. Getting Started */}
-            <section id="getting-started" className="scroll-mt-28">
+            {/* ── 1. Platform Overview ────────────────────────────────── */}
+            <section id="platform-overview" className="scroll-mt-28">
               <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                1. Getting Started
+                1. Platform Overview
               </h2>
               <p className="text-slate-600 font-medium leading-relaxed mb-6">
-                Before your first campaign, take five minutes to set up your workspace. Ozigi works best when it knows your voice and where you want to publish.
+                Ozigi has two main engines. They work independently but share the same persona system and source material.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-                  <span className="text-brand-red font-black text-xs uppercase tracking-widest block mb-2">Step 1</span>
-                  <h4 className="font-bold text-slate-900 mb-2">Define Your Voice</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">Create a System Persona—a database‑backed editorial brief. The more specific, the better. Tell the AI <em>who</em> it is, not what to write.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="bg-slate-900 text-white p-6 rounded-2xl">
+                  <p className="text-brand-red font-black text-xs uppercase tracking-widest mb-3">Outbound Growth</p>
+                  <h3 className="text-lg font-black italic uppercase tracking-tighter mb-3">Find leads. Run sequences.</h3>
+                  <ul className="text-sm text-slate-300 space-y-1.5">
+                    <li>→ Scrape GitHub, Dev.to, LinkedIn for ICP-matched leads</li>
+                    <li>→ Gemini scores each lead against your ICP</li>
+                    <li>→ Personalised email sequences (cold intro → follow-ups)</li>
+                    <li>→ LinkedIn connection requests + DMs (automated)</li>
+                    <li>→ Reply detection, open tracking, bounce handling</li>
+                    <li>→ CRM sync (HubSpot, Zoho, Salesforce)</li>
+                  </ul>
                 </div>
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-                  <span className="text-brand-red font-black text-xs uppercase tracking-widest block mb-2">Step 2</span>
-                  <h4 className="font-bold text-slate-900 mb-2">Connect Channels</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">Add your Discord or Slack webhook in Settings. For X and LinkedIn, OAuth authentication is built in—just sign in once.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-                  <span className="text-brand-red font-black text-xs uppercase tracking-widest block mb-2">Step 3</span>
-                  <h4 className="font-bold text-slate-900 mb-2">Advanced Settings</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">Set your default tweet format (single/thread), and add campaign directives (e.g., “target junior engineers”) to fine‑tune output.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-                  <span className="text-brand-red font-black text-xs uppercase tracking-widest block mb-2">Step 4</span>
-                  <h4 className="font-bold text-slate-900 mb-2">Choose Context</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">Paste a URL, raw notes, or upload a file. Ozigi ingests text, PDFs, images, audio, and video—no need to summarize first.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
-                  <span className="text-brand-red font-black text-xs uppercase tracking-widest block mb-2">Step 5</span>
-                  <h4 className="font-bold text-slate-900 mb-2">Start a Campaign</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">Click “Generate Campaign”. In seconds, you’ll have a multi‑day content plan with posts for each selected platform.</p>
+                <div className="bg-white border-2 border-slate-200 p-6 rounded-2xl">
+                  <p className="text-brand-red font-black text-xs uppercase tracking-widest mb-3">Content Engine</p>
+                  <h3 className="text-lg font-black italic uppercase tracking-tighter mb-3">Publish content. Sound human.</h3>
+                  <ul className="text-sm text-slate-600 space-y-1.5">
+                    <li>→ Social posts: LinkedIn, X, Discord, Email</li>
+                    <li>→ Email newsletters to your subscriber list</li>
+                    <li>→ Blog posts and long-form articles</li>
+                    <li>→ Banned lexicon strips AI buzzwords automatically</li>
+                    <li>→ Persona system shapes every piece of content</li>
+                    <li>→ Schedule and publish directly from the dashboard</li>
+                  </ul>
                 </div>
               </div>
             </section>
 
-            {/* 2. Multimodal Ingestion */}
-            <section id="ingestion" className="scroll-mt-28">
+            {/* ── 2. Content Engine ───────────────────────────────────── */}
+            <section id="content-engine" className="scroll-mt-28">
               <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                2. Multimodal Ingestion
+                2. Content Engine
               </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi’s engine is built on Google’s Gemini 2.5 Flash, which handles massive context windows. You don’t need to prompt‑engineer – just dump your raw material and let the engine extract the core narrative.
+              <p className="text-slate-600 font-medium leading-relaxed mb-6">
+                The content engine generates social posts, newsletters, and blog articles from any source material — URLs, notes, PDFs, images, or audio.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">🔗</span>
-                    <h3 className="font-black uppercase tracking-widest text-sm">URL Extraction</h3>
+
+              <div className="space-y-5">
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Social Posts</h3>
+                  <p className="text-sm text-slate-600 mb-3">Go to <strong>Social Posts</strong> in the sidebar. Paste a URL, notes, or upload a file. Select which platforms to generate for (LinkedIn, X, Discord, Email) and pick a persona. Click Generate — all platforms are created simultaneously.</p>
+                  <div className="bg-slate-50 p-4 rounded-xl text-sm text-slate-600">
+                    <p className="font-semibold mb-1">Input options:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Any public URL (blog post, changelog, Dev.to article)</li>
+                      <li>Raw meeting notes or brain dump (messy is fine)</li>
+                      <li>PDF, image, audio, or video file (up to 100MB)</li>
+                    </ul>
                   </div>
-                  <div className="bg-slate-50 p-3 rounded-xl text-xs font-mono text-slate-500 mb-2">
-                    https://dev.to/dumebii/ozigi-v2-changelog
-                  </div>
-                  <p className="text-xs text-slate-500 mt-2">The engine fetches and reads the page content, ignoring ads and navigation.</p>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">📝</span>
-                    <h3 className="font-black uppercase tracking-widest text-sm">Raw Notes</h3>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-xl text-xs text-slate-500 italic">
-                    "Scaling automation requires treating test code like production code..."
-                  </div>
-                  <p className="text-xs text-slate-500 mt-2">Unformatted meeting transcripts, brain dumps – keep them messy.</p>
+
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Newsletter</h3>
+                  <p className="text-sm text-slate-600 mb-3">Go to <strong>Newsletter</strong> in the sidebar. Same input flow as social posts — the email platform is pre-selected and social platforms are locked. The generated newsletter can be sent directly to your subscriber list via the Schedule button.</p>
+                  <p className="text-sm text-slate-500 italic">Requires at least one subscriber and a configured sender name in Settings.</p>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">📁</span>
-                    <h3 className="font-black uppercase tracking-widest text-sm">File Uploads</h3>
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-xl text-xs text-slate-500">PDF, images, video, audio</div>
-                  <p className="text-xs text-slate-500 mt-2">Upload up to 100MB per file. The AI reads text from images and transcribes audio.</p>
+
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Generation History</h3>
+                  <p className="text-sm text-slate-600">Every social post campaign and newsletter you generate is saved automatically. Access it via the Generation History sub-link under Social Posts in the sidebar. Social posts and newsletters are in separate tabs — click any entry to restore it.</p>
                 </div>
-              </div>
-              <div className="mt-6">
-                <Link href="/docs/multimodal-pipeline" className="inline-flex items-center gap-2 bg-red-50 text-brand-red px-5 py-3 rounded-full text-sm font-bold hover:bg-red-100 transition-colors">
-                  Read the Pipeline Deep Dive →
-                </Link>
+
+                <div className="bg-slate-900 text-white p-5 rounded-2xl text-sm">
+                  <h3 className="font-black uppercase tracking-widest text-xs mb-3">The Banned Lexicon</h3>
+                  <p className="text-slate-300 mb-3">Ozigi enforces a hard block on AI buzzwords at the prompt level. Words like "delve", "tapestry", "robust", "seamlessly", and "unlock" are banned before the model responds. The result is copy that sounds like a real person wrote it.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {["delve", "tapestry", "crucial", "unlock", "supercharge", "robust", "seamlessly", "vibrant"].map(w => (
+                      <span key={w} className="px-2 py-0.5 bg-white/10 rounded text-xs font-mono line-through decoration-brand-red">{w}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
-            {/* 3. System Personas */}
+            {/* ── 3. Outbound Growth ──────────────────────────────────── */}
+            <section id="outbound-growth" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                3. Outbound Growth
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-6">
+                The outbound engine scrapes leads from GitHub, Dev.to, and LinkedIn, scores them against your ICP, writes personalised emails and LinkedIn messages for each, and sends them on a schedule.
+              </p>
+
+              <div className="space-y-5">
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Creating a Campaign</h3>
+                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
+                    <li>Go to <strong>Email Outreach</strong> and click <strong>New Campaign</strong></li>
+                    <li>Paste your product URL — Gemini reads the page and auto-fills sender info, product description, and ICP</li>
+                    <li>Review and edit the auto-filled fields, then describe your target audience in plain English</li>
+                    <li>Configure your sequence steps (email + LinkedIn, with delays between each)</li>
+                    <li>Optionally pick a persona for the email writing voice</li>
+                    <li>Set daily send limits and click <strong>Create Campaign</strong></li>
+                  </ol>
+                </div>
+
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Running the Campaign</h3>
+                  <p className="text-sm text-slate-600 mb-3">From the campaign detail page:</p>
+                  <ul className="text-sm text-slate-600 list-disc pl-5 space-y-1.5">
+                    <li><strong>Run Scrape</strong> — finds leads from GitHub, Dev.to, and LinkedIn matching your ICP description</li>
+                    <li><strong>Preview Emails</strong> — generates 3 sample emails so you can review personalisation before sending</li>
+                    <li><strong>Run Send</strong> — sends the current sequence step to all due leads up to your daily limit</li>
+                    <li><strong>Pause / Resume</strong> — pauses the campaign at any time without losing progress</li>
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Sequence Steps</h3>
+                  <p className="text-sm text-slate-600 mb-3">Email and LinkedIn steps run in parallel on the same leads. Each step has a delay (in days) from the previous step of the same channel. Step 1 and the first LinkedIn step both fire on day 0.</p>
+                  <div className="bg-slate-50 p-4 rounded-xl text-sm">
+                    <p className="font-mono text-xs text-slate-500">Email channel: Cold intro → +3 days → Follow-up → +4 days → Breakup</p>
+                    <p className="font-mono text-xs text-slate-500 mt-1">LinkedIn channel: Connect request → +0 days → Direct message</p>
+                  </div>
+                </div>
+
+                <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-2xl">
+                  <h4 className="font-black text-slate-900 mb-2">Reply Detection</h4>
+                  <p className="text-sm text-slate-700">Ozigi monitors your connected Gmail inbox for replies. When a lead replies, the sequence pauses for that lead automatically and the status updates to "replied" in your campaign dashboard. Requires Gmail connected with <code className="bg-white px-1 rounded text-xs">gmail.readonly</code> permission.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* ── 4. Personas ─────────────────────────────────────────── */}
             <section id="personas" className="scroll-mt-28">
               <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                3. System Personas
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Personas are database‑backed voice profiles. Instead of rewriting prompts for every campaign, you save your editorial brief once and reuse it. Ozigi applies the persona’s constraints to every post.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
-                  <span className="text-red-700 font-black uppercase tracking-widest text-xs mb-2 block">❌ Weak Persona</span>
-                  <p className="font-mono text-sm text-slate-700 leading-relaxed">"You are a helpful marketing assistant. Write engaging and professional posts about my software updates. Make sure to use emojis to make it fun."</p>
-                  <p className="text-xs text-slate-600 mt-3">This tells the AI <em>what</em> to write, not <em>who</em> to be. It invites buzzwords.</p>
-                </div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-lg">
-                  <span className="text-green-400 font-black uppercase tracking-widest text-xs mb-2 block">✅ High-Impact Persona</span>
-                  <p className="font-mono text-sm text-slate-300 leading-relaxed">"You are a pragmatic, battle-tested Staff Engineer. You speak directly, use dry humor, and absolutely despise corporate fluff. You never apologize."</p>
-                  <p className="text-xs text-slate-400 mt-3">This defines a character. The AI now has a voice to adopt.</p>
-                </div>
-              </div>
-              <div className="mt-6">
-                <Link href="/docs/system-personas" className="inline-flex items-center gap-2 bg-red-50 text-brand-red px-5 py-3 rounded-full text-sm font-bold hover:bg-red-100 transition-colors">
-                  Read the Persona Deep Dive →
-                </Link>
-              </div>
-            </section>
-
-            {/* 4. The Banned Lexicon */}
-            <section id="lexicon" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                4. The Banned Lexicon
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi enforces a strict list of banned words at the API level. If the AI tries to use “delve”, “tapestry”, or “robust”, the request is penalized. This invisible guardrail forces the model to write like a real human.
-              </p>
-              <div className="bg-slate-900 text-white p-6 rounded-2xl flex flex-wrap gap-2 justify-center mb-4">
-                {["delve", "tapestry", "crucial", "landscape", "realm", "unlock", "supercharge", "robust", "seamlessly"].map(word => (
-                  <span key={word} className="px-3 py-1 bg-white/10 rounded-full text-xs font-mono line-through decoration-brand-red">
-                    {word}
-                  </span>
-                ))}
-              </div>
-              <p className="text-slate-600 font-medium leading-relaxed">The result? Copy that passes AI detectors and sounds like it came from a subject matter expert, not a language model.</p>
-              <div className="mt-6">
-                <Link href="/docs/the-banned-lexicon" className="inline-flex items-center gap-2 bg-red-50 text-brand-red px-5 py-3 rounded-full text-sm font-bold hover:bg-red-100 transition-colors">
-                  Read the Architecture Deep Dive →
-                </Link>
-              </div>
-            </section>
-
-            {/* 5. Generating a Campaign */}
-            <section id="generating" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                5. Generating a Campaign
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                After selecting your persona and platforms, click “Generate Campaign”. The engine produces a 3‑day content plan, with separate posts for each platform. You’ll see an example like this:
-              </p>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Day 1</span>
-                    <span className="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Day 2</span>
-                    <span className="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Day 3</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-xs font-black uppercase tracking-widest text-slate-500">X</span>
-                    <span className="text-xs font-black uppercase tracking-widest text-slate-500">LI</span>
-                    <span className="text-xs font-black uppercase tracking-widest text-slate-500">DC</span>
-                    <span className="text-xs font-black uppercase tracking-widest text-slate-500">SL</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 gap-2 text-xs text-slate-600">
-                  <div className="bg-slate-50 p-2 rounded">Rate limits at edge</div>
-                  <div className="bg-slate-50 p-2 rounded">Why edge matters</div>
-                  <div className="bg-slate-50 p-2 rounded">Community update</div>
-                  <div className="bg-slate-50 p-2 rounded">Slack announcement</div>
-                </div>
-              </div>
-              <p className="text-slate-600 font-medium leading-relaxed mt-4">
-                Each post is a 90%‑ready draft. You’ll see an <strong>Edit</strong> button to add the final 10%—the specific details only you know.
-              </p>
-            </section>
-
-            {/* 6. Human-in-the-Loop */}
-            <section id="human-in-the-loop" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                6. Human-in-the-Loop (Editing)
+                4. Personas
               </h2>
               <p className="text-slate-600 font-medium leading-relaxed mb-6">
-                Ozigi is your co‑pilot, not your replacement. The engine handles extraction and structural drafting; you control the final polish.
+                Personas are voice profiles. They're applied to social posts, newsletters, and outbound emails — define once, reuse everywhere. The more specific, the better.
               </p>
-              <div className="bg-red-50 border-2 border-red-100 p-6 rounded-2xl flex flex-col sm:flex-row gap-6 items-center">
-                <div className="flex-1 text-sm text-slate-700 font-medium leading-relaxed">
-                  <p className="mb-2">Before: <span className="line-through text-slate-400">"We're thrilled to announce..."</span></p>
-                  <p>After: <span className="font-bold">"Shipped rate limiting today. Hard cap at 1,000 req/min."</span></p>
-                  <p className="text-xs mt-3">Click <strong>Edit</strong> on any card, tweak the content, and save. Your changes are preserved.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
+                  <span className="text-red-700 font-black uppercase tracking-widest text-xs mb-2 block">❌ Weak</span>
+                  <p className="font-mono text-sm text-slate-700 leading-relaxed">"You are a helpful assistant. Write engaging posts about my product updates."</p>
+                  <p className="text-xs text-slate-500 mt-2">Tells the AI <em>what</em> to write, not <em>who</em> to be. Produces generic output.</p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl shadow-xl border border-red-100 flex items-center gap-3 shrink-0">
-                  <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <div className="bg-slate-900 p-6 rounded-2xl">
+                  <span className="text-green-400 font-black uppercase tracking-widest text-xs mb-2 block">✅ Strong</span>
+                  <p className="font-mono text-sm text-slate-300 leading-relaxed">"Pragmatic technical founder. Direct, occasionally dry. Never uses 'leverage' or 'ecosystem'. Always leads with a specific number or outcome."</p>
+                  <p className="text-xs text-slate-400 mt-2">Defines a character. The AI has a voice to adopt consistently.</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-600">Create personas under <strong>Personas</strong> in the sidebar. Browse the <strong>Persona Marketplace</strong> for pre-built profiles from industry experts — customize any of them to match your voice.</p>
+            </section>
+
+            {/* ── 5. Email Setup ──────────────────────────────────────── */}
+            <section id="email-setup" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                5. Email Setup (Gmail / SMTP)
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                You must connect a sending account before launching any outbound campaign. Go to <strong>Outreach Settings</strong> in the sidebar.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="bg-white border border-slate-200 p-5 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">Gmail</h3>
+                  <ol className="text-sm text-slate-600 list-decimal pl-5 space-y-1.5">
+                    <li>Click <strong>Connect Gmail</strong></li>
+                    <li>Authorise Ozigi via Google OAuth — grant both send and readonly permissions</li>
+                    <li>Your inbox appears in the connected accounts list</li>
+                  </ol>
+                  <p className="text-xs text-slate-400 mt-3 italic">The readonly permission enables reply detection. If you connected before this was added, disconnect and reconnect to enable it.</p>
+                </div>
+                <div className="bg-white border border-slate-200 p-5 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-3">SMTP (Outlook, Yahoo, custom)</h3>
+                  <ol className="text-sm text-slate-600 list-decimal pl-5 space-y-1.5">
+                    <li>Click <strong>Connect SMTP</strong></li>
+                    <li>Select a preset (Outlook, Yahoo, Zoho Mail, etc.) or enter custom host + port</li>
+                    <li>Enter your email, password / app password, and display name</li>
+                    <li>Click Connect — Ozigi tests the connection before saving</li>
+                  </ol>
+                </div>
+              </div>
+            </section>
+
+            {/* ── 6. CRM Integrations ─────────────────────────────────── */}
+            <section id="crm" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                6. CRM Integrations
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                Connect your CRM via OAuth — no API keys needed. Leads are synced automatically when first contacted by Ozigi. Go to <strong>Outreach Settings → CRM</strong>.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                {[
+                  { name: "HubSpot",    color: "#ff7a59", note: "OAuth ready — click Connect HubSpot" },
+                  { name: "Zoho CRM",   color: "#e42527", note: "Create auth config in Composio dashboard first" },
+                  { name: "Salesforce", color: "#00a1e0", note: "Create auth config in Composio dashboard first" },
+                ].map(c => (
+                  <div key={c.name} className="bg-white border border-slate-200 p-5 rounded-2xl">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: c.color }} />
+                      <h3 className="font-bold text-slate-900">{c.name}</h3>
+                    </div>
+                    <p className="text-xs text-slate-500">{c.note}</p>
                   </div>
-                  <span className="font-black italic uppercase text-slate-900 tracking-tighter">The "Edit" Factor</span>
-                </div>
+                ))}
               </div>
-              <div className="mt-6">
-                <Link href="/docs/human-in-the-loop" className="inline-flex items-center gap-2 bg-red-50 text-brand-red px-5 py-3 rounded-full text-sm font-bold hover:bg-red-100 transition-colors">
-                  Read the Architecture Deep Dive →
-                </Link>
-              </div>
+              <p className="text-sm text-slate-600">CRM sync happens on first contact — when Ozigi sends the first email or LinkedIn message to a lead, the lead is pushed to your connected CRM as a new contact.</p>
             </section>
 
-            {/* 7. Native Image Generation */}
-            <section id="image-gen" className="scroll-mt-28">
+            {/* ── 7. LinkedIn Setup ───────────────────────────────────── */}
+            <section id="linkedin-setup" className="scroll-mt-28">
               <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                7. Native Image Generation
+                7. LinkedIn Setup
               </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Every campaign card includes an image generator powered by Gemini 2.5 Flash. It creates platform‑aware graphics that you can download and attach to your posts.
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                Ozigi automates LinkedIn outreach by logging into your account and performing actions via a browser worker. Go to <strong>Outreach Settings → LinkedIn</strong>.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm text-center">
-                  <div className="w-full h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-3 flex items-center justify-center text-xs text-slate-400">Abstract background</div>
-                  <p className="text-xs font-medium text-slate-600">Leave the text field empty → generates a custom abstract graphic.</p>
-                </div>
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm text-center">
-                  <div className="w-full h-24 bg-slate-800 rounded-lg flex items-center justify-center text-white font-black text-sm">"3 Rules"</div>
-                  <p className="text-xs font-medium text-slate-600 mt-3">Type a phrase → renders that text as a stylish title graphic.</p>
-                </div>
-              </div>
-              <p className="text-slate-600 font-medium leading-relaxed mt-4">Images are generated in 16:9 aspect ratio, perfect for social cards. They are stored in your R2 bucket and automatically linked when you publish to LinkedIn (via OAuth) or when you share the download link.</p>
-            </section>
-
-            {/* 8. Publishing Integrations */}
-            <section id="publishing" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                8. Publishing Integrations
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi never posts without your final approval. Each platform uses a secure, one‑click method:
-              </p>
-              <div className="flex flex-wrap gap-4 mb-6">
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full shadow-sm">
-                  <span className="text-xl">𝕏</span>
-                  <span className="text-xs font-bold">Web Intents</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full shadow-sm">
-                  <span className="text-xl text-[#0A66C2]">in</span>
-                  <span className="text-xs font-bold">Direct OAuth</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full shadow-sm">
-                  <span className="text-xl text-[#5865F2]">👾</span>
-                  <span className="text-xs font-bold">Webhook</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-full shadow-sm">
-                  <span className="text-xl">💬</span>
-                  <span className="text-xs font-bold">Slack Webhook</span>
-                </div>
-              </div>
-              <div className="bg-white border-2 border-slate-200 p-5 rounded-2xl text-sm text-slate-600 font-mono">
-                <p className="text-xs">• X: opens a pre‑filled tweet in a new tab – you review and post.</p>
-                <p className="text-xs mt-2">• LinkedIn: OAuth popup – you authorise once; future posts go directly.</p>
-                <p className="text-xs mt-2">• Discord / Slack: webhook URLs stored in your profile – posts go straight to your chosen channel.</p>
-              </div>
-              <div className="bg-white border-2 border-slate-200 p-6 sm:p-8 rounded-[2rem] shadow-sm">
-                <h3 className="text-lg font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
-                  <Link href="/docs/webhooks" className="text-xs font-bold text-brand-red hover:underline">
-                    See full webhook guide →
-                  </Link>  </h3>
-
-
-
-              </div>
-            </section>
-
-            {/* 9. Scheduling & Reminders */}
-            <section id="scheduling" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                9. Scheduling & X Email Reminders
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                You don’t have to publish immediately. Click the <strong>Schedule</strong> icon on any campaign card, pick a date and time, and Ozigi will hold the post.
-              </p>
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4">
-                <div className="p-3 bg-slate-100 rounded-full">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-bold">When the scheduled time arrives:</p>
-                  <ul className="text-xs text-slate-500 list-disc pl-4 mt-1">
-                    <li>X posts: you receive an email with a direct link to the tweet intent.</li>
-                    <li>LinkedIn, Discord, Slack: posts are published automatically (if you have the appropriate token/webhook).</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* 10. Email Newsletters */}
-            <section id="email" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                10. Email Newsletters
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi supports email newsletter delivery to your subscribers. Manage your email list, send newsletters to multiple recipients, and configure your email sender information—all from the dashboard.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Email Setup</h3>
-                  <p className="text-sm text-slate-600">Configure sender name, reply-to email, and email address for scheduling reminders in Settings → Workspace Preferences.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Subscriber List</h3>
-                  <p className="text-sm text-slate-600">Add subscribers manually, upload CSV files, or import lists. All emails are validated before sending.</p>
-                </div>
-              </div>
-
-              <div className="bg-slate-900 text-white p-6 rounded-2xl mb-6">
-                <h3 className="font-black uppercase tracking-widest text-sm mb-4">Email Features</h3>
-                <ul className="space-y-2 text-sm">
-                  <li>• <strong>Subscriber Management:</strong> Add, remove, and manage your email list from the Subscribers page</li>
-                  <li>• <strong>CSV Upload:</strong> Import multiple subscribers at once (Team: max 500/upload, Org: unlimited)</li>
-                  <li>• <strong>Scheduled Delivery:</strong> Schedule newsletters to send at a specific date and time</li>
-                  <li>• <strong>Rich Editor:</strong> Edit emails with markdown support before scheduling</li>
-                  <li>• <strong>Per-Plan Limits:</strong> Team (500/month), Organization (unlimited)</li>
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-bold text-slate-900">How to Send an Email Newsletter</h3>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h4 className="font-bold text-slate-900 mb-3">Step 1: Configure Email Settings</h4>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Go to <strong>Settings</strong> (gear icon)</li>
-                    <li>In <strong>Workspace Preferences</strong>, find the "Email" section</li>
-                    <li>Enter:
-                      <ul className="list-disc pl-5 mt-1 space-y-1">
-                        <li><strong>Email Address:</strong> For scheduling reminders (optional)</li>
-                        <li><strong>Newsletter Sender Name:</strong> How your emails will appear in inboxes (e.g., "Ozigi Weekly")</li>
-                        <li><strong>Reply-to Email:</strong> Where subscriber replies go (defaults to your account email)</li>
-                      </ul>
-                    </li>
-                    <li>Click <strong>Save Workspace Settings</strong></li>
-                  </ol>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h4 className="font-bold text-slate-900 mb-3">Step 2: Add Subscribers</h4>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Go to <strong>Subscribers</strong> in the sidebar</li>
-                    <li>Choose how to add emails:
-                      <ul className="list-disc pl-5 mt-1 space-y-1">
-                        <li><strong>Manual:</strong> Paste emails (one per line) and click "Add Emails"</li>
-                        <li><strong>CSV:</strong> Click "📁 Upload CSV" with one email per row</li>
-                      </ul>
-                    </li>
-                    <li>Verify the count updates in "Your Subscribers"</li>
-                  </ol>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h4 className="font-bold text-slate-900 mb-3">Step 3: Schedule an Email</h4>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>After generating a campaign, click the <strong>Email</strong> platform icon</li>
-                    <li>Choose a send time and click <strong>Schedule</strong></li>
-                    <li>The email will be sent to all active subscribers at the scheduled time</li>
-                  </ol>
-                </div>
-              </div>
-
-              <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-2xl mt-4">
-                <h4 className="font-black text-slate-900 mb-2">📧 Subscriber Management Tips</h4>
-                <ul className="text-sm text-slate-700 list-disc pl-5 space-y-1">
-                  <li>Subscribers have a unique unsubscribe token for one-click opt-out</li>
-                  <li>Team plan: max 500 subscribers per upload and 500 emails/month total send limit</li>
-                  <li>Organization plan: unlimited subscribers and unlimited email sends</li>
-                  <li>Remove individual subscribers anytime by clicking the ✕ button next to their email</li>
-                </ul>
-              </div>
-            </section>
-
-            {/* 11. Blog Post Generation */}
-            <section id="longform" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                11. Blog Post Generation
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi's Blog Post engine generates thought-leadership articles, deep dives, and whitepapers from 500 to 8,000 words. Powered by Claude Opus, it produces SEO-friendly, deeply researched content with configurable structure and tone.
-              </p>
-
-              <div className="bg-slate-900 text-white p-6 rounded-2xl mb-6">
-                <h3 className="font-black uppercase tracking-widest text-sm mb-4 flex items-center gap-2">
-                  <span>🚀</span> Available on Organization & Enterprise Plans
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  <li>• <strong>Rate Limit:</strong> 5 blog posts per 24 hours (Organization), unlimited (Enterprise)</li>
-                  <li>• <strong>Processing:</strong> Takes 30-90 seconds depending on length and complexity</li>
-                  <li>• <strong>Output:</strong> Structured sections with intro, body, conclusion</li>
-                </ul>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Target Length</h3>
-                  <p className="text-sm text-slate-600">Choose from 500 to 8,000 words. The AI adjusts depth and detail accordingly.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Tone & Style</h3>
-                  <p className="text-sm text-slate-600">Select from professional, casual, technical, or storytelling. Mix with your custom persona.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Structure</h3>
-                  <p className="text-sm text-slate-600">Choose narrative, listicle, how-to, opinion, or analysis. Each has its own flow.</p>
-                </div>
-              </div>
-
               <div className="bg-white border border-slate-200 p-6 rounded-2xl mb-4">
-                <h3 className="font-bold text-slate-900 mb-3">How to Generate a Blog Post</h3>
-                <ol className="space-y-3 text-sm text-slate-600">
-                  <li><strong>1. Go to Blog Post:</strong> Click "Blog Post" in your sidebar.</li>
-                  <li><strong>2. Add Context:</strong> Paste an article, research notes, a URL, or raw ideas (minimum 50 characters).</li>
-                  <li><strong>3. Configure:</strong> Choose target length (500–8,000 words), tone, structure, and optional instructions.</li>
-                  <li><strong>4. Select Persona:</strong> Pick a saved persona to inject your voice into the content.</li>
-                  <li><strong>5. Generate:</strong> Click "Generate Article". The engine processes in 30–90 seconds.</li>
-                  <li><strong>6. Edit & Export:</strong> Each section is editable. Copy to clipboard or download as Markdown.</li>
+                <h3 className="font-bold text-slate-900 mb-3">Connecting LinkedIn</h3>
+                <ol className="text-sm text-slate-600 list-decimal pl-5 space-y-2">
+                  <li>Enter your LinkedIn email and password and click <strong>Connect LinkedIn</strong></li>
+                  <li>The worker logs in on your behalf — this may take up to a minute</li>
+                  <li>If LinkedIn sends a verification code, enter it in the 2FA prompt that appears on the page</li>
+                  <li>If LinkedIn sends a push notification to your phone, approve it in the LinkedIn app</li>
+                  <li>Once connected, the status shows <strong>Active</strong></li>
                 </ol>
               </div>
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-sm text-amber-800">
+                <strong>Note:</strong> Your credentials are encrypted at rest and never shared. LinkedIn sessions can expire — reconnect from Outreach Settings if the status shows Expired.
+              </div>
+            </section>
 
-              <div className="bg-red-50 border border-red-100 p-5 rounded-2xl">
-                <h3 className="font-black text-slate-900 mb-2">⚠️ Rate Limiting & Quota</h3>
-                <p className="text-sm text-slate-700 mb-3">Long-form generation is intentionally throttled to prevent abuse and ensure quality output.</p>
-                <ul className="text-sm text-slate-700 list-disc pl-5 space-y-1">
-                  <li><strong>Organization Plan:</strong> 5 articles per 24-hour rolling window</li>
-                  <li><strong>Enterprise Plan:</strong> Unlimited blog post generation with priority processing</li>
-                  <li><strong>Billing:</strong> Rate limits reset at the same time each day based on your timezone</li>
-                  <li><strong>Upgrade:</strong> Running out of quota? Contact us for higher limits or enterprise access</li>
+            {/* ── 8. Newsletter Subscribers ───────────────────────────── */}
+            <section id="subscribers" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                8. Newsletter Subscribers
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                Manage your newsletter list from <strong>Subscribers</strong> in the sidebar.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="bg-white border border-slate-200 p-5 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-2">Adding Subscribers</h3>
+                  <ul className="text-sm text-slate-600 space-y-1.5">
+                    <li>• <strong>Manual:</strong> Paste emails (one per line)</li>
+                    <li>• <strong>CSV upload:</strong> One email per row</li>
+                    <li>• <strong>Public form:</strong> Share your subscriber link</li>
+                  </ul>
+                </div>
+                <div className="bg-white border border-slate-200 p-5 rounded-2xl">
+                  <h3 className="font-bold text-slate-900 mb-2">Sending</h3>
+                  <ul className="text-sm text-slate-600 space-y-1.5">
+                    <li>• Generate a newsletter in the Newsletter view</li>
+                    <li>• Click Schedule and pick a send time</li>
+                    <li>• Sends to all active subscribers</li>
+                    <li>• Unsubscribe link included automatically</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* ── 9. Social Publishing ────────────────────────────────── */}
+            <section id="publishing" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                9. Social Publishing
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                Every platform uses a different publishing method. Connect integrations in <strong>Settings & Integrations</strong>.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { platform: "X (Twitter)",  method: "Web Intent — opens pre-filled compose window in a new tab. You review and post." },
+                  { platform: "LinkedIn",     method: "Direct OAuth — authorise once, posts go directly from Ozigi." },
+                  { platform: "Discord",      method: "Webhook — paste your server webhook URL in Settings." },
+                  { platform: "Slack",        method: "Webhook — paste your incoming webhook URL in Settings." },
+                ].map(p => (
+                  <div key={p.platform} className="bg-white border border-slate-200 p-4 rounded-2xl">
+                    <h3 className="font-bold text-slate-900 text-sm mb-1">{p.platform}</h3>
+                    <p className="text-xs text-slate-500">{p.method}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── 10. Blog Post ───────────────────────────────────────── */}
+            <section id="blog" className="scroll-mt-28">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
+                10. Blog Post Generation
+              </h2>
+              <p className="text-slate-600 font-medium leading-relaxed mb-5">
+                Available on Organization and Enterprise plans. Generates long-form articles (500–8,000 words) from any source material.
+              </p>
+              <div className="bg-slate-900 text-white p-5 rounded-2xl mb-5">
+                <ul className="text-sm text-slate-300 space-y-1.5">
+                  <li>• Choose length, tone (professional / casual / technical), and structure (narrative / listicle / how-to)</li>
+                  <li>• Powered by Claude Opus — deeper reasoning for long-form</li>
+                  <li>• Each section is independently editable and copyable</li>
+                  <li>• Organization plan: 5 articles per 24 hours · Enterprise: unlimited</li>
                 </ul>
               </div>
+              <p className="text-sm text-slate-500">Access via <strong>Blog Post</strong> in the sidebar. If you're on the Free or Team plan, the sidebar item prompts you to upgrade.</p>
             </section>
 
-            {/* 12. Ozigi Copilot */}
-            <section id="copilot" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                12. Ozigi Copilot
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Your personal AI assistant lives in the dashboard. Ask questions, brainstorm ideas, or refine drafts – the Copilot has access to your saved persona context and can optionally search the web.
-              </p>
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-3">
-                <div className="flex justify-end">
-                  <div className="bg-brand-red text-white rounded-2xl px-3 py-2 max-w-[80%] text-sm">How do I make my X thread more engaging?</div>
-                </div>
-                <div className="flex justify-start">
-                  <div className="bg-slate-100 text-slate-800 rounded-2xl px-3 py-2 max-w-[80%] text-sm">Start with a specific fact or number. Use sentence fragments. End each tweet with a hook that makes people want to read the next one.</div>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs font-bold">🔍 Web Search</span>
-                  <span className="text-xs text-slate-400">Toggle on for real‑time information.</span>
-                </div>
-                <div className="mt-2 text-xs text-slate-500 italic">Responses stream in real time. You can send any answer directly to the Context Engine to start a campaign.</div>
-              </div>
-              <p className="text-slate-600 font-medium leading-relaxed mt-4">Copilot is available on the Organization plan. It uses your stored copilot context (set in Copilot Settings) to give tailored advice.</p>
-            </section>
-
-            {/* 12. Pricing & Gating */}
-            <section id="pricing" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                13. Pricing & Gating
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi offers tiered plans to match your volume. Every new user gets a <strong>7‑day trial of the Team plan</strong> – no credit card required.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white border border-slate-200 p-5 rounded-xl text-center">
-                  <p className="font-black text-lg">Free</p>
-                  <p className="text-xs text-slate-500">5 campaigns/month</p>
-                  <ul className="mt-3 text-xs text-left text-slate-600 list-disc pl-4">
-                    <li>1 saved persona</li>
-                    <li>X, LinkedIn, Discord</li>
-                  </ul>
-                </div>
-                <div className="bg-slate-900 text-white p-5 rounded-xl text-center relative">
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-brand-red text-white text-[8px] px-2 py-0.5 rounded-full">Trial</span>
-                  <p className="font-black text-lg">Team</p>
-                  <p className="text-xs text-slate-300">$15/month or $144/year</p>
-                  <ul className="mt-3 text-xs text-left text-slate-300 list-disc pl-4">
-                    <li>30 campaigns/month</li>
-                    <li>Unlimited personas</li>
-                    <li>2 images/campaign</li>
-                    <li>500 email sends/month</li>
-                  </ul>
-                </div>
-                <div className="bg-white border border-slate-200 p-5 rounded-xl text-center">
-                  <p className="font-black text-lg">Organization</p>
-                  <p className="text-xs text-slate-500">$39/month or $374.40/year</p>
-                  <ul className="mt-3 text-xs text-left text-slate-600 list-disc pl-4">
-                    <li>Unlimited campaigns & images</li>
-                    <li>Unlimited email sends</li>
-                    <li>Full Copilot with web search</li>
-                    <li>Analytics</li>
-                  </ul>
-                </div>
-              </div>
-              <p className="text-slate-600 font-medium leading-relaxed mt-4">
-                Enterprise plans available – <a href="mailto:hello@ozigi.app" className="text-brand-red underline">contact us</a> for custom quotas, SLA, and team management.
-              </p>
-            </section>
-
-            {/* 14. Troubleshooting */}
+            {/* ── 11. Troubleshooting ─────────────────────────────────── */}
             <section id="troubleshooting" className="scroll-mt-28">
               <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                14. Troubleshooting
+                11. Troubleshooting
               </h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Campaign creation fails when analysing URL",
+                    a: "The URL must be publicly accessible — no login walls or paywalls. If analysis fails, fill in the fields manually and skip the auto-fill step."
+                  },
+                  {
+                    q: "Emails aren't sending",
+                    a: "Check Outreach Settings — your sending account must be connected and active. If the daily send count is at your limit, sends resume the following day."
+                  },
+                  {
+                    q: "LinkedIn status shows 'Expired'",
+                    a: "Sessions expire periodically. Go to Outreach Settings → LinkedIn, disconnect, and reconnect. The login flow will re-establish the session."
+                  },
+                  {
+                    q: "Reply detection isn't working",
+                    a: "This requires Gmail connected with the gmail.readonly permission. If you connected Gmail before reply detection was added, disconnect and reconnect from Outreach Settings."
+                  },
+                  {
+                    q: "Generated content sounds generic",
+                    a: "This is almost always a persona issue. A vague persona produces vague output. Edit your persona to be more specific — define your voice, what you'd never say, and what you always lead with."
+                  },
+                  {
+                    q: "CRM OAuth flow fails",
+                    a: "HubSpot works out of the box. For Zoho CRM and Salesforce, you must create an OAuth 2.0 auth config in your Composio dashboard (app.composio.dev) before the flow will work."
+                  },
+                  {
+                    q: "Discord / Slack posts aren't appearing",
+                    a: "Verify the webhook URL in Settings → Integrations is correct and active. Check your Discord server's Integrations → Webhooks or your Slack app settings to confirm it hasn't been revoked."
+                  },
+                ].map(({ q, a }) => (
+                  <div key={q} className="bg-white border border-slate-200 p-5 rounded-2xl">
+                    <h3 className="font-bold text-slate-900 mb-2 text-sm">{q}</h3>
+                    <p className="text-sm text-slate-600">{a}</p>
+                  </div>
+                ))}
+              </div>
 
-              <div className="space-y-6">
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">Generation fails or returns an error</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> Clicking Generate shows an error message or the spinner runs indefinitely.</p>
-                  <p className="text-sm text-slate-600 font-medium mb-2"><strong>Check first:</strong></p>
-                  <ul className="text-sm text-slate-600 list-disc pl-5 space-y-1">
-                    <li>Is your context field empty? Generation requires at least some input.</li>
-                    <li>Is the URL you pasted publicly accessible? Ozigi cannot scrape pages behind login walls or paywalls.</li>
-                    <li>Does your input contain special characters or very long text? Try trimming to under 5,000 words.</li>
-                  </ul>
-                  <p className="text-sm text-slate-600 mt-3"><strong>If the error persists:</strong> Email <a href="mailto:hello@ozigi.app" className="text-brand-red font-medium">hello@ozigi.app</a> with the URL or context you were using and we'll investigate.</p>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">The generated content doesn't match my context</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> The campaign seems generic or ignores key details from the source material.</p>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Fix:</strong> Your System Persona is the most common cause. A vague persona produces generic output. Edit your persona to be more specific about the domain, the writing style, and what to prioritize. See Section 3 — System Personas.</p>
-                  <p className="text-sm text-slate-600"><strong>Also check:</strong> If you pasted a URL, open the URL in a private browser window to confirm it's publicly accessible. If the page requires JavaScript to render content, Ozigi may receive limited data. Paste the key text directly instead.</p>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">X (Twitter) publishing isn't working</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> Clicking the X publish button opens a blank tab or the pre-filled tweet is missing content.</p>
-                  <p className="text-sm text-slate-600 mb-3"><strong>How X publishing works:</strong> Ozigi uses X Web Intents — it opens a new tab with your post pre-loaded in the X compose window. This requires you to be logged into X in your browser.</p>
-                  <p className="text-sm text-slate-600"><strong>Fix:</strong> Log into X in the same browser before clicking publish. If content is missing from the compose window, copy it manually from the campaign card using the Copy button.</p>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">Discord messages aren't appearing in my server</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> Clicking the Discord publish button shows success but nothing appears in the channel.</p>
-                  <p className="text-sm text-slate-600 font-medium mb-2"><strong>Check:</strong></p>
-                  <ul className="text-sm text-slate-600 list-disc pl-5 space-y-1">
-                    <li>Is the webhook URL in your Ozigi Settings modal correct and complete? It should start with <code className="bg-slate-100 px-1 rounded">https://discord.com/api/webhooks/</code></li>
-                    <li>Was the webhook deleted or disabled in your Discord server settings? Go to Server Settings → Integrations → Webhooks to verify.</li>
-                    <li>Does the bot have permission to post in that specific channel?</li>
-                  </ul>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">LinkedIn publishing fails with an auth error</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> LinkedIn OAuth shows an error or your posts aren't publishing.</p>
-                  <p className="text-sm text-slate-600"><strong>Fix:</strong> Go to Settings → Integrations → Disconnect LinkedIn, then reconnect. LinkedIn OAuth tokens expire — reconnecting refreshes them. If the error continues, email hello@ozigi.app.</p>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-2">Email reminders for scheduled posts aren't arriving</h3>
-                  <p className="text-sm text-slate-600 mb-3"><strong>Symptom:</strong> You scheduled a post but didn't receive the email reminder at the scheduled time.</p>
-                  <p className="text-sm text-slate-600 font-medium mb-2"><strong>Check:</strong></p>
-                  <ul className="text-sm text-slate-600 list-disc pl-5 space-y-1">
-                    <li>Did you sign up with X OAuth? If so, add your email address in Settings → Account to enable email reminders.</li>
-                    <li>Check your spam folder — reminder emails come from <code className="bg-slate-100 px-1 rounded">no-reply@ozigi.app</code>.</li>
-                    <li>Is your scheduled time in the future? Scheduling in the past is ignored silently.</li>
-                  </ul>
-                </div>
+              <div className="mt-8 bg-slate-900 rounded-2xl p-6 text-center">
+                <p className="text-white font-medium mb-2">Still stuck?</p>
+                <p className="text-slate-400 text-sm mb-4">Email us with your account email and a description of the issue.</p>
+                <a href="mailto:hello@ozigi.app"
+                  className="inline-flex items-center gap-2 bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-black uppercase tracking-widest hover:bg-red-700 transition-colors">
+                  hello@ozigi.app →
+                </a>
               </div>
             </section>
 
-            {/* 15. Integration Setup */}
-            <section id="integrations" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                15. Integration Setup Walkthroughs
-              </h2>
-
-              <div className="space-y-6">
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-3">Discord — 60-Second Setup</h3>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Open your Discord server and go to <strong>Server Settings</strong> (gear icon).</li>
-                    <li>Click <strong>Integrations</strong> in the left sidebar.</li>
-                    <li>Click <strong>Webhooks</strong> and then <strong>New Webhook</strong>.</li>
-                    <li>Name it "Ozigi" and select the channel where posts should appear.</li>
-                    <li>Click <strong>Copy Webhook URL</strong> and paste it into Settings → Integrations → Discord Webhook in Ozigi.</li>
-                    <li>Save. Now your campaigns publish directly to that Discord channel.</li>
-                  </ol>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-3">Slack — 60-Second Setup</h3>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Open your Slack workspace and go to <strong>Apps</strong> in the left sidebar.</li>
-                    <li>Search for <strong>Incoming Webhooks</strong> and click Add to Slack.</li>
-                    <li>Choose the channel where Ozigi should post and click <strong>Authorize</strong>.</li>
-                    <li>Copy the <strong>Webhook URL</strong> shown on the confirmation page (starts with <code className="bg-slate-100 px-1 rounded">https://hooks.slack.com/services/</code>).</li>
-                    <li>Paste it into Settings → Integrations → Slack Webhook URL in your Ozigi dashboard.</li>
-                  </ol>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-3">LinkedIn OAuth — Step by Step</h3>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Go to <strong>Settings → Integrations</strong> in your Ozigi dashboard.</li>
-                    <li>Click <strong>Connect LinkedIn</strong>.</li>
-                    <li>You'll be redirected to LinkedIn's authorization page. Sign in if prompted.</li>
-                    <li>Click <strong>Allow</strong> to grant Ozigi permission to post on your behalf.</li>
-                    <li>You'll be redirected back to Ozigi. The LinkedIn button should now show your name.</li>
-                  </ol>
-                  <p className="text-xs text-slate-500 mt-3 italic"><strong>Note:</strong> LinkedIn OAuth tokens expire after 60 days. You'll receive an email when reconnection is needed.</p>
-                </div>
-
-                <div className="bg-white border border-slate-200 p-6 rounded-2xl">
-                  <h3 className="font-bold text-slate-900 mb-3">GitHub Context — Connect Your Repositories</h3>
-                  <p className="text-sm text-slate-600 mb-4">When you connect GitHub, Ozigi reads the names and descriptions of your public repositories and silently includes them in every generation prompt. This means your campaigns will automatically reference what you actually build — without you having to paste project details manually.</p>
-                  <ol className="space-y-2 text-sm text-slate-600 list-decimal pl-5">
-                    <li>Go to <strong>Settings → Integrations</strong> in your Ozigi dashboard.</li>
-                    <li>Click <strong>Connect GitHub</strong> under "GitHub Context".</li>
-                    <li>You'll be redirected to GitHub's OAuth authorization page via Composio.</li>
-                    <li>Authorize access and you'll be redirected back to your dashboard.</li>
-                    <li>GitHub context is now active — your next generation will include your repository list.</li>
-                  </ol>
-                  <p className="text-xs text-slate-500 mt-3 italic"><strong>Note:</strong> Ozigi only reads repository names and descriptions — not code, commits, or private content.</p>
-                </div>
-              </div>
-            </section>
-
-            {/* 16. GitHub Context */}
-            <section id="github-context" className="scroll-mt-28">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 border-b-2 border-slate-100 pb-2 mb-6">
-                16. GitHub Context Integration
-              </h2>
-              <p className="text-slate-600 font-medium leading-relaxed mb-4">
-                Ozigi can read your GitHub repositories and use them as invisible context when generating your campaigns. If you're a developer or founder who builds things, this means your posts will naturally reference your actual work — your repo names, project descriptions, what you've shipped — without you having to explain it every time.
-              </p>
-
-              <div className="bg-slate-900 text-white p-6 rounded-2xl mb-6">
-                <h3 className="font-black uppercase tracking-widest text-sm mb-3 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                  What Ozigi reads from GitHub
-                </h3>
-                <ul className="space-y-2 text-sm text-slate-300">
-                  <li>✅ Repository names and descriptions</li>
-                  <li>✅ README (intro, what the project does)</li>
-                  <li>✅ Last 5 commit messages per repo</li>
-                  <li>✅ Latest release name and notes (if published)</li>
-                  <li>❌ Source code — never read</li>
-                  <li>❌ Private repository content — never accessed</li>
-                </ul>
-                <p className="text-xs text-slate-400 mt-4">Ozigi reads your 3 most recently active repos. Fetched fresh on every generation.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">Without GitHub connected</h3>
-                  <p className="text-sm text-slate-600 italic">"Today I shipped a performance update to our backend infrastructure..."</p>
-                  <p className="text-xs text-slate-400 mt-2">Generic — the AI has no idea what you've actually built.</p>
-                </div>
-                <div className="bg-white border border-slate-200 p-5 rounded-xl">
-                  <h3 className="font-black text-sm uppercase tracking-widest text-brand-red mb-2">With GitHub connected</h3>
-                  <p className="text-sm text-slate-600 italic">"Just pushed a fix to OziGi — rate limiting now handles bursts without dropping legitimate traffic..."</p>
-                  <p className="text-xs text-slate-400 mt-2">Specific — your actual project names ground the copy in reality.</p>
-                </div>
-              </div>
-
-              <div className="bg-white border-2 border-slate-200 p-6 rounded-2xl mb-4">
-                <h3 className="font-bold text-slate-900 mb-3">How It Works</h3>
-                <div className="space-y-3 text-sm text-slate-600">
-                  <div className="flex gap-3 items-start">
-                    <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xs shrink-0 mt-0.5">1</span>
-                    <p>You connect GitHub via OAuth through Composio (a secure integrations platform). Ozigi never sees your credentials — Composio handles the token exchange.</p>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xs shrink-0 mt-0.5">2</span>
-                    <p>Your Composio connection ID is stored in Ozigi's database (not the token itself).</p>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xs shrink-0 mt-0.5">3</span>
-                    <p>On every campaign generation, Ozigi calls Composio's API to fetch your current repository list — names and descriptions only.</p>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <span className="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xs shrink-0 mt-0.5">4</span>
-                    <p>The repo list is appended to your generation context, behind the scenes. The model uses it to ground your posts in your actual work.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-2xl">
-                <h4 className="font-black text-slate-900 mb-2">Also active in Copilot</h4>
-                <p className="text-sm text-slate-700">When you're chatting with the Ozigi Copilot, your GitHub repositories are included in the conversation context too. Ask the Copilot to write a post about your latest project and it already knows what you've built.</p>
-              </div>
-            </section>
-          </div>
-
-          {/* Deep Dives CTA */}
-          <div className="mt-20 border-t-2 border-slate-100 pt-16">
-            <div className="bg-slate-900 rounded-3xl p-10 text-center">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-4">
-                Master the Engine
-              </h2>
-              <p className="text-slate-400 font-medium leading-relaxed mb-8 max-w-xl mx-auto">
-                Ready to go under the hood? Read our architectural deep dives to understand exactly how Ozigi processes, constrains, and generates professional copy.
-              </p>
-              <Link
-                href="/docs/deep-dives"
-                className="inline-flex items-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-full text-sm font-black uppercase tracking-widest hover:bg-red-50 hover:scale-105 transition-all shadow-xl"
-              >
-                View All Deep Dives →
-              </Link>
-            </div>
           </div>
         </main>
       </div>

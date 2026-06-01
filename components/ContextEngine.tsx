@@ -15,6 +15,8 @@ interface DistilleryProps {
   onOpenSettings?: () => void;
   onOpenPersonas?: () => void;
   demoMode?: boolean;
+  /** Platform IDs that are locked and cannot be toggled by the user */
+  lockedPlatforms?: string[];
   inputs: {
     url: string;
     text: string;
@@ -37,6 +39,7 @@ export default function Distillery({
   onOpenSettings,
   onOpenPersonas,
   demoMode = false,
+  lockedPlatforms = [],
   inputs,
   setInputs,
   onGenerate,
@@ -285,39 +288,46 @@ export default function Distillery({
                 <span className="text-slate-400 uppercase tracking-widest text-[10px] font-bold">Platforms</span>
                 {ALL_PLATFORMS.map((platform) => {
                   const isActive = inputs.platforms.includes(platform.id);
+                  const isLocked = lockedPlatforms.includes(platform.id);
                   return (
                     <div key={platform.id} className="relative group">
                       <button
-                        onClick={() => togglePlatform(platform.id)}
+                        onClick={() => !isLocked && togglePlatform(platform.id)}
+                        disabled={isLocked}
+                        title={isLocked ? (isActive ? 'Required for this view' : 'Not available in this view') : platform.tooltip}
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition-all ${
-                          isActive
-                            ? "bg-brand-navy text-white border-brand-navy"
-                            : "bg-white text-slate-400 border-slate-200 line-through"
+                          isLocked
+                            ? isActive
+                              ? "bg-brand-navy text-white border-brand-navy opacity-60 cursor-not-allowed"
+                              : "bg-white text-slate-300 border-slate-100 line-through opacity-40 cursor-not-allowed"
+                            : isActive
+                              ? "bg-brand-navy text-white border-brand-navy"
+                              : "bg-white text-slate-400 border-slate-200 line-through"
                         }`}
                       >
                         {platform.shortLabel}
                       </button>
-                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[8px] px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none z-50 shadow-lg">
-                        {platform.tooltip}
-                      </span>
                     </div>
                   );
                 })}
               </div>
 
-              <span className="text-slate-200 text-sm">|</span>
-
-              {/* X format inline toggle */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-slate-400 uppercase tracking-widest text-[10px] font-bold">X</span>
-                <button
-                  onClick={() => setInputs({ ...inputs, tweetFormat: inputs.tweetFormat === "single" ? "thread" : "single" })}
-                  className="flex items-center gap-1 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  {inputs.tweetFormat === "single" ? "Single tweet" : "Full thread"}
-                  <ArrowLeftRight size={10} className="text-slate-400" />
-                </button>
-              </div>
+              {/* X format toggle — hidden when X platform is locked (e.g. newsletter view) */}
+              {!lockedPlatforms.includes('x') && (
+                <>
+                  <span className="text-slate-200 text-sm">|</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-slate-400 uppercase tracking-widest text-[10px] font-bold">X</span>
+                    <button
+                      onClick={() => setInputs({ ...inputs, tweetFormat: inputs.tweetFormat === "single" ? "thread" : "single" })}
+                      className="flex items-center gap-1 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors"
+                    >
+                      {inputs.tweetFormat === "single" ? "Single tweet" : "Full thread"}
+                      <ArrowLeftRight size={10} className="text-slate-400" />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           )}
 

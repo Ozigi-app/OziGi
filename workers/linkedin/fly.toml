@@ -1,0 +1,37 @@
+# Fly.io config for the Ozigi LinkedIn Playwright worker.
+# Deploy from this directory:
+#
+#   cd workers/linkedin
+#   fly apps create ozigi-linkedin-worker   # once, to register the app name
+#   fly secrets set NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... GTM_ENCRYPTION_KEY=...
+#   fly deploy
+
+app = "ozigi-linkedin-worker"
+primary_region = "lax"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+
+# Keep exactly one instance running at all times — this is a persistent worker
+[[vm]]
+  memory = "1gb"     # Playwright/Chromium needs at least 512MB; 1GB is safe
+  cpu_kind = "shared"
+  cpus = 1
+
+[http_service]
+  internal_port = 8080
+  force_https = false   # internal worker, no public HTTPS needed
+  auto_stop_machines = false   # never stop — must stay running to poll queue
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "60s"
+    interval = "30s"
+    method = "GET"
+    timeout = "10s"
+    path = "/"

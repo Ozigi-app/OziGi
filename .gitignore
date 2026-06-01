@@ -71,6 +71,7 @@ linkedin_cap.py
 linkedin_tracking.csv
 linkedin_daily_tracker.json
 linkedin_queue_*.txt
+start_chrome_debug.bat
 __pycache__/
 
 # Development and testing
@@ -83,7 +84,7 @@ tests/
 # Scripts and automation
 scripts/
 
-# Database migrations
+# Database migrations (local only - not for public repo)
 supabase/migrations/
 
 # Worker configurations

@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="73%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="22%" r="30%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.45">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="160" x2="1160" y2="160"/>
+    <line x1="580" y1="250" x2="1160" y2="250"/>
+    <line x1="580" y1="340" x2="1160" y2="340"/>
+    <line x1="580" y1="430" x2="1160" y2="430"/>
+    <line x1="580" y1="520" x2="1160" y2="520"/>
+    <line x1="632"  y1="40" x2="632"  y2="590"/>
+    <line x1="720"  y1="40" x2="720"  y2="590"/>
+    <line x1="808"  y1="40" x2="808"  y2="590"/>
+    <line x1="896"  y1="40" x2="896"  y2="590"/>
+    <line x1="984"  y1="40" x2="984"  y2="590"/>
+    <line x1="1072" y1="40" x2="1072" y2="590"/>
+    <line x1="1140" y1="40" x2="1140" y2="590"/>
+  </g>
+
+  <!-- Two-channel comparison blocks -->
+  <!-- EMAIL block (left, highlighted) -->
+  <rect x="632" y="84" width="228" height="340" rx="8" fill="#1A2540" stroke="#E8320A" stroke-width="1.5"/>
+  <rect x="632" y="84" width="228" height="44" rx="8" fill="#E8320A"/>
+  <rect x="632" y="114" width="228" height="14" fill="#E8320A"/>
+  <text x="746" y="112" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#FAFAFA" letter-spacing="2">EMAIL</text>
+
+  <text x="652" y="154" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">REACH</text>
+  <text x="652" y="172" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">High — commit inbox</text>
+  <text x="652" y="206" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">WEEKLY CAP</text>
+  <text x="652" y="224" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Deliverability only</text>
+  <text x="652" y="258" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">BEST ROLE</text>
+  <text x="652" y="276" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Open the convo</text>
+  <text x="652" y="310" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">RISK</text>
+  <text x="652" y="328" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Domain reputation</text>
+  <text x="652" y="362" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">SIGNAL/CONTACT</text>
+  <text x="652" y="380" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Moderate</text>
+  <rect x="652" y="400" width="86" height="8" rx="4" fill="#1E293B"/>
+  <rect x="652" y="400" width="60" height="8" rx="4" fill="#E8320A" opacity="0.7"/>
+
+  <!-- VS divider -->
+  <rect x="862" y="220" width="44" height="44" rx="22" fill="#0F1828" stroke="#1E293B" stroke-width="1"/>
+  <text x="884" y="247" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="800" fill="#94A3B8">VS</text>
+
+  <!-- LINKEDIN block (right) -->
+  <rect x="908" y="84" width="228" height="340" rx="8" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <rect x="908" y="84" width="228" height="44" rx="8" fill="#1E3A5F"/>
+  <rect x="908" y="114" width="228" height="14" fill="#1E3A5F"/>
+  <text x="1022" y="112" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#94A3B8" letter-spacing="2">LINKEDIN</text>
+
+  <text x="928" y="154" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">REACH</text>
+  <text x="928" y="172" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Lower — often ignored</text>
+  <text x="928" y="206" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">WEEKLY CAP</text>
+  <text x="928" y="224" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">~100 req/week</text>
+  <text x="928" y="258" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">BEST ROLE</text>
+  <text x="928" y="276" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Warm follow-up</text>
+  <text x="928" y="310" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">RISK</text>
+  <text x="928" y="328" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">Account restriction</text>
+  <text x="928" y="362" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">SIGNAL/CONTACT</text>
+  <text x="928" y="380" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8">High — real identity</text>
+  <rect x="928" y="400" width="86" height="8" rx="4" fill="#1E293B"/>
+  <rect x="928" y="400" width="78" height="8" rx="4" fill="#94A3B8" opacity="0.5"/>
+
+  <!-- Sequence callout at bottom -->
+  <rect x="632" y="444" width="504" height="52" rx="8" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="884" y="465" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">MULTICHANNEL SEQUENCE</text>
+  <text x="884" y="484" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Day 1 email → Day 3 LinkedIn → Day 6 follow-up</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M720 520 L720 590 L808 590"/>
+    <path x="984 520" d="M984 520 L984 590 L1072 590"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="808" cy="590" r="4"/></g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3"><circle cx="808" cy="590" r="10"/></g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="112" height="30" rx="6" fill="#E8320A"/>
+  <text x="136" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">MARKETING</text>
+  <text x="206" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="74" font-weight="800" fill="#FAFAFA">Email or</text>
+  <text x="80" y="295" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="74" font-weight="800" fill="#E8320A">LinkedIn?</text>
+
+  <text x="80" y="355" font-family="'DM Sans','Inter',sans-serif" font-size="26" fill="#94A3B8">For dev tools,</text>
+  <text x="80" y="387" font-family="'DM Sans','Inter',sans-serif" font-size="26" fill="#94A3B8">the answer is both.</text>
+
+  <line x1="80" y1="418" x2="460" y2="418" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="434" width="152" height="36" rx="18" fill="#1E293B"/>
+  <text x="156" y="457" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">100 req/wk cap</text>
+  <rect x="244" y="434" width="152" height="36" rx="18" fill="#1E293B"/>
+  <text x="320" y="457" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">one sequence</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>

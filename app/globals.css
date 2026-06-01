@@ -91,7 +91,7 @@ html.dark {
 body {
   color: var(--foreground);
   background: var(--bg);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: "Geist Mono", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;

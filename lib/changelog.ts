@@ -13,6 +13,115 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "v1.0",
+    title: "Image Upgrade, Architecture & June Content Push",
+    date: "2026-06-01",
+    dateLabel: "June 1, 2026",
+    summary:
+      "Image generation moves to the stable Gemini 3.1 Flash Image model, the architecture page is replaced with current system documentation, the gating system is simplified, and eight long-form GTM articles ship across the blog.",
+    items: [
+      {
+        label: "AI",
+        text: "Image generation upgraded from `gemini-3.1-flash-image-preview` to the stable GA model `gemini-3.1-flash-image`. No change to the server-side R2 upload pipeline.",
+      },
+      {
+        label: "Fix",
+        text: "Credit bundle return URL (`?checkout=credits`) now fires the Google Ads conversion event, shows a 'Credits added' toast, and cleans the URL param — it previously landed silently with no feedback.",
+      },
+      {
+        label: "Improvement",
+        text: "Architecture page rewritten with five current decision records: GTM pipeline, JSON schema enforcement, image generation pipeline, and the Banned Lexicon (including the LinkedIn 360Brew compliance connection). Removed the dated LLM cost-comparison tab.",
+      },
+      {
+        label: "Improvement",
+        text: "Trial gating replaced — TrialBanner and TrialGateModal removed. LimitModal is now the single surface for plan-limit nudges, without the time-pressure framing.",
+      },
+      {
+        label: "Feature",
+        text: "GTM blog series: eight long-form articles on go-to-market for developer products published across June 1–12. Covers ICP definition, GitHub/Dev.to lead sourcing, email vs LinkedIn, cold email copywriting, daily send limits, and domain warmup.",
+      },
+      {
+        label: "Infra",
+        text: "README fully rewritten to reflect the current two-engine product, updated pricing, and accurate tech stack (R2, Dodo Payments, Composio CRM, Gemini 3.1 Flash Image).",
+      },
+    ],
+    accent: "green",
+  },
+  {
+    version: "v0.9",
+    title: "Pricing Overhaul & Dodo Payments",
+    date: "2026-05-20",
+    dateLabel: "May 15–30, 2026",
+    summary:
+      "The entire pricing model is replaced. The old Team/Organization tiers are retired in favour of a five-tier system built around the two engines. Payments move to Dodo Payments with a full webhook pipeline into Supabase.",
+    items: [
+      {
+        label: "Feature",
+        text: "New pricing tiers: Free ($0 · 50 GTM credits + 3 content pieces), Starter ($19 · content engine only), Growth ($29 · GTM engine · 1,000 credits/mo), Pro ($49 · both engines, no limits), Enterprise (custom).",
+      },
+      {
+        label: "Feature",
+        text: "Credit bundles for Starter users who want outbound without upgrading: 200 credits for $5, 500 for $10, 1,500 for $25. Credits stack on the monthly plan and never expire.",
+      },
+      {
+        label: "Infra",
+        text: "Payments moved to Dodo Payments. `/api/create-checkout` handles subscription plans; `/api/create-bundle-checkout` handles one-time credit bundles. Both call the Dodo live API and return a `checkout_url`.",
+      },
+      {
+        label: "Infra",
+        text: "Dodo webhook at `/api/dodo-webhook` processes subscription lifecycle events and writes plan state directly to Supabase.",
+      },
+      {
+        label: "Improvement",
+        text: "Multi-inbox rotation added as a Pro-only feature. Campaigns on Pro can spread daily sends across multiple sending accounts to protect domain reputation at higher volumes.",
+      },
+      {
+        label: "Improvement",
+        text: "Content entitlements restructured: newsletter sending moved to Starter+, image generation (2/campaign) added to Starter, scheduling moved to Starter+, subscriber list management and campaign analytics gated to Pro+.",
+      },
+    ],
+    accent: "blue",
+  },
+  {
+    version: "v0.8",
+    title: "GTM Engine — Lead Sourcing, Scoring & Outreach",
+    date: "2026-05-08",
+    dateLabel: "May 8–14, 2026",
+    summary:
+      "The GTM engine ships as a full second product line inside the same dashboard. Source leads from GitHub, Dev.to, and LinkedIn, score them against an ICP with Gemini, run email and LinkedIn sequences from your own accounts, and sync to your CRM — all in one voice.",
+    items: [
+      {
+        label: "Feature",
+        text: "Lead sourcing from GitHub: bio-keyword + language + location query against the GitHub user search API. Commit-history email recovery when a profile hides its email address.",
+      },
+      {
+        label: "Feature",
+        text: "Lead sourcing from Dev.to: pulls authors by tag, matched against ICP topic keywords.",
+      },
+      {
+        label: "Feature",
+        text: "ICP scoring: every sourced lead is scored by Gemini (0.0–1.0) against the ICP defined on the campaign. Leads below threshold are dropped before entering any sequence.",
+      },
+      {
+        label: "Feature",
+        text: "Email + LinkedIn sequences: multi-step outreach from your own accounts with configurable step delays and per-channel daily limits. Reply detection pauses the sequence automatically on any inbound response.",
+      },
+      {
+        label: "Feature",
+        text: "CRM sync: first-contact write to HubSpot, Zoho, or Salesforce via Composio. Available on Growth and Pro.",
+      },
+      {
+        label: "AI",
+        text: "GTM outreach copy uses the same Banned Lexicon and persona system as the content engine — the cold email and the blog post read as the same person because they are written by the same engine.",
+      },
+      {
+        label: "Infra",
+        text: "GTM cron workers (`/api/gtm/cron/scrape` and `/api/gtm/cron/send`) handle sourcing and sequence delivery on schedules managed by QStash.",
+      },
+    ],
+    accent: "purple",
+  },
+  {
     version: "v0.7",
     title: "Generation Reliability & Media Support",
     date: "2026-05-07",

@@ -1,87 +1,184 @@
 import { createClient } from '@supabase/supabase-js';
 
-export type Plan = "free" | "team" | "organization" | "enterprise";
+export type Plan = "free" | "starter" | "growth" | "pro" | "enterprise";
 
 export interface PlanStatus {
   plan: Plan;
-  isTrialActive: boolean;
-  isTrialExpired: boolean;
-  trialEndsAt: Date | null;
+
+  // Content engine
   canGenerate: boolean;
   generationsUsed: number;
-  generationsLimit: number;
+  generationsLimit: number;        // -1 = unlimited
   imageGenUsed: number;
-  imageGenLimit: number;
+  imageGenLimit: number;           // -1 = unlimited; 0 = no access
   emailSendsUsed: number;
-  emailSendsLimit: number;
+  emailSendsLimit: number;         // -1 = unlimited; 0 = no access
   hasCopilot: boolean;
-  hasLongForm: boolean;
+  hasLongForm: boolean;            // true when limit not yet reached this month
+  longFormUsed: number;
+  longFormLimit: number;           // 1 on free/starter/growth; -1 on pro/enterprise
+  hasScheduling: boolean;
+  newsletterSendingEnabled: boolean;
+
+  // GTM / outbound
+  hasGtm: boolean;                 // false on starter — blocks all GTM UI
+  canRunCampaigns: boolean;
+  activeCampaignsUsed: number;
+  activeCampaignsLimit: number;    // -1 = unlimited
+  creditsUsed: number;
+  creditsLimit: number;            // -1 = unlimited; 0 = no GTM
+  creditsBalance: number;          // Infinity when unlimited
+  sequenceSendsUsed: number;
+  sequenceSendsLimit: number;      // -1 = unlimited
+  hasLinkedInOutreach: boolean;
+  hasCrmSync: boolean;
+  hasMultiInbox: boolean;
+  hasReplyDetection: boolean;
+
   isEnterprise: boolean;
 }
 
-// Limits per plan (base limits – trial uses team limits)
+// ─── Limit tables ─────────────────────────────────────────────────────────────
+
 const GENERATION_LIMITS: Record<Plan, number> = {
-  free: 5,
-  team: 30,
-  organization: -1,
+  free: 3,
+  starter: 30,
+  growth: 10,
+  pro: -1,
+  enterprise: -1,
+};
+
+const LONG_FORM_LIMITS: Record<Plan, number> = {
+  free: 1,
+  starter: 1,
+  growth: 1,
+  pro: -1,
   enterprise: -1,
 };
 
 const IMAGE_GEN_LIMITS: Record<Plan, number> = {
   free: 0,
-  team: 2,
-  organization: -1,
+  starter: 2,
+  growth: 0,
+  pro: -1,
   enterprise: -1,
 };
 
 const EMAIL_SEND_LIMITS: Record<Plan, number> = {
   free: 0,
-  team: 500,
-  organization: -1,
+  starter: 500,
+  growth: 0,
+  pro: -1,
   enterprise: -1,
 };
 
-const COPILOT_ACCESS: Record<Plan, boolean> = {
+const HAS_SCHEDULING: Record<Plan, boolean> = {
   free: false,
-  team: false,
-  organization: true,
+  starter: true,
+  growth: true,
+  pro: true,
   enterprise: true,
 };
 
-const LONG_FORM_ACCESS: Record<Plan, boolean> = {
+const HAS_COPILOT: Record<Plan, boolean> = {
   free: false,
-  team: false,
-  organization: true,
+  starter: false,
+  growth: false,
+  pro: true,
   enterprise: true,
 };
 
-export async function getPlanStatus(userId: string): Promise<PlanStatus> {
-  const ADMIN_EMAILS = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim()) : [];
-  const supabaseAdmin = createClient(
+const HAS_GTM: Record<Plan, boolean> = {
+  free: true,
+  starter: false,
+  growth: true,
+  pro: true,
+  enterprise: true,
+};
+
+const CREDITS_LIMITS: Record<Plan, number> = {
+  free: 50,
+  starter: 0,
+  growth: 1000,
+  pro: -1,
+  enterprise: -1,
+};
+
+const ACTIVE_CAMPAIGNS_LIMITS: Record<Plan, number> = {
+  free: 1,
+  starter: 0,
+  growth: -1,
+  pro: -1,
+  enterprise: -1,
+};
+
+const SEQUENCE_SENDS_LIMITS: Record<Plan, number> = {
+  free: 30,
+  starter: 0,
+  growth: -1,
+  pro: -1,
+  enterprise: -1,
+};
+
+const HAS_LINKEDIN_OUTREACH: Record<Plan, boolean> = {
+  free: false,
+  starter: false,
+  growth: true,
+  pro: true,
+  enterprise: true,
+};
+
+const HAS_CRM_SYNC: Record<Plan, boolean> = {
+  free: false,
+  starter: false,
+  growth: true,
+  pro: true,
+  enterprise: true,
+};
+
+const HAS_MULTI_INBOX: Record<Plan, boolean> = {
+  free: false,
+  starter: false,
+  growth: false,
+  pro: true,
+  enterprise: true,
+};
+
+const HAS_REPLY_DETECTION: Record<Plan, boolean> = {
+  free: true,
+  starter: false,
+  growth: true,
+  pro: true,
+  enterprise: true,
+};
+
+const VALID_PLANS = new Set<string>(['free', 'starter', 'growth', 'pro', 'enterprise']);
+
+function adminClient() {
+  return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
+}
 
-  // 1. Fetch user email from auth
+export async function getPlanStatus(userId: string): Promise<PlanStatus> {
+  const ADMIN_EMAILS = process.env.ADMIN_EMAILS
+    ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim())
+    : [];
+
+  const supabaseAdmin = adminClient();
+
+  // 1. Fetch user email for admin check
   let userEmail: string | undefined;
   try {
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
-    if (userError) {
-      console.error('Error fetching user email:', userError);
-    } else {
-      userEmail = userData.user.email;
-    }
-  } catch (err) {
-    console.error('Unexpected error fetching user:', err);
-  }
+    const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId);
+    userEmail = userData.user.email;
+  } catch {}
 
-  // 2. Admin override – return unlimited access
+  // 2. Admin override — unlimited on everything, plan shown as "pro"
   if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
     return {
-      plan: 'organization',
-      isTrialActive: false,
-      isTrialExpired: false,
-      trialEndsAt: null,
+      plan: 'pro',
       canGenerate: true,
       generationsUsed: 0,
       generationsLimit: -1,
@@ -91,162 +188,217 @@ export async function getPlanStatus(userId: string): Promise<PlanStatus> {
       emailSendsLimit: -1,
       hasCopilot: true,
       hasLongForm: true,
+      longFormUsed: 0,
+      longFormLimit: -1,
+      hasScheduling: true,
+      newsletterSendingEnabled: true,
+      hasGtm: true,
+      canRunCampaigns: true,
+      activeCampaignsUsed: 0,
+      activeCampaignsLimit: -1,
+      creditsUsed: 0,
+      creditsLimit: -1,
+      creditsBalance: Infinity,
+      sequenceSendsUsed: 0,
+      sequenceSendsLimit: -1,
+      hasLinkedInOutreach: true,
+      hasCrmSync: true,
+      hasMultiInbox: true,
+      hasReplyDetection: true,
       isEnterprise: false,
     };
   }
 
-  // 3. Normal flow (for non-admin users)
   const now = new Date();
 
-  // Fetch profile
-  let { data: existingProfile, error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .select("plan, trial_started_at, trial_ends_at")
-    .eq("id", userId)
+  // 3. Fetch or create profile — new users default to "free", no trial
+  let { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('plan')
+    .eq('id', userId)
     .maybeSingle();
 
-  let profile: any;
-
-  // If no profile exists, create one with trial
-  if (!existingProfile) {
-    const newProfile = {
-      id: userId,
-      plan: "team",
-      trial_started_at: now.toISOString(),
-      trial_ends_at: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-    await supabaseAdmin.from("profiles").insert(newProfile);
-    profile = newProfile;
-  } else {
-    profile = existingProfile;
+  if (!profile) {
+    await supabaseAdmin.from('profiles').insert({ id: userId, plan: 'free' });
+    profile = { plan: 'free' };
   }
 
-  // Check trial status
-  // Support both "trial" and "team" as trial plans (handle legacy data)
-  const trialEndsAt = profile.trial_ends_at ? new Date(profile.trial_ends_at) : null;
-  const isTrialPlan = profile.plan === "team" || profile.plan === "trial";
-  const isTrialActive = isTrialPlan && trialEndsAt !== null && now < trialEndsAt;
-  const isTrialExpired = isTrialPlan && trialEndsAt !== null && now >= trialEndsAt;
+  const plan: Plan = VALID_PLANS.has(profile.plan) ? (profile.plan as Plan) : 'free';
 
-  // If trial expired, downgrade to free and clear trial dates
-  if (isTrialExpired) {
-    await supabaseAdmin
-      .from("profiles")
-      .update({ plan: "free", trial_ends_at: null, trial_started_at: null })
-      .eq("id", userId);
-    profile.plan = "free";
-    profile.trial_ends_at = null;
-    profile.trial_started_at = null;
-  }
+  // 4. Fetch usage stats, auto-create row if missing
+  const { data: existingStats } = await supabaseAdmin
+    .from('user_stats')
+    .select(
+      'campaigns_generated, image_generations_this_month, email_sends_this_month, ' +
+      'leads_scraped_this_month, sequence_sends_this_month, long_form_used_this_month, ' +
+      'addon_credits_balance, generation_reset_at'
+    )
+    .eq('user_id', userId)
+    .maybeSingle();
 
-  // Map "trial" to "team" for limits lookup (trial users get team-level access)
-  const effectivePlan: Plan = (profile.plan === "trial" ? "team" : profile.plan) as Plan;
-  const generationsLimit = GENERATION_LIMITS[effectivePlan];
-  const imageGenLimit = IMAGE_GEN_LIMITS[effectivePlan];
-  const emailSendsLimit = EMAIL_SEND_LIMITS[effectivePlan];
-  const hasCopilot = COPILOT_ACCESS[effectivePlan];
-  const hasLongForm = LONG_FORM_ACCESS[effectivePlan];
-
-  // Fetch usage stats
-  let stats: {
-    campaigns_generated: number;
-    image_generations_this_month: number;
-    email_sends_this_month: number;
+  let stats = {
+    campaigns_generated: 0,
+    image_generations_this_month: 0,
+    email_sends_this_month: 0,
+    leads_scraped_this_month: 0,
+    sequence_sends_this_month: 0,
+    long_form_used_this_month: 0,
+    addon_credits_balance: 0,
   };
 
-  const { data: existingStats, error: statsError } = await supabaseAdmin
-    .from("user_stats")
-    .select("campaigns_generated, image_generations_this_month, email_sends_this_month, generation_reset_at")
-    .eq("user_id", userId)
-    .maybeSingle();
-
   if (!existingStats) {
-    const nowDate = new Date();
-    const newStats = {
+    const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    await supabaseAdmin.from('user_stats').insert({
       user_id: userId,
-      campaigns_generated: 0,
-      image_generations_this_month: 0,
-      email_sends_this_month: 0,
-      generation_reset_at: new Date(nowDate.getFullYear(), nowDate.getMonth() + 1, 1).toISOString(),
-    };
-    await supabaseAdmin.from("user_stats").insert(newStats);
-    stats = {
-      campaigns_generated: 0,
-      image_generations_this_month: 0,
-      email_sends_this_month: 0,
-    };
+      ...stats,
+      generation_reset_at: nextReset.toISOString(),
+    });
   } else {
-    // Check if we need to reset monthly counters
-    const resetAt = existingStats.generation_reset_at ? new Date(existingStats.generation_reset_at) : null;
+    const resetAt = existingStats.generation_reset_at
+      ? new Date(existingStats.generation_reset_at)
+      : null;
+
     if (resetAt && now >= resetAt) {
-      // Reset counters for the new month
-      const nextResetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      // Monthly reset — do NOT reset addon_credits_balance
+      const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       await supabaseAdmin
-        .from("user_stats")
+        .from('user_stats')
         .update({
           campaigns_generated: 0,
           image_generations_this_month: 0,
           email_sends_this_month: 0,
-          generation_reset_at: nextResetDate.toISOString(),
+          leads_scraped_this_month: 0,
+          sequence_sends_this_month: 0,
+          long_form_used_this_month: 0,
+          generation_reset_at: nextReset.toISOString(),
           updated_at: now.toISOString(),
         })
-        .eq("user_id", userId);
-      
-      stats = {
-        campaigns_generated: 0,
-        image_generations_this_month: 0,
-        email_sends_this_month: 0,
-      };
+        .eq('user_id', userId);
+      stats.addon_credits_balance = existingStats.addon_credits_balance ?? 0;
     } else {
-      stats = existingStats;
+      stats = {
+        campaigns_generated: existingStats.campaigns_generated ?? 0,
+        image_generations_this_month: existingStats.image_generations_this_month ?? 0,
+        email_sends_this_month: existingStats.email_sends_this_month ?? 0,
+        leads_scraped_this_month: existingStats.leads_scraped_this_month ?? 0,
+        sequence_sends_this_month: existingStats.sequence_sends_this_month ?? 0,
+        long_form_used_this_month: existingStats.long_form_used_this_month ?? 0,
+        addon_credits_balance: existingStats.addon_credits_balance ?? 0,
+      };
     }
   }
 
+  // 5. Count active campaigns from the campaigns table
+  let activeCampaignsUsed = 0;
+  try {
+    const { count } = await supabaseAdmin
+      .from('campaigns')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('status', 'active');
+    activeCampaignsUsed = count ?? 0;
+  } catch {}
+
+  // 6. Compute derived values
+  const creditsLimit = CREDITS_LIMITS[plan];
+  const creditsUsed = stats.leads_scraped_this_month;
+  const addonCredits = stats.addon_credits_balance;
+  const creditsBalance =
+    creditsLimit === -1 ? Infinity : creditsLimit - creditsUsed + addonCredits;
+
+  const activeCampaignsLimit = ACTIVE_CAMPAIGNS_LIMITS[plan];
+  const hasGtm = HAS_GTM[plan];
+  const canRunCampaigns =
+    hasGtm && (activeCampaignsLimit === -1 || activeCampaignsUsed < activeCampaignsLimit);
+
+  const generationsLimit = GENERATION_LIMITS[plan];
+  const longFormLimit = LONG_FORM_LIMITS[plan];
+  const emailSendsLimit = EMAIL_SEND_LIMITS[plan];
+
   return {
-    plan: effectivePlan,
-    isTrialActive,
-    isTrialExpired,
-    trialEndsAt,
+    plan,
     canGenerate: generationsLimit === -1 || stats.campaigns_generated < generationsLimit,
     generationsUsed: stats.campaigns_generated,
-    generationsLimit: generationsLimit === -1 ? -1 : generationsLimit,
+    generationsLimit,
     imageGenUsed: stats.image_generations_this_month,
-    imageGenLimit: imageGenLimit === -1 ? -1 : imageGenLimit,
+    imageGenLimit: IMAGE_GEN_LIMITS[plan],
     emailSendsUsed: stats.email_sends_this_month,
-    emailSendsLimit: emailSendsLimit === -1 ? -1 : emailSendsLimit,
-    hasCopilot,
-    hasLongForm,
-    isEnterprise: effectivePlan === "enterprise",
+    emailSendsLimit,
+    hasCopilot: HAS_COPILOT[plan],
+    hasLongForm: longFormLimit === -1 || stats.long_form_used_this_month < longFormLimit,
+    longFormUsed: stats.long_form_used_this_month,
+    longFormLimit,
+    hasScheduling: HAS_SCHEDULING[plan],
+    newsletterSendingEnabled: emailSendsLimit !== 0,
+    hasGtm,
+    canRunCampaigns,
+    activeCampaignsUsed,
+    activeCampaignsLimit,
+    creditsUsed,
+    creditsLimit,
+    creditsBalance,
+    sequenceSendsUsed: stats.sequence_sends_this_month,
+    sequenceSendsLimit: SEQUENCE_SENDS_LIMITS[plan],
+    hasLinkedInOutreach: HAS_LINKEDIN_OUTREACH[plan],
+    hasCrmSync: HAS_CRM_SYNC[plan],
+    hasMultiInbox: HAS_MULTI_INBOX[plan],
+    hasReplyDetection: HAS_REPLY_DETECTION[plan],
+    isEnterprise: plan === 'enterprise',
   };
 }
 
+// ─── Increment helpers ────────────────────────────────────────────────────────
+
 export async function incrementCampaignGeneration(userId: string): Promise<void> {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  const { error } = await supabaseAdmin.rpc('increment_campaigns_generated', { user_id_param: userId });
-  if (error) {
-    console.error('RPC increment_campaigns_generated error:', error);
-  } else {
-    console.log('Campaign increment RPC called successfully for user', userId);
-  }
+  const { error } = await adminClient().rpc('increment_campaigns_generated', { user_id_param: userId });
+  if (error) console.error('increment_campaigns_generated error:', error);
+}
+
+export async function incrementNewsletterGeneration(userId: string): Promise<void> {
+  const { error } = await adminClient().rpc('increment_newsletters_generated', { user_id_param: userId });
+  if (error) console.error('increment_newsletters_generated error:', error);
 }
 
 export async function incrementImageGeneration(userId: string): Promise<void> {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  const { error } = await supabaseAdmin.rpc('increment_image_generations', { user_id_param: userId });
-  if (error) console.error('Error incrementing image generations:', error);
+  const { error } = await adminClient().rpc('increment_image_generations', { user_id_param: userId });
+  if (error) console.error('increment_image_generations error:', error);
 }
 
 export async function incrementEmailSend(userId: string): Promise<void> {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  const { error } = await supabaseAdmin.rpc('increment_email_sends', { user_id_param: userId });
-  if (error) console.error('Error incrementing email sends:', error);
+  const { error } = await adminClient().rpc('increment_email_sends', { user_id_param: userId });
+  if (error) console.error('increment_email_sends error:', error);
+}
+
+export async function incrementLeadsScraped(userId: string, count = 1): Promise<void> {
+  const { error } = await adminClient().rpc('increment_leads_scraped', {
+    user_id_param: userId,
+    count_param: count,
+  });
+  if (error) console.error('increment_leads_scraped error:', error);
+}
+
+export async function incrementSequenceSend(userId: string): Promise<void> {
+  const { error } = await adminClient().rpc('increment_sequence_sends', { user_id_param: userId });
+  if (error) console.error('increment_sequence_sends error:', error);
+}
+
+export async function incrementLongFormUsed(userId: string): Promise<void> {
+  const { error } = await adminClient().rpc('increment_long_form_used', { user_id_param: userId });
+  if (error) console.error('increment_long_form_used error:', error);
+}
+
+export async function addAddonCredits(userId: string, credits: number): Promise<void> {
+  const { error } = await adminClient().rpc('add_addon_credits', {
+    user_id_param: userId,
+    credits_param: credits,
+  });
+  if (error) console.error('add_addon_credits error:', error);
+}
+
+export async function deductAddonCredits(userId: string, count = 1): Promise<void> {
+  const { error } = await adminClient().rpc('deduct_addon_credits', {
+    user_id_param: userId,
+    count_param: count,
+  });
+  if (error) console.error('deduct_addon_credits error:', error);
 }

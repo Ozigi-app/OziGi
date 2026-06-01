@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.chrome-session/
+*.env
+.env*
+*.log

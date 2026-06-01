@@ -47,9 +47,9 @@ export default function SubscribersManager({ session, onOpenUpgradeModal }: Subs
 
     if (emailList.length === 0) return;
 
-    // Check per-upload limit for Team plan
-    if (planStatus?.plan === 'team' && emailList.length > 500) {
-      toast.error("Team plan allows max 500 emails per upload. Upgrade to Organization for unlimited.");
+    // Check per-upload limit for plans with a newsletter send cap
+    if (planStatus?.emailSendsLimit !== -1 && planStatus?.emailSendsLimit !== undefined && emailList.length > planStatus.emailSendsLimit) {
+      toast.error(`Your plan allows max ${planStatus.emailSendsLimit} subscribers. Upgrade to Pro for unlimited.`);
       return;
     }
 
@@ -121,9 +121,9 @@ export default function SubscribersManager({ session, onOpenUpgradeModal }: Subs
           return;
         }
 
-        // Check per-upload limit for Team plan
-        if (planStatus?.plan === 'team' && emails.length > 500) {
-          toast.error("Team plan allows max 500 emails per upload. Upgrade to Organization for unlimited.");
+        // Check per-upload limit for plans with a newsletter send cap
+        if (planStatus?.emailSendsLimit !== -1 && planStatus?.emailSendsLimit !== undefined && emails.length > planStatus.emailSendsLimit) {
+          toast.error(`Your plan allows max ${planStatus.emailSendsLimit} subscribers. Upgrade to Pro for unlimited.`);
           setIsUploadingCSV(false);
           return;
         }
@@ -235,9 +235,9 @@ export default function SubscribersManager({ session, onOpenUpgradeModal }: Subs
             ))}
           </ul>
         )}
-        {planStatus?.plan !== 'organization' && (
+        {planStatus?.emailSendsLimit !== -1 && (
           <p className="text-xs text-slate-500 mt-4">
-            Your plan includes up to {subscriberLimit} subscribers. Upgrade for unlimited.
+            Your plan includes up to {subscriberLimit} subscribers. Upgrade to Pro for unlimited.
           </p>
         )}
       </div>

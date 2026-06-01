@@ -1,0 +1,119 @@
+---
+title: "How Do You Define an ICP When Your Buyers Are Developers?"
+date: "2026-06-09"
+modifiedTime: "2026-06-03"
+description: "Developers do not respond to the targeting that works on sales and marketing buyers. This guide shows how to build an ideal customer profile for a developer product using public signals you can actually search for, how narrow to go, and how to turn that profile into a list you can reach."
+coverImage: "/images/blog/icp-for-developers/cover.svg"
+section: "Marketing"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about go-to-market, content strategy, and the tooling small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "9 min read"
+category: "Marketing, GTM, ICP"
+keywords: ["ideal customer profile for developers", "developer icp", "icp for dev tools", "how to define icp", "developer marketing targeting", "b2b icp technical buyers", "icp signals github", "devtool go to market"]
+---
+
+> **TL;DR:** An ideal customer profile for a developer product is built from public, searchable signals, not from the firmographic filters that sell to sales and marketing teams. Instead of "company size and job title," you target the languages a person uses, the repositories they maintain, the topics they write about, and the problems they complain about in public. The trick is to go narrow on purpose and to describe your buyer in terms a tool can actually search: role, stack, bio keywords, activity, company stage, and location. This guide walks through the signals that matter, how narrow to go, and how to turn the profile into a list you can reach.
+
+A developer ICP is not a smaller version of a sales ICP. It is a different kind of object, built from different inputs.
+
+Most ideal customer profile advice was written for selling software to revenue and operations teams. It tells you to filter by company size, industry, and job title, then buy a list. That works when your buyer sits in a CRM somewhere. It falls apart when your buyer is an engineer who ignores LinkedIn, never fills in a job title accurately, and decides what to adopt based on whether the docs are good.
+
+Here is how to build a profile that actually matches how developers behave, and how to make it specific enough to act on.
+
+## What Is an ICP, and Why Is It Different for Developer Products?
+
+An ideal customer profile is a description of the buyer who gets the most value from your product and is easiest to reach and convert. For a developer product, the difference is where the signal lives: out in public, in code and writing, rather than locked inside a sales database.
+
+A sales ICP leans on firmographics: revenue, headcount, industry, the title on a business card. A developer ICP leans on behavior you can observe directly. What does this person build? What stack do they use? What do they star, fork, and write about? What are they frustrated by right now?
+
+This is good news for a small team. You do not need to buy access to an expensive contact database to find developers. With 180 million of them now on GitHub, according to [GitHub's 2025 Octoverse report](https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/), the people you want are already showing you who they are in public.
+
+## What Signals Define a Developer ICP?
+
+A developer ICP is defined by six signals: role, stack, activity, company stage, seniority, and location. Each one is something you can search for, which is the whole point.
+
+- **Role.** Not the polished title, but the function: backend engineer, platform engineer, DevRel, indie maker, founding engineer.
+- **Stack.** The languages, frameworks, and tools they use. A person shipping TypeScript and Postgres is a different buyer than one writing Rust systems code.
+- **Activity.** What they do in public: maintain a repo, file issues against a tool like yours, write tutorials, answer questions. Activity signals intent better than any title.
+- **Company stage.** A seed-stage startup adopts tools by individual choice. A large enterprise adopts by committee. Your motion changes completely between the two.
+- **Seniority.** A staff engineer chooses tools and influences others. A junior follows. Both can matter, for different reasons.
+- **Location.** Time zone and region affect reply rates, compliance, and whether your outreach even lands during working hours.
+
+The reason these matter is simple: every one of them is a filter you can apply when sourcing. Vague signals like "innovative teams" cannot be searched. "Maintains a public TypeScript API client and has filed an issue about rate limiting" can be.
+
+| Signal | Sales ICP version | Developer ICP version |
+|---|---|---|
+| Identity | Job title | Role plus what they build |
+| Fit | Industry | Stack and tooling |
+| Intent | Recent funding | Repos, issues, posts, stars |
+| Scale | Headcount | Company stage and adoption model |
+| Influence | Seniority on paper | Who they influence in public |
+| Reachability | Email in a database | Public profile, commit history, posts |
+
+## How Narrow Should a Developer ICP Be?
+
+Narrower than feels safe. The goal is the smallest group that feels your problem most sharply and shares enough signals that one message can speak to all of them.
+
+"Developers" is not an ICP. It is 180 million people. "Backend engineers at seed and Series A startups who maintain a public REST API and have complained about Postman pricing" is an ICP. You can find those people, you know what to say to them, and you know what content would earn their attention.
+
+Narrow feels risky because it shrinks the market on paper. In practice it raises your reply rate, because a specific message reads like it was written for one person. The founders who struggle with cold outreach almost always defined their ICP too wide, then wrote a message bland enough to fit everyone, which means it landed with no one. You can widen later. Start tight.
+
+## Where Do Developers Reveal These Signals in Public?
+
+Developers reveal almost everything in public: their stack in their repos, their interests in their bios, their problems in issues and posts. GitHub and Dev.to are the two richest sources, and both are open to search.
+
+On GitHub, a profile bio names the role and stack, pinned repositories show what someone actually builds, and the languages on those repos confirm the tools they use. On Dev.to, the tags a person writes under map directly to their interests, and their posts reveal the problems they care about. Conference talks, personal sites, and open issues fill in the rest.
+
+The practical upshot is that you can build a developer lead list from public signal alone, no purchased database required. The mechanics of doing that, including the exact GitHub search qualifiers and how to recover a contact email, are covered in the companion piece on [how to find B2B leads on GitHub and Dev.to](https://blog.ozigi.app/blog/how-to-find-b2b-leads-github-devto).
+
+## How Do You Turn an ICP Into Something a Tool Can Search?
+
+You turn it into a set of explicit fields: job titles, keywords, company sizes, seniority, and location. Each field maps to a filter your sourcing runs against, and to context your outreach can reference.
+
+This is the bridge between strategy and action. A profile written as a paragraph is a nice idea. A profile written as fields is something you can run. In the [Ozigi GTM engine](https://ozigi.app/dashboard/gtm/new), an ICP is exactly this: a structured config of job titles, industries, company sizes, keywords, locations, and seniority levels. You describe your buyer once, and the engine sources against it.
+
+Sourcing alone is not enough, though, because any keyword search returns noise. The second half is scoring. Ozigi sends each sourced lead's bio, company, and tags to Gemini and asks for a match score against your ICP, on a scale from 0 to 1, so only the strong matches enter your sequence. A tight ICP plus a scoring pass is what turns a raw list of 200 profiles into 40 people genuinely worth writing to.
+
+## What Are the Common Mistakes When Targeting Developers?
+
+The most common mistake is treating developers as one homogeneous audience. The second is selling to them the way you would sell to a VP. The third is chasing vanity signals like raw follower counts.
+
+Developers are not a monolith. A hobbyist building side projects, a platform engineer at a 2,000-person company, and a founding engineer at a seed startup share a job category and almost nothing else about how they buy. A profile that lumps them together produces messaging that fits none of them.
+
+Selling like you would to an executive is the fastest way to get ignored. Developers distrust polish. They respond to specificity, honesty about tradeoffs, and proof that you understand their actual problem. This is also why generic AI-written outreach fails on this audience: it reads as marketing, and marketing reads as noise. We go deeper on that in the note on [writing cold email that does not sound like AI](https://blog.ozigi.app/blog/cold-email-that-does-not-sound-like-ai).
+
+Vanity signals are the last trap. A high follower count does not mean someone needs your tool. A person with 12 followers who maintains the exact kind of project your product serves is a far better lead than an influencer who will never use it.
+
+## How Do You Validate That Your ICP Is Right?
+
+You validate an ICP by watching who replies and who converts, then tightening toward them. Reply rate by segment is the fastest signal you have, and it is free.
+
+Run your outreach, then look at the pattern. Which roles answered? Which company stage booked a call? Which stack converted to actual usage? If backend engineers at small startups reply at 15% and enterprise platform teams reply at 1%, your ICP just told you where to focus. Move budget and attention toward the segment that responds, and drop the rest.
+
+This is why a small team should treat the ICP as a living thing, not a document written once and filed away. Your first version is a hypothesis. Your reply data is the test. Revisit it every few weeks against the [weekly go-to-market loop](https://blog.ozigi.app/blog/go-to-market-playbook-solo-founder-technical-team), and let real responses pull the profile into focus.
+
+## Frequently Asked Questions
+
+**What is an ideal customer profile for a developer product?**
+It is a description of the developers who get the most value from your product and are easiest to reach, built from public signals like role, stack, public activity, company stage, seniority, and location. Unlike a sales ICP based on firmographics, a developer ICP relies on behavior you can observe directly in repos, posts, and issues.
+
+**How is a developer ICP different from a normal B2B ICP?**
+A normal B2B ICP filters by company size, industry, and job title from a purchased database. A developer ICP filters by observable behavior: the languages someone uses, the repositories they maintain, the topics they write about. The signal lives in public, so you can find your buyers without buying a contact list.
+
+**How specific should my developer ICP be?**
+Very specific. Target the smallest group that feels your problem most sharply and shares enough signals that one message fits all of them. A precise profile raises reply rates because the message reads as written for one person. Defining the ICP too broadly forces bland messaging that converts no one.
+
+**What signals should I use to target developers?**
+Role and function, technology stack, public activity such as repos and posts and issues, company stage, seniority, and location. Each of these is searchable, which lets you turn the profile into an actual list. Avoid vanity signals like follower count, which rarely indicate real need for your product.
+
+**How do I turn my ICP into a lead list?**
+Write the profile as explicit fields: job titles, keywords, company sizes, seniority, and location. Then source against those fields on platforms where developers are public, and score each result for fit before reaching out. Tools like Ozigi do both steps, sourcing from GitHub and Dev.to and scoring matches with AI.
+
+**Why does generic outreach fail with developers?**
+Developers distrust polish and recognize marketing language instantly. Generic, AI-default copy reads as noise to them. Outreach to this audience works when it is specific, honest about tradeoffs, and clearly written by someone who understands the technical problem, in a real human voice rather than a smooth template.
+
+---
+
+*Want to define an ICP once and have it source and score leads automatically? [Ozigi](https://ozigi.app) turns a developer profile into a qualified lead list and writes the outreach in your voice. Free to start, no credit card.*

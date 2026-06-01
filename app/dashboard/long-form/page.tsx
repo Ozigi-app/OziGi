@@ -266,7 +266,7 @@ function LongFormContent() {
   const isPipelineRunning = pipelineStage !== "idle" && pipelineStage !== "plan-review";
   const isPlanReview = pipelineStage === "plan-review";
 
-  const hasAccess = planStatus?.plan === "organization" || planStatus?.plan === "enterprise";
+  const hasAccess = planStatus?.hasLongForm ?? false;
 
   useEffect(() => {
     if (!session) return;
@@ -519,7 +519,7 @@ function LongFormContent() {
                 Upgrade to Access Long-Form Generation
               </h2>
               <p className="text-foreground-muted mb-6">
-                Blog post and brief generation are available on Organization and Enterprise plans.
+                You&apos;ve used your long-form article for this month. Upgrade to Pro for unlimited articles.
               </p>
               <button
                 onClick={() => router.push("/pricing")}

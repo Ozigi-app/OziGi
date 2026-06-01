@@ -1,0 +1,21 @@
+{
+  "name": "ozigi-linkedin-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx index.ts",
+    "build": "esbuild index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --external:playwright"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "playwright": "^1.44.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "esbuild": "^0.21.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

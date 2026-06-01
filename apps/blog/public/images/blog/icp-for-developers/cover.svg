@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="22%" r="32%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.45">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <!-- ICP signal cards — stacked filter visual -->
+  <!-- Signal 1: Role -->
+  <rect x="640" y="80" width="480" height="52" rx="6" fill="#1A2540" stroke="#E8320A" stroke-width="1"/>
+  <text x="660" y="101" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">ROLE</text>
+  <text x="660" y="119" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#FAFAFA">backend engineer · founding engineer · DevRel</text>
+
+  <!-- Signal 2: Stack -->
+  <rect x="640" y="144" width="480" height="52" rx="6" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="660" y="165" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">STACK</text>
+  <text x="660" y="183" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#94A3B8">TypeScript · Postgres · Node.js · Rust</text>
+
+  <!-- Signal 3: Activity -->
+  <rect x="640" y="208" width="480" height="52" rx="6" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="660" y="229" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">ACTIVITY</text>
+  <text x="660" y="247" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#94A3B8">maintains repos · files issues · writes tutorials</text>
+
+  <!-- Signal 4: Company stage -->
+  <rect x="640" y="272" width="480" height="52" rx="6" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="660" y="293" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">STAGE</text>
+  <text x="660" y="311" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#94A3B8">seed · series A · indie maker</text>
+
+  <!-- Signal 5: Seniority -->
+  <rect x="640" y="336" width="480" height="52" rx="6" fill="#0F1828" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="357" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#6B7E99" letter-spacing="1">SENIORITY</text>
+  <text x="660" y="375" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#6B7E99">staff · senior · founding</text>
+
+  <!-- Signal 6: Location -->
+  <rect x="640" y="400" width="480" height="52" rx="6" fill="#0F1828" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="421" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#6B7E99" letter-spacing="1">LOCATION</text>
+  <text x="660" y="439" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#6B7E99">US · EU · APAC</text>
+
+  <!-- Score badge -->
+  <rect x="640" y="468" width="480" height="52" rx="8" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="660" y="489" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">ICP MATCH SCORE (GEMINI)</text>
+  <rect x="660" y="499" width="300" height="8" rx="4" fill="#1E293B"/>
+  <rect x="660" y="499" width="255" height="8" rx="4" fill="#E8320A" opacity="0.85"/>
+  <text x="972" y="509" font-family="'DM Sans','Inter',monospace" font-size="13" font-weight="700" fill="#FAFAFA">0.85</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M870 550 L870 590"/>
+    <path d="M1030 550 L1030 590 L1110 590"/>
+    <path d="M630 550 L630 590 L710 590"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="870" cy="550" r="4"/></g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3"><circle cx="870" cy="550" r="10"/></g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="112" height="30" rx="6" fill="#E8320A"/>
+  <text x="136" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">MARKETING</text>
+  <text x="206" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="78" font-weight="800" fill="#FAFAFA">Developer</text>
+  <text x="80" y="300" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="78" font-weight="800" fill="#E8320A">ICP</text>
+
+  <text x="80" y="358" font-family="'DM Sans','Inter',sans-serif" font-size="26" fill="#94A3B8">Six public signals.</text>
+  <text x="80" y="392" font-family="'DM Sans','Inter',sans-serif" font-size="26" fill="#94A3B8">No list buying.</text>
+
+  <line x1="80" y1="422" x2="460" y2="422" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="438" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="140" y="461" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">6 signals</text>
+  <rect x="212" y="438" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="277" y="461" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">public data</text>
+  <rect x="354" y="438" width="110" height="36" rx="18" fill="#1E293B"/>
+  <text x="409" y="461" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">AI scoring</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="73%" cy="50%" r="38%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="16%" cy="20%" r="30%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.45">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <!-- Terminal / code block visual -->
+  <!-- Terminal window chrome -->
+  <rect x="632" y="78" width="508" height="390" rx="8" fill="#0B1422" stroke="#1E293B" stroke-width="1"/>
+  <!-- Title bar -->
+  <rect x="632" y="78" width="508" height="34" rx="8" fill="#131F32"/>
+  <rect x="632" y="98" width="508" height="14" fill="#131F32"/>
+  <circle cx="658" cy="95" r="6" fill="#E8320A" opacity="0.7"/>
+  <circle cx="678" cy="95" r="6" fill="#94A3B8" opacity="0.3"/>
+  <circle cx="698" cy="95" r="6" fill="#94A3B8" opacity="0.3"/>
+  <text x="885" y="100" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="11" fill="#6B7E99">github-search.sh</text>
+
+  <!-- Code lines -->
+  <text x="654" y="138" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">$ # Search GitHub for your ICP</text>
+  <text x="654" y="162" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">$ gh api search/users \</text>
+  <text x="654" y="182" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">    -f q=<tspan fill="#E8320A">"backend engineer api</tspan></text>
+  <text x="654" y="202" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#E8320A">    in:bio language:typescript"</tspan></text>
+
+  <!-- Result output -->
+  <text x="654" y="232" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">→ 2,847 results</text>
+
+  <line x1="650" y1="248" x2="1126" y2="248" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Result rows -->
+  <!-- Row 1 (highlighted) -->
+  <rect x="642" y="254" width="490" height="36" rx="4" fill="#1A2540" stroke="#E8320A" stroke-width="1"/>
+  <text x="658" y="274" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">samkent  ·  Backend Eng @ Stripe  ·  TS, Go</text>
+  <text x="1078" y="274" text-anchor="end" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#E8320A">0.92</text>
+
+  <!-- Row 2 -->
+  <rect x="642" y="296" width="490" height="36" rx="4" fill="#0F1828"/>
+  <text x="658" y="316" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">alex_dev  ·  Platform Eng, API tools  ·  Node</text>
+  <text x="1078" y="316" text-anchor="end" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8">0.81</text>
+
+  <!-- Row 3 -->
+  <rect x="642" y="338" width="490" height="36" rx="4" fill="#0F1828"/>
+  <text x="658" y="358" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">mjpatel  ·  Founding Eng  ·  TypeScript</text>
+  <text x="1078" y="358" text-anchor="end" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8">0.78</text>
+
+  <!-- Row 4 dim -->
+  <rect x="642" y="380" width="490" height="36" rx="4" fill="#0A1220"/>
+  <text x="658" y="400" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#3A4A5E">student_dev  ·  learning Python…</text>
+  <text x="1078" y="400" text-anchor="end" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#3A4A5E">0.14</text>
+
+  <!-- Email recovery block -->
+  <rect x="632" y="482" width="508" height="58" rx="6" fill="#1E2D4A" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="652" y="503" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">COMMIT EMAIL RECOVERY</text>
+  <text x="652" y="524" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">git log → author.email → sam@stripe.com  ✓</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M870 550 L870 590 L950 590"/>
+    <path d="M1110 550 L1110 590"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="950" cy="590" r="4"/></g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="112" height="30" rx="6" fill="#E8320A"/>
+  <text x="136" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">MARKETING</text>
+  <text x="206" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="68" font-weight="800" fill="#FAFAFA">B2B Leads</text>
+  <text x="80" y="290" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="68" font-weight="800" fill="#FAFAFA">on <tspan fill="#E8320A">GitHub</tspan></text>
+  <text x="80" y="350" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="40" font-weight="800" fill="#FAFAFA">&amp; Dev.to</text>
+
+  <text x="80" y="406" font-family="'DM Sans','Inter',sans-serif" font-size="24" fill="#94A3B8">Search, enrich, score.</text>
+  <text x="80" y="438" font-family="'DM Sans','Inter',sans-serif" font-size="24" fill="#94A3B8">No database subscription.</text>
+
+  <line x1="80" y1="468" x2="460" y2="468" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="484" width="126" height="36" rx="18" fill="#1E293B"/>
+  <text x="143" y="507" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">180M devs</text>
+  <rect x="218" y="484" width="146" height="36" rx="18" fill="#1E293B"/>
+  <text x="291" y="507" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">commit emails</text>
+  <rect x="376" y="484" width="100" height="36" rx="18" fill="#1E293B"/>
+  <text x="426" y="507" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">free data</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="75%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="25%" r="32%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.5">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <!-- Comparison table visual — right side -->
+  <!-- Header row -->
+  <rect x="630" y="90" width="510" height="38" rx="4" fill="#1A2540"/>
+  <text x="730" y="114" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A" letter-spacing="1">TOOL</text>
+  <text x="900" y="114" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#94A3B8" letter-spacing="1">LEADS</text>
+  <text x="990" y="114" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#94A3B8" letter-spacing="1">OUTREACH</text>
+  <text x="1090" y="114" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#94A3B8" letter-spacing="1">CONTENT</text>
+
+  <!-- Ozigi row (highlighted) -->
+  <rect x="630" y="136" width="510" height="40" rx="4" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="730" y="161" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="13" font-weight="700" fill="#FAFAFA">Ozigi</text>
+  <text x="900" y="161" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="16" fill="#E8320A">✓</text>
+  <text x="990" y="161" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="16" fill="#E8320A">✓</text>
+  <text x="1090" y="161" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="16" fill="#E8320A">✓</text>
+
+  <!-- Apollo row -->
+  <rect x="630" y="184" width="510" height="38" rx="4" fill="#0F1828"/>
+  <text x="730" y="208" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">Apollo</text>
+  <text x="900" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#6B7E99">✓</text>
+  <text x="990" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#6B7E99">✓</text>
+  <text x="1090" y="208" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#3A4A5E">—</text>
+
+  <!-- Clay row -->
+  <rect x="630" y="230" width="510" height="38" rx="4" fill="#0F1828"/>
+  <text x="730" y="254" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">Clay</text>
+  <text x="900" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#6B7E99">✓</text>
+  <text x="990" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#3A4A5E">—</text>
+  <text x="1090" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#3A4A5E">—</text>
+
+  <!-- lemlist row -->
+  <rect x="630" y="276" width="510" height="38" rx="4" fill="#0F1828"/>
+  <text x="730" y="300" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">lemlist</text>
+  <text x="900" y="300" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#3A4A5E">—</text>
+  <text x="990" y="300" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#6B7E99">✓</text>
+  <text x="1090" y="300" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#3A4A5E">—</text>
+
+  <!-- Pricing callout -->
+  <rect x="630" y="334" width="510" height="52" rx="8" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="885" y="355" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="600" fill="#E8320A" letter-spacing="1">OZIGI PRO</text>
+  <text x="885" y="375" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="14" fill="#FAFAFA">$49/mo  ·  all 4 GTM jobs  ·  no credit math</text>
+
+  <!-- vs stack price -->
+  <rect x="630" y="398" width="510" height="36" rx="6" fill="#0F1828"/>
+  <text x="885" y="421" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#6B7E99">Assembled stack: $150–190/user/mo</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.6">
+    <path d="M870 470 L870 550 L950 550"/>
+    <path d="M1030 470 L1030 550 L1110 550"/>
+    <path d="M710 470 L710 550"/>
+  </g>
+  <g fill="#E8320A" opacity="0.8">
+    <circle cx="870" cy="550" r="4"/>
+    <circle cx="1030" cy="470" r="4"/>
+  </g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3">
+    <circle cx="870" cy="550" r="10"/>
+    <circle cx="1030" cy="470" r="10"/>
+  </g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="148" height="30" rx="6" fill="#E8320A"/>
+  <text x="154" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">TOOLS ROUNDUP</text>
+  <text x="242" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="200" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">Best Free</text>
+  <text x="80" y="285" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#E8320A">GTM Tool</text>
+  <text x="80" y="355" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="38" font-weight="800" fill="#FAFAFA">in 2026</text>
+
+  <text x="80" y="410" font-family="'DM Sans','Inter',sans-serif" font-size="24" fill="#94A3B8">Leads, outreach, and content</text>
+  <text x="80" y="442" font-family="'DM Sans','Inter',sans-serif" font-size="24" fill="#94A3B8">from one place.</text>
+
+  <line x1="80" y1="472" x2="460" y2="472" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="488" width="90"  height="36" rx="18" fill="#1E293B"/>
+  <text x="125" y="511" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Free tier</text>
+  <rect x="182" y="488" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="242" y="511" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">vs 5 tools</text>
+  <rect x="314" y="488" width="130" height="36" rx="18" fill="#1E293B"/>
+  <text x="379" y="511" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">13 min read</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>

@@ -3,10 +3,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
 export interface PlanStatus {
-  plan: 'free' | 'team' | 'organization' | 'enterprise';
-  isTrialActive: boolean;
-  isTrialExpired: boolean;
-  trialEndsAt: Date | null;
+  plan: 'free' | 'starter' | 'growth' | 'pro' | 'enterprise';
+  // Content engine
   canGenerate: boolean;
   generationsUsed: number;
   generationsLimit: number;
@@ -16,6 +14,24 @@ export interface PlanStatus {
   emailSendsLimit: number;
   hasCopilot: boolean;
   hasLongForm: boolean;
+  longFormUsed: number;
+  longFormLimit: number;
+  hasScheduling: boolean;
+  newsletterSendingEnabled: boolean;
+  // GTM / outbound
+  hasGtm: boolean;
+  canRunCampaigns: boolean;
+  activeCampaignsUsed: number;
+  activeCampaignsLimit: number;
+  creditsUsed: number;
+  creditsLimit: number;
+  creditsBalance: number;
+  sequenceSendsUsed: number;
+  sequenceSendsLimit: number;
+  hasLinkedInOutreach: boolean;
+  hasCrmSync: boolean;
+  hasMultiInbox: boolean;
+  hasReplyDetection: boolean;
   isEnterprise: boolean;
 }
 
@@ -41,7 +57,6 @@ export function usePlanStatus() {
         if (res.ok) {
           const data = await res.json();
           setPlanStatus(data);
-          // Store in cache with timestamp
           localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
         }
       } catch (err) {
@@ -51,7 +66,6 @@ export function usePlanStatus() {
       }
     };
 
-    // Check cache first
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
@@ -61,7 +75,7 @@ export function usePlanStatus() {
           setLoading(false);
           return;
         }
-      } catch (e) {}
+      } catch {}
     }
 
     fetchPlanStatus();

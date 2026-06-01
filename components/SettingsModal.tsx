@@ -400,7 +400,7 @@ const handleConnectGitHub = async () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-black uppercase tracking-widest text-slate-900">
-                    Current Plan: <span className="text-brand-red capitalize">{userPlan === 'organization' ? 'Organization' : userPlan === 'team' ? 'Team' : userPlan}</span>
+                    Current Plan: <span className="text-brand-red capitalize">{userPlan}</span>
                   </span>
                   {userPlan !== 'free' && (
                     <span className="text-[10px] text-slate-500">
