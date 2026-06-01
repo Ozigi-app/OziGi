@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server'
 import { verifyQStashRequest } from '@/lib/qstash'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { scrapeGitHub, scrapeDevTo, scoreLeads } from '@/lib/gtm/scraper'
+import { getPlanStatus, incrementLeadsScraped, deductAddonCredits } from '@/lib/plan'
 import type { Campaign } from '@/lib/types/gtm'
+import type { PlanStatus } from '@/lib/plan'
+
+// Cache plan status per user within a single cron run to avoid N×DB calls
+const planCache = new Map<string, PlanStatus>()
 
 export const maxDuration = 300  // 5 min — scraping takes time
 
@@ -35,10 +40,25 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!campaigns?.length) return NextResponse.json({ ok: true, message: 'No active campaigns' })
 
-  const results: Record<string, { scraped: number; inserted: number; error?: string }> = {}
+  planCache.clear()
+  const results: Record<string, { scraped: number; inserted: number; skipped?: boolean; error?: string }> = {}
 
   for (const campaign of campaigns as Campaign[]) {
     try {
+      // ── Credit gate ────────────────────────────────────────────────────────
+      if (!planCache.has(campaign.user_id)) {
+        planCache.set(campaign.user_id, await getPlanStatus(campaign.user_id))
+      }
+      const ps = planCache.get(campaign.user_id)!
+      if (!ps.hasGtm) {
+        results[campaign.id] = { scraped: 0, inserted: 0, skipped: true, error: 'No GTM access on current plan' }
+        continue
+      }
+      if (ps.creditsBalance < 1) {
+        results[campaign.id] = { scraped: 0, inserted: 0, skipped: true, error: 'No credits remaining' }
+        continue
+      }
+
       const allLeads: Awaited<ReturnType<typeof scrapeGitHub>> = []
 
       if (campaign.sources.includes('github')) {
@@ -103,9 +123,16 @@ export async function POST(req: Request) {
         status: 'pending' as const,
       }))
 
+      // Cap insertion at remaining credit balance
+      const ps2 = planCache.get(campaign.user_id)!
+      const maxInsert = ps2.creditsLimit === -1
+        ? rows.length
+        : Math.min(rows.length, Math.floor(ps2.creditsBalance))
+      const cappedRows = rows.slice(0, maxInsert)
+
       const { error: upsertError, count } = await supabaseAdmin
         .from('leads')
-        .upsert(rows, {
+        .upsert(cappedRows, {
           onConflict: 'campaign_id,source,source_id',
           ignoreDuplicates: true,
           count: 'exact',
@@ -113,7 +140,22 @@ export async function POST(req: Request) {
 
       if (upsertError) throw upsertError
 
-      results[campaign.id] = { scraped: allLeads.length, inserted: count ?? 0 }
+      const inserted = count ?? 0
+
+      // Deduct credits (fire-and-forget)
+      if (inserted > 0 && ps2.creditsLimit !== -1) {
+        if (ps2.plan === 'starter') {
+          // Starter has no monthly credits — draw from addon balance only
+          deductAddonCredits(campaign.user_id, inserted).catch(() => {})
+        } else {
+          // Free / Growth — track via monthly counter
+          incrementLeadsScraped(campaign.user_id, inserted).catch(() => {})
+        }
+        // Bust cache so next campaign in this run sees updated balance
+        planCache.delete(campaign.user_id)
+      }
+
+      results[campaign.id] = { scraped: allLeads.length, inserted }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       console.error(`[gtm/cron/scrape] campaign ${campaign.id}:`, msg)

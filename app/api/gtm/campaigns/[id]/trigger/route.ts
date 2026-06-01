@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { triggerImmediateScrape, triggerImmediateSend } from '@/lib/gtm/scheduler'
+import { getPlanStatus } from '@/lib/plan'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient()
@@ -20,6 +21,27 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .single()
 
   if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  // Plan gates
+  const planStatus = await getPlanStatus(user.id)
+  if (!planStatus.hasGtm) {
+    return NextResponse.json(
+      { error: 'GTM features are available on Growth and Pro plans.' },
+      { status: 403 }
+    )
+  }
+  if (action === 'scrape' && planStatus.creditsBalance < 1) {
+    return NextResponse.json(
+      { error: 'No credits remaining. Purchase a credit bundle or upgrade your plan.', creditsBalance: planStatus.creditsBalance, creditsUsed: planStatus.creditsUsed, creditsLimit: planStatus.creditsLimit },
+      { status: 403 }
+    )
+  }
+  if (action === 'send' && planStatus.sequenceSendsLimit !== -1 && planStatus.sequenceSendsUsed >= planStatus.sequenceSendsLimit) {
+    return NextResponse.json(
+      { error: 'Monthly sequence send limit reached. Upgrade to Growth or Pro for unlimited sends.', sequenceSendsUsed: planStatus.sequenceSendsUsed, sequenceSendsLimit: planStatus.sequenceSendsLimit },
+      { status: 403 }
+    )
+  }
 
   const origin = new URL(req.url).origin
 

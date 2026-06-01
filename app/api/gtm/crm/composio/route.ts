@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Composio } from '@composio/core'
+import { getPlanStatus } from '@/lib/plan'
 
 // Composio toolkit slugs for supported CRMs
 const TOOLKIT: Record<string, string> = {
@@ -21,6 +22,15 @@ export async function POST(req: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Plan gate — CRM sync requires Growth or Pro
+  const planStatus = await getPlanStatus(user.id)
+  if (!planStatus.hasCrmSync) {
+    return NextResponse.json(
+      { error: 'CRM sync is available on Growth and Pro plans.' },
+      { status: 403 }
+    )
+  }
 
   const { provider } = await req.json()
   const toolkit = TOOLKIT[provider]

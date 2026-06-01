@@ -79,7 +79,7 @@ function NavButton({
             {item.label}
             {item.locked && (
               <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-foreground-subtle bg-surface-2 px-1.5 py-0.5 rounded">
-                Org
+                Growth+
               </span>
             )}
           </span>

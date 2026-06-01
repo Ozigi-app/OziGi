@@ -44,14 +44,29 @@ export async function POST(req: Request) {
 
     // Map Dodo product IDs to our plan names
     const productToPlan: Record<string, string> = {
-      'pdt_0Nb2mk6p1FU3JGdzuNUzt': 'team',        // team monthly
-      'pdt_0Nb2varb5A2JQeOENmlfH': 'team',        // team yearly
-      'pdt_0Nb2wrZKVoi4PDNwOMbbw': 'organization', // org monthly
-      'pdt_0Nb2ydRec1WCRdZdQS6QW': 'organization', // org yearly
+      // Legacy product IDs (kept for in-flight subscriptions)
+      'pdt_0Nb2mk6p1FU3JGdzuNUzt': 'growth',  // was team monthly
+      'pdt_0Nb2varb5A2JQeOENmlfH': 'growth',  // was team yearly
+      'pdt_0Nb2wrZKVoi4PDNwOMbbw': 'pro',     // was org monthly
+      'pdt_0Nb2ydRec1WCRdZdQS6QW': 'pro',     // was org yearly
+      // Current plan product IDs
+      'pdt_0Ng3KxpDctsmZzkvR9RmM': 'starter', // starter monthly
+      'pdt_0Ng3KxsMWqBgU9U9etp27': 'starter', // starter yearly
+      'pdt_0Ng3KxvdmDWWdclDsMBm8': 'growth',  // growth monthly
+      'pdt_0Ng3KxzWmRd0k0mq5tlJa': 'growth',  // growth yearly
+      'pdt_0Ng3Ky3xlkd5RlLJV9jI9': 'pro',     // pro monthly
+      'pdt_0Ng3Ky77RmHesXIqWB800': 'pro',     // pro yearly
+    };
+
+    // Map bundle product IDs to credit amounts
+    const bundleProductToCredits: Record<string, number> = {
+      'pdt_0Ng3KyAEqRIz72yefBDim': 200,   // small bundle, $5
+      'pdt_0Ng3KyDWoEN3GN1nCWUFV': 500,   // medium bundle, $10
+      'pdt_0Ng3KyGkEPswQk0mFt6xc': 1500,  // large bundle, $25
     };
 
     // Helper to send upgrade welcome email
-    async function sendUpgradeEmail(userId: string, plan: 'team' | 'organization' | 'enterprise') {
+    async function sendUpgradeEmail(userId: string, plan: 'starter' | 'growth' | 'pro' | 'enterprise') {
       try {
         // Get user profile
         const { data: profile } = await supabaseAdmin
@@ -76,11 +91,14 @@ export async function POST(req: Request) {
           plan,
         });
 
-        const subject = plan === 'team' 
-          ? "Welcome to Team - Here's what you unlocked!"
-          : plan === 'organization'
-          ? "Welcome to Organization - Full power unlocked!"
-          : "Welcome to Enterprise - Let's build something amazing!";
+        const subject =
+          plan === 'starter'
+            ? "Welcome to Starter - Your content engine is live!"
+            : plan === 'growth'
+            ? "Welcome to Growth - Your outbound pipeline is live!"
+            : plan === 'pro'
+            ? "Welcome to Pro - Both engines, no limits!"
+            : "Welcome to Enterprise - Let's build something amazing!";
 
         await mailClient.sendMail({
           from: { address: EMAIL_FROM_ADDRESS, name: EMAIL_FROM_NAME },
@@ -236,28 +254,45 @@ export async function POST(req: Request) {
       console.log('[Dodo Webhook] Successfully upgraded user', userId, 'to', plan);
       
       // Send upgrade welcome email
-      if (plan === 'team' || plan === 'organization' || plan === 'enterprise') {
-        await sendUpgradeEmail(userId, plan as 'team' | 'organization' | 'enterprise');
+      if (plan === 'starter' || plan === 'growth' || plan === 'pro' || plan === 'enterprise') {
+        await sendUpgradeEmail(userId, plan as 'starter' | 'growth' | 'pro' | 'enterprise');
       }
       
       return true;
     }
 
-    // Handle payment success (instant upgrade + receipt)
+    // Handle payment success (instant upgrade + receipt, or bundle credit top-up)
     if (event.type === 'payment.succeeded' || event.type === 'payment.completed') {
       const metadata = event.data?.metadata;
       const userId = metadata?.user_id;
-      const planFromMetadata = metadata?.plan; // We pass this in create-checkout
       const paymentId = event.data?.payment_id || event.data?.id || `pay_${Date.now()}`;
       const subscriptionId = event.data?.subscription_id;
       const amount = event.data?.amount || event.data?.total_amount || 0;
       const currency = event.data?.currency || 'usd';
       const productId = event.data?.product_id || metadata?.product_id;
 
+      // Credit bundle purchase
+      if (metadata?.type === 'credit_bundle' && userId && productId) {
+        const credits = bundleProductToCredits[productId];
+        if (credits) {
+          console.log('[Dodo Webhook] Adding', credits, 'credits to user', userId);
+          const { error } = await supabaseAdmin.rpc('add_addon_credits', {
+            user_id_param: userId,
+            credits_param: credits,
+          });
+          if (error) {
+            console.error('[Dodo Webhook] Failed to add addon credits:', error);
+          }
+        } else {
+          console.warn('[Dodo Webhook] Unknown bundle product ID:', productId);
+        }
+        return NextResponse.json({ received: true });
+      }
+
+      // Regular plan upgrade
+      const planFromMetadata = metadata?.plan;
       if (userId && planFromMetadata) {
         await upgradePlan(userId, planFromMetadata);
-        
-        // Record payment and send receipt
         await recordPaymentAndSendReceipt(userId, {
           paymentId,
           subscriptionId,
@@ -288,19 +323,46 @@ export async function POST(req: Request) {
       }
     }
 
-    // Handle subscription cancellation
-    if (event.type === 'subscription.canceled' || event.type === 'subscription.cancelled') {
+    // Handle subscription cancellation / expiry / failure → downgrade to free
+    if (
+      event.type === 'subscription.canceled'  ||
+      event.type === 'subscription.cancelled' ||
+      event.type === 'subscription.expired'   ||
+      event.type === 'subscription.failed'
+    ) {
       const userId = event.data?.metadata?.user_id;
       if (userId) {
-        console.log('[Dodo Webhook] Downgrading user', userId, 'to free (subscription canceled)');
+        console.log(`[Dodo Webhook] Downgrading user ${userId} to free (${event.type})`);
         await supabaseAdmin
           .from('profiles')
-          .update({ 
-            plan: 'free',
-            updated_at: new Date().toISOString(),
-          })
+          .update({ plan: 'free', updated_at: new Date().toISOString() })
           .eq('id', userId);
       }
+    }
+
+    // Handle plan change (e.g. user upgrades starter → pro via Dodo portal)
+    if (event.type === 'subscription.plan_changed') {
+      const metadata = event.data?.metadata;
+      const userId = metadata?.user_id;
+      const subscriptionItems = event.data?.subscription_items || event.data?.items || [];
+      const productId = subscriptionItems?.[0]?.product_id;
+
+      // Prefer metadata plan, fall back to product ID lookup
+      const plan = metadata?.plan || productToPlan[productId];
+
+      if (userId && plan) {
+        console.log(`[Dodo Webhook] Plan changed for user ${userId} → ${plan}`);
+        await upgradePlan(userId, plan);
+      } else {
+        console.warn('[Dodo Webhook] subscription.plan_changed but could not resolve plan:', { userId, productId, metadata });
+      }
+    }
+
+    // subscription.on_hold — payment is failing but Dodo is retrying.
+    // Log it but don't downgrade yet; let subscription.failed or .cancelled handle the final state.
+    if (event.type === 'subscription.on_hold') {
+      const userId = event.data?.metadata?.user_id;
+      console.warn(`[Dodo Webhook] Subscription on hold for user ${userId} — awaiting retry outcome`);
     }
 
     return NextResponse.json({ received: true });

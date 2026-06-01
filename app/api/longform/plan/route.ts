@@ -115,8 +115,11 @@ export async function POST(req: Request) {
     }
 
     const planStatus = await getPlanStatus(user.id);
-    if (planStatus.plan !== 'organization' && planStatus.plan !== 'enterprise') {
-      return NextResponse.json({ error: 'Requires Organization or Enterprise plan' }, { status: 403 });
+    if (!planStatus.hasLongForm) {
+      return NextResponse.json(
+        { error: 'You have used your long-form article for this month. Upgrade to Pro for unlimited.' },
+        { status: 403 }
+      );
     }
 
     const { brief } = await req.json();

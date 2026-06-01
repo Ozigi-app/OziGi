@@ -5,7 +5,12 @@ import { composeEmail, composeLinkedInMessage } from '@/lib/gtm/composer'
 import { sendViaGmail } from '@/lib/gtm/gmail'
 import { sendViaSmtp } from '@/lib/gtm/smtp'
 import { syncLeadToCRM } from '@/lib/gtm/crm'
+import { getPlanStatus, incrementSequenceSend } from '@/lib/plan'
 import type { Campaign, Lead, SequenceStep } from '@/lib/types/gtm'
+import type { PlanStatus } from '@/lib/plan'
+
+// Cache plan status per user within a single cron run
+const planCache = new Map<string, PlanStatus>()
 
 export const maxDuration = 300
 
@@ -40,10 +45,25 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!campaigns?.length) return NextResponse.json({ ok: true, message: 'No active campaigns' })
 
+  planCache.clear()
   const results: Record<string, { emailSent: number; liEnqueued: number; skipped: number; error?: string }> = {}
 
   for (const campaign of campaigns as Campaign[]) {
     try {
+      // ── Per-user plan gates ────────────────────────────────────────────────
+      if (!planCache.has(campaign.user_id)) {
+        planCache.set(campaign.user_id, await getPlanStatus(campaign.user_id))
+      }
+      const ps = planCache.get(campaign.user_id)!
+
+      if (!ps.hasGtm) {
+        results[campaign.id] = { emailSent: 0, liEnqueued: 0, skipped: 0, error: 'No GTM access on current plan' }
+        continue
+      }
+
+      // Check global sequence sends limit (applies to free plan: 30/mo)
+      const atSendLimit = ps.sequenceSendsLimit !== -1 && ps.sequenceSendsUsed >= ps.sequenceSendsLimit
+
       const steps: SequenceStep[] = (campaign.sequence_steps ?? []).sort((a, b) => a.step - b.step)
       let campaignEmailSent = 0
       let campaignLiEnqueued = 0
@@ -79,6 +99,7 @@ export async function POST(req: Request) {
             for (const lead of leadsForStep) {
               if (sentToday >= dailyEmailLimit) break
               if (sentThisRun >= MAX_PER_RUN) break
+              if (atSendLimit) { campaignSkipped++; continue }
               // In test mode TEST_EMAIL overrides recipient, so no real email needed
               if (!lead.email && !process.env.TEST_EMAIL) { campaignSkipped++; continue }
 
@@ -137,6 +158,9 @@ export async function POST(req: Request) {
                 sentToday++
                 sentThisRun++
                 campaignEmailSent++
+                // Track sequence send usage (fire-and-forget; bust cache so limit is respected)
+                incrementSequenceSend(campaign.user_id).catch(() => {})
+                planCache.delete(campaign.user_id)
 
                 // Human-paced delay — skip after the last send of this run
                 if (sentThisRun < MAX_PER_RUN) await sleep(INTER_SEND_DELAY_MS)
@@ -161,7 +185,10 @@ export async function POST(req: Request) {
 
       // ── LinkedIn steps ───────────────────────────────────────────────────────
       const linkedinSteps = steps.filter(s => s.channel === 'linkedin')
-      if (linkedinSteps.length > 0) {
+      if (linkedinSteps.length > 0 && !ps.hasLinkedInOutreach) {
+        console.log(`[gtm/cron/send] LinkedIn outreach not available on plan '${ps.plan}' for user ${campaign.user_id} — skipping LinkedIn steps`)
+      }
+      if (linkedinSteps.length > 0 && ps.hasLinkedInOutreach) {
         // Count how many LinkedIn actions already enqueued today for this campaign
         const today = new Date().toISOString().split('T')[0]
         const { count: liTodayCount } = await supabaseAdmin

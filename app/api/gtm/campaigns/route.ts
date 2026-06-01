@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { parseIcpDescription } from '@/lib/gtm/composer'
 import { createCampaignSchedules, triggerImmediateScrape } from '@/lib/gtm/scheduler'
+import { getPlanStatus } from '@/lib/plan'
 
 export async function GET() {
   const supabase = await createClient()
@@ -23,6 +24,21 @@ export async function POST(req: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Plan gates
+  const planStatus = await getPlanStatus(user.id)
+  if (!planStatus.hasGtm) {
+    return NextResponse.json(
+      { error: 'GTM features are available on Growth and Pro plans.' },
+      { status: 403 }
+    )
+  }
+  if (!planStatus.canRunCampaigns) {
+    return NextResponse.json(
+      { error: 'You have reached your active campaign limit. Upgrade to Growth or Pro for unlimited campaigns.', plan: planStatus.plan, activeCampaignsUsed: planStatus.activeCampaignsUsed, activeCampaignsLimit: planStatus.activeCampaignsLimit },
+      { status: 403 }
+    )
+  }
 
   const {
     name, icp_description, sources, daily_email_limit, daily_linkedin_limit, sequence_steps,
