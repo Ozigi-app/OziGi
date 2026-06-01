@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
-import { buildPromotionalEmail } from "@/lib/email-templates";
+import { buildPromotionalEmail, buildGTMLaunchAnnouncementEmail } from "@/lib/email-templates";
 import { verifyQStashRequest } from "@/lib/qstash";
 
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -91,14 +91,22 @@ export async function GET(req: Request) {
 
       try {
         const unsubscribeUrl = `${APP_URL}/api/email/promo-unsubscribe?userId=${user.id}`;
-        const html = buildPromotionalEmail(
-          campaign.subject,
-          campaign.headline,
-          campaign.body_content,
-          campaign.cta_text,
-          campaign.cta_url,
-          unsubscribeUrl
-        );
+
+        // Route to the correct template based on the queue row's `template` field.
+        // Null / undefined → default light promotional template.
+        let html: string;
+        if (campaign.template === 'founders_thoughts') {
+          html = buildGTMLaunchAnnouncementEmail(unsubscribeUrl);
+        } else {
+          html = buildPromotionalEmail(
+            campaign.subject,
+            campaign.headline,
+            campaign.body_content,
+            campaign.cta_text,
+            campaign.cta_url,
+            unsubscribeUrl
+          );
+        }
         await sendEmail(user.email, campaign.subject, html);
         results.sent++;
         // Throttle: 10 sends/sec to stay within ZeptoMail limits

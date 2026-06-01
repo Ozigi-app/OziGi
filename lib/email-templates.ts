@@ -5,7 +5,7 @@
 // ==========================================
 
 export const ANNOUNCEMENT_EMAIL_SUBJECT =
-  "We went quiet for a week. Here's what we were building.";
+  "Ozigi changed. Here’s everything that’s new.";
 
 export function buildGTMLaunchAnnouncementEmail(unsubscribeUrl: string) {
   const appUrl = process.env.APP_URL || 'https://ozigi.app';
