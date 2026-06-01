@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import Footer from "../../../components/Footer";
+import type { Metadata } from "next";
 
 // --- THE SEQUENCE ARRAY ---
 const DEEP_DIVE_ORDER = [
@@ -12,6 +13,17 @@ const DEEP_DIVE_ORDER = [
   { slug: "system-personas", title: "3. System Personas" },
   { slug: "human-in-the-loop", title: "4. Human-in-the-Loop" }
 ];
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const entry = DEEP_DIVE_ORDER.find((d) => d.slug === slug);
+  const title = entry ? entry.title : slug.replace(/-/g, " ");
+  return {
+    title: `${title} — Ozigi Docs`,
+    description: `Deep dive: ${title}. Technical documentation from the Ozigi team.`,
+    alternates: { canonical: `https://ozigi.app/docs/${slug}` },
+  };
+}
 
 // --- FAQ SCHEMA DATA FOR EACH DEEP DIVE ---
 const FAQ_DATA: Record<string, { question: string; answer: string }[]> = {

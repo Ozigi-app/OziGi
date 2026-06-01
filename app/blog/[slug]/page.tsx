@@ -6,7 +6,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const resolvedParams = await params;
   
   return {
-    title: `${resolvedParams.slug.replace(/-/g, ' ')} | Ozigi Blog`, // Placeholder logic
+    title: `${resolvedParams.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} — Ozigi Blog`,
     description: "Technical writing and updates from the Ozigi team.",
     alternates: { canonical: `https://ozigi.app/blog/${resolvedParams.slug}` },
   };
