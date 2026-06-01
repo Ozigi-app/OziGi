@@ -1,3 +1,259 @@
+// ==========================================
+// GTM LAUNCH ANNOUNCEMENT EMAIL
+// Sender: Founder's Thoughts
+// Subject: see ANNOUNCEMENT_EMAIL_SUBJECT export below
+// ==========================================
+
+export const ANNOUNCEMENT_EMAIL_SUBJECT =
+  "We went quiet for a week. Here's what we were building.";
+
+export function buildGTMLaunchAnnouncementEmail(unsubscribeUrl: string) {
+  const appUrl = process.env.APP_URL || 'https://ozigi.app';
+  const dashboardUrl = `${appUrl}/dashboard`;
+  const pricingUrl   = `${appUrl}/pricing`;
+  const gtmUrl       = `${appUrl}/dashboard/gtm`;
+  const year         = new Date().getFullYear();
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>${ANNOUNCEMENT_EMAIL_SUBJECT}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0f172a;">
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
+<div style="background:#1e293b;border-radius:20px;overflow:hidden;">
+
+  <!-- Red accent bar -->
+  <div style="height:3px;background:linear-gradient(to right,#E8320A,#c52000);"></div>
+
+  <!-- Header -->
+  <div style="padding:40px 40px 0;">
+    <p style="margin:0 0 24px 0;font-size:10px;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:#E8320A;">
+      Founder&rsquo;s Thoughts
+    </p>
+    <h1 style="margin:0;font-size:34px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em;line-height:1.05;color:#f8fafc;">
+      We went quiet<br>for a week.<br>
+      <span style="color:#E8320A;">Worth it.</span>
+    </h1>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:32px 40px 0;">
+
+    <!-- Opening -->
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 18px 0;">
+      I missed my usual sending schedule last week. No apology &mdash; just an explanation.
+    </p>
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 18px 0;">
+      The team and I have been heads-down cooking, and I didn&rsquo;t want to show up
+      in your inbox with a half-baked update. So I waited until we were done.
+    </p>
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 32px 0;">
+      We&rsquo;re done. And what we shipped is the biggest thing Ozigi has ever done.
+    </p>
+
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 32px 0;"></div>
+
+    <!-- The reveal -->
+    <p style="margin:0 0 12px 0;font-size:10px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">
+      What changed
+    </p>
+    <h2 style="margin:0 0 20px 0;font-size:26px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.02em;color:#f8fafc;line-height:1.1;">
+      Ozigi is now your full<br>go-to-market engine.
+    </h2>
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 18px 0;">
+      When we built the content engine, the goal was to help you publish things
+      that sound like you &mdash; not a robot. That part worked. You&rsquo;ve been
+      generating campaigns, newsletters, and blog posts that actually sound human.
+    </p>
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 18px 0;">
+      But content without pipeline is a megaphone in an empty room.
+      We kept hearing the same thing: <em>&ldquo;I love the writing tool, but I still
+      have to find my own leads.&rdquo;</em>
+    </p>
+    <p style="font-size:16px;color:#cbd5e1;line-height:1.8;margin:0 0 32px 0;">
+      So we built the other half.
+    </p>
+
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 32px 0;"></div>
+
+    <!-- What they can do now -->
+    <p style="margin:0 0 20px 0;font-size:10px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">
+      What you can do now
+    </p>
+
+    <!-- Feature 1 -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px 24px;margin-bottom:12px;">
+      <p style="margin:0 0 6px 0;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#E8320A;">
+        01 &nbsp;&mdash;&nbsp; Find the right leads
+      </p>
+      <p style="margin:0;font-size:15px;color:#e2e8f0;line-height:1.7;">
+        Tell Ozigi who you&rsquo;re after &mdash; the role, the stack, the company size &mdash;
+        and it will source leads directly from GitHub, Dev.to, and LinkedIn.
+        It recovers real email addresses from commit history when profiles hide them.
+        Gemini scores every result against your ICP before anything
+        reaches your pipeline. You only see the people worth talking to.
+      </p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px 24px;margin-bottom:12px;">
+      <p style="margin:0 0 6px 0;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#E8320A;">
+        02 &nbsp;&mdash;&nbsp; Reach out without sounding like a robot
+      </p>
+      <p style="margin:0;font-size:15px;color:#e2e8f0;line-height:1.7;">
+        Ozigi writes the cold email from the lead&rsquo;s actual profile &mdash;
+        the repo they maintain, the thing they wrote about last week &mdash;
+        in your voice, with the same Banned Lexicon we use for blog posts.
+        The sequence goes out from your own inbox, on a schedule you set,
+        pausing the moment someone replies. LinkedIn steps included.
+      </p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px 24px;margin-bottom:32px;">
+      <p style="margin:0 0 6px 0;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;color:#E8320A;">
+        03 &nbsp;&mdash;&nbsp; Stay visible while the pipeline runs
+      </p>
+      <p style="margin:0;font-size:15px;color:#e2e8f0;line-height:1.7;">
+        The content engine didn&rsquo;t go anywhere. Your newsletters,
+        LinkedIn posts, X threads, and blog articles still run on autopilot.
+        The difference is that now, by the time a cold email lands in someone&rsquo;s inbox,
+        there&rsquo;s a good chance they&rsquo;ve already read something you wrote.
+        That&rsquo;s not a cold email anymore. That&rsquo;s a warm one.
+      </p>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 32px 0;"></div>
+
+    <!-- Pricing -->
+    <p style="margin:0 0 12px 0;font-size:10px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">
+      Pricing
+    </p>
+    <h2 style="margin:0 0 16px 0;font-size:22px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.02em;color:#f8fafc;">
+      We also rebuilt the plans.
+    </h2>
+    <p style="font-size:15px;color:#cbd5e1;line-height:1.8;margin:0 0 20px 0;">
+      The old tiers didn&rsquo;t make sense for a two-engine product.
+      Here&rsquo;s where things stand now:
+    </p>
+
+    <!-- Pricing table -->
+    <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+      <tr>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px 0 0 0;">
+          <p style="margin:0;font-size:13px;font-weight:900;color:#f8fafc;">Free</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#64748b;">$0 &mdash; no card</p>
+        </td>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);font-size:12px;color:#94a3b8;border-radius:0 8px 0 0;">
+          50 lead credits &bull; 30 email sends &bull; 3 content pieces
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+          <p style="margin:0;font-size:13px;font-weight:900;color:#f8fafc;">Starter</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#64748b;">$19/mo</p>
+        </td>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);font-size:12px;color:#94a3b8;">
+          Full content engine &bull; 30 campaigns &bull; image gen &bull; newsletter sending
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);">
+          <p style="margin:0;font-size:13px;font-weight:900;color:#f8fafc;">Growth</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#64748b;">$29/mo</p>
+        </td>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);font-size:12px;color:#94a3b8;">
+          1,000 GTM credits &bull; unlimited outreach &bull; LinkedIn &bull; CRM sync
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;background:rgba(232,50,10,0.12);border:1px solid rgba(232,50,10,0.3);">
+          <p style="margin:0;font-size:13px;font-weight:900;color:#f8fafc;">Pro</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#E8320A;font-weight:700;">$49/mo</p>
+        </td>
+        <td style="padding:12px 16px;background:rgba(232,50,10,0.12);border:1px solid rgba(232,50,10,0.3);font-size:12px;color:#cbd5e1;font-weight:600;">
+          Both engines, no limits &bull; Copilot &bull; analytics &bull; multi-inbox rotation
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:0 0 0 8px;">
+          <p style="margin:0;font-size:13px;font-weight:900;color:#f8fafc;">Enterprise</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#64748b;">Custom</p>
+        </td>
+        <td style="padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);font-size:12px;color:#94a3b8;border-radius:0 0 8px 0;">
+          Everything in Pro &bull; SLA &bull; white-label &bull; dedicated onboarding
+        </td>
+      </tr>
+    </table>
+
+    <p style="font-size:13px;color:#64748b;line-height:1.7;margin:12px 0 32px 0;">
+      If you were on the old Team or Organization plan, nothing changed for you right now.
+      We&rsquo;ll reach out separately with migration options. If you&rsquo;re on the free tier,
+      you&rsquo;ve got 50 lead credits waiting for you &mdash; go use them.
+    </p>
+
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 32px 0;"></div>
+
+    <!-- CTA block -->
+    <div style="background:rgba(232,50,10,0.1);border:1px solid rgba(232,50,10,0.25);border-radius:16px;padding:28px;text-align:center;margin-bottom:32px;">
+      <p style="margin:0 0 6px 0;font-size:18px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-0.01em;color:#f8fafc;">
+        Ready to see it?
+      </p>
+      <p style="margin:0 0 22px 0;font-size:14px;color:#94a3b8;line-height:1.6;">
+        Your dashboard already has the GTM engine.<br>Start a campaign, define your ICP, and let it run.
+      </p>
+      <a href="${gtmUrl}"
+         style="display:inline-block;background:linear-gradient(135deg,#E8320A 0%,#c52000 100%);color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:10px;font-size:12px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">
+        Launch Your First GTM Campaign &rarr;
+      </a>
+      <br>
+      <a href="${pricingUrl}"
+         style="display:inline-block;color:#64748b;font-size:12px;text-decoration:underline;margin-top:10px;">
+        See full pricing &rarr;
+      </a>
+    </div>
+
+    <!-- Sign-off -->
+    <p style="font-size:15px;color:#94a3b8;line-height:1.8;margin:0 0 8px 0;">
+      This took a while to build. It was worth it.
+      I genuinely think this changes how small teams do outbound &mdash; and I&rsquo;m curious
+      what you think once you&rsquo;ve tried it. Hit reply and tell me.
+    </p>
+    <p style="font-size:15px;color:#94a3b8;line-height:1.6;margin:0 0 40px 0;">
+      Talk soon,<br>
+      <strong style="color:#f1f5f9;">Dumebi</strong><br>
+      <span style="font-size:13px;">Founder, Ozigi</span>
+    </p>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="background:#0f172a;padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06);">
+    <p style="color:#475569;font-size:11px;margin:0;line-height:1.6;">
+      You&rsquo;re receiving this because you have an account on Ozigi or subscribed to Founder&rsquo;s Thoughts.<br>
+      &copy; ${year} Ozigi &nbsp;&middot;&nbsp;
+      <a href="${unsubscribeUrl}" style="color:#475569;text-decoration:underline;">Unsubscribe</a>
+      &nbsp;&middot;&nbsp;
+      <a href="${appUrl}" style="color:#475569;text-decoration:none;">ozigi.app</a>
+    </p>
+  </div>
+
+</div>
+</div>
+</body>
+</html>`;
+}
+
+// ==========================================
+
 export function buildXReminderEmail(postContent: string, intentUrl: string, dashboardUrl: string) {
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
