@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { UserPlus, CheckCircle, Clock, XCircle } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
+import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
 
 interface QueueItem {
   id: string
@@ -49,6 +50,8 @@ export default function LinkedInOutreachPage() {
           <p className="text-foreground-subtle text-sm mt-0.5">All LinkedIn actions across campaigns</p>
         </div>
       </div>
+
+      <FreeAgentBanner />
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-6">

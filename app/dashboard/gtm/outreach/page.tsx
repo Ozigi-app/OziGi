@@ -5,6 +5,7 @@ import {
   Mail, Send, Clock, CheckCircle, XCircle, RefreshCw, ChevronRight, Inbox,
 } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
+import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
 
 interface EmailRecord {
   id: string
@@ -145,6 +146,8 @@ export default function EmailOutreachPage() {
             </a>
           </div>
         </div>
+
+        <FreeAgentBanner />
 
         {/* Compose panel */}
         {composing && (

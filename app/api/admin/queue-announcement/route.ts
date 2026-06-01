@@ -46,8 +46,8 @@ export async function POST(req: Request) {
     .from("promo_queue")
     .insert({
       subject:        ANNOUNCEMENT_EMAIL_SUBJECT,
-      headline:       null,       // not used by founders_thoughts template
-      body_content:   null,       // not used by founders_thoughts template
+      headline:       ANNOUNCEMENT_EMAIL_SUBJECT,
+      body_content:   "",
       cta_text:       null,
       cta_url:        null,
       template:       "founders_thoughts",
