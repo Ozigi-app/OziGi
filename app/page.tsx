@@ -510,6 +510,162 @@ export default function Home() {
           <PeerlistReviews />
         </div>
 
+        {/* ── PRICING ───────────────────────────────────────────────────── */}
+        <section
+          className="relative overflow-hidden py-16 md:py-24"
+          style={{ background: C.navyMid, borderTop: `1px solid ${C.border}` }}
+        >
+          <DotGrid id="pricing-dots" opacity={0.035} />
+          <div className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: `linear-gradient(to right, transparent, ${C.red}40, transparent)` }} />
+
+          <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">
+            {/* Header */}
+            <motion.div
+              initial="hidden" whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }} variants={fadeUp}
+              className="text-center mb-10"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-3" style={{ color: C.red }}>Pricing</p>
+              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-3">
+                Simple. Transparent.
+              </h2>
+              <p className="text-sm font-medium max-w-md mx-auto" style={{ color: C.muted }}>
+                Free to start — no credit card. Pick a plan when you&apos;re ready.
+              </p>
+            </motion.div>
+
+            {/* Compact tier grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"
+            >
+              {([
+                {
+                  name: "Free",
+                  price: "$0",
+                  period: "",
+                  highlight: "Try both engines",
+                  bullets: ["50 lead credits/mo", "30 email sends/mo", "3 content pieces/mo", "1 campaign · 1 persona"],
+                  cta: "Start free",
+                  popular: false,
+                },
+                {
+                  name: "Starter",
+                  price: "$19",
+                  period: "/mo",
+                  highlight: "Content engine only",
+                  bullets: ["30 content campaigns/mo", "Image generation", "Newsletter + 500 sends", "Scheduling · unlimited personas"],
+                  cta: "Get Starter",
+                  popular: false,
+                },
+                {
+                  name: "Growth",
+                  price: "$29",
+                  period: "/mo",
+                  highlight: "Active outbound",
+                  bullets: ["1,000 GTM credits/mo", "Unlimited sends", "LinkedIn outreach", "CRM sync · reply detection"],
+                  cta: "Get Growth",
+                  popular: false,
+                },
+                {
+                  name: "Pro",
+                  price: "$49",
+                  period: "/mo",
+                  highlight: "Both engines, no limits",
+                  bullets: ["Unlimited credits + sends", "Unlimited content + long-form", "Copilot · campaign analytics", "Multi-inbox rotation"],
+                  cta: "Get Pro",
+                  popular: true,
+                },
+                {
+                  name: "Enterprise",
+                  price: "Custom",
+                  period: "",
+                  highlight: "Volume teams",
+                  bullets: ["Everything in Pro", "Custom credit volume", "White-label option", "SLA · dedicated onboarding"],
+                  cta: "Contact us",
+                  popular: false,
+                },
+              ] as const).map((tier) => (
+                <div
+                  key={tier.name}
+                  className="rounded-2xl p-5 flex flex-col"
+                  style={
+                    tier.popular
+                      ? { background: "#0A1628", border: `1px solid rgba(232,50,10,0.4)`, boxShadow: "0 8px 32px rgba(232,50,10,0.12)" }
+                      : { background: C.card, border: `1px solid ${C.border}` }
+                  }
+                >
+                  {tier.popular && (
+                    <span className="inline-block self-start text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-3"
+                      style={{ background: C.red, color: "#fff" }}>
+                      Most popular
+                    </span>
+                  )}
+
+                  <p className={`text-xs font-black uppercase tracking-widest mb-1 ${tier.popular ? "text-slate-400" : ""}`}
+                    style={tier.popular ? undefined : { color: C.dim }}>
+                    {tier.name}
+                  </p>
+
+                  <div className="flex items-baseline gap-0.5 mb-1">
+                    <span className={`text-2xl font-black ${tier.popular ? "text-white" : ""}`}
+                      style={tier.popular ? undefined : { color: C.white }}>
+                      {tier.price}
+                    </span>
+                    {tier.period && (
+                      <span className="text-xs font-semibold" style={{ color: tier.popular ? "#94a3b8" : C.dim }}>
+                        {tier.period}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] font-semibold mb-4"
+                    style={{ color: tier.popular ? "#94a3b8" : C.dim }}>
+                    {tier.highlight}
+                  </p>
+
+                  <ul className="space-y-1.5 flex-1 mb-5">
+                    {tier.bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-1.5">
+                        <span className="mt-0.5 shrink-0 text-[10px]" style={{ color: C.red }}>✓</span>
+                        <span className="text-[11px] leading-snug"
+                          style={{ color: tier.popular ? "#cbd5e1" : C.muted }}>
+                          {b}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="w-full py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all active:scale-95 cursor-pointer"
+                    style={
+                      tier.popular
+                        ? { background: C.red, color: "#fff" }
+                        : { background: "rgba(15,23,42,0.06)", border: `1px solid ${C.border}`, color: C.white }
+                    }
+                  >
+                    {tier.cta}
+                  </button>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Full pricing link */}
+            <p className="text-center mt-6 text-xs font-semibold" style={{ color: C.dim }}>
+              Credit bundles available for Starter users · {" "}
+              <Link href="/pricing" className="underline underline-offset-2 hover:opacity-80 transition-opacity"
+                style={{ color: C.muted }}>
+                See full feature comparison →
+              </Link>
+            </p>
+          </div>
+        </section>
+
         {/* ── WHO IT'S FOR ──────────────────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-32"
           style={{ background: C.navyMid, borderTop: `1px solid ${C.border}` }}>
