@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
+import { usePlanStatus } from '@/components/hooks/usePlanStatus'
 
 interface CrmConnection {
   id: string
@@ -43,6 +44,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 function SettingsContent() {
   const searchParams = useSearchParams()
+  const { planStatus } = usePlanStatus()
 
   // ── Gmail state ─────────────────────────────────────────────────────────────
   const [accounts, setAccounts] = useState<EmailAccount[]>([])
@@ -258,12 +260,24 @@ function SettingsContent() {
       <section style={{ marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <h2 style={{ fontWeight: 700 }}>Gmail</h2>
-          <a href="/api/gtm/gmail/connect" style={{ padding: '0.4rem 0.9rem', background: '#111', color: '#fff', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem' }}>
-            + Connect Gmail
-          </a>
+          {!planStatus?.hasMultiInbox && accounts.length >= 1 ? (
+            <Link href="/pricing" style={{ padding: '0.4rem 0.9rem', background: '#f1f5f9', color: '#475569', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem', border: '1px solid #e2e8f0' }}>
+              🔒 Pro required for 2nd inbox
+            </Link>
+          ) : (
+            <a href="/api/gtm/gmail/connect" style={{ padding: '0.4rem 0.9rem', background: '#111', color: '#fff', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem' }}>
+              + Connect Gmail
+            </a>
+          )}
         </div>
-        <div style={{ fontSize: '0.8rem', color: '#92400e', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 6, padding: '0.6rem 0.8rem', marginBottom: '1rem' }}>
-          ⚠ We recently added reply detection which requires a new Gmail permission (<code>gmail.readonly</code>). If your account was connected before, please <strong>disconnect and reconnect</strong> to enable it.
+        <div style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '0.85rem 1rem', marginBottom: '1rem', lineHeight: 1.6 }}>
+          <div style={{ fontWeight: 700, marginBottom: '0.3rem', color: '#1e40af' }}>📋 Heads up before you connect</div>
+          <div style={{ color: '#1e3a8a' }}>
+            Ozigi&apos;s Google integration is <strong>pending verification</strong> — we&apos;ve submitted our application and are waiting on Google&apos;s review. When you click <em>Connect Gmail</em>, Google will show an &quot;unverified app&quot; warning screen. <strong>This is expected and safe to proceed past.</strong>
+          </div>
+          <div style={{ marginTop: '0.5rem', color: '#1e3a8a' }}>
+            To continue: click <strong>&quot;Advanced&quot;</strong> on the warning screen, then <strong>&quot;Go to Ozigi (unsafe)&quot;</strong>. Your credentials are encrypted and we only request the permissions shown. We&apos;ll remove this notice once Google approves the app.
+          </div>
         </div>
         {gmailLoading && <p style={{ color: '#888' }}>Loading…</p>}
         {!gmailLoading && accounts.length === 0 && (
@@ -390,6 +404,11 @@ function SettingsContent() {
         ))}
 
         {/* OAuth connect buttons — only CRMs with Composio Managed credentials */}
+        {!planStatus?.hasCrmSync && (
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#475569' }}>
+            🔒 CRM sync is available on <Link href="/pricing" style={{ color: '#e8320a', fontWeight: 600 }}>Growth and Pro plans</Link>.
+          </div>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {[
             { provider: 'hubspot',    label: 'HubSpot',    color: '#ff7a59' },
@@ -398,26 +417,27 @@ function SettingsContent() {
           ].map(({ provider, label, color }) => {
             const already = crmConnections.some(c => c.provider === provider && c.is_active)
             const busy = crmConnecting === provider
+            const locked = !planStatus?.hasCrmSync
             return (
               <button
                 key={provider}
-                onClick={() => !already && connectCrmOAuth(provider)}
-                disabled={already || busy}
+                onClick={() => locked ? void 0 : !already && connectCrmOAuth(provider)}
+                disabled={already || busy || locked}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
                   padding: '0.65rem 1rem',
-                  border: `1px solid ${already ? '#86efac' : '#e5e7eb'}`,
+                  border: `1px solid ${already ? '#86efac' : locked ? '#e2e8f0' : '#e5e7eb'}`,
                   borderRadius: 8,
-                  background: already ? '#f0fdf4' : 'white',
-                  color: already ? '#166534' : '#111',
-                  cursor: already ? 'default' : busy ? 'wait' : 'pointer',
+                  background: already ? '#f0fdf4' : locked ? '#f8fafc' : 'white',
+                  color: already ? '#166534' : locked ? '#94a3b8' : '#111',
+                  cursor: already || locked ? 'default' : busy ? 'wait' : 'pointer',
                   fontSize: '0.9rem', fontWeight: 600,
                   opacity: busy ? 0.7 : 1,
                   transition: 'all 0.15s',
                 }}
               >
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: already ? '#22c55e' : color, flexShrink: 0 }} />
-                {busy ? 'Redirecting…' : already ? `${label} ✓` : `Connect ${label}`}
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: already ? '#22c55e' : locked ? '#cbd5e1' : color, flexShrink: 0 }} />
+                {busy ? 'Redirecting…' : already ? `${label} ✓` : locked ? `🔒 ${label}` : `Connect ${label}`}
               </button>
             )
           })}
