@@ -3,7 +3,8 @@ import Image from "next/image";
 import { getAllSections, getPostsBySection, SECTION_META } from "@/lib/blog";
 import { format } from "date-fns";
 
-// Revalidate every hour so post counts update without a full redeploy
+// Match the homepage revalidation so newly published posts appear in sections
+// without requiring a full redeploy.
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
