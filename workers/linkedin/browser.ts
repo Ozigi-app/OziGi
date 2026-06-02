@@ -1,5 +1,6 @@
 import { chromium, type Browser, type BrowserContext, type Cookie } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
 import crypto from 'crypto'
 
 const ALGORITHM = 'aes-256-gcm'
@@ -28,7 +29,8 @@ function encrypt(plaintext: string): string {
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { realtime: { transport: ws } }
   )
 }
 

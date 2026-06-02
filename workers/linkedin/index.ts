@@ -280,7 +280,7 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
 
         await supabase
           .from('linkedin_queue')
-          .update({ status: 'done', processed_at: now })
+          .update({ status: 'done', processed_at: now, error: null })
           .eq('id', item.id)
 
         // Mark the corresponding sequence_send as sent

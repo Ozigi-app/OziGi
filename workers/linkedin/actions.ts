@@ -15,6 +15,65 @@ async function humanType(page: import('playwright').Page, selector: string, text
   }
 }
 
+/**
+ * Tries every known LinkedIn pattern to click the Connect button.
+ * Returns true if clicked, false if not found (already connected / creator / etc).
+ *
+ * LinkedIn button placement varies by:
+ *   - Profile type (member vs creator)
+ *   - Connection degree (2nd, 3rd, Out-of-network)
+ *   - Viewport / A/B tests
+ *
+ * Strategy:
+ *   1. aria-label contains "Invite" or "Connect" — most reliable, survives text changes
+ *   2. Visible button with exact text "Connect" scoped to main
+ *   3. "More actions" dropdown → look for Connect item inside
+ */
+async function clickConnectButton(page: import('playwright').Page): Promise<boolean> {
+  const main = page.locator('main').first()
+
+  // 1. aria-label approach — most stable across LinkedIn versions
+  const ariaConnect = main.locator(
+    'button[aria-label*="Invite"], button[aria-label*="Connect"], button[aria-label*="connect"]'
+  ).first()
+  if (await ariaConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await ariaConnect.click({ timeout: 10_000 })
+    return true
+  }
+
+  // 2. Visible "Connect" button text scoped to main (not sidebar)
+  const textConnect = main.locator('button:has-text("Connect")').first()
+  if (await textConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await textConnect.click({ timeout: 10_000 })
+    return true
+  }
+
+  // 3. "More actions" / "More" dropdown — Connect sometimes lives here
+  const moreBtn = main.locator(
+    'button[aria-label*="More actions"], button[aria-label*="more actions"], button:has-text("More")'
+  ).first()
+  if (await moreBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await moreBtn.click({ timeout: 8_000 })
+    await page.waitForTimeout(800)
+
+    // Look for Connect inside the opened dropdown
+    const dropdownConnect = page.locator(
+      '[role="listbox"] [aria-label*="Connect"], [role="listbox"] [aria-label*="Invite"], ' +
+      '.artdeco-dropdown__content button:has-text("Connect"), ' +
+      '[data-control-name="connect"]'
+    ).first()
+    if (await dropdownConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await dropdownConnect.click({ timeout: 8_000 })
+      return true
+    }
+
+    // Close dropdown — Connect wasn't in there
+    await page.keyboard.press('Escape')
+  }
+
+  return false
+}
+
 export async function sendConnectionRequest(
   context: BrowserContext,
   linkedinUrl: string,
@@ -23,39 +82,24 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 })
+    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 40_000 })
     // Give the SPA extra time to finish rendering action buttons
-    await delay(2500, 4000)
+    await delay(3000, 5000)
 
-    // click() internally waits for the element to be visible + actionable (unlike isVisible which is instant)
-    // Scope to main to prefer the profile-header button over sidebar suggestions
-    const mainSection = page.locator('main').first()
-
-    const connectClicked = await mainSection
-      .locator('button:has-text("Connect")')
-      .first()
-      .click({ timeout: 10_000 })
-      .then(() => true)
-      .catch(() => false)
+    const connectClicked = await clickConnectButton(page)
 
     if (!connectClicked) {
-      // Some profiles hide Connect inside the "More" dropdown
-      const moreClicked = await mainSection
-        .locator('button[aria-label*="More actions"], button:has-text("More")')
-        .first()
-        .click({ timeout: 4_000 })
-        .then(() => true)
-        .catch(() => false)
+      // Could be: already connected, pending invite, creator with Follow-only, private profile
+      // Check what's actually there so we log something useful
+      const main = page.locator('main').first()
+      const isPending  = await main.locator('button:has-text("Pending")').isVisible({ timeout: 2_000 }).catch(() => false)
+      const isMessage  = await main.locator('button:has-text("Message")').isVisible({ timeout: 1_000 }).catch(() => false)
+      const isFollowing = await main.locator('button:has-text("Following")').isVisible({ timeout: 1_000 }).catch(() => false)
 
-      if (moreClicked) {
-        await delay(500, 1000)
-        await page
-          .locator('[aria-label*="Connect"], .artdeco-dropdown__item:has-text("Connect")')
-          .first()
-          .click({ timeout: 4_000 })
-      } else {
-        throw new Error('Connect button not found — already connected or profile not reachable')
-      }
+      if (isPending)   throw new Error('Connection request already pending')
+      if (isMessage)   throw new Error('Already connected — Message button visible')
+      if (isFollowing) throw new Error('Creator profile — Follow only, no Connect option')
+      throw new Error('Connect button not found — profile may be private or layout unrecognised')
     }
 
     await delay(1000, 2000)

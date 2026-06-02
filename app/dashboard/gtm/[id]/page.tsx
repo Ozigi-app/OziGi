@@ -5,6 +5,32 @@ import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import type { Campaign, Lead } from '@/lib/types/gtm'
 
+// ── Friendly error messages — never expose raw backend errors to users ─────────
+function friendlyActionError(raw: string): string {
+  if (raw.includes('credits'))           return 'No credits remaining — purchase a bundle to continue.'
+  if (raw.includes('limit'))             return 'Monthly send limit reached — upgrade your plan.'
+  if (raw.includes('GTM features'))      return 'GTM features require a Growth or Pro plan.'
+  if (raw.includes('No active Gmail') || raw.includes('email account')) return 'No email account connected — check Settings.'
+  return 'Something went wrong — please try again.'
+}
+
+function friendlyLiError(raw: string): string {
+  if (raw.includes('already connected') || raw.includes('Message button'))  return 'Already connected'
+  if (raw.includes('pending'))           return 'Invite already pending'
+  if (raw.includes('Creator profile'))   return 'Follow-only profile'
+  if (raw.includes('private'))           return 'Private profile'
+  if (raw.includes('Timeout') || raw.includes('timeout')) return 'Page timed out — will retry'
+  if (raw.includes('session expired') || raw.includes('no active')) return 'LinkedIn session expired — reconnect in Settings'
+  if (raw.includes('Connect button not found')) return 'Could not find Connect button — will retry'
+  return 'Action failed — will retry'
+}
+
+function friendlyPreviewError(raw: string): string {
+  if (raw.includes('no leads') || raw.includes('No leads')) return 'No leads available to preview — run a scrape first.'
+  if (raw.includes('sequence') || raw.includes('steps'))    return 'No email steps configured in this campaign.'
+  return 'Could not generate preview — please try again.'
+}
+
 // ── ICP Editor ────────────────────────────────────────────────────────────────
 type IcpConfig = Campaign['icp_config']
 
@@ -185,7 +211,7 @@ export default function CampaignDetailPage() {
       body: JSON.stringify({ action }),
     })
     const d = await res.json()
-    if (!res.ok) { setActionMsg(`Error: ${d.error}`); return }
+    if (!res.ok) { setActionMsg(friendlyActionError(d.error ?? '')); return }
 
     const before = action === 'scrape' ? data?.leads.length ?? 0 : data?.sends.length ?? 0
     let attempts = 0
@@ -212,7 +238,7 @@ export default function CampaignDetailPage() {
     const res = await fetch(`/api/gtm/campaigns/${id}/preview-emails`, { method: 'POST' })
     const d = await res.json()
     if (res.ok) setPreview(d)
-    else setActionMsg(`Preview failed: ${d.error}`)
+    else setActionMsg(friendlyPreviewError(d.error ?? ''))
     setPreviewing(false)
   }
 
@@ -292,7 +318,7 @@ export default function CampaignDetailPage() {
       {/* ── LinkedIn worker status banner ────────────────────────────────────── */}
       {liQueue.length > 0 && liPending > 0 && (
         <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '0.85rem', color: '#92400e' }}>
-          ⏳ <strong>{liPending} LinkedIn action{liPending > 1 ? 's' : ''} queued</strong> — the LinkedIn worker will process these automatically. Make sure the worker is running.
+          ⏳ <strong>{liPending} LinkedIn action{liPending > 1 ? 's' : ''} queued</strong> — processing automatically, actions are spaced out to appear human.
         </div>
       )}
       {liFailed > 0 && (
@@ -458,7 +484,7 @@ export default function CampaignDetailPage() {
                       {q.processed_at ? new Date(q.processed_at).toLocaleString() : '—'}
                     </td>
                     <td style={{ padding: '0.4rem 0.6rem', color: '#dc2626', fontSize: '0.78rem', maxWidth: 200 }}>
-                      {q.error ?? '—'}
+                      {q.error ? friendlyLiError(q.error) : '—'}
                     </td>
                   </tr>
                 ))}
@@ -535,7 +561,7 @@ export default function CampaignDetailPage() {
                   </div>
                   {p.error ? (
                     <div style={{ color: '#dc2626', fontSize: '0.85rem', padding: '0.75rem', background: '#fee2e2', borderRadius: 6 }}>
-                      Error: {p.error}
+                      {friendlyPreviewError(p.error)}
                     </div>
                   ) : (
                     <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>

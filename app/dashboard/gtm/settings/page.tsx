@@ -42,6 +42,14 @@ const STATUS_LABEL: Record<string, string> = {
   expired:     '⚠ Session expired',
 }
 
+function friendlyLoginError(raw: string): string {
+  if (raw.includes('credentials') || raw.includes('wrong') || raw.includes('blocked')) return 'Login failed — check your email and password.'
+  if (raw.includes('Timed out') || raw.includes('timeout') || raw.includes('Timeout'))  return 'Login timed out — please try again.'
+  if (raw.includes('credentials found'))  return 'No credentials saved — enter your LinkedIn email and password below.'
+  if (raw.includes('2FA') || raw.includes('verify') || raw.includes('checkpoint'))      return 'Verification required — enter the code sent to your email or phone.'
+  return 'Login failed — please try again.'
+}
+
 function SettingsContent() {
   const searchParams = useSearchParams()
   const { planStatus } = usePlanStatus()
@@ -206,7 +214,7 @@ function SettingsContent() {
       // Start polling immediately — don't wait to see 'logging_in' in DB first
       startPolling()
     } else {
-      setLiMsg(`Error: ${d.error}`)
+      setLiMsg('Could not start LinkedIn login — please check your credentials and try again.')
     }
     setLiConnecting(false)
   }
@@ -220,7 +228,7 @@ function SettingsContent() {
       body: JSON.stringify({ code: twoFaCode }),
     })
     const d = await res.json()
-    setLiMsg(d.message ?? d.error)
+    setLiMsg(d.ok ? 'Verification code submitted.' : 'Invalid or expired code — please try again.')
     setTwoFaCode('')
     setTwoFaSubmitting(false)
   }
@@ -465,7 +473,7 @@ function SettingsContent() {
                 </div>
                 {s.login_error && s.login_error !== '__push_notification__' && (
                   <div style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.25rem' }}>
-                    ✗ {s.login_error}
+                    ✗ {friendlyLoginError(s.login_error)}
                   </div>
                 )}
               </div>

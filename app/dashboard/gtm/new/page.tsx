@@ -93,7 +93,7 @@ export default function NewCampaignPage() {
     const d = await res.json()
 
     if (!res.ok) {
-      setAnalyseError(d.error ?? 'Analysis failed')
+      setAnalyseError("Couldn't analyse that URL — make sure it's a public page and try again.")
       setAnalysing(false)
       return
     }
@@ -168,7 +168,7 @@ export default function NewCampaignPage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Failed to create campaign')
+      if (!res.ok) throw new Error('Failed to create campaign — please try again.')
       router.push(`/dashboard/gtm/${data.campaign.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')

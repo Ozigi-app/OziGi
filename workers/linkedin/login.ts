@@ -18,6 +18,7 @@
 import { type Page } from 'playwright'
 import { chromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
 import crypto from 'crypto'
 
 const ALGORITHM       = 'aes-256-gcm'
@@ -47,7 +48,8 @@ function encrypt(plaintext: string): string {
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { realtime: { transport: ws } }
   )
 }
 
@@ -196,7 +198,7 @@ export async function loginLinkedIn(userId: string): Promise<void> {
 
   try {
     // Navigate to login page
-    await page.goto('https://www.linkedin.com/login', { waitUntil: 'networkidle', timeout: 30_000 })
+    await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 40_000 })
     await page.waitForTimeout(2000 + Math.random() * 1000)
 
     // Fill email
