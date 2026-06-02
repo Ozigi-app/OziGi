@@ -20,6 +20,7 @@ config({ path: path.resolve(__dirname, '../../.env.local') })
 
 import http from 'http'
 import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
 import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './browser'
 import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
 import { loginLinkedIn } from './login'
@@ -137,7 +138,8 @@ const MAX_ACTIONS_PER_RUN = 5         // max actions per poll cycle per user
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { realtime: { transport: ws } }
   )
 }
 

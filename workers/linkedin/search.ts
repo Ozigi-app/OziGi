@@ -46,52 +46,55 @@ function buildSearchUrl(icpConfig: IcpConfig): string {
  * LinkedIn's DOM changes frequently — multiple selectors used for robustness.
  */
 async function extractProfiles(page: import('playwright').Page): Promise<FoundProfile[]> {
+  // Wait for at least one /in/ profile link to appear (or timeout gracefully)
+  await page.waitForSelector('a[href*="/in/"]', { timeout: 8_000 }).catch(() => {})
+
   return page.evaluate(() => {
     const results: FoundProfile[] = []
+    const seen = new Set<string>()
 
-    // LinkedIn uses different container classes across versions
-    const cards = document.querySelectorAll(
-      'li.reusable-search__result-container, .entity-result__item, .search-result'
-    )
+    // Walk every /in/ link on the page — DOM-change proof
+    const links = Array.from(document.querySelectorAll('a[href*="/in/"]')) as HTMLAnchorElement[]
 
-    cards.forEach(card => {
-      // Profile link — must contain /in/
-      const linkEl = card.querySelector('a[href*="/in/"]') as HTMLAnchorElement | null
-      if (!linkEl) return
-
+    for (const linkEl of links) {
       const url = linkEl.href.split('?')[0].split('#')[0]
-      if (!url.includes('/in/')) return
+      if (!url.match(/linkedin\.com\/in\/[^/]+\/?$/)) continue
+      if (seen.has(url)) continue
+      seen.add(url)
 
-      // Name — try several selectors
-      const name = (
-        card.querySelector('.entity-result__title-text a span[aria-hidden="true"]')?.textContent ??
-        card.querySelector('.entity-result__title-text')?.textContent ??
-        card.querySelector('[data-anonymize="person-name"]')?.textContent ??
-        ''
-      ).trim().replace(/\s+/g, ' ')
-
-      // Title / headline
-      const title = (
-        card.querySelector('.entity-result__primary-subtitle')?.textContent ??
-        card.querySelector('.subline-level-1')?.textContent ??
-        ''
-      ).trim().replace(/\s+/g, ' ')
-
-      // Location
-      const location = (
-        card.querySelector('.entity-result__secondary-subtitle')?.textContent ??
-        card.querySelector('.subline-level-2')?.textContent ??
-        ''
-      ).trim().replace(/\s+/g, ' ')
-
-      // Skip 1st-degree connections — already connected
-      const degree = card.querySelector('.entity-result__badge-text, .dist-value')?.textContent ?? ''
-      if (degree.includes('1st')) return
-
-      if (url && name) {
-        results.push({ url, name, title, location })
+      // Walk up to find the result card container (li or div wrapping the card)
+      let card: Element = linkEl
+      for (let i = 0; i < 8; i++) {
+        if (!card.parentElement) break
+        card = card.parentElement
+        if (card.tagName === 'LI' || card.classList.length > 0) break
       }
-    })
+
+      // Name: prefer aria-hidden span inside the link (LinkedIn hides the real name
+      // in a visually-hidden span for screen readers and shows aria-hidden for display)
+      const nameSpan = linkEl.querySelector('span[aria-hidden="true"]')
+      const name = (nameSpan?.textContent ?? linkEl.textContent ?? '').trim().replace(/\s+/g, ' ')
+
+      // Skip "LinkedIn Member" — anonymised profiles we can't reach
+      if (!name || name.toLowerCase().includes('linkedin member')) continue
+
+      // Title: first non-empty text node in a span/div that isn't the name, within the card
+      let title = ''
+      const textEls = Array.from(card.querySelectorAll('span, div'))
+      for (const el of textEls) {
+        const t = (el.textContent ?? '').trim().replace(/\s+/g, ' ')
+        if (t && t !== name && t.length > 5 && t.length < 150 && !el.querySelector('a')) {
+          title = t
+          break
+        }
+      }
+
+      // Skip 1st-degree — already connected
+      const cardText = card.textContent ?? ''
+      if (cardText.includes('1st') && cardText.includes('degree')) continue
+
+      results.push({ url, name, title, location: '' })
+    }
 
     return results
   })
@@ -116,8 +119,8 @@ export async function searchAndSaveLeads(
     const searchUrl = buildSearchUrl(icpConfig)
     console.log(`[worker:search] searching LinkedIn: ${searchUrl}`)
 
-    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 })
-    await delay(2500, 4000)
+    await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 30_000 })
+    await delay(3000, 5000)
 
     // Check we're still logged in (not redirected to login page)
     const currentUrl = page.url()

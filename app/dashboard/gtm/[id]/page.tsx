@@ -1,9 +1,110 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import type { Campaign, Lead } from '@/lib/types/gtm'
+
+// ── ICP Editor ────────────────────────────────────────────────────────────────
+type IcpConfig = Campaign['icp_config']
+
+const ICP_FIELDS: { key: keyof IcpConfig; label: string; hint: string }[] = [
+  { key: 'job_titles',      label: 'Job Titles',      hint: 'e.g. Founder, CTO, Head of Growth — titles people use on LinkedIn' },
+  { key: 'industries',      label: 'Industries',      hint: 'e.g. SaaS, Developer Tools, B2B Software' },
+  { key: 'keywords',        label: 'Keywords',        hint: 'Words in a LinkedIn headline/bio — e.g. early-stage, startup, outbound. Avoid tool names like GitHub.' },
+  { key: 'company_sizes',   label: 'Company Sizes',   hint: 'e.g. 1-10, 11-50' },
+  { key: 'seniority_levels',label: 'Seniority',       hint: 'e.g. founder, senior, lead — optional' },
+  { key: 'locations',       label: 'Locations',       hint: 'e.g. United States, Europe — leave empty for global' },
+]
+
+function TagInput({ values, onChange }: { values: string[]; onChange: (v: string[]) => void }) {
+  const [input, setInput] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function add() {
+    const v = input.trim()
+    if (v && !values.includes(v)) onChange([...values, v])
+    setInput('')
+  }
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center', padding: '0.35rem 0.5rem', border: '1px solid #ddd', borderRadius: 6, background: '#fafafa', cursor: 'text' }}
+      onClick={() => inputRef.current?.focus()}>
+      {values.map(v => (
+        <span key={v} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#e0e7ff', color: '#3730a3', padding: '0.15rem 0.5rem', borderRadius: 12, fontSize: '0.8rem', fontWeight: 500 }}>
+          {v}
+          <button onClick={e => { e.stopPropagation(); onChange(values.filter(x => x !== v)) }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6366f1', fontSize: '0.85rem', lineHeight: 1, padding: 0 }}>×</button>
+        </span>
+      ))}
+      <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add() } if (e.key === 'Backspace' && !input && values.length) onChange(values.slice(0, -1)) }}
+        onBlur={add}
+        placeholder={values.length === 0 ? 'Type and press Enter…' : ''}
+        style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', minWidth: 120, flex: 1 }} />
+    </div>
+  )
+}
+
+function IcpEditor({ campaignId, icp, onSaved }: { campaignId: string; icp: IcpConfig; onSaved: (fresh: IcpConfig) => void }) {
+  const [config, setConfig] = useState<IcpConfig>(icp ?? {})
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved]   = useState(false)
+  const [open, setOpen]     = useState(false)
+
+  function setField(key: keyof IcpConfig, val: string[]) {
+    setConfig(prev => ({ ...prev, [key]: val }))
+    setSaved(false)
+  }
+
+  async function save() {
+    setSaving(true)
+    await fetch(`/api/gtm/campaigns/${campaignId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ icp_config: config }),
+    })
+    setSaving(false)
+    setSaved(true)
+    onSaved(config)
+    setTimeout(() => setSaved(false), 3000)
+  }
+
+  return (
+    <div style={{ marginTop: '2rem', border: '1px solid #eee', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', cursor: 'pointer', background: open ? '#fafafa' : 'white' }}
+        onClick={() => setOpen(o => !o)}>
+        <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>
+          ICP Config <span style={{ fontWeight: 400, color: '#888', fontSize: '0.8rem' }}>— controls LinkedIn &amp; GitHub search</span>
+        </span>
+        <span style={{ color: '#888', fontSize: '0.85rem' }}>{open ? '▲ collapse' : '▼ edit'}</span>
+      </div>
+
+      {open && (
+        <div style={{ padding: '1rem', borderTop: '1px solid #eee' }}>
+          <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#666', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 6, padding: '0.5rem 0.75rem' }}>
+            ⚠️ <strong>Keywords and Job Titles</strong> are used directly as LinkedIn search terms. Use words people actually write in their LinkedIn headline — avoid tool names like "GitHub" or "Dev.to".
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            {ICP_FIELDS.map(({ key, label, hint }) => (
+              <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#444' }}>{label}</label>
+                <TagInput values={(config as Record<string, string[]>)[key] ?? []} onChange={val => setField(key, val)} />
+                <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{hint}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button onClick={save} disabled={saving} style={{ padding: '0.45rem 1.1rem', background: '#111', color: 'white', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: '0.88rem', cursor: saving ? 'not-allowed' : 'pointer' }}>
+              {saving ? 'Saving…' : 'Save ICP'}
+            </button>
+            {saved && <span style={{ color: '#16a34a', fontSize: '0.85rem' }}>✓ Saved — changes apply on next Scrape</span>}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface Send {
   id: string
@@ -314,14 +415,18 @@ export default function CampaignDetailPage() {
             <div style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.5rem', color: '#666', fontSize: '0.88rem', lineHeight: 1.7 }}>
               <div style={{ fontWeight: 700, color: '#111', marginBottom: '0.5rem' }}>How LinkedIn outreach works</div>
               <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
-                <li>Run Send → the cron queues LinkedIn actions for leads that have a LinkedIn URL</li>
+                <li>Run Scrape → the LinkedIn worker finds profiles on LinkedIn matching your ICP and adds them as leads</li>
+                <li>Run Send → the cron queues LinkedIn actions for those leads</li>
                 <li>The LinkedIn worker (running locally or on Fly.io) picks them up every 30s</li>
                 <li>It opens a browser session using your connected LinkedIn account and performs each action</li>
                 <li>Results appear here — done, failed, and error details</li>
               </ol>
               <div style={{ marginTop: '0.9rem', padding: '0.6rem 0.8rem', background: '#f9f9f9', borderRadius: 6, fontSize: '0.82rem' }}>
                 <strong>{leadsWithLi} of {leads.length} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
-                {leadsWithLi === 0 && ' Run a scrape — GitHub profiles often include LinkedIn URLs.'}
+                {leadsWithLi === 0 && campaign.sources?.includes('linkedin')
+                  ? ' Run a scrape — the LinkedIn worker will find and add leads with LinkedIn profiles directly.'
+                  : leadsWithLi === 0 ? ' GitHub profiles sometimes include LinkedIn URLs, but for direct LinkedIn sourcing add "linkedin" to your campaign sources.' : ''
+                }
               </div>
             </div>
           )}
@@ -398,13 +503,8 @@ export default function CampaignDetailPage() {
         </div>
       )}
 
-      {/* ── ICP config ──────────────────────────────────────────────────────── */}
-      <details style={{ marginTop: '2rem', border: '1px solid #eee', borderRadius: 8, padding: '1rem' }}>
-        <summary style={{ cursor: 'pointer', fontWeight: 600 }}>ICP Config (parsed by Gemini)</summary>
-        <pre style={{ marginTop: '0.75rem', fontSize: '0.8rem', background: '#f9f9f9', padding: '0.75rem', borderRadius: 6, overflow: 'auto' }}>
-          {JSON.stringify(campaign.icp_config, null, 2)}
-        </pre>
-      </details>
+      {/* ── ICP config editor ───────────────────────────────────────────────── */}
+      <IcpEditor campaignId={id} icp={campaign.icp_config} onSaved={fresh => setData(prev => prev ? { ...prev, campaign: { ...prev.campaign, icp_config: fresh } } : prev)} />
 
       {/* ── Email preview modal ──────────────────────────────────────────────── */}
       {preview && (

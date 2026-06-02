@@ -223,16 +223,16 @@ Return ONLY the message text, nothing else.`,
 export async function parseIcpDescription(description: string): Promise<Campaign['icp_config']> {
   const ai = await getVertexAIClient()
 
-  const prompt = `Extract structured ICP (Ideal Customer Profile) data from this description:
+  const prompt = `Extract structured ICP (Ideal Customer Profile) data from this description for use in LinkedIn and GitHub outreach campaigns.
 
 "${description}"
 
 Return JSON with these fields (arrays of strings):
 {
-  "job_titles": [],        // e.g. ["Software Engineer", "CTO", "Indie Developer"]
-  "industries": [],        // e.g. ["SaaS", "Developer Tools", "FinTech"]
+  "job_titles": [],        // Job titles or roles this person holds on LinkedIn. e.g. ["Founder", "CTO", "Head of Growth"]. Use titles people actually put on LinkedIn profiles.
+  "industries": [],        // Industries, e.g. ["SaaS", "Developer Tools", "FinTech"]
   "company_sizes": [],     // e.g. ["1-10", "11-50"] — use these exact ranges: 1-10, 11-50, 51-200, 201-1000, 1000+
-  "keywords": [],          // skills/topics that signal a match, e.g. ["open source", "TypeScript", "side project"]
+  "keywords": [],          // Words or short phrases that appear in this person's LinkedIn headline or bio. e.g. ["open source", "B2B", "early-stage", "startup"]. IMPORTANT: these are used as LinkedIn search terms — only include words a real person would write in their own profile. Never include product names, tool names (e.g. GitHub, Dev.to), or internal descriptions.
   "seniority_levels": [],  // e.g. ["senior", "lead", "founder"] — optional
   "locations": []          // e.g. ["United States", "Europe"] — optional, empty if global
 }`

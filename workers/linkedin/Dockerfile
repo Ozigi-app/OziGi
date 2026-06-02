@@ -1,5 +1,5 @@
 # ── Build stage — needs devDependencies (esbuild, tsx) ───────────────────────
-FROM mcr.microsoft.com/playwright:v1.44.0-jammy AS builder
+FROM mcr.microsoft.com/playwright:v1.60.0-jammy AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY . .
 RUN npm run build
 
 # ── Runtime stage ─────────────────────────────────────────────────────────────
-FROM mcr.microsoft.com/playwright:v1.44.0-jammy
+FROM mcr.microsoft.com/playwright:v1.60.0-jammy
 
 WORKDIR /app
 
