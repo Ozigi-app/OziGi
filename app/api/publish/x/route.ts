@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { TwitterApi } from "twitter-api-v2";
+import { phCapture } from "@/lib/posthog";
 
 export async function POST(req: Request) {
   try {
@@ -86,6 +87,14 @@ export async function POST(req: Request) {
       previousTweetId = response.data.id;
     }
     await supabase.rpc("increment_posts_published", { user_id_input: user.id });
+
+    phCapture(user.id, 'content_published_x', {
+      email: user.email,
+      tweetCount: tweets.length,
+      isThread: tweets.length > 1,
+      hasImage: !!imageUrl,
+      charCount: text?.length,
+    }).catch(() => {})
 
     return NextResponse.json({ success: true });
 

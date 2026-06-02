@@ -93,7 +93,56 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta property="og:image" content="https://ozigi.app/og-image.png" />
         <link rel="me" href="https://mastodon.social/@Dumebi" />
-              <script src="https://analytics.ahrefs.com/analytics.js" data-key="MhdBfYlV5PLcSxQWguZYSQ" async></script>
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="MhdBfYlV5PLcSxQWguZYSQ" async></script>
+
+        {/* Organization structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Ozigi",
+              url: "https://ozigi.app",
+              logo: "https://ozigi.app/og-image.png",
+              description:
+                "Ozigi is a free go-to-market suite for founders. Run LinkedIn outreach, email campaigns, and AI content generation — all in one place.",
+              sameAs: [
+                "https://twitter.com/DumebiTheWriter",
+                "https://mastodon.social/@Dumebi",
+                "https://peerlist.io/dumebi",
+              ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer support",
+                url: "https://ozigi.app/docs",
+              },
+            }),
+          }}
+        />
+
+        {/* SoftwareApplication structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "Ozigi",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              url: "https://ozigi.app",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+                description: "Free to start — no credit card required.",
+              },
+              description:
+                "Free GTM suite for founders: LinkedIn outreach, email campaigns, lead scraping, and AI content generation in one place.",
+            }),
+          }}
+        />
       </head>
 
       <body

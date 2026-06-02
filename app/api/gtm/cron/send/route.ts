@@ -8,6 +8,7 @@ import { syncLeadToCRM } from '@/lib/gtm/crm'
 import { getPlanStatus, incrementSequenceSend } from '@/lib/plan'
 import type { Campaign, Lead, SequenceStep } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
+import { phCapture } from '@/lib/posthog'
 
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
@@ -269,6 +270,16 @@ export async function POST(req: Request) {
       }
 
       results[campaign.id] = { emailSent: campaignEmailSent, liEnqueued: campaignLiEnqueued, skipped: campaignSkipped }
+
+      if (campaignEmailSent > 0 || campaignLiEnqueued > 0) {
+        phCapture(campaign.user_id, 'gtm_outreach_sent', {
+          campaignId: campaign.id,
+          emailsSent: campaignEmailSent,
+          linkedinEnqueued: campaignLiEnqueued,
+          skipped: campaignSkipped,
+          plan: planCache.get(campaign.user_id)?.plan,
+        }).catch(() => {})
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       console.error(`[gtm/cron/send] campaign ${campaign.id}:`, msg)

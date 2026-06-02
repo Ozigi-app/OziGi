@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import { buildUpgradeWelcomeEmail, buildPaymentReceiptEmail } from '@/lib/email-templates';
 import { SendMailClient } from 'zeptomail';
+import { phCapture } from '@/lib/posthog';
 
 const ZEPTOMAIL_BASE_URL = "https://api.zeptomail.com/v1.1/email";
 const ZEPTOMAIL_RAW_TOKEN = process.env.ZEPTOMAIL_API_KEY!;
@@ -282,6 +283,14 @@ export async function POST(req: Request) {
           });
           if (error) {
             console.error('[Dodo Webhook] Failed to add addon credits:', error);
+          } else {
+            phCapture(userId, 'credits_purchased', {
+              credits,
+              productId,
+              amount,
+              currency,
+              paymentId,
+            }).catch(() => {})
           }
         } else {
           console.warn('[Dodo Webhook] Unknown bundle product ID:', productId);
@@ -301,6 +310,16 @@ export async function POST(req: Request) {
           currency,
           productId,
         });
+
+        phCapture(userId, 'subscription_activated', {
+          plan: planFromMetadata,
+          interval: productId ? (productId.includes('yearly') ? 'yearly' : 'monthly') : undefined,
+          amount,
+          currency,
+          paymentId,
+          subscriptionId,
+          productId,
+        }).catch(() => {})
       } else {
         console.warn('[Dodo Webhook] Payment succeeded but missing user_id or plan in metadata:', metadata);
       }
@@ -337,6 +356,11 @@ export async function POST(req: Request) {
           .from('profiles')
           .update({ plan: 'free', updated_at: new Date().toISOString() })
           .eq('id', userId);
+
+        phCapture(userId, 'subscription_cancelled', {
+          reason: event.type,
+          previousPlan: event.data?.metadata?.plan,
+        }).catch(() => {})
       }
     }
 

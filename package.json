@@ -4,15 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx playwright test",
-    "test:headless": "npx playwright test --headless",
-    "test:ci": "npx playwright test --workers=1 --retries=2",
-    "test:staging": "BASE_URL=https://staging.ozigi.app npx playwright test",
-    "test:prod": "BASE_URL=https://ozigi.app npx playwright test",
-    "test:report": "npx playwright show-report"
+    "test": "USE_PROD_SERVER=1 npx playwright test --workers=1 --project=chromium",
+    "test:dev": "npx playwright test --workers=1 --project=chromium",
+    "test:all": "USE_PROD_SERVER=1 npx playwright test --workers=1",
+    "test:headless": "USE_PROD_SERVER=1 npx playwright test --workers=1 --project=chromium",
+    "test:ci": "USE_PROD_SERVER=1 npx playwright test --workers=1 --retries=2 --project=chromium",
+    "test:staging": "BASE_URL=https://staging.ozigi.app npx playwright test --workers=1",
+    "test:prod": "BASE_URL=https://ozigi.app npx playwright test --workers=1",
+    "test:report": "npx playwright show-report",
+    "test:api": "USE_PROD_SERVER=1 npx playwright test tests/09-api-endpoints.spec.ts --project=chromium",
+    "test:public": "USE_PROD_SERVER=1 npx playwright test tests/01-public-pages.spec.ts tests/02-auth.spec.ts --workers=1 --project=chromium"
   },
   "dependencies": {
     "@ai-sdk/google-vertex": "^4.0.95",

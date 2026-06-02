@@ -79,7 +79,9 @@ emails/
 playwright-report/
 playwright-reports/
 test-results/
-tests/
+
+# Playwright auth state (contains tokens — never commit)
+playwright/.auth/
 
 # Scripts and automation
 scripts/

@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { phCapture } from '@/lib/posthog'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -55,6 +56,17 @@ console.log("Auth callback called, code present:", !!code);
           },
           body: JSON.stringify({ email: userEmail, name: userName }),
         }).catch(err => console.error('Welcome email fetch error:', err))
+
+        phCapture(user.id, 'user_signed_up', {
+          email: user.email,
+          provider: user.app_metadata?.provider,
+          name: user.user_metadata?.full_name,
+        }).catch(() => {})
+      } else {
+        phCapture(user.id, 'user_signed_in', {
+          email: user.email,
+          provider: user.app_metadata?.provider,
+        }).catch(() => {})
       }
 
       return NextResponse.redirect(`${origin}${next}`)

@@ -5,6 +5,7 @@ import { scrapeGitHub, scrapeDevTo, scoreLeads } from '@/lib/gtm/scraper'
 import { getPlanStatus, incrementLeadsScraped, deductAddonCredits } from '@/lib/plan'
 import type { Campaign } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
+import { phCapture } from '@/lib/posthog'
 
 // Cache plan status per user within a single cron run to avoid N×DB calls
 const planCache = new Map<string, PlanStatus>()
@@ -156,6 +157,16 @@ export async function POST(req: Request) {
       }
 
       results[campaign.id] = { scraped: allLeads.length, inserted }
+
+      phCapture(campaign.user_id, 'gtm_leads_scraped', {
+        campaignId: campaign.id,
+        sources: campaign.sources,
+        totalScraped: allLeads.length,
+        qualified: qualified.length,
+        inserted,
+        plan: ps.plan,
+        creditsRemaining: ps.creditsBalance - inserted,
+      }).catch(() => {})
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       console.error(`[gtm/cron/scrape] campaign ${campaign.id}:`, msg)

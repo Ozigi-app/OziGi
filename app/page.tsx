@@ -334,7 +334,7 @@ export default function Home() {
             </a>
             <a href="https://goodaitools.com/ai/ozigi-app" target="_blank" rel="noopener"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Badge" height={54} className="h-7 w-auto" />
+              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Featured on GoodAITools" height={54} className="h-7 w-auto" />
             </a>
           </div>
         </div>

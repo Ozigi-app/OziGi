@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { schedulePostWithQStash } from "@/lib/qstash";
+import { phCapture } from "@/lib/posthog";
 
 export async function POST(req: Request) {
   try {
@@ -59,6 +60,15 @@ export async function POST(req: Request) {
         qstashResults.push({ postId: post.id, success: false, error: qstashError.message });
       }
     }
+
+    const platforms = [...new Set(posts.map((p: any) => p.platform))]
+    phCapture(user.id, 'content_scheduled', {
+      email: user.email,
+      postCount: posts.length,
+      platforms,
+      scheduledFor,
+      hasCampaign: !!campaignId,
+    }).catch(() => {})
 
     return NextResponse.json({ success: true, data, qstash: qstashResults });
   } catch (error: any) {

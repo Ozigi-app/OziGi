@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { parseIcpDescription } from '@/lib/gtm/composer'
 import { createCampaignSchedules, triggerImmediateScrape } from '@/lib/gtm/scheduler'
 import { getPlanStatus } from '@/lib/plan'
+import { phCapture } from '@/lib/posthog'
 
 export async function GET() {
   const supabase = await createClient()
@@ -90,6 +91,17 @@ export async function POST(req: Request) {
       console.error('[gtm/campaigns] immediate scrape failed:', e)
     )
   }
+
+  phCapture(user.id, 'gtm_campaign_created', {
+    email: user.email,
+    campaignId: campaign.id,
+    campaignName: name,
+    sources,
+    dailyEmailLimit: daily_email_limit ?? 40,
+    dailyLinkedinLimit: daily_linkedin_limit ?? 20,
+    sequenceStepCount: (sequence_steps ?? []).length || 3,
+    plan: planStatus.plan,
+  }).catch(() => {})
 
   return NextResponse.json({ campaign }, { status: 201 })
 }

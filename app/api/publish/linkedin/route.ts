@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { phCapture } from "@/lib/posthog";
 
 // LinkedIn REST API version — YYYYMM format used by /rest/* endpoints.
 // 202601 = January 2026 — ~5 months old, safely released and within LinkedIn's
@@ -365,6 +366,14 @@ export async function POST(req: Request) {
     }
 
     await supabaseAdmin.rpc("increment_posts_published", { user_id_input: userId });
+
+    phCapture(userId ?? 'unknown', 'content_published_linkedin', {
+      hasImage: imageList.length > 0,
+      imageCount: imageList.length,
+      hasDocument: !!documentBase64,
+      postType: documentBase64 ? 'carousel' : imageList.length > 0 ? 'image' : 'text',
+      charCount: text?.length,
+    }).catch(() => {})
 
     return NextResponse.json({
       success: true,

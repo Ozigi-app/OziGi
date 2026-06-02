@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { triggerImmediateScrape, triggerImmediateSend } from '@/lib/gtm/scheduler'
 import { getPlanStatus } from '@/lib/plan'
+import { phCapture } from '@/lib/posthog'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient()
@@ -67,6 +68,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } else {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
+
+  phCapture(user.id, 'gtm_campaign_triggered', {
+    email: user.email,
+    campaignId: id,
+    action,
+    plan: planStatus.plan,
+  }).catch(() => {})
 
   return NextResponse.json({ ok: true, queued: action })
 }

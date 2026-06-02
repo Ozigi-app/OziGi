@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { UserPlus, CheckCircle, Clock, XCircle } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
+import Link from 'next/link'
 
 interface QueueItem {
   id: string
@@ -43,12 +44,20 @@ export default function LinkedInOutreachPage() {
     <div>
     <GtmPageHeader title="LinkedIn Outreach" />
     <div className="px-8 py-7 max-w-4xl">
-      <div className="flex items-center gap-3 mb-7">
-        <UserPlus size={20} className="text-[#0a66c2]" />
-        <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">LinkedIn Outreach</h1>
-          <p className="text-foreground-subtle text-sm mt-0.5">All LinkedIn actions across campaigns</p>
+      <div className="flex items-start justify-between mb-7">
+        <div className="flex items-center gap-3">
+          <UserPlus size={20} className="text-[#0a66c2]" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">LinkedIn Outreach</h1>
+            <p className="text-foreground-subtle text-sm mt-0.5">All LinkedIn actions across campaigns</p>
+          </div>
         </div>
+        <Link
+          href="/dashboard/gtm/new"
+          className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors no-underline"
+        >
+          + New Campaign
+        </Link>
       </div>
 
       <FreeAgentBanner />

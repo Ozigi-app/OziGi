@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { phCapture } from '@/lib/posthog';
 
 type Plan = 'starter' | 'growth' | 'pro';
 type Interval = 'monthly' | 'yearly';
@@ -91,6 +92,13 @@ export async function POST(req: Request) {
     if (!data.checkout_url) {
       return NextResponse.json({ error: 'No checkout URL returned' }, { status: 500 });
     }
+
+    phCapture(user.id, 'checkout_started', {
+      email: user.email,
+      plan,
+      interval,
+      productId,
+    }).catch(() => {})
 
     return NextResponse.json({ checkoutUrl: data.checkout_url });
   } catch (error: any) {

@@ -126,7 +126,7 @@ export default async function SectionPage({ params }: { params: Promise<{ slug: 
                 )}
                 <div className="p-6">
                   <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
-                    <span>{format(new Date(post.date), "MMM dd, yyyy")}</span>
+                    <span>{format(new Date(post.date + "T00:00:00Z"), "MMM dd, yyyy")}</span>
                     <span>•</span>
                     <span>{post.readTime || "5 min read"}</span>
                   </div>
