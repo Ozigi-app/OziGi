@@ -115,7 +115,7 @@ function IcpEditor({ campaignId, icp, onSaved }: { campaignId: string; icp: IcpC
             {ICP_FIELDS.map(({ key, label, hint }) => (
               <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#444' }}>{label}</label>
-                <TagInput values={(config as Record<string, string[]>)[key] ?? []} onChange={val => setField(key, val)} />
+                <TagInput values={(config as unknown as Record<string, string[]>)[key] ?? []} onChange={val => setField(key, val)} />
                 <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{hint}</span>
               </div>
             ))}

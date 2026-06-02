@@ -49,7 +49,7 @@ function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { realtime: { transport: ws } }
+    { realtime: { transport: ws as unknown as typeof WebSocket } }
   )
 }
 
@@ -199,22 +199,25 @@ export async function loginLinkedIn(userId: string): Promise<void> {
   try {
     // Navigate to login page
     await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 40_000 })
-    await page.waitForTimeout(2000 + Math.random() * 1000)
 
-    // Fill email
-    const usernameSelector = await Promise.race([
-      page.waitForSelector('#username',                      { timeout: 15_000 }).then(() => '#username'),
-      page.waitForSelector('input[name="session_key"]',      { timeout: 15_000 }).then(() => 'input[name="session_key"]'),
-      page.waitForSelector('input[autocomplete="username"]', { timeout: 15_000 }).then(() => 'input[autocomplete="username"]'),
-    ])
+    // Wait for the login form to actually render (SPA may take a few seconds after domcontentloaded)
+    const usernameSelector = await Promise.any([
+      page.waitForSelector('#username',                      { timeout: 20_000 }).then(() => '#username'),
+      page.waitForSelector('input[name="session_key"]',      { timeout: 20_000 }).then(() => 'input[name="session_key"]'),
+      page.waitForSelector('input[autocomplete="username"]', { timeout: 20_000 }).then(() => 'input[autocomplete="username"]'),
+    ]).catch(() => { throw new Error('LinkedIn login page did not load — please try again.') })
+
+    await page.waitForTimeout(1000 + Math.random() * 1000)
     await page.fill(usernameSelector, email)
     await page.waitForTimeout(500 + Math.random() * 500)
 
     // Fill password
-    const passwordSelector = await Promise.race([
-      page.waitForSelector('#password',                         { timeout: 5_000 }).then(() => '#password'),
-      page.waitForSelector('input[name="session_password"]',    { timeout: 5_000 }).then(() => 'input[name="session_password"]'),
-    ])
+    const passwordSelector = await Promise.any([
+      page.waitForSelector('#password',                      { timeout: 10_000 }).then(() => '#password'),
+      page.waitForSelector('input[name="session_password"]', { timeout: 10_000 }).then(() => 'input[name="session_password"]'),
+      page.waitForSelector('input[type="password"]',         { timeout: 10_000 }).then(() => 'input[type="password"]'),
+    ]).catch(() => { throw new Error('LinkedIn login page did not load — please try again.') })
+
     await page.fill(passwordSelector, password)
     await page.waitForTimeout(500 + Math.random() * 800)
 

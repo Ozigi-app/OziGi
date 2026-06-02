@@ -14,12 +14,19 @@ export async function generateStaticParams() {
   }));
 }
 
+/** Reverse a URL slug back to its canonical section name.
+ *  Looks up the slug in getAllSections() so brand-name casing
+ *  (e.g. "WordPress" not "Wordpress") is always preserved. */
+function slugToSection(slug: string): string {
+  const sections = getAllSections();
+  return (
+    sections.find((s) => s.toLowerCase().replace(/\s+/g, "-") === slug) ?? slug
+  );
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const sectionName = slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const sectionName = slugToSection(slug);
 
   return {
     title: `${sectionName} | Ozigi Blog`,
@@ -29,10 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function SectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const sectionName = slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const sectionName = slugToSection(slug);
 
   const posts = await getPostsBySection(sectionName);
   const allSections = getAllSections();
