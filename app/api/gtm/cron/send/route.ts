@@ -186,6 +186,7 @@ export async function POST(req: Request) {
 
       // ── LinkedIn steps ───────────────────────────────────────────────────────
       const linkedinSteps = steps.filter(s => s.channel === 'linkedin')
+      console.log(`[gtm/cron/send] campaign ${campaign.id}: ${linkedinSteps.length} linkedin steps, hasLinkedInOutreach=${ps.hasLinkedInOutreach}`)
       if (linkedinSteps.length > 0 && !ps.hasLinkedInOutreach) {
         console.log(`[gtm/cron/send] LinkedIn outreach not available on plan '${ps.plan}' for user ${campaign.user_id} — skipping LinkedIn steps`)
       }
@@ -200,12 +201,14 @@ export async function POST(req: Request) {
 
         let liEnqueuedToday = liTodayCount ?? 0
         const dailyLinkedInLimit = campaign.daily_linkedin_limit ?? 20
+        console.log(`[gtm/cron/send] campaign ${campaign.id}: liEnqueuedToday=${liEnqueuedToday}, dailyLinkedInLimit=${dailyLinkedInLimit}`)
 
         for (const step of linkedinSteps) {
           if (liEnqueuedToday >= dailyLinkedInLimit) break
 
           const action = getLinkedInAction(step, steps)
           const leadsForStep = await getLinkedInLeadsDueForStep(campaign.id, step, steps, action)
+          console.log(`[gtm/cron/send] campaign ${campaign.id}: step ${step.step} action=${action}, leadsForStep=${leadsForStep.length}`)
 
           for (const lead of leadsForStep) {
             if (liEnqueuedToday >= dailyLinkedInLimit) break
