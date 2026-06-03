@@ -8,13 +8,13 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { li_at, linkedin_email } = await req.json()
+  const { li_at, linkedin_email, jsessionid, bcookie } = await req.json()
   if (!li_at || !linkedin_email) {
     return NextResponse.json({ error: 'li_at cookie value and LinkedIn email required' }, { status: 400 })
   }
 
-  // Build a minimal Playwright-compatible cookie array — browser.ts:loadSession()
-  // calls context.addCookies() with this, and isLoggedIn() checks for li_at.
+  // Build a Playwright-compatible cookie array. More cookies = more stable session.
+  // li_at alone causes LinkedIn to detect fingerprint mismatch after a few requests.
   const cookies = [
     {
       name: 'li_at',
@@ -26,6 +26,26 @@ export async function POST(req: Request) {
       secure: true,
       sameSite: 'None' as const,
     },
+    ...(jsessionid ? [{
+      name: 'JSESSIONID',
+      value: (jsessionid as string).trim(),
+      domain: '.www.linkedin.com',
+      path: '/',
+      expires: -1,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None' as const,
+    }] : []),
+    ...(bcookie ? [{
+      name: 'bcookie',
+      value: (bcookie as string).trim(),
+      domain: '.linkedin.com',
+      path: '/',
+      expires: -1,
+      httpOnly: false,
+      secure: true,
+      sameSite: 'None' as const,
+    }] : []),
   ]
 
   const { error } = await supabaseAdmin

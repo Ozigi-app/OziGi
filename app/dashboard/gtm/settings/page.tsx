@@ -85,6 +85,8 @@ function SettingsContent() {
   const [liMode, setLiMode] = useState<'password' | 'cookie'>('cookie')
   const [liCookieValue, setLiCookieValue] = useState('')
   const [liCookieEmail, setLiCookieEmail] = useState('')
+  const [liJsessionId, setLiJsessionId] = useState('')
+  const [liBcookie, setLiBcookie] = useState('')
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -229,7 +231,12 @@ function SettingsContent() {
     const res = await fetch('/api/gtm/linkedin/cookie', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ li_at: liCookieValue, linkedin_email: liCookieEmail }),
+      body: JSON.stringify({
+        li_at: liCookieValue,
+        linkedin_email: liCookieEmail,
+        jsessionid: liJsessionId || undefined,
+        bcookie: liBcookie || undefined,
+      }),
     })
     const d = await res.json()
     if (res.ok) {
@@ -604,7 +611,13 @@ function SettingsContent() {
                     </li>
                     <li>Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox).</li>
                     <li>In the left sidebar, expand <strong>Cookies</strong> → click <strong>https://www.linkedin.com</strong>.</li>
-                    <li>Find the row named <strong>li_at</strong> and copy the full <strong>Value</strong> (it&apos;s a long string).</li>
+                    <li>Copy the <strong>Value</strong> for each of these cookies into the fields below:
+                      <ul style={{ margin: '0.2rem 0 0 1rem', padding: 0, listStyle: 'disc' }}>
+                        <li><strong>li_at</strong> — required (your auth token)</li>
+                        <li><strong>JSESSIONID</strong> — recommended (session ID, helps keep you logged in)</li>
+                        <li><strong>bcookie</strong> — recommended (browser ID, prevents session drops)</li>
+                      </ul>
+                    </li>
                   </ol>
                 </div>
                 <form onSubmit={connectLinkedInCookie} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -619,7 +632,21 @@ function SettingsContent() {
                     type="text"
                     value={liCookieValue}
                     onChange={e => setLiCookieValue(e.target.value)}
-                    placeholder="Paste li_at cookie value here"
+                    placeholder="li_at value (required)"
+                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                  />
+                  <input
+                    type="text"
+                    value={liJsessionId}
+                    onChange={e => setLiJsessionId(e.target.value)}
+                    placeholder="JSESSIONID value (recommended)"
+                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                  />
+                  <input
+                    type="text"
+                    value={liBcookie}
+                    onChange={e => setLiBcookie(e.target.value)}
+                    placeholder="bcookie value (recommended)"
                     style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
                   />
                   <button

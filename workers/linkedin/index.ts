@@ -269,6 +269,33 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       return
     }
 
+    // Visit the feed first — refreshes session tokens and looks like normal browsing.
+    // Also lets us detect a dead session before wasting time on profile actions.
+    console.log(`[worker] warming session via feed visit for ${session.linkedin_email}`)
+    const feedPage = await context.newPage()
+    try {
+      await feedPage.goto('https://www.linkedin.com/feed/', {
+        waitUntil: 'domcontentloaded',
+        timeout: 30_000,
+      })
+      await feedPage.waitForTimeout(2000)
+
+      const feedBlank = await feedPage.evaluate(() =>
+        document.querySelectorAll('button').length === 0 &&
+        (document.body.textContent ?? '').trim().length < 50
+      )
+      if (feedBlank) {
+        console.warn(`[worker] feed page blank — session invalidated for ${session.linkedin_email}`)
+        await markSessionExpired(session.id)
+        return
+      }
+
+      // Save any fresh cookies LinkedIn set on the feed page
+      await saveSession(sessionInfo, context)
+    } finally {
+      await feedPage.close().catch(() => {})
+    }
+
     let actionsThisRun = 0
 
     for (const item of items) {
