@@ -148,10 +148,17 @@ export async function sendConnectionRequest(
 
     await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
 
+    // Wait for the profile to actually render — wait for the title to change
+    // from the generic "LinkedIn" shell to the person's name, or for the
+    // profile action area to appear. Waiting for any button is unreliable:
+    // Chrome injects empty skeleton buttons during SPA hydration.
     await page.waitForFunction(
-      () => document.querySelectorAll('button').length > 0 ||
-            (document.body.textContent ?? '').trim().length > 50,
-      { timeout: 15_000 }
+      () => {
+        const t = document.title
+        return (t && t !== 'LinkedIn' && t.length > 0) ||
+               !!document.querySelector('.pvs-profile-actions, [data-member-id]')
+      },
+      { timeout: 20_000 }
     ).catch(() => {})
 
     await delay(1000, 1500)
@@ -162,6 +169,15 @@ export async function sendConnectionRequest(
     }))
     if (btnCount === 0 && bodyLen < 50) {
       throw new Error('SESSION_EXPIRED: LinkedIn returned a blank page — please reconnect your account')
+    }
+
+    // Auth wall: page loaded at the profile URL but title is still the generic
+    // "LinkedIn" shell — LinkedIn is showing a sign-in overlay, meaning the
+    // session cookies aren't accepted for profile pages.
+    // Most common cause: li_a cookie missing from the submitted cookie set.
+    const pageTitle = await page.title()
+    if (pageTitle === 'LinkedIn') {
+      throw new Error('SESSION_EXPIRED: LinkedIn auth wall — reconnect and include the li_a cookie')
     }
 
     const connectClicked = await clickConnectButton(page)

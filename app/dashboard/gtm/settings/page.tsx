@@ -87,6 +87,7 @@ function SettingsContent() {
   const [liCookieEmail, setLiCookieEmail] = useState('')
   const [liJsessionId, setLiJsessionId] = useState('')
   const [liBcookie, setLiBcookie] = useState('')
+  const [liLiA, setLiLiA] = useState('')
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -236,6 +237,7 @@ function SettingsContent() {
         linkedin_email: liCookieEmail,
         jsessionid: liJsessionId || undefined,
         bcookie: liBcookie || undefined,
+        li_a: liLiA || undefined,
       }),
     })
     const d = await res.json()
@@ -614,6 +616,7 @@ function SettingsContent() {
                     <li>Copy the <strong>Value</strong> for each of these cookies into the fields below:
                       <ul style={{ margin: '0.2rem 0 0 1rem', padding: 0, listStyle: 'disc' }}>
                         <li><strong>li_at</strong> — required (your auth token)</li>
+                        <li><strong>li_a</strong> — required (member identity token, needed to view profiles)</li>
                         <li><strong>JSESSIONID</strong> — recommended (session ID, helps keep you logged in)</li>
                         <li><strong>bcookie</strong> — recommended (browser ID, prevents session drops)</li>
                       </ul>
@@ -639,12 +642,22 @@ function SettingsContent() {
                     />
                   </label>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>li_a <span style={{ color: '#dc2626' }}>*</span></span>
+                    <input
+                      type="text"
+                      value={liLiA}
+                      onChange={e => setLiLiA(e.target.value)}
+                      placeholder="AQEDAUyG..."
+                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                    />
+                  </label>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                     <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>JSESSIONID <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 400 }}>recommended</span></span>
                     <input
                       type="text"
                       value={liJsessionId}
                       onChange={e => setLiJsessionId(e.target.value)}
-                      placeholder="ajax:4372911438374098651"
+                      placeholder="ajax:1234567890123456789"
                       style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
                     />
                   </label>

@@ -348,12 +348,20 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       return
     }
 
-    const feedBlank = await feedPage.evaluate(() =>
-      document.querySelectorAll('button').length === 0 &&
-      (document.body.textContent ?? '').trim().length < 50
-    )
-    if (feedBlank) {
-      console.warn(`[worker] feed blank — session invalidated for ${session.linkedin_email}`)
+    // Check for authenticated content — the feed shows some content even when
+    // logged out (public posts), so "not blank" is a false positive. We need to
+    // confirm we're actually authenticated by looking for logged-in-only elements.
+    const sessionValid = await feedPage.evaluate(() => {
+      // These elements only exist when authenticated
+      const hasGlobalNav   = !!document.querySelector('.global-nav__me, [data-test-global-nav-me]')
+      const hasProfileIcon = !!document.querySelector('[data-control-name="identity_welcome_message"]')
+      const hasFeedContent = !!document.querySelector('.feed-shared-update-v2, [data-urn*="urn:li:activity"]')
+      const titleOk        = document.title !== 'LinkedIn | Professional Network'
+      return hasGlobalNav || hasProfileIcon || hasFeedContent || titleOk
+    })
+
+    if (!sessionValid) {
+      console.warn(`[worker] feed loaded but no authenticated content — session invalid for ${session.linkedin_email}`)
       await markSessionExpired(session.id)
       await context.close().catch(() => {})
       contextCache.delete(userId)

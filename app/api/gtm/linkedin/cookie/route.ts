@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { li_at, linkedin_email, jsessionid, bcookie } = await req.json()
+  const { li_at, linkedin_email, jsessionid, bcookie, li_a } = await req.json()
   if (!li_at || !linkedin_email) {
     return NextResponse.json({ error: 'li_at cookie value and LinkedIn email required' }, { status: 400 })
   }
@@ -48,6 +48,19 @@ export async function POST(req: Request) {
       path: '/',
       expires: -1,
       httpOnly: false,
+      secure: true,
+      sameSite: 'None' as const,
+    }] : []),
+    // li_a is LinkedIn's application cookie containing the member identity token.
+    // Without it, LinkedIn's SPA can't fully initialise the authenticated session
+    // and shows the sign-in auth wall over profile pages even when li_at is valid.
+    ...(li_a ? [{
+      name: 'li_a',
+      value: (li_a as string).trim(),
+      domain: '.linkedin.com',
+      path: '/',
+      expires: -1,
+      httpOnly: true,
       secure: true,
       sameSite: 'None' as const,
     }] : []),
