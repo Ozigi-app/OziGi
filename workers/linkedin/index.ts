@@ -131,9 +131,9 @@ server.listen(process.env.PORT ?? 8080, () => {
   console.log(`[worker] listening on port ${process.env.PORT ?? 8080}`)
 })
 
-const POLL_INTERVAL_MS = 30_000        // check queue every 30s
-const ACTION_DELAY_MS  = [90_000, 180_000] as const  // wait 1.5–3 min between actions
-const MAX_ACTIONS_PER_RUN = 2          // max 2 actions per poll cycle — LinkedIn flags rapid bursts
+const POLL_INTERVAL_MS    = 90_000               // check queue every 90s
+const ACTION_DELAY_MS     = [120_000, 240_000] as const  // wait 2–4 min between actions
+const MAX_ACTIONS_PER_RUN = 1                    // 1 action per poll cycle — safest for session longevity
 
 function getSupabase() {
   return createClient(
@@ -242,7 +242,7 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
   // meaning no action has ever been run). Once saveSession() sets last_used_at
   // after the first successful action, this check is permanently skipped.
   if (!session.last_used_at) {
-    const WARMUP_MS = 45 * 60 * 1000
+    const WARMUP_MS = 15 * 60 * 1000
     const sessionAgeMs = Date.now() - new Date(session.updated_at).getTime()
     if (sessionAgeMs < WARMUP_MS) {
       const waitMin = Math.ceil((WARMUP_MS - sessionAgeMs) / 60_000)

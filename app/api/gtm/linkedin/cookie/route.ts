@@ -58,6 +58,7 @@ export async function POST(req: Request) {
         status: 'active',
         login_error: null,
         verification_code: null,
+        last_used_at: null,   // reset so warmup fires for the new session
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id,linkedin_email' }

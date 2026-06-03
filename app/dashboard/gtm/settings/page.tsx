@@ -628,27 +628,36 @@ function SettingsContent() {
                     placeholder="Your LinkedIn email address"
                     style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
                   />
-                  <input
-                    type="text"
-                    value={liCookieValue}
-                    onChange={e => setLiCookieValue(e.target.value)}
-                    placeholder="li_at value (required)"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                  />
-                  <input
-                    type="text"
-                    value={liJsessionId}
-                    onChange={e => setLiJsessionId(e.target.value)}
-                    placeholder="JSESSIONID value (recommended)"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                  />
-                  <input
-                    type="text"
-                    value={liBcookie}
-                    onChange={e => setLiBcookie(e.target.value)}
-                    placeholder="bcookie value (recommended)"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                  />
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>li_at <span style={{ color: '#dc2626' }}>*</span></span>
+                    <input
+                      type="text"
+                      value={liCookieValue}
+                      onChange={e => setLiCookieValue(e.target.value)}
+                      placeholder="AQEDATd8MXcF..."
+                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                    />
+                  </label>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>JSESSIONID <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 400 }}>recommended</span></span>
+                    <input
+                      type="text"
+                      value={liJsessionId}
+                      onChange={e => setLiJsessionId(e.target.value)}
+                      placeholder="ajax:4372911438374098651"
+                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                    />
+                  </label>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>bcookie <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 400 }}>recommended</span></span>
+                    <input
+                      type="text"
+                      value={liBcookie}
+                      onChange={e => setLiBcookie(e.target.value)}
+                      placeholder="v=2&amp;26d6ae18-f2b4-4d4a-..."
+                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
+                    />
+                  </label>
                   <button
                     type="submit"
                     disabled={liConnecting || !liCookieEmail || !liCookieValue}

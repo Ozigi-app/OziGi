@@ -25,6 +25,7 @@ const STATUS_ICON: Record<string, React.ReactNode> = {
 function formatScheduled(iso: string): string {
   const d = new Date(iso)
   const now = new Date()
+  if (d <= now) return 'ASAP'
   const todayStr = now.toDateString()
   if (d.toDateString() === todayStr) {
     return `Today ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
