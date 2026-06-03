@@ -16,10 +16,15 @@
  *   6. On failure: set status='needs_login' with login_error
  */
 import { type Page } from 'playwright'
-import { chromium } from 'playwright'
+import { chromium as baseChromium } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import crypto from 'crypto'
+import { chromium as stealthChromium } from 'playwright-extra'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+
+stealthChromium.use(StealthPlugin())
+const chromium = stealthChromium as unknown as typeof baseChromium
 
 const ALGORITHM       = 'aes-256-gcm'
 const POLL_INTERVAL_MS = 3_000   // check every 3 s (both DB and browser)
@@ -178,20 +183,40 @@ export async function loginLinkedIn(userId: string): Promise<void> {
   }
 
   const browser = await chromium.launch({
-    headless: isProduction,
+    headless: false,   // Always headed — Xvfb provides the virtual display in production
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-blink-features=AutomationControlled',
       '--disable-web-security',
       '--disable-features=IsolateOrigins,site-per-process',
+      '--disable-infobars',
+      '--window-size=1280,800',
     ],
-    slowMo: isProduction ? 0 : 50,
+    slowMo: 0,
   })
 
   const context = await browser.newContext({
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     viewport: { width: 1280, height: 800 },
+    locale: 'en-US',
+    timezoneId: 'America/New_York',
+    extraHTTPHeaders: {
+      'Accept-Language': 'en-US,en;q=0.9',
+    },
+  })
+
+  // Hide automation signals before any page loads
+  await context.addInitScript(() => {
+    // Remove webdriver flag
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+    // Spoof plugins (real browsers have plugins, headless has none)
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] })
+    // Spoof languages
+    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] })
+    // Remove automation-related chrome properties
+    // @ts-ignore
+    window.chrome = { runtime: {} }
   })
 
   const page = await context.newPage()
@@ -200,25 +225,24 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     // Navigate to login page
     await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 40_000 })
 
-    // Wait for the login form to actually render (SPA may take a few seconds after domcontentloaded)
-    const usernameSelector = await Promise.any([
-      page.waitForSelector('#username',                      { timeout: 20_000 }).then(() => '#username'),
-      page.waitForSelector('input[name="session_key"]',      { timeout: 20_000 }).then(() => 'input[name="session_key"]'),
-      page.waitForSelector('input[autocomplete="username"]', { timeout: 20_000 }).then(() => 'input[autocomplete="username"]'),
-    ]).catch(() => { throw new Error('LinkedIn login page did not load — please try again.') })
+    // Wait for any input to appear, then fill using locator (handles visibility natively)
+    await page.waitForSelector('input', { timeout: 20_000 }).catch(async () => {
+      const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
+      console.error(`[login] no inputs found on page. url=${page.url()} body="${bodySnippet}"`)
+      throw new Error('LinkedIn login page did not load — please try again.')
+    })
 
-    await page.waitForTimeout(1000 + Math.random() * 1000)
-    await page.fill(usernameSelector, email)
+    // Use the first visible input for email (LinkedIn's email field is always input #1)
+    const emailInput = page.locator('input').first()
+    await emailInput.waitFor({ state: 'visible', timeout: 10_000 })
+    await page.waitForTimeout(800 + Math.random() * 800)
+    await emailInput.fill(email)
     await page.waitForTimeout(500 + Math.random() * 500)
 
-    // Fill password
-    const passwordSelector = await Promise.any([
-      page.waitForSelector('#password',                      { timeout: 10_000 }).then(() => '#password'),
-      page.waitForSelector('input[name="session_password"]', { timeout: 10_000 }).then(() => 'input[name="session_password"]'),
-      page.waitForSelector('input[type="password"]',         { timeout: 10_000 }).then(() => 'input[type="password"]'),
-    ]).catch(() => { throw new Error('LinkedIn login page did not load — please try again.') })
-
-    await page.fill(passwordSelector, password)
+    // Password is always input type="password"
+    const passwordInput = page.locator('input[type="password"]').first()
+    await passwordInput.waitFor({ state: 'visible', timeout: 10_000 })
+    await passwordInput.fill(password)
     await page.waitForTimeout(500 + Math.random() * 800)
 
     await page.click('[type="submit"]')

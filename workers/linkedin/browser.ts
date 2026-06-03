@@ -1,7 +1,12 @@
-import { chromium, type Browser, type BrowserContext, type Cookie } from 'playwright'
+import { chromium as baseChromium, type Browser, type BrowserContext, type Cookie } from 'playwright'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import crypto from 'crypto'
+import { chromium as stealthChromium } from 'playwright-extra'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+
+stealthChromium.use(StealthPlugin())
+const chromium = stealthChromium as unknown as typeof baseChromium
 
 const ALGORITHM = 'aes-256-gcm'
 
@@ -43,11 +48,13 @@ export interface SessionInfo {
 // Load a Playwright browser context seeded with the user's saved LinkedIn cookies
 export async function loadSession(session: SessionInfo): Promise<{ browser: Browser; context: BrowserContext }> {
   const browser = await chromium.launch({
-    headless: process.env.NODE_ENV === 'production',
+    headless: false,   // Always headed — Xvfb provides the virtual display in production
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-blink-features=AutomationControlled',
+      '--disable-infobars',
+      '--window-size=1280,800',
     ],
   })
 
@@ -55,6 +62,16 @@ export async function loadSession(session: SessionInfo): Promise<{ browser: Brow
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     viewport: { width: 1280, height: 800 },
     locale: 'en-US',
+    timezoneId: 'America/New_York',
+    extraHTTPHeaders: { 'Accept-Language': 'en-US,en;q=0.9' },
+  })
+
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+    Object.defineProperty(navigator, 'plugins',   { get: () => [1, 2, 3, 4, 5] })
+    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] })
+    // @ts-ignore
+    window.chrome = { runtime: {} }
   })
 
   // Load saved cookies if available

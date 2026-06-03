@@ -5,7 +5,6 @@ WORKDIR /app
 
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Install all deps (including devDeps for esbuild)
 COPY package.json ./
 RUN npm install --ignore-scripts
 
@@ -20,6 +19,10 @@ WORKDIR /app
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV NODE_ENV=production
+ENV DISPLAY=:99
+
+# Install Xvfb — virtual display so Chromium runs headed (not headless) on the server
+RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
 
 # Only production deps at runtime
 COPY package.json ./
@@ -28,4 +31,8 @@ RUN npm install --ignore-scripts --omit=dev
 # Copy compiled output from build stage
 COPY --from=builder /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+# Startup script: launch virtual display then start the worker
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
+CMD ["./start.sh"]
