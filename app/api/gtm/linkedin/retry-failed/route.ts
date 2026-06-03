@@ -34,7 +34,6 @@ export async function POST() {
       attempts:     0,
       error:        null,
       scheduled_at: scheduledAt,
-      updated_at:   new Date().toISOString(),
     })
     .in('id', ids)
     .eq('user_id', user.id)

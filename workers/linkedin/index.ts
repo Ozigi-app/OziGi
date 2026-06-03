@@ -457,11 +457,12 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
 async function poll(): Promise<void> {
   const supabase = getSupabase()
 
+  // Reset items stuck in_progress (browser crashed mid-run).
+  // Single worker machine — any in_progress at poll time is a crash remnant.
   await supabase
     .from('linkedin_queue')
-    .update({ status: 'queued', updated_at: new Date().toISOString() })
+    .update({ status: 'queued' })
     .eq('status', 'in_progress')
-    .lt('updated_at', new Date(Date.now() - 10 * 60_000).toISOString())
 
   const { data: items, error } = await supabase
     .from('linkedin_queue')
