@@ -41,9 +41,11 @@ export default function LinkedInOutreachPage() {
   const [items, setItems]         = useState<QueueItem[]>([])
   const [loading, setLoading]     = useState(true)
   const [retrying, setRetrying]   = useState(false)
+  const [retryMsg, setRetryMsg]   = useState<string | null>(null)
 
   const load = useCallback(() => {
-    fetch('/api/gtm/linkedin/queue')
+    // Return the promise so callers can await actual completion
+    return fetch('/api/gtm/linkedin/queue')
       .then(r => r.json())
       .then(d => { setItems(d.items ?? []); setLoading(false) })
       .catch(() => setLoading(false))
@@ -66,9 +68,18 @@ export default function LinkedInOutreachPage() {
 
   async function retryFailed() {
     setRetrying(true)
-    await fetch('/api/gtm/linkedin/retry-failed', { method: 'POST' })
+    setRetryMsg(null)
+    const res  = await fetch('/api/gtm/linkedin/retry-failed', { method: 'POST' })
+    const data = await res.json()
     await load()
     setRetrying(false)
+    if (!res.ok) {
+      setRetryMsg(`Error: ${data.error ?? 'retry failed'}`)
+    } else if (data.reset === 0) {
+      setRetryMsg('No failed items to retry.')
+    } else {
+      setRetryMsg(`${data.reset} item${data.reset === 1 ? '' : 's'} re-queued.`)
+    }
   }
 
   return (
@@ -116,6 +127,9 @@ export default function LinkedInOutreachPage() {
             <div>
               <div className="text-2xl font-bold text-red-500">{failed}</div>
               <div className="text-foreground-subtle text-xs mt-0.5">Failed</div>
+              {retryMsg && (
+                <div className="text-xs mt-1 text-foreground-subtle">{retryMsg}</div>
+              )}
             </div>
             {failed > 0 && (
               <button
@@ -124,7 +138,7 @@ export default function LinkedInOutreachPage() {
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:bg-surface-2 transition-colors disabled:opacity-50"
               >
                 <RefreshCw size={12} className={retrying ? 'animate-spin' : ''} />
-                Retry all
+                {retrying ? 'Retrying…' : 'Retry all'}
               </button>
             )}
           </div>
