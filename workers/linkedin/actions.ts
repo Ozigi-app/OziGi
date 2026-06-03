@@ -154,15 +154,22 @@ export async function sendConnectionRequest(
       throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
     }
 
-    // Wait for the profile title to change from the generic "LinkedIn" shell to
-    // the person's name — this confirms the SPA has fetched and rendered profile data.
+    // LinkedIn shows a logo+slider loading screen while the SPA hydrates.
+    // Wait for it to clear by watching for the title to change from the generic
+    // "LinkedIn" shell to the person's name, or for the profile action area.
+    // 45s timeout — proxied connections can take 30s+ to fully hydrate the SPA.
     await page.waitForFunction(
       () => {
+        // Loading overlay present = still loading
+        const isLoading = !!document.querySelector(
+          '.loader-container, #loading-spinner, .artdeco-spinner, [class*="loading-page"]'
+        )
+        if (isLoading) return false
         const t = document.title
         return (t && t !== 'LinkedIn' && t.length > 0) ||
                !!document.querySelector('.pvs-profile-actions, [data-member-id]')
       },
-      { timeout: 20_000 }
+      { timeout: 45_000 }
     ).catch(() => {})
 
     await delay(800, 1200)
