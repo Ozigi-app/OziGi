@@ -219,6 +219,17 @@ function SettingsContent() {
     setLiConnecting(false)
   }
 
+  async function disconnectLinkedIn(sessionId: string) {
+    if (!confirm('Disconnect this LinkedIn account? You can reconnect at any time.')) return
+    await fetch('/api/gtm/linkedin/disconnect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    })
+    stopPolling()
+    loadLinkedIn()
+  }
+
   async function submitTwoFa(e: React.FormEvent) {
     e.preventDefault()
     setTwoFaSubmitting(true)
@@ -477,9 +488,12 @@ function SettingsContent() {
                   </div>
                 )}
               </div>
-              {s.status === 'logging_in' && (
-                <span style={{ fontSize: '0.8rem', color: '#888' }}>This may take up to a minute…</span>
-              )}
+              <button
+                onClick={() => disconnectLinkedIn(s.id)}
+                style={{ padding: '0.3rem 0.7rem', border: '1px solid #fca5a5', borderRadius: 5, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem', flexShrink: 0 }}
+              >
+                {s.status === 'active' ? 'Disconnect' : 'Reconnect'}
+              </button>
             </div>
           </div>
         ))}
