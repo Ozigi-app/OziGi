@@ -139,19 +139,23 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 30_000 })
+    // Navigate via the feed first so LinkedIn's SPA session state is already
+    // initialised when we hit the profile. Going directly to a profile URL in
+    // a fresh page leaves the SPA cold — the Voyager API calls it needs for
+    // profile data fail because the auth context hasn't been bootstrapped yet.
+    await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded', timeout: 20_000 }).catch(() => {})
+    await delay(1500, 2500)
+
+    // Now navigate to the actual profile
+    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 })
 
     const landedUrl = page.url()
     if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
       throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
     }
 
-    await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
-
-    // Wait for the profile to actually render — wait for the title to change
-    // from the generic "LinkedIn" shell to the person's name, or for the
-    // profile action area to appear. Waiting for any button is unreliable:
-    // Chrome injects empty skeleton buttons during SPA hydration.
+    // Wait for the profile title to change from the generic "LinkedIn" shell to
+    // the person's name — this confirms the SPA has fetched and rendered profile data.
     await page.waitForFunction(
       () => {
         const t = document.title
@@ -161,7 +165,7 @@ export async function sendConnectionRequest(
       { timeout: 20_000 }
     ).catch(() => {})
 
-    await delay(1000, 1500)
+    await delay(800, 1200)
 
     const { btnCount, bodyLen } = await page.evaluate(() => ({
       btnCount: document.querySelectorAll('button').length,
@@ -171,13 +175,11 @@ export async function sendConnectionRequest(
       throw new Error('SESSION_EXPIRED: LinkedIn returned a blank page — please reconnect your account')
     }
 
-    // Auth wall: page loaded at the profile URL but title is still the generic
-    // "LinkedIn" shell — LinkedIn is showing a sign-in overlay, meaning the
-    // session cookies aren't accepted for profile pages.
-    // Most common cause: li_a cookie missing from the submitted cookie set.
+    // Auth wall: profile URL loaded but title is still the generic "LinkedIn"
+    // shell — session cookies aren't being accepted for profile data requests.
     const pageTitle = await page.title()
     if (pageTitle === 'LinkedIn') {
-      throw new Error('SESSION_EXPIRED: LinkedIn auth wall — reconnect and include the li_a cookie')
+      throw new Error('AUTHWALL: LinkedIn showed sign-in wall on profile — session may need reconnecting')
     }
 
     const connectClicked = await clickConnectButton(page)

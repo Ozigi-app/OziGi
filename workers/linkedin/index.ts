@@ -434,6 +434,12 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
         break
       }
 
+      // Auth wall is NOT a session expiry — the session is valid but the SPA
+      // didn't bootstrap properly. Don't mark expired; just let it retry.
+      if (msg.includes('AUTHWALL')) {
+        console.warn(`[worker] auth wall for item ${item.id} — will retry without expiring session`)
+      }
+
       const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
       await supabase
         .from('linkedin_queue')
