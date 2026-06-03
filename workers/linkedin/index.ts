@@ -226,7 +226,7 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
   // Get the user's LinkedIn session
   const { data: session } = await supabase
     .from('linkedin_sessions')
-    .select('id, linkedin_email, status, updated_at')
+    .select('id, linkedin_email, status, updated_at, last_used_at')
     .eq('user_id', userId)
     .eq('status', 'active')
     .order('last_used_at', { ascending: false })
@@ -238,15 +238,17 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
     return
   }
 
-  // Warmup guard — don't run outreach immediately after authentication.
-  // LinkedIn flags sessions that start connecting right after a cookie is set
-  // from a new IP. Give it 45 minutes to look like a normal browsing session.
-  const WARMUP_MS = 45 * 60 * 1000
-  const sessionAgeMs = Date.now() - new Date(session.updated_at).getTime()
-  if (sessionAgeMs < WARMUP_MS) {
-    const waitMin = Math.ceil((WARMUP_MS - sessionAgeMs) / 60_000)
-    console.log(`[worker] session for ${session.linkedin_email} is warming up — ${waitMin}min remaining, skipping`)
-    return
+  // Warmup guard — only applies to brand-new sessions (last_used_at is null,
+  // meaning no action has ever been run). Once saveSession() sets last_used_at
+  // after the first successful action, this check is permanently skipped.
+  if (!session.last_used_at) {
+    const WARMUP_MS = 45 * 60 * 1000
+    const sessionAgeMs = Date.now() - new Date(session.updated_at).getTime()
+    if (sessionAgeMs < WARMUP_MS) {
+      const waitMin = Math.ceil((WARMUP_MS - sessionAgeMs) / 60_000)
+      console.log(`[worker] session for ${session.linkedin_email} is warming up — ${waitMin}min remaining, skipping`)
+      return
+    }
   }
 
   const sessionInfo = { sessionId: session.id, userId, linkedinEmail: session.linkedin_email }

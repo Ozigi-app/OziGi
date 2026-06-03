@@ -188,9 +188,55 @@ export async function sendConnectionRequest(
       console.log(`[actions] connect not found — url=${finalUrl} state=${JSON.stringify(pageState)}`)
 
       if (isPending)   throw new Error('Connection request already pending')
-      if (isMessage)   throw new Error('Already connected — Message button visible')
       if (isFollowing) throw new Error('Creator profile — Follow only, no Connect option')
-      throw new Error('Connect button not found — profile may be private or layout unrecognised')
+
+      // Message visible does NOT always mean connected — open profiles allow
+      // messaging without a connection. Check the More dropdown explicitly
+      // before concluding the person is already a connection.
+      if (isMessage) {
+        const moreOpened = await page.evaluate(() => {
+          const buttons = Array.from(document.querySelectorAll('button'))
+          const more = buttons.find(b => {
+            const label = (b.getAttribute('aria-label') ?? '').toLowerCase()
+            const text  = (b.textContent ?? '').trim().toLowerCase()
+            return label.includes('more actions') || text === 'more'
+          })
+          if (!more) return false
+          more.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+          more.dispatchEvent(new MouseEvent('mouseup',   { bubbles: true, cancelable: true }))
+          more.dispatchEvent(new MouseEvent('click',     { bubbles: true, cancelable: true }))
+          return true
+        })
+
+        if (moreOpened) {
+          await page.waitForTimeout(1000)
+          const connectInMore = await page.evaluate(() => {
+            const all = Array.from(document.querySelectorAll(
+              '.artdeco-dropdown__content--is-open li, [role="menu"] li, [role="listbox"] li'
+            ))
+            for (const el of all) {
+              const text = (el.textContent ?? '').trim().toLowerCase()
+              if (text.includes('connect') || text.includes('invite')) {
+                const clickable = (el.querySelector('button, a') ?? el) as HTMLElement
+                clickable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+                return true
+              }
+            }
+            return false
+          })
+          if (connectInMore) {
+            // Successfully clicked Connect from More dropdown — continue with send flow
+            await delay(1000, 1500)
+          } else {
+            await page.keyboard.press('Escape')
+            throw new Error('Already connected — Message button visible, no Connect in More dropdown')
+          }
+        } else {
+          throw new Error('Already connected — Message button visible, More button not found')
+        }
+      } else {
+        throw new Error('Connect button not found — profile may be private or layout unrecognised')
+      }
     }
 
     await delay(1000, 2000)

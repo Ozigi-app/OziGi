@@ -10,8 +10,6 @@ interface QueueItem {
   lead_id: string
   action: string
   status: string
-  attempts: number
-  error: string | null
   scheduled_at: string
   processed_at: string | null
   campaign_id: string
@@ -150,7 +148,7 @@ export default function LinkedInOutreachPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  {['Action', 'Status', 'Scheduled / Processed', 'Attempts', 'Error'].map(h => (
+                  {['Action', 'Status', 'Scheduled / Processed'].map(h => (
                     <th key={h} className="px-5 py-3 text-foreground-subtle text-xs font-medium">{h}</th>
                   ))}
                 </tr>
@@ -171,10 +169,6 @@ export default function LinkedInOutreachPage() {
                         : item.status === 'queued'
                           ? formatScheduled(item.scheduled_at)
                           : '—'}
-                    </td>
-                    <td className="px-5 py-3 text-foreground-subtle">{item.attempts}</td>
-                    <td className="px-5 py-3 text-red-500 text-xs max-w-[200px] truncate">
-                      {item.error ?? '—'}
                     </td>
                   </tr>
                 ))}

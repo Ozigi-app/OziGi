@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     {
       name: 'li_at',
       value: (li_at as string).trim(),
-      domain: '.www.linkedin.com',
+      domain: '.linkedin.com',
       path: '/',
       expires: -1,
       httpOnly: true,

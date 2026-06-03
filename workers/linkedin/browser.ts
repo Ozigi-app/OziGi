@@ -74,14 +74,6 @@ export async function loadSession(session: SessionInfo): Promise<{ browser: Brow
     extraHTTPHeaders: { 'Accept-Language': 'en-US,en;q=0.9' },
   })
 
-  await context.addInitScript(() => {
-    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
-    Object.defineProperty(navigator, 'plugins',   { get: () => [1, 2, 3, 4, 5] })
-    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] })
-    // @ts-ignore
-    window.chrome = { runtime: {} }
-  })
-
   // Seed cookies from Supabase — primary source of truth when the profile dir
   // is missing or was wiped (container restart without a mounted volume).
   const supabase = getSupabase()
