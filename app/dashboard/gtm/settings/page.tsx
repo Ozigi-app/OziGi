@@ -283,7 +283,7 @@ function SettingsContent() {
   return (
     <div style={{ padding: '2rem', maxWidth: 680 }}>
       <div style={{ marginBottom: '1.5rem' }}>
-        <Link href="/dashboard/gtm" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Campaigns</Link>
+        <Link href="/dashboard/gtm/new" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Back to GTM</Link>
         <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.5rem' }}>GTM Settings</h1>
       </div>
 
@@ -595,9 +595,16 @@ function SettingsContent() {
                   <strong>How to get your session cookie:</strong>
                   <ol style={{ margin: '0.4rem 0 0 1.2rem', padding: 0 }}>
                     <li>Open <strong>LinkedIn.com</strong> in your browser and make sure you&apos;re logged in.</li>
-                    <li>Press <strong>F12</strong> (or right-click → Inspect) to open DevTools.</li>
-                    <li>Go to <strong>Application</strong> → <strong>Cookies</strong> → <strong>https://www.linkedin.com</strong>.</li>
-                    <li>Find the cookie named <strong>li_at</strong> and copy its <strong>Value</strong>.</li>
+                    <li>Open DevTools:
+                      <ul style={{ margin: '0.2rem 0 0 1rem', padding: 0, listStyle: 'disc' }}>
+                        <li><strong>Windows / Linux:</strong> press <strong>F12</strong> or <strong>Ctrl + Shift + I</strong></li>
+                        <li><strong>Mac:</strong> press <strong>Cmd + Option + I</strong></li>
+                        <li>Or: right-click anywhere on the page → <strong>Inspect</strong></li>
+                      </ul>
+                    </li>
+                    <li>Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox).</li>
+                    <li>In the left sidebar, expand <strong>Cookies</strong> → click <strong>https://www.linkedin.com</strong>.</li>
+                    <li>Find the row named <strong>li_at</strong> and copy the full <strong>Value</strong> (it&apos;s a long string).</li>
                   </ol>
                 </div>
                 <form onSubmit={connectLinkedInCookie} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

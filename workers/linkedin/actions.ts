@@ -19,55 +19,102 @@ async function humanType(page: import('playwright').Page, selector: string, text
  * Tries every known LinkedIn pattern to click the Connect button.
  * Returns true if clicked, false if not found (already connected / creator / etc).
  *
- * LinkedIn button placement varies by:
- *   - Profile type (member vs creator)
- *   - Connection degree (2nd, 3rd, Out-of-network)
- *   - Viewport / A/B tests
- *
- * Strategy:
- *   1. aria-label contains "Invite" or "Connect" — most reliable, survives text changes
- *   2. Visible button with exact text "Connect" scoped to main
- *   3. "More actions" dropdown → look for Connect item inside
+ * Uses page.evaluate()-based clicks as fallback since Playwright's .click()
+ * requires strict "visibility" that LinkedIn buttons often don't satisfy.
  */
 async function clickConnectButton(page: import('playwright').Page): Promise<boolean> {
-  const main = page.locator('main').first()
 
-  // 1. aria-label approach — most stable across LinkedIn versions
+  // Helper: find button by aria-label substring or text content and fire a
+  // proper bubbling MouseEvent so React's synthetic event system picks it up.
+  async function findAndClickButton(tests: Array<{ aria?: string; text?: string }>): Promise<boolean> {
+    return page.evaluate((tests) => {
+      const buttons = Array.from(document.querySelectorAll('button'))
+      for (const btn of buttons) {
+        const label = (btn.getAttribute('aria-label') ?? '').toLowerCase()
+        const text  = (btn.textContent ?? '').trim().toLowerCase()
+        for (const t of tests) {
+          const ariaMatch = t.aria && label.includes(t.aria.toLowerCase())
+          const textMatch = t.text && (text === t.text.toLowerCase() || text.includes(t.text.toLowerCase()))
+          if (ariaMatch || textMatch) {
+            // dispatchEvent with bubbles:true reaches React's root listener
+            btn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+            btn.dispatchEvent(new MouseEvent('mouseup',   { bubbles: true, cancelable: true }))
+            btn.dispatchEvent(new MouseEvent('click',     { bubbles: true, cancelable: true }))
+            return true
+          }
+        }
+      }
+      return false
+    }, tests)
+  }
+
+  // 1. Direct Connect/Invite button (aria-label or text)
+  const directConnect = await findAndClickButton([
+    { aria: 'Invite' },
+    { aria: 'Connect' },
+    { text: 'Connect' },
+  ])
+  if (directConnect) return true
+
+  // 2. Also try Playwright locator as belt-and-suspenders
+  const main = page.locator('main').first()
   const ariaConnect = main.locator(
     'button[aria-label*="Invite"], button[aria-label*="Connect"], button[aria-label*="connect"]'
   ).first()
-  if (await ariaConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
+  if (await ariaConnect.isVisible({ timeout: 2_000 }).catch(() => false)) {
     await ariaConnect.click({ timeout: 10_000 })
     return true
   }
 
-  // 2. Visible "Connect" button text scoped to main (not sidebar)
-  const textConnect = main.locator('button:has-text("Connect")').first()
-  if (await textConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
-    await textConnect.click({ timeout: 10_000 })
-    return true
-  }
+  // 3. More actions dropdown — Connect lives here for many profiles
+  // First try Playwright click, then JS click fallback
+  const moreBtnClicked =
+    await main.locator('button[aria-label*="More actions"], button[aria-label*="more actions"]')
+      .first().click({ timeout: 3_000 }).then(() => true).catch(() => false) ||
+    await findAndClickButton([{ aria: 'More actions' }, { text: 'More' }])
 
-  // 3. "More actions" / "More" dropdown — Connect sometimes lives here
-  const moreBtn = main.locator(
-    'button[aria-label*="More actions"], button[aria-label*="more actions"], button:has-text("More")'
-  ).first()
-  if (await moreBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-    await moreBtn.click({ timeout: 8_000 })
-    await page.waitForTimeout(800)
+  if (moreBtnClicked) {
+    // Wait for the dropdown to actually open
+    await page.waitForFunction(
+      () => {
+        const open = document.querySelector(
+          '.artdeco-dropdown__content--is-open, [role="menu"], [role="listbox"]:not([aria-hidden="true"])'
+        )
+        return !!open
+      },
+      { timeout: 5_000 }
+    ).catch(() => {})
+    await page.waitForTimeout(300)
 
-    // Look for Connect inside the opened dropdown
-    const dropdownConnect = page.locator(
-      '[role="listbox"] [aria-label*="Connect"], [role="listbox"] [aria-label*="Invite"], ' +
-      '.artdeco-dropdown__content button:has-text("Connect"), ' +
-      '[data-control-name="connect"]'
-    ).first()
-    if (await dropdownConnect.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await dropdownConnect.click({ timeout: 8_000 })
-      return true
-    }
+    // Look for Connect inside the opened dropdown via JS (most reliable)
+    const dropdownConnect = await page.evaluate(() => {
+      const selectors = [
+        '.artdeco-dropdown__content--is-open li',
+        '.artdeco-dropdown__content--is-open button',
+        '[role="menu"] li',
+        '[role="menu"] button',
+        '[role="listbox"] li',
+        '[role="menuitem"]',
+      ]
+      for (const sel of selectors) {
+        const items = Array.from(document.querySelectorAll(sel))
+        for (const item of items) {
+          const label = (item.getAttribute('aria-label') ?? '').toLowerCase()
+          const text  = (item.textContent ?? '').trim().toLowerCase()
+          if (label.includes('connect') || label.includes('invite') ||
+              text.includes('connect')  || text.includes('invite')) {
+            const clickable = (item.querySelector('button, a') ?? item) as HTMLElement
+            clickable.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+            clickable.dispatchEvent(new MouseEvent('mouseup',   { bubbles: true, cancelable: true }))
+            clickable.dispatchEvent(new MouseEvent('click',     { bubbles: true, cancelable: true }))
+            return true
+          }
+        }
+      }
+      return false
+    })
 
-    // Close dropdown — Connect wasn't in there
+    if (dropdownConnect) return true
     await page.keyboard.press('Escape')
   }
 
@@ -91,11 +138,27 @@ export async function sendConnectionRequest(
       throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
     }
 
-    // Now wait for the SPA to finish rendering
+    // Wait for the SPA to finish rendering
     await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
 
-    // Give the SPA extra time to finish rendering action buttons
-    await delay(2000, 4000)
+    // Wait for the page to actually render content (any buttons or body text)
+    await page.waitForFunction(
+      () => document.querySelectorAll('button').length > 0 ||
+            (document.body.textContent ?? '').trim().length > 50,
+      { timeout: 15_000 }
+    ).catch(() => {})
+
+    await delay(1000, 1500)
+
+    // Detect blank page — LinkedIn returns an empty shell when the session has
+    // been invalidated server-side (li_at cookie exists but auth token is dead)
+    const { btnCount, bodyLen } = await page.evaluate(() => ({
+      btnCount: document.querySelectorAll('button').length,
+      bodyLen:  (document.body.textContent ?? '').trim().length,
+    }))
+    if (btnCount === 0 && bodyLen < 50) {
+      throw new Error('SESSION_EXPIRED: LinkedIn returned a blank page — please reconnect your account')
+    }
 
     const connectClicked = await clickConnectButton(page)
 
@@ -103,9 +166,26 @@ export async function sendConnectionRequest(
       // Could be: already connected, pending invite, creator with Follow-only, private profile
       // Check what's actually there so we log something useful
       const main = page.locator('main').first()
-      const isPending  = await main.locator('button:has-text("Pending")').isVisible({ timeout: 2_000 }).catch(() => false)
-      const isMessage  = await main.locator('button:has-text("Message")').isVisible({ timeout: 1_000 }).catch(() => false)
+      const isPending   = await main.locator('button:has-text("Pending")').isVisible({ timeout: 2_000 }).catch(() => false)
+      const isMessage   = await main.locator('button:has-text("Message")').isVisible({ timeout: 1_000 }).catch(() => false)
       const isFollowing = await main.locator('button:has-text("Following")').isVisible({ timeout: 1_000 }).catch(() => false)
+
+      // Log URL + all visible button labels so we know exactly what LinkedIn showed
+      const finalUrl = page.url()
+      const pageState = await page.evaluate(() => {
+        const allBtns = Array.from(document.querySelectorAll('button'))
+          .map(b => (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 40))
+          .filter(Boolean).slice(0, 25).join(' | ')
+        return {
+          title: document.title.slice(0, 80),
+          mainExists: !!document.querySelector('main'),
+          mainBtnCount: document.querySelectorAll('main button').length,
+          allBtnCount: document.querySelectorAll('button').length,
+          buttons: allBtns,
+          bodyPreview: (document.body.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 200),
+        }
+      }).catch(() => null)
+      console.log(`[actions] connect not found — url=${finalUrl} state=${JSON.stringify(pageState)}`)
 
       if (isPending)   throw new Error('Connection request already pending')
       if (isMessage)   throw new Error('Already connected — Message button visible')
