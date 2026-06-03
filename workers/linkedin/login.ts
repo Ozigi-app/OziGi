@@ -216,90 +216,87 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     },
   })
 
-  // Hide automation signals before any page loads
-  await context.addInitScript(() => {
-    // Remove webdriver flag
-    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
-    // Spoof plugins (real browsers have plugins, headless has none)
-    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] })
-    // Spoof languages
-    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] })
-    // Remove automation-related chrome properties
-    // @ts-ignore
-    window.chrome = { runtime: {} }
-  })
-
   const page = await context.newPage()
 
   try {
     // Navigate to login page
     await page.goto('https://www.linkedin.com/login', { waitUntil: 'load', timeout: 60_000 })
-    await page.waitForTimeout(2000)
 
-    // Log every input in the DOM so we can see what LinkedIn is serving
+    // Wait for any input to be attached (in DOM) — not necessarily Playwright-"visible"
+    await page.waitForSelector('input', { state: 'attached', timeout: 30_000 }).catch(async () => {
+      const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
+      console.error(`[login] no inputs found. url=${page.url()} body="${bodySnippet}"`)
+      throw new Error('LinkedIn login page did not load — please try again.')
+    })
+
+    // Log inputs + visibility for diagnostics
     const domInputs = await page.evaluate(() =>
       Array.from(document.querySelectorAll('input'))
-        .map(i => `${i.tagName}[name=${i.name}][id=${i.id}][type=${i.type}]`)
+        .map(i => `${i.tagName}[name=${i.name}][id=${i.id}][type=${i.type}][offsetParent=${
+          (i as HTMLElement).offsetParent !== null
+        }]`)
         .join(' | ')
-    )
+    ).catch(() => 'evaluate failed')
     console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
 
-    // Fill using React-compatible native setter so the submit button becomes enabled
-    const filled = await page.evaluate((emailVal) => {
+    // Focus email via JS then type with real keyboard events (most reliable for React)
+    const emailFocused = await page.evaluate(() => {
       const field = (
+        document.querySelector('input#username') ||
         document.querySelector('input[name="session_key"]') ||
         document.querySelector('input[autocomplete="username"]') ||
         document.querySelector('input[type="email"]') ||
         document.querySelector('input[type="text"]')
       ) as HTMLInputElement | null
       if (!field) return false
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
-      setter?.call(field, emailVal)
-      field.dispatchEvent(new Event('input',  { bubbles: true }))
-      field.dispatchEvent(new Event('change', { bubbles: true }))
+      field.focus()
       return true
-    }, email)
+    })
 
-    if (!filled) {
+    if (!emailFocused) {
       const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
-      console.error(`[login] email field not found. url=${page.url()} body="${bodySnippet}"`)
+      console.error(`[login] email field not found in DOM. url=${page.url()} body="${bodySnippet}"`)
       throw new Error('LinkedIn login page did not load — please try again.')
     }
 
+    await page.keyboard.type(email, { delay: 40 + Math.random() * 60 })
     console.log('[login] email filled')
-    await page.waitForTimeout(600 + Math.random() * 600)
-
-    // Fill password with same React-compatible approach
-    await page.evaluate((passVal) => {
-      const field = (
-        document.querySelector('input[name="session_password"]') ||
-        document.querySelector('input[type="password"]')
-      ) as HTMLInputElement | null
-      if (!field) return
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
-      setter?.call(field, passVal)
-      field.dispatchEvent(new Event('input',  { bubbles: true }))
-      field.dispatchEvent(new Event('change', { bubbles: true }))
-    }, password)
-
-    console.log('[login] password filled')
-    await page.waitForTimeout(500 + Math.random() * 800)
-
     await page.waitForTimeout(500 + Math.random() * 500)
-    // Submit by pressing Enter on the password field — works even if the button is still animating
+
+    // Focus password via JS then type
     await page.evaluate(() => {
-      const pwd = (
+      const field = (
+        document.querySelector('input#password') ||
         document.querySelector('input[name="session_password"]') ||
         document.querySelector('input[type="password"]')
       ) as HTMLInputElement | null
-      pwd?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      field?.focus()
     })
-    // Also click the button as a fallback
-    await page.locator('button[type="submit"], button:has-text("Sign in")').first()
-      .click({ timeout: 8_000, force: true }).catch(() => {})
-    await page.waitForTimeout(3000)
+    await page.keyboard.type(password, { delay: 40 + Math.random() * 60 })
+    console.log('[login] password filled')
+    await page.waitForTimeout(1000 + Math.random() * 500)
+
+    // Log button state to see if React processed the input events
+    const btnInfo = await page.evaluate(() => {
+      const btn = document.querySelector('button[type="submit"]') as HTMLButtonElement | null
+      return btn ? `disabled=${btn.disabled} text="${btn.textContent?.trim()}"` : 'NOT FOUND'
+    })
+    console.log(`[login] submit button: ${btnInfo}`)
+
+    // Submit: Enter key first (most natural), then JS btn.click() as fallback
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(1000)
+    // JS click bypasses disabled state in case button is still disabled
+    await page.evaluate(() => {
+      const btn = document.querySelector('button[type="submit"]') as HTMLButtonElement | null
+      btn?.click()
+    })
+    await page.waitForTimeout(4000)
 
     const postLoginUrl = page.url()
+    // Log page text so we can see LinkedIn's error message if submission failed
+    const postLoginText = await page.innerText('body').catch(() => '').then(t => t.slice(0, 600).replace(/\s+/g, ' '))
+    console.log(`[login] post-submit url=${postLoginUrl} text="${postLoginText}"`)
 
     // ── 4. Handle 2FA / checkpoint ────────────────────────────────────────────
     if (isCheckpointUrl(postLoginUrl)) {

@@ -82,16 +82,20 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    // 'commit' fires as soon as the first response byte arrives — lets us detect
+    // redirects to /login immediately without waiting the full 60s timeout
+    await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 30_000 })
 
-    // If LinkedIn redirected us to login, the session was invalidated server-side
     const landedUrl = page.url()
     if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
       throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
     }
 
+    // Now wait for the SPA to finish rendering
+    await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
+
     // Give the SPA extra time to finish rendering action buttons
-    await delay(3000, 5000)
+    await delay(2000, 4000)
 
     const connectClicked = await clickConnectButton(page)
 
