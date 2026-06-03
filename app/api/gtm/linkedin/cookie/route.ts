@@ -13,6 +13,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'li_at cookie value and LinkedIn email required' }, { status: 400 })
   }
 
+  // Capture the user's actual browser User-Agent. LinkedIn binds bcookie to a
+  // specific browser UA — if our worker uses a different UA, bcookie becomes a
+  // fingerprint mismatch signal and the session is invalidated.
+  const userAgent = req.headers.get('user-agent') ?? undefined
+
   // Build a Playwright-compatible cookie array. More cookies = more stable session.
   // li_at alone causes LinkedIn to detect fingerprint mismatch after a few requests.
   const cookies = [
@@ -48,13 +53,17 @@ export async function POST(req: Request) {
     }] : []),
   ]
 
+  // Store cookies + userAgent together so the worker can replay the exact
+  // browser fingerprint the user had when these cookies were issued.
+  const sessionData = { cookies, userAgent }
+
   const { error } = await supabaseAdmin
     .from('linkedin_sessions')
     .upsert(
       {
         user_id: user.id,
         linkedin_email,
-        session_cookies: encrypt(JSON.stringify(cookies)),
+        session_cookies: encrypt(JSON.stringify(sessionData)),
         status: 'active',
         login_error: null,
         verification_code: null,

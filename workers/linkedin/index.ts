@@ -15,7 +15,6 @@
 import path from 'path'
 import { config } from 'dotenv'
 
-// Load .env.local from repo root when running locally
 config({ path: path.resolve(__dirname, '../../.env.local') })
 
 import http from 'http'
@@ -25,18 +24,30 @@ import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './brow
 import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
 import { loginLinkedIn } from './login'
 import { searchAndSaveLeads } from './search'
-import type { BrowserContext, Browser } from 'playwright'
+import type { BrowserContext } from 'playwright'
 
-// HTTP server — health checks + /login endpoint
+// Module-level context cache — keeps browser contexts alive between poll cycles.
+//
+// WHY: LinkedIn's APFC fingerprint system captures ~48 device signals on every
+// page load and binds them to the session. Closing and reopening the browser on
+// every 90-second poll resets these signals → session killed after 2-3 pages.
+// Keeping the same context alive means LinkedIn always sees the same "device".
+interface CachedContext {
+  context: BrowserContext
+  sessionId: string        // track which DB session this context belongs to
+  linkedinEmail: string
+  validatedAt: number
+}
+const contextCache = new Map<string, CachedContext>()
+
+// HTTP server — health checks + /login + /search endpoints
 const server = http.createServer(async (req, res) => {
-  // Health check
   if (req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ ok: true, service: 'linkedin-worker' }))
     return
   }
 
-  // POST /search — triggered by the scrape cron to find LinkedIn leads by ICP
   if (req.method === 'POST' && req.url === '/search') {
     const auth = req.headers['authorization']
     if (auth !== `Bearer ${process.env.WORKER_SECRET}`) {
@@ -51,7 +62,6 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(400); res.end(JSON.stringify({ error: 'userId, campaignId, icpConfig required' })); return
     }
 
-    // Acknowledge immediately — search runs async
     res.writeHead(202, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ ok: true, message: 'LinkedIn search started' }))
 
@@ -68,34 +78,54 @@ const server = http.createServer(async (req, res) => {
       }
 
       const sessionInfo = { sessionId: session.id, userId, linkedinEmail: session.linkedin_email }
-      let browser: Browser | null = null
-      let context: BrowserContext | null = null
+
+      // Reuse cached context for search if available
+      let context: BrowserContext
+      const cached = contextCache.get(userId)
+
+      if (cached && cached.sessionId === session.id) {
+        const loggedIn = await isLoggedIn(cached.context).catch(() => false)
+        if (loggedIn) {
+          context = cached.context
+          cached.validatedAt = Date.now()
+        } else {
+          await cached.context.close().catch(() => {})
+          contextCache.delete(userId)
+          const loaded = await loadSession(sessionInfo)
+          context = loaded.context
+          contextCache.set(userId, { context, sessionId: session.id, linkedinEmail: session.linkedin_email, validatedAt: Date.now() })
+        }
+      } else {
+        if (cached) {
+          await cached.context.close().catch(() => {})
+          contextCache.delete(userId)
+        }
+        const loaded = await loadSession(sessionInfo)
+        context = loaded.context
+        contextCache.set(userId, { context, sessionId: session.id, linkedinEmail: session.linkedin_email, validatedAt: Date.now() })
+      }
 
       try {
-        const loaded = await loadSession(sessionInfo)
-        browser = loaded.browser; context = loaded.context
-
         if (!await isLoggedIn(context)) {
           await markSessionExpired(session.id)
+          await context.close().catch(() => {})
+          contextCache.delete(userId)
           console.warn(`[worker:search] session expired for ${session.linkedin_email}`); return
         }
 
         const saved = await searchAndSaveLeads(context, supabase, userId, campaignId, icpConfig, limit ?? 25)
         console.log(`[worker:search] done — ${saved} leads saved for campaign ${campaignId}`)
         await saveSession(sessionInfo, context)
+        // Leave context alive in cache
       } catch (err) {
         console.error('[worker:search] error:', err)
-      } finally {
-        if (context) await context.close().catch(() => {})
-        if (browser)  await browser.close().catch(() => {})
+        // Don't close context on search error — might recover on next action
       }
     })().catch(err => console.error('[worker:search] unhandled:', err))
     return
   }
 
-  // POST /login — triggered by Ozigi when user connects their LinkedIn account
   if (req.method === 'POST' && req.url === '/login') {
-    // Verify internal secret
     const auth = req.headers['authorization']
     if (auth !== `Bearer ${process.env.WORKER_SECRET}`) {
       res.writeHead(401)
@@ -113,9 +143,15 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
-    // Acknowledge immediately — login runs async (may wait for 2FA)
     res.writeHead(202, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ ok: true, message: 'Login started' }))
+
+    // Close any cached context for this user — login creates a new session
+    const cached = contextCache.get(userId)
+    if (cached) {
+      await cached.context.close().catch(() => {})
+      contextCache.delete(userId)
+    }
 
     loginLinkedIn(userId).catch(err =>
       console.error(`[worker] loginLinkedIn failed for ${userId}:`, err)
@@ -131,9 +167,9 @@ server.listen(process.env.PORT ?? 8080, () => {
   console.log(`[worker] listening on port ${process.env.PORT ?? 8080}`)
 })
 
-const POLL_INTERVAL_MS    = 90_000               // check queue every 90s
-const ACTION_DELAY_MS     = [120_000, 240_000] as const  // wait 2–4 min between actions
-const MAX_ACTIONS_PER_RUN = 1                    // 1 action per poll cycle — safest for session longevity
+const POLL_INTERVAL_MS    = 90_000
+const ACTION_DELAY_MS     = [120_000, 240_000] as const
+const MAX_ACTIONS_PER_RUN = 1
 
 function getSupabase() {
   return createClient(
@@ -167,7 +203,6 @@ interface Lead {
   name: string | null
 }
 
-/** Extract the profile slug from a LinkedIn URL (e.g. /in/john-doe → "john-doe") */
 function extractProfileId(url: string): string | null {
   const m = url.match(/linkedin\.com\/in\/([^/?#]+)/)
   return m ? m[1] : null
@@ -179,7 +214,6 @@ async function processItem(
 ): Promise<void> {
   const supabase = getSupabase()
 
-  // Fetch the lead to get LinkedIn identifiers
   const { data: lead } = await supabase
     .from('leads')
     .select('linkedin_url, linkedin_profile_id, name')
@@ -190,7 +224,6 @@ async function processItem(
     throw new Error('Lead has no LinkedIn URL or profile ID')
   }
 
-  // Resolve profile ID — stored explicitly or extract from the URL slug
   const profileId = lead.linkedin_profile_id
     ?? (lead.linkedin_url ? extractProfileId(lead.linkedin_url) : null)
 
@@ -198,11 +231,21 @@ async function processItem(
 
   switch (item.action) {
     case 'connect':
-      await sendConnectionRequest(
-        context,
-        lead.linkedin_url!,
-        item.message ?? undefined
-      )
+      try {
+        await sendConnectionRequest(context, lead.linkedin_url!, item.message ?? undefined)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        if (msg.startsWith('OPEN_PROFILE') && profileId) {
+          // Open Profile (LinkedIn Premium) — send direct message as first contact
+          if (item.message) {
+            console.log(`[worker] Open Profile for lead ${item.lead_id} — sending direct message`)
+            await sendLinkedInMessage(context, profileId, item.message)
+            return  // success — caller marks item done and lead contacted
+          }
+          throw new Error('Open Profile detected — no message text configured for direct outreach')
+        }
+        throw err
+      }
       break
 
     case 'message':
@@ -223,7 +266,6 @@ async function processItem(
 async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
   const supabase = getSupabase()
 
-  // Get the user's LinkedIn session
   const { data: session } = await supabase
     .from('linkedin_sessions')
     .select('id, linkedin_email, status, updated_at, last_used_at')
@@ -238,149 +280,169 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
     return
   }
 
-  // Warmup guard — only applies to brand-new sessions (last_used_at is null,
-  // meaning no action has ever been run). Once saveSession() sets last_used_at
-  // after the first successful action, this check is permanently skipped.
   if (!session.last_used_at) {
     const WARMUP_MS = 15 * 60 * 1000
     const sessionAgeMs = Date.now() - new Date(session.updated_at).getTime()
     if (sessionAgeMs < WARMUP_MS) {
       const waitMin = Math.ceil((WARMUP_MS - sessionAgeMs) / 60_000)
-      console.log(`[worker] session for ${session.linkedin_email} is warming up — ${waitMin}min remaining, skipping`)
+      console.log(`[worker] session for ${session.linkedin_email} warming up — ${waitMin}min remaining, skipping`)
       return
     }
   }
 
   const sessionInfo = { sessionId: session.id, userId, linkedinEmail: session.linkedin_email }
 
-  let browser: Browser | null = null
-  let context: BrowserContext | null = null
+  // Resolve context from cache or create a new persistent context.
+  // If the DB session changed (user re-logged in), discard the old context.
+  let context: BrowserContext
+  const cached = contextCache.get(userId)
 
-  try {
+  if (cached) {
+    if (cached.sessionId !== session.id) {
+      // User re-authenticated — the old profile's cookies are stale
+      console.log(`[worker] session renewed for ${session.linkedin_email} — closing old context`)
+      await cached.context.close().catch(() => {})
+      contextCache.delete(userId)
+    } else {
+      const loggedIn = await isLoggedIn(cached.context).catch(() => false)
+      if (loggedIn) {
+        console.log(`[worker] reusing live context for ${session.linkedin_email}`)
+        context = cached.context
+        cached.validatedAt = Date.now()
+      } else {
+        console.warn(`[worker] cached context invalid for ${session.linkedin_email} — recreating`)
+        await cached.context.close().catch(() => {})
+        contextCache.delete(userId)
+      }
+    }
+  }
+
+  if (!context!) {
+    console.log(`[worker] creating persistent context for ${session.linkedin_email}`)
     const loaded = await loadSession(sessionInfo)
-    browser = loaded.browser
     context = loaded.context
+    contextCache.set(userId, {
+      context,
+      sessionId: session.id,
+      linkedinEmail: session.linkedin_email,
+      validatedAt: Date.now(),
+    })
+  }
 
-    // Verify the session is still valid
-    const loggedIn = await isLoggedIn(context)
-    if (!loggedIn) {
-      console.warn(`[worker] session expired for ${session.linkedin_email}`)
+  // Feed visit: validates the session is live and refreshes tokens.
+  console.log(`[worker] warming session via feed for ${session.linkedin_email}`)
+  const feedPage = await context.newPage()
+  try {
+    await feedPage.goto('https://www.linkedin.com/feed/', {
+      waitUntil: 'domcontentloaded',
+      timeout: 30_000,
+    })
+    await feedPage.waitForTimeout(2000)
+
+    const feedUrl = feedPage.url()
+    if (feedUrl.includes('/login') || feedUrl.includes('/checkpoint') || feedUrl.includes('/authwall')) {
+      console.warn(`[worker] feed redirected to ${feedUrl} — session expired for ${session.linkedin_email}`)
       await markSessionExpired(session.id)
+      await context.close().catch(() => {})
+      contextCache.delete(userId)
       return
     }
 
-    // Visit the feed first — refreshes session tokens and looks like normal browsing.
-    // Also lets us detect a dead session before wasting time on profile actions.
-    console.log(`[worker] warming session via feed visit for ${session.linkedin_email}`)
-    const feedPage = await context.newPage()
-    try {
-      await feedPage.goto('https://www.linkedin.com/feed/', {
-        waitUntil: 'domcontentloaded',
-        timeout: 30_000,
-      })
-      await feedPage.waitForTimeout(2000)
-
-      const feedBlank = await feedPage.evaluate(() =>
-        document.querySelectorAll('button').length === 0 &&
-        (document.body.textContent ?? '').trim().length < 50
-      )
-      if (feedBlank) {
-        console.warn(`[worker] feed page blank — session invalidated for ${session.linkedin_email}`)
-        await markSessionExpired(session.id)
-        return
-      }
-
-      // Save any fresh cookies LinkedIn set on the feed page
-      await saveSession(sessionInfo, context)
-    } finally {
-      await feedPage.close().catch(() => {})
+    const feedBlank = await feedPage.evaluate(() =>
+      document.querySelectorAll('button').length === 0 &&
+      (document.body.textContent ?? '').trim().length < 50
+    )
+    if (feedBlank) {
+      console.warn(`[worker] feed blank — session invalidated for ${session.linkedin_email}`)
+      await markSessionExpired(session.id)
+      await context.close().catch(() => {})
+      contextCache.delete(userId)
+      return
     }
 
-    let actionsThisRun = 0
-
-    for (const item of items) {
-      if (actionsThisRun >= MAX_ACTIONS_PER_RUN) break
-
-      // Lock the item
-      const { error: lockErr } = await supabase
-        .from('linkedin_queue')
-        .update({ status: 'in_progress', attempts: item.attempts + 1 })
-        .eq('id', item.id)
-        .eq('status', 'queued')  // only lock if still queued (prevent double-processing)
-
-      if (lockErr) {
-        console.warn(`[worker] could not lock item ${item.id}:`, lockErr.message)
-        continue
-      }
-
-      try {
-        await processItem(item, context)
-
-        const now = new Date().toISOString()
-
-        await supabase
-          .from('linkedin_queue')
-          .update({ status: 'done', processed_at: now, error: null })
-          .eq('id', item.id)
-
-        // Mark the corresponding sequence_send as sent
-        if (item.sequence_step > 0) {
-          await supabase
-            .from('sequence_sends')
-            .update({ status: 'sent', sent_at: now })
-            .eq('lead_id', item.lead_id)
-            .eq('step', item.sequence_step)
-            .eq('channel', 'linkedin')
-            .eq('status', 'queued')
-        }
-
-        // Update lead status if it was a connect action
-        if (item.action === 'connect') {
-          await supabase
-            .from('leads')
-            .update({ status: 'contacted', updated_at: now })
-            .eq('id', item.lead_id)
-        }
-
-        actionsThisRun++
-        await saveSession(sessionInfo, context)
-
-        // Human-like pause between actions
-        if (actionsThisRun < items.length) {
-          await randomDelay(ACTION_DELAY_MS[0], ACTION_DELAY_MS[1])
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err)
-        console.error(`[worker] item ${item.id} failed:`, msg)
-
-        // Session was invalidated by LinkedIn — stop processing and force re-login
-        if (msg.includes('SESSION_EXPIRED')) {
-          await markSessionExpired(session.id)
-          console.warn(`[worker] session expired mid-run for ${session.linkedin_email} — stopping`)
-          break
-        }
-
-        const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
-        await supabase
-          .from('linkedin_queue')
-          .update({
-            status: newStatus,
-            error: msg,
-            processed_at: newStatus === 'failed' ? new Date().toISOString() : null,
-          })
-          .eq('id', item.id)
-      }
-    }
+    await saveSession(sessionInfo, context)
   } finally {
-    if (context) await context.close().catch(() => {})
-    if (browser) await browser.close().catch(() => {})
+    await feedPage.close().catch(() => {})
   }
+
+  let actionsThisRun = 0
+
+  for (const item of items) {
+    if (actionsThisRun >= MAX_ACTIONS_PER_RUN) break
+
+    const { error: lockErr } = await supabase
+      .from('linkedin_queue')
+      .update({ status: 'in_progress', attempts: item.attempts + 1 })
+      .eq('id', item.id)
+      .eq('status', 'queued')
+
+    if (lockErr) {
+      console.warn(`[worker] could not lock item ${item.id}:`, lockErr.message)
+      continue
+    }
+
+    try {
+      await processItem(item, context)
+
+      const now = new Date().toISOString()
+
+      await supabase
+        .from('linkedin_queue')
+        .update({ status: 'done', processed_at: now, error: null })
+        .eq('id', item.id)
+
+      if (item.sequence_step > 0) {
+        await supabase
+          .from('sequence_sends')
+          .update({ status: 'sent', sent_at: now })
+          .eq('lead_id', item.lead_id)
+          .eq('step', item.sequence_step)
+          .eq('channel', 'linkedin')
+          .eq('status', 'queued')
+      }
+
+      if (item.action === 'connect') {
+        await supabase
+          .from('leads')
+          .update({ status: 'contacted', updated_at: now })
+          .eq('id', item.lead_id)
+      }
+
+      actionsThisRun++
+      await saveSession(sessionInfo, context)
+
+      if (actionsThisRun < items.length) {
+        await randomDelay(ACTION_DELAY_MS[0], ACTION_DELAY_MS[1])
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error(`[worker] item ${item.id} failed:`, msg)
+
+      if (msg.includes('SESSION_EXPIRED')) {
+        await markSessionExpired(session.id)
+        await context.close().catch(() => {})
+        contextCache.delete(userId)
+        console.warn(`[worker] session expired mid-run for ${session.linkedin_email} — stopping`)
+        break
+      }
+
+      const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
+      await supabase
+        .from('linkedin_queue')
+        .update({
+          status: newStatus,
+          error: msg,
+          processed_at: newStatus === 'failed' ? new Date().toISOString() : null,
+        })
+        .eq('id', item.id)
+    }
+  }
+  // Context stays alive in cache — NOT closed here. The next poll reuses it.
 }
 
 async function poll(): Promise<void> {
   const supabase = getSupabase()
 
-  // ── Cleanup: reset items stuck in_progress for > 10 min (browser crashed mid-run)
   await supabase
     .from('linkedin_queue')
     .update({ status: 'queued', updated_at: new Date().toISOString() })
@@ -404,14 +466,12 @@ async function poll(): Promise<void> {
 
   console.log(`[worker] ${items.length} item(s) in queue`)
 
-  // Group by user so each user gets their own browser session
   const byUser = items.reduce<Record<string, QueueItem[]>>((acc, item) => {
     acc[item.user_id] = acc[item.user_id] ?? []
     acc[item.user_id].push(item as QueueItem)
     return acc
   }, {})
 
-  // Process users sequentially (not in parallel — LinkedIn bot detection)
   for (const [userId, userItems] of Object.entries(byUser)) {
     try {
       await runForUser(userId, userItems)
@@ -422,7 +482,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-03-v4')
+  console.log('[worker] LinkedIn worker started — build 2026-06-03-v5')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling = false
@@ -442,14 +502,10 @@ async function main(): Promise<void> {
     }
   }
 
-  // Run immediately on start, then on interval
   await safePoll()
   setInterval(safePoll, POLL_INTERVAL_MS)
 }
 
-// Prevent the stealth plugin's CDP session teardown from crashing the process.
-// When the browser closes, playwright-extra fires a CDP message to an already-closed
-// session — this produces an unhandled rejection we can safely swallow.
 process.on('unhandledRejection', (reason) => {
   const msg = String(reason)
   if (
@@ -457,10 +513,19 @@ process.on('unhandledRejection', (reason) => {
     msg.includes('cdpSession') ||
     msg.includes('Browser has been closed')
   ) {
-    // Expected during browser teardown — not a real error
     return
   }
   console.error('[worker] unhandled rejection:', reason)
+})
+
+// Graceful shutdown: close all cached contexts cleanly
+process.on('SIGTERM', async () => {
+  console.log('[worker] SIGTERM — closing cached contexts')
+  for (const [userId, cached] of contextCache.entries()) {
+    await cached.context.close().catch(() => {})
+    contextCache.delete(userId)
+  }
+  process.exit(0)
 })
 
 main().catch(err => {

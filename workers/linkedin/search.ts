@@ -119,7 +119,7 @@ export async function searchAndSaveLeads(
     const searchUrl = buildSearchUrl(icpConfig)
     console.log(`[worker:search] searching LinkedIn: ${searchUrl}`)
 
-    await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 30_000 })
+    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 })
     await delay(3000, 5000)
 
     // Check we're still logged in (not redirected to login page)
