@@ -15,10 +15,20 @@ primary_region = "lax"
 [env]
   NODE_ENV = "production"
   PORT = "8080"
+  BROWSER_PROFILES_DIR = "/data/linkedin-profiles"
+  # Residential proxy — set via fly secrets (never commit credentials):
+  #   fly secrets set PROXY_SERVER=geo.iproyal.com:12321 PROXY_USERNAME=... PROXY_PASSWORD=...
+  # PROXY_SERVER must be host:port only (no http://) — the code builds the full URL
+
+# Persistent volume so browser profiles survive container restarts.
+# Create once with: fly volumes create linkedin_profiles --region lax --size 5
+[[mounts]]
+  source = "linkedin_profiles"
+  destination = "/data"
 
 # Keep exactly one instance running at all times — this is a persistent worker
 [[vm]]
-  memory = "1gb"     # Playwright/Chromium needs at least 512MB; 1GB is safe
+  memory = "2gb"     # Chromium + Xvfb + stealth plugin (shared CPU max)
   cpu_kind = "shared"
   cpus = 1
 

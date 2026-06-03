@@ -131,9 +131,9 @@ server.listen(process.env.PORT ?? 8080, () => {
   console.log(`[worker] listening on port ${process.env.PORT ?? 8080}`)
 })
 
-const POLL_INTERVAL_MS = 30_000       // check queue every 30s
-const ACTION_DELAY_MS  = [45_000, 90_000] as const  // wait 45–90s between actions (human pacing)
-const MAX_ACTIONS_PER_RUN = 5         // max actions per poll cycle per user
+const POLL_INTERVAL_MS = 30_000        // check queue every 30s
+const ACTION_DELAY_MS  = [90_000, 180_000] as const  // wait 1.5–3 min between actions
+const MAX_ACTIONS_PER_RUN = 2          // max 2 actions per poll cycle — LinkedIn flags rapid bursts
 
 function getSupabase() {
   return createClient(
@@ -313,6 +313,13 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
         const msg = err instanceof Error ? err.message : String(err)
         console.error(`[worker] item ${item.id} failed:`, msg)
 
+        // Session was invalidated by LinkedIn — stop processing and force re-login
+        if (msg.includes('SESSION_EXPIRED')) {
+          await markSessionExpired(session.id)
+          console.warn(`[worker] session expired mid-run for ${session.linkedin_email} — stopping`)
+          break
+        }
+
         const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
         await supabase
           .from('linkedin_queue')
@@ -332,6 +339,13 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
 
 async function poll(): Promise<void> {
   const supabase = getSupabase()
+
+  // ── Cleanup: reset items stuck in_progress for > 10 min (browser crashed mid-run)
+  await supabase
+    .from('linkedin_queue')
+    .update({ status: 'queued', updated_at: new Date().toISOString() })
+    .eq('status', 'in_progress')
+    .lt('updated_at', new Date(Date.now() - 10 * 60_000).toISOString())
 
   const { data: items, error } = await supabase
     .from('linkedin_queue')
@@ -368,20 +382,46 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started')
+  console.log('[worker] LinkedIn worker started — build 2026-06-03-v4')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
-  // Run immediately on start, then on interval
-  await poll()
+  let isPolling = false
 
-  setInterval(async () => {
+  async function safePoll() {
+    if (isPolling) {
+      console.log('[worker] previous poll still running — skipping this tick')
+      return
+    }
+    isPolling = true
     try {
       await poll()
     } catch (err) {
       console.error('[worker] poll error:', err)
+    } finally {
+      isPolling = false
     }
-  }, POLL_INTERVAL_MS)
+  }
+
+  // Run immediately on start, then on interval
+  await safePoll()
+  setInterval(safePoll, POLL_INTERVAL_MS)
 }
+
+// Prevent the stealth plugin's CDP session teardown from crashing the process.
+// When the browser closes, playwright-extra fires a CDP message to an already-closed
+// session — this produces an unhandled rejection we can safely swallow.
+process.on('unhandledRejection', (reason) => {
+  const msg = String(reason)
+  if (
+    msg.includes('Target page, context or browser has been closed') ||
+    msg.includes('cdpSession') ||
+    msg.includes('Browser has been closed')
+  ) {
+    // Expected during browser teardown — not a real error
+    return
+  }
+  console.error('[worker] unhandled rejection:', reason)
+})
 
 main().catch(err => {
   console.error('[worker] fatal error:', err)

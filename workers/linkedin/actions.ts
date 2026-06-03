@@ -82,7 +82,14 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 40_000 })
+    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+
+    // If LinkedIn redirected us to login, the session was invalidated server-side
+    const landedUrl = page.url()
+    if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
+      throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
+    }
+
     // Give the SPA extra time to finish rendering action buttons
     await delay(3000, 5000)
 
@@ -173,7 +180,7 @@ export async function sendLinkedInMessage(
   try {
     // Use the messaging URL directly for existing connections
     const messageUrl = `https://www.linkedin.com/messaging/thread/new/?recipients=${linkedinProfileId}`
-    await page.goto(messageUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 })
+    await page.goto(messageUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await delay(2000, 3500)
 
     // Try to find the message input; fall back to profile → Message button

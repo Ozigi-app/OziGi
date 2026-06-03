@@ -22,6 +22,7 @@ import ws from 'ws'
 import crypto from 'crypto'
 import { chromium as stealthChromium } from 'playwright-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { getProxyConfig } from './proxy'
 
 stealthChromium.use(StealthPlugin())
 const chromium = stealthChromium as unknown as typeof baseChromium
@@ -71,7 +72,13 @@ async function setSessionStatus(
 }
 
 function isCheckpointUrl(url: string): boolean {
-  return url.includes('/checkpoint') || url.includes('/challenge') || url.includes('/verify')
+  return (
+    url.includes('/checkpoint') ||
+    url.includes('/challenge')  ||
+    url.includes('/verify')     ||
+    url.includes('challengeId=')    ||  // device recognition challenge
+    url.includes('recognizeDevice=')    // new device/IP verification
+  )
 }
 
 /**
@@ -182,6 +189,8 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     console.log('[login] If LinkedIn shows "Check your app", approve it on your phone.')
   }
 
+  const proxy = await getProxyConfig(userId)
+
   const browser = await chromium.launch({
     headless: false,   // Always headed — Xvfb provides the virtual display in production
     args: [
@@ -192,6 +201,7 @@ export async function loginLinkedIn(userId: string): Promise<void> {
       '--disable-features=IsolateOrigins,site-per-process',
       '--disable-infobars',
       '--window-size=1280,800',
+      ...(proxy ? [`--proxy-server=${proxy.server}`] : []),
     ],
     slowMo: 0,
   })
@@ -223,29 +233,70 @@ export async function loginLinkedIn(userId: string): Promise<void> {
 
   try {
     // Navigate to login page
-    await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 40_000 })
+    await page.goto('https://www.linkedin.com/login', { waitUntil: 'load', timeout: 60_000 })
+    await page.waitForTimeout(2000)
 
-    // Wait for any input to appear, then fill using locator (handles visibility natively)
-    await page.waitForSelector('input', { timeout: 20_000 }).catch(async () => {
+    // Log every input in the DOM so we can see what LinkedIn is serving
+    const domInputs = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('input'))
+        .map(i => `${i.tagName}[name=${i.name}][id=${i.id}][type=${i.type}]`)
+        .join(' | ')
+    )
+    console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
+
+    // Fill using React-compatible native setter so the submit button becomes enabled
+    const filled = await page.evaluate((emailVal) => {
+      const field = (
+        document.querySelector('input[name="session_key"]') ||
+        document.querySelector('input[autocomplete="username"]') ||
+        document.querySelector('input[type="email"]') ||
+        document.querySelector('input[type="text"]')
+      ) as HTMLInputElement | null
+      if (!field) return false
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
+      setter?.call(field, emailVal)
+      field.dispatchEvent(new Event('input',  { bubbles: true }))
+      field.dispatchEvent(new Event('change', { bubbles: true }))
+      return true
+    }, email)
+
+    if (!filled) {
       const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
-      console.error(`[login] no inputs found on page. url=${page.url()} body="${bodySnippet}"`)
+      console.error(`[login] email field not found. url=${page.url()} body="${bodySnippet}"`)
       throw new Error('LinkedIn login page did not load — please try again.')
-    })
+    }
 
-    // Use the first visible input for email (LinkedIn's email field is always input #1)
-    const emailInput = page.locator('input').first()
-    await emailInput.waitFor({ state: 'visible', timeout: 10_000 })
-    await page.waitForTimeout(800 + Math.random() * 800)
-    await emailInput.fill(email)
-    await page.waitForTimeout(500 + Math.random() * 500)
+    console.log('[login] email filled')
+    await page.waitForTimeout(600 + Math.random() * 600)
 
-    // Password is always input type="password"
-    const passwordInput = page.locator('input[type="password"]').first()
-    await passwordInput.waitFor({ state: 'visible', timeout: 10_000 })
-    await passwordInput.fill(password)
+    // Fill password with same React-compatible approach
+    await page.evaluate((passVal) => {
+      const field = (
+        document.querySelector('input[name="session_password"]') ||
+        document.querySelector('input[type="password"]')
+      ) as HTMLInputElement | null
+      if (!field) return
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
+      setter?.call(field, passVal)
+      field.dispatchEvent(new Event('input',  { bubbles: true }))
+      field.dispatchEvent(new Event('change', { bubbles: true }))
+    }, password)
+
+    console.log('[login] password filled')
     await page.waitForTimeout(500 + Math.random() * 800)
 
-    await page.click('[type="submit"]')
+    await page.waitForTimeout(500 + Math.random() * 500)
+    // Submit by pressing Enter on the password field — works even if the button is still animating
+    await page.evaluate(() => {
+      const pwd = (
+        document.querySelector('input[name="session_password"]') ||
+        document.querySelector('input[type="password"]')
+      ) as HTMLInputElement | null
+      pwd?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    })
+    // Also click the button as a fallback
+    await page.locator('button[type="submit"], button:has-text("Sign in")').first()
+      .click({ timeout: 8_000, force: true }).catch(() => {})
     await page.waitForTimeout(3000)
 
     const postLoginUrl = page.url()
@@ -338,15 +389,39 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     }
 
     // ── 5. Verify we're logged in ─────────────────────────────────────────────
-    const finalUrl = page.url()
+    let finalUrl = page.url()
     console.log(`[login] final URL: ${finalUrl}`)
 
-    if (finalUrl.includes('/login') || isCheckpointUrl(finalUrl)) {
+    // auth_context_expired: the push-notification 2FA was approved but LinkedIn's
+    // server-side token expired before the callback arrived. Navigate to /feed — if
+    // the session was actually created LinkedIn will redirect us there successfully.
+    if (finalUrl.includes('auth_context_expired')) {
+      console.log('[login] auth_context_expired — retrying navigation to feed')
+      await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded', timeout: 20_000 }).catch(() => {})
+      finalUrl = page.url()
+      console.log(`[login] post-retry URL: ${finalUrl}`)
+    }
+
+    // A checkpoint URL here means LinkedIn wants another verification step.
+    // A /login URL (without a challengeId) means wrong credentials or hard block.
+    if (isCheckpointUrl(finalUrl)) {
+      throw new Error('LinkedIn requires another verification step — please reconnect and complete the challenge.')
+    }
+    if (finalUrl.includes('/login')) {
       throw new Error('Login failed — wrong credentials or LinkedIn blocked the attempt')
     }
 
     // ── 6. Save cookies + mark active ────────────────────────────────────────
-    const cookies   = await context.cookies()
+    const cookies = await context.cookies()
+
+    // Verify LinkedIn's session cookie exists — if it's missing the login
+    // appeared to succeed but the auth context was actually invalid (e.g. after
+    // auth_context_expired recovery). Better to fail now than save a dead session.
+    const liAt = cookies.find(c => c.name === 'li_at')
+    if (!liAt) {
+      throw new Error('Login appeared to succeed but LinkedIn session cookie missing — please try again.')
+    }
+
     const encrypted = encrypt(JSON.stringify(cookies))
 
     await setSessionStatus(sessionId, 'active', {

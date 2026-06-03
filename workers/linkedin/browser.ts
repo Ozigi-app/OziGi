@@ -4,6 +4,7 @@ import ws from 'ws'
 import crypto from 'crypto'
 import { chromium as stealthChromium } from 'playwright-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { getProxyConfig } from './proxy'
 
 stealthChromium.use(StealthPlugin())
 const chromium = stealthChromium as unknown as typeof baseChromium
@@ -45,8 +46,12 @@ export interface SessionInfo {
   linkedinEmail: string
 }
 
-// Load a Playwright browser context seeded with the user's saved LinkedIn cookies
+// Load a Playwright browser context seeded with the user's saved LinkedIn cookies.
+// The browser is launched through a per-user sticky residential proxy so LinkedIn
+// always sees a consistent residential IP for this account.
 export async function loadSession(session: SessionInfo): Promise<{ browser: Browser; context: BrowserContext }> {
+  const proxy = await getProxyConfig(session.userId)
+
   const browser = await chromium.launch({
     headless: false,   // Always headed — Xvfb provides the virtual display in production
     args: [
@@ -55,6 +60,9 @@ export async function loadSession(session: SessionInfo): Promise<{ browser: Brow
       '--disable-blink-features=AutomationControlled',
       '--disable-infobars',
       '--window-size=1280,800',
+      // Pass proxy directly as a Chromium flag — bypasses playwright-extra's
+      // launch interception which can silently drop the proxy config object.
+      ...(proxy ? [`--proxy-server=${proxy.server}`] : []),
     ],
   })
 
@@ -74,7 +82,8 @@ export async function loadSession(session: SessionInfo): Promise<{ browser: Brow
     window.chrome = { runtime: {} }
   })
 
-  // Load saved cookies if available
+  // Seed cookies from Supabase — primary source of truth when the profile dir
+  // is missing or was wiped (container restart without a mounted volume).
   const supabase = getSupabase()
   const { data } = await supabase
     .from('linkedin_sessions')
@@ -120,16 +129,21 @@ export async function markSessionExpired(sessionId: string): Promise<void> {
     .eq('id', sessionId)
 }
 
-// Check if LinkedIn is showing a login wall (session expired or banned)
+// Check if the session has a valid LinkedIn session cookie — no network request needed.
+// The li_at cookie is LinkedIn's primary session token. If it exists and isn't expired
+// we treat the session as valid. Actions will naturally fail + re-trigger login if
+// LinkedIn has invalidated it server-side.
 export async function isLoggedIn(context: BrowserContext): Promise<boolean> {
-  const page = await context.newPage()
-  try {
-    await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded', timeout: 15_000 })
-    const url = page.url()
-    return !url.includes('/login') && !url.includes('/checkpoint')
-  } catch {
+  const cookies = await context.cookies('https://www.linkedin.com')
+  const liAt = cookies.find(c => c.name === 'li_at')
+  if (!liAt) {
+    console.warn('[browser] li_at cookie missing — session invalid')
     return false
-  } finally {
-    await page.close()
   }
+  // expires is -1 for session cookies (no expiry) or a Unix timestamp
+  if (liAt.expires > 0 && liAt.expires < Date.now() / 1000) {
+    console.warn('[browser] li_at cookie expired')
+    return false
+  }
+  return true
 }

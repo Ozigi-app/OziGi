@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { verifyQStashRequest } from '@/lib/qstash'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { composeEmail, composeLinkedInMessage } from '@/lib/gtm/composer'
+import { spreadScheduledAt } from '@/lib/gtm/schedule'
 import { sendViaGmail } from '@/lib/gtm/gmail'
 import { sendViaSmtp } from '@/lib/gtm/smtp'
 import { syncLeadToCRM } from '@/lib/gtm/crm'
@@ -235,7 +236,7 @@ export async function POST(req: Request) {
 
               if (insertErr) { campaignSkipped++; continue } // already enqueued
 
-              // Enqueue to the LinkedIn worker queue
+              // Enqueue to the LinkedIn worker queue — spread across business hours
               const { error: queueErr } = await supabaseAdmin
                 .from('linkedin_queue')
                 .insert({
@@ -247,7 +248,7 @@ export async function POST(req: Request) {
                     ? message.slice(0, 300)
                     : message,
                   sequence_step: step.step,
-                  scheduled_at: new Date().toISOString(),
+                  scheduled_at: spreadScheduledAt(liEnqueuedToday, dailyLinkedInLimit),
                 })
 
               if (queueErr) {
