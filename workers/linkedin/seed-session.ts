@@ -14,7 +14,7 @@
  *   GTM_ENCRYPTION_KEY
  *   LINKEDIN_USER_ID   ← your Supabase auth user UUID
  */
-import { chromium } from 'playwright'
+import { chromium } from 'patchright'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import * as readline from 'readline'

@@ -24,7 +24,7 @@ import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './brow
 import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
 import { loginLinkedIn } from './login'
 import { searchAndSaveLeads } from './search'
-import type { BrowserContext } from 'playwright'
+import type { BrowserContext } from 'patchright'
 
 // Module-level context cache — keeps browser contexts alive between poll cycles.
 //

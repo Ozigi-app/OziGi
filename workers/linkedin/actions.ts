@@ -1,4 +1,4 @@
-import type { BrowserContext } from 'playwright'
+import type { BrowserContext } from 'patchright'
 
 function delay(minMs: number, maxMs: number): Promise<void> {
   const ms = Math.floor(Math.random() * (maxMs - minMs) + minMs)

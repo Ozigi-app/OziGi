@@ -5,7 +5,7 @@
  * Called by the /search HTTP endpoint in index.ts when the scrape cron
  * triggers a LinkedIn-source campaign.
  */
-import type { BrowserContext } from 'playwright'
+import type { BrowserContext } from 'patchright'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 interface IcpConfig {
@@ -45,7 +45,7 @@ function buildSearchUrl(icpConfig: IcpConfig): string {
  * Scrapes profile cards from the current search results page.
  * LinkedIn's DOM changes frequently — multiple selectors used for robustness.
  */
-async function extractProfiles(page: import('playwright').Page): Promise<FoundProfile[]> {
+async function extractProfiles(page: import('patchright').Page): Promise<FoundProfile[]> {
   // Wait for at least one /in/ profile link to appear (or timeout gracefully)
   await page.waitForSelector('a[href*="/in/"]', { timeout: 8_000 }).catch(() => {})
 

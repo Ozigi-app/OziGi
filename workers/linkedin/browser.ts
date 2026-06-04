@@ -1,15 +1,10 @@
 import path from 'path'
 import fs from 'fs'
-import { chromium as baseChromium, type BrowserContext, type Cookie } from 'playwright'
+import { chromium, type BrowserContext, type Cookie } from 'patchright'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import crypto from 'crypto'
-import { chromium as stealthChromium } from 'playwright-extra'
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { getProxyConfig } from './proxy'
-
-stealthChromium.use(StealthPlugin())
-const chromium = stealthChromium as unknown as typeof baseChromium
 
 const ALGORITHM = 'aes-256-gcm'
 

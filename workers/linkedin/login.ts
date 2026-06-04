@@ -15,17 +15,11 @@
  *   5. On success: encrypt cookies, set status='active'
  *   6. On failure: set status='needs_login' with login_error
  */
-import { type Page } from 'playwright'
-import { chromium as baseChromium } from 'playwright'
+import { type Page, chromium } from 'patchright'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import crypto from 'crypto'
-import { chromium as stealthChromium } from 'playwright-extra'
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { getProxyConfig } from './proxy'
-
-stealthChromium.use(StealthPlugin())
-const chromium = stealthChromium as unknown as typeof baseChromium
 
 const ALGORITHM       = 'aes-256-gcm'
 const POLL_INTERVAL_MS = 3_000   // check every 3 s (both DB and browser)
