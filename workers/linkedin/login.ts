@@ -296,24 +296,38 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     console.log('[login] password filled')
     await page.waitForTimeout(1000 + Math.random() * 500)
 
-    // Log button state (visible buttons only) for diagnostics
+    // Log the button that's inside the email/password form (for diagnostics)
     const btnInfo = await page.evaluate(() => {
       const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      const btn = Array.from(document.querySelectorAll('button[type="submit"], button'))
-        .find(visible) as HTMLButtonElement | null
+      // Walk from the visible password field up to its parent <form>
+      const pwField = Array.from(document.querySelectorAll('input[type="password"]'))
+        .find(visible) as HTMLElement | null
+      const form = pwField?.closest('form') as HTMLFormElement | null
+      const btn = (form?.querySelector('button[type="submit"]') ||
+                   form?.querySelector('button')) as HTMLButtonElement | null
       return btn ? `disabled=${btn.disabled} text="${btn.textContent?.trim()}"` : 'NOT FOUND'
     })
     console.log(`[login] submit button: ${btnInfo}`)
 
-    // Submit via Enter key (most natural — triggers the focused visible form)
+    // Submit via Enter key (most natural — fires on the focused password field)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(1000)
-    // JS click on the visible submit button as a fallback
+
+    // Fallback: click the submit button INSIDE the email/password form.
+    // We find it by walking from the visible password input to its <form>, then
+    // clicking that form's button. This avoids the SSO buttons ("Sign in with
+    // Microsoft / Apple") that appear first in the DOM as visible buttons and
+    // would otherwise be selected by a naïve find(visible) search.
     await page.evaluate(() => {
       const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      const btn = Array.from(document.querySelectorAll('button[type="submit"], button'))
-        .find(visible) as HTMLButtonElement | null
-      btn?.click()
+      const pwField = Array.from(document.querySelectorAll('input[type="password"]'))
+        .find(visible) as HTMLElement | null
+      const form = pwField?.closest('form') as HTMLFormElement | null
+      if (form) {
+        const btn = (form.querySelector('button[type="submit"]') ||
+                     form.querySelector('button')) as HTMLButtonElement | null
+        btn ? btn.click() : form.submit()
+      }
     })
     await page.waitForTimeout(4000)
 
