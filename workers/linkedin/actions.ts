@@ -139,9 +139,19 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    // 'commit' fires on the first response byte — fast, avoids waiting for
-    // images/ads/fonts that LinkedIn loads. waitForFunction below handles
-    // the actual content-ready check.
+    // Prime localStorage before visiting the profile. LinkedIn's SPA checks
+    // localStorage for auth state when loading a profile page — a blank
+    // localStorage triggers a client-side redirect to the auth wall even
+    // when li_at is valid. Visiting the feed on the same page lets LinkedIn's
+    // JavaScript populate localStorage, then the profile navigation finds it
+    // already set and loads normally.
+    await page.goto('https://www.linkedin.com/feed/', {
+      waitUntil: 'commit',   // fires on first byte — no timeout risk
+      timeout: 15_000,
+    }).catch(() => {})
+    // Give LinkedIn's JS 3-4 seconds to run and write to localStorage
+    await delay(3000, 4000)
+
     await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 60_000 })
     await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
 
@@ -167,18 +177,23 @@ export async function sendConnectionRequest(
     // Extra settle time for buttons to render after data arrives
     await delay(2000, 3000)
 
-    const { btnCount, bodyLen } = await page.evaluate(() => ({
+    const pageState = await page.evaluate(() => ({
       btnCount: document.querySelectorAll('button').length,
       bodyLen:  (document.body.textContent ?? '').trim().length,
-    }))
-    if (btnCount === 0 && bodyLen < 50) {
+      title:    document.title,
+    })).catch(err => {
+      const msg = String(err)
+      if (msg.includes('Execution context was destroyed') || msg.includes('Target page')) {
+        throw new Error(`AUTHWALL: Page redirected during evaluation (url=${page.url()}) — LinkedIn auth wall`)
+      }
+      throw err
+    })
+
+    if (pageState.btnCount === 0 && pageState.bodyLen < 50) {
       throw new Error('SESSION_EXPIRED: LinkedIn returned a blank page — please reconnect your account')
     }
 
-    // Auth wall: profile URL loaded but title is still the generic "LinkedIn"
-    // shell — session cookies aren't being accepted for profile data requests.
-    const pageTitle = await page.title()
-    if (pageTitle === 'LinkedIn') {
+    if (pageState.title === 'LinkedIn') {
       throw new Error('AUTHWALL: LinkedIn showed sign-in wall on profile — session may need reconnecting')
     }
 
