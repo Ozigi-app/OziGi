@@ -15,11 +15,17 @@
  *   5. On success: encrypt cookies, set status='active'
  *   6. On failure: set status='needs_login' with login_error
  */
+import path from 'path'
+import fs from 'fs'
 import { type Page, chromium } from 'patchright'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import crypto from 'crypto'
 import { getProxyConfig } from './proxy'
+
+// Must match the value in browser.ts — login and worker share the same profile dir.
+const PROFILES_DIR = process.env.BROWSER_PROFILES_DIR ?? process.env.LINKEDIN_PROFILES_DIR ?? '/tmp/linkedin-profiles'
+const DEFAULT_UA    = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
 const ALGORITHM       = 'aes-256-gcm'
 const POLL_INTERVAL_MS = 3_000   // check every 3 s (both DB and browser)
@@ -185,29 +191,43 @@ export async function loginLinkedIn(userId: string): Promise<void> {
 
   const proxy = await getProxyConfig(userId)
 
-  const browser = await chromium.launch({
+  // Use the SAME persistent profile directory the worker uses.
+  //
+  // WHY THIS MATTERS: LinkedIn binds the li_at cookie to the device fingerprint
+  // (PerimeterX state, Canvas, WebGL, CPU, etc.) of the browser that created it.
+  // If login uses a temporary context and the worker uses a persistent context,
+  // LinkedIn sees two different "devices" → it allows feed access but blocks profile
+  // pages with an auth wall (the exact bug we kept hitting).
+  //
+  // By using launchPersistentContext with the same userDataDir, login and all
+  // subsequent worker requests share identical browser state. LinkedIn sees one
+  // consistent device from first login through every outreach action.
+  const userDataDir = path.join(PROFILES_DIR, userId)
+  fs.mkdirSync(userDataDir, { recursive: true })
+
+  // Prefer Google Chrome — better JA3/JA4 TLS fingerprint than Playwright Chromium
+  const chromeExecutable = process.env.CHROME_EXECUTABLE_PATH ??
+    ['/usr/bin/google-chrome-stable', '/usr/bin/google-chrome', '/usr/bin/chromium-browser']
+      .find(p => { try { fs.accessSync(p); return true } catch { return false } })
+
+  const context = await chromium.launchPersistentContext(userDataDir, {
     headless: false,   // Always headed — Xvfb provides the virtual display in production
+    ...(chromeExecutable ? { executablePath: chromeExecutable } : {}),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-blink-features=AutomationControlled',
-      '--disable-web-security',
-      '--disable-features=IsolateOrigins,site-per-process',
       '--disable-infobars',
       '--window-size=1280,800',
       ...(proxy ? [`--proxy-server=${proxy.server}`] : []),
+      '--proxy-bypass-list=*.google.com,*.googleapis.com,*.gstatic.com,*.googleusercontent.com',
     ],
-    slowMo: 0,
-  })
-
-  const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    ignoreDefaultArgs: ['--enable-automation'],
+    userAgent: DEFAULT_UA,
     viewport: { width: 1280, height: 800 },
     locale: 'en-US',
     timezoneId: 'America/New_York',
-    extraHTTPHeaders: {
-      'Accept-Language': 'en-US,en;q=0.9',
-    },
+    extraHTTPHeaders: { 'Accept-Language': 'en-US,en;q=0.9' },
   })
 
   const page = await context.newPage()
@@ -413,7 +433,11 @@ export async function loginLinkedIn(userId: string): Promise<void> {
       throw new Error('Login appeared to succeed but LinkedIn session cookie missing — please try again.')
     }
 
-    const encrypted = encrypt(JSON.stringify(cookies))
+    // Save cookies in the same { cookies, userAgent } format that browser.ts
+    // parseSessionBlob() expects, so the worker can re-seed if the profile dir
+    // is ever lost (container restart, volume wipe).
+    const sessionData = { cookies, userAgent: DEFAULT_UA }
+    const encrypted = encrypt(JSON.stringify(sessionData))
 
     await setSessionStatus(sessionId, 'active', {
       login_error: null,
@@ -434,6 +458,7 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     throw err
   } finally {
     await context.close()
-    await browser.close()
+    // No browser.close() — launchPersistentContext owns the browser; closing
+    // the context shuts it down. The profile directory stays on disk.
   }
 }
