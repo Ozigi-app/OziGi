@@ -139,15 +139,11 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    // Navigate via the feed first so LinkedIn's SPA session state is already
-    // initialised when we hit the profile. Going directly to a profile URL in
-    // a fresh page leaves the SPA cold — the Voyager API calls it needs for
-    // profile data fail because the auth context hasn't been bootstrapped yet.
-    await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded', timeout: 20_000 }).catch(() => {})
-    await delay(1500, 2500)
-
-    // Now navigate to the actual profile
-    await page.goto(linkedinUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 })
+    // The feed warmup already ran in runForUser before this action was called,
+    // so the context's localStorage/service-worker state is warm. Go directly
+    // to the profile. Use 'load' so the browser waits for scripts to start
+    // executing before we hand off to waitForFunction.
+    await page.goto(linkedinUrl, { waitUntil: 'load', timeout: 60_000 })
 
     const landedUrl = page.url()
     if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
