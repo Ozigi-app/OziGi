@@ -146,11 +146,20 @@ export async function sendConnectionRequest(
     // JavaScript populate localStorage, then the profile navigation finds it
     // already set and loads normally.
     await page.goto('https://www.linkedin.com/feed/', {
-      waitUntil: 'commit',   // fires on first byte — no timeout risk
+      waitUntil: 'commit',   // fires on first byte — safe through proxy
       timeout: 15_000,
     }).catch(() => {})
-    // Give LinkedIn's JS 3-4 seconds to run and write to localStorage
-    await delay(3000, 4000)
+    // Wait for HTML to be fully parsed (scripts are now downloading)
+    await page.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {})
+    // Wait for LinkedIn's React app to initialise and write auth state to
+    // localStorage. Without this, the profile SPA sees empty localStorage and
+    // triggers a client-side redirect to the auth wall.
+    await page.waitForFunction(
+      () => Object.keys(localStorage).some(k => k.startsWith('voyager-web:')),
+      { timeout: 12_000 }
+    ).catch(() => {})
+    // Extra settle for any remaining async writes
+    await delay(2000, 3000)
 
     await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 60_000 })
     await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})

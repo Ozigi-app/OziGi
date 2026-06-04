@@ -337,7 +337,10 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       waitUntil: 'domcontentloaded',
       timeout: 30_000,
     })
-    await feedPage.waitForTimeout(2000)
+    // Give PerimeterX scripts time to run and establish session cookies.
+    // On a fresh profile dir (no _px3/_pxvid on disk) this takes longer —
+    // 10s covers the JS download + PerimeterX challenge on a proxied connection.
+    await feedPage.waitForTimeout(10_000)
 
     const feedUrl = feedPage.url()
     if (feedUrl.includes('/login') || feedUrl.includes('/checkpoint') || feedUrl.includes('/authwall')) {
@@ -497,7 +500,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-03-v5')
+  console.log('[worker] LinkedIn worker started — build 2026-06-04-v1')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling = false
