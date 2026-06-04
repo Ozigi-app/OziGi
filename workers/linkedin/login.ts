@@ -253,14 +253,19 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     ).catch(() => 'evaluate failed')
     console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
 
-    // Focus email via JS then type with real keyboard events (most reliable for React)
+    // LinkedIn's login page renders two copies of the form: a server-rendered
+    // (hidden) version and a React-hydrated (visible) version. The hidden fields
+    // have offsetParent===null; we must target the visible ones, otherwise
+    // credentials are typed into the hidden form and nothing submits.
     const emailFocused = await page.evaluate(() => {
+      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
       const field = (
         document.querySelector('input#username') ||
         document.querySelector('input[name="session_key"]') ||
         document.querySelector('input[autocomplete="username"]') ||
-        document.querySelector('input[type="email"]') ||
-        document.querySelector('input[type="text"]')
+        // Prefer the first VISIBLE email/text input
+        Array.from(document.querySelectorAll('input[type="email"]')).find(visible) ||
+        Array.from(document.querySelectorAll('input[type="text"]')).find(visible)
       ) as HTMLInputElement | null
       if (!field) return false
       field.focus()
@@ -277,12 +282,13 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     console.log('[login] email filled')
     await page.waitForTimeout(500 + Math.random() * 500)
 
-    // Focus password via JS then type
+    // Focus the first VISIBLE password input
     await page.evaluate(() => {
+      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
       const field = (
         document.querySelector('input#password') ||
         document.querySelector('input[name="session_password"]') ||
-        document.querySelector('input[type="password"]')
+        Array.from(document.querySelectorAll('input[type="password"]')).find(visible)
       ) as HTMLInputElement | null
       field?.focus()
     })
@@ -290,19 +296,23 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     console.log('[login] password filled')
     await page.waitForTimeout(1000 + Math.random() * 500)
 
-    // Log button state to see if React processed the input events
+    // Log button state (visible buttons only) for diagnostics
     const btnInfo = await page.evaluate(() => {
-      const btn = document.querySelector('button[type="submit"]') as HTMLButtonElement | null
+      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
+      const btn = Array.from(document.querySelectorAll('button[type="submit"], button'))
+        .find(visible) as HTMLButtonElement | null
       return btn ? `disabled=${btn.disabled} text="${btn.textContent?.trim()}"` : 'NOT FOUND'
     })
     console.log(`[login] submit button: ${btnInfo}`)
 
-    // Submit: Enter key first (most natural), then JS btn.click() as fallback
+    // Submit via Enter key (most natural — triggers the focused visible form)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(1000)
-    // JS click bypasses disabled state in case button is still disabled
+    // JS click on the visible submit button as a fallback
     await page.evaluate(() => {
-      const btn = document.querySelector('button[type="submit"]') as HTMLButtonElement | null
+      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
+      const btn = Array.from(document.querySelectorAll('button[type="submit"], button'))
+        .find(visible) as HTMLButtonElement | null
       btn?.click()
     })
     await page.waitForTimeout(4000)
