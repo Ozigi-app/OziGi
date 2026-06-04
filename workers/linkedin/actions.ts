@@ -150,17 +150,13 @@ export async function sendConnectionRequest(
       throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during action')
     }
 
-    // LinkedIn shows a logo+slider loading screen while the SPA hydrates.
-    // Wait for it to clear by watching for the title to change from the generic
-    // "LinkedIn" shell to the person's name, or for the profile action area.
-    // 45s timeout — proxied connections can take 30s+ to fully hydrate the SPA.
+    // Wait for the SPA to render the profile — the title changes from the
+    // generic "LinkedIn" shell to the person's name once data is loaded.
+    // 45s covers slow proxied connections. artdeco-spinner intentionally
+    // NOT checked here — it appears on many parts of the page, not just
+    // during initial load, and would cause this to never resolve.
     await page.waitForFunction(
       () => {
-        // Loading overlay present = still loading
-        const isLoading = !!document.querySelector(
-          '.loader-container, #loading-spinner, .artdeco-spinner, [class*="loading-page"]'
-        )
-        if (isLoading) return false
         const t = document.title
         return (t && t !== 'LinkedIn' && t.length > 0) ||
                !!document.querySelector('.pvs-profile-actions, [data-member-id]')
@@ -168,7 +164,8 @@ export async function sendConnectionRequest(
       { timeout: 45_000 }
     ).catch(() => {})
 
-    await delay(800, 1200)
+    // Extra settle time for buttons to render after data arrives
+    await delay(2000, 3000)
 
     const { btnCount, bodyLen } = await page.evaluate(() => ({
       btnCount: document.querySelectorAll('button').length,
