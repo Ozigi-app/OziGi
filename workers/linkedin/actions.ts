@@ -139,11 +139,11 @@ export async function sendConnectionRequest(
   const page = await context.newPage()
 
   try {
-    // The feed warmup already ran in runForUser before this action was called,
-    // so the context's localStorage/service-worker state is warm. Go directly
-    // to the profile. Use 'load' so the browser waits for scripts to start
-    // executing before we hand off to waitForFunction.
-    await page.goto(linkedinUrl, { waitUntil: 'load', timeout: 60_000 })
+    // 'commit' fires on the first response byte — fast, avoids waiting for
+    // images/ads/fonts that LinkedIn loads. waitForFunction below handles
+    // the actual content-ready check.
+    await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 60_000 })
+    await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {})
 
     const landedUrl = page.url()
     if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {

@@ -131,6 +131,10 @@ export async function loadSession(session: SessionInfo): Promise<{ context: Brow
       '--disable-infobars',
       '--window-size=1280,800',
       ...(proxy ? [`--proxy-server=${proxy.server}`] : []),
+      // Bypass the residential proxy for Chrome's own background services
+      // (update checks, push messaging, autofill). Only LinkedIn traffic
+      // should go through IPRoyal.
+      '--proxy-bypass-list=*.google.com,*.googleapis.com,*.gstatic.com,*.googleusercontent.com',
     ],
     // Prevent Playwright from injecting --enable-automation which LinkedIn detects
     ignoreDefaultArgs: ['--enable-automation'],
