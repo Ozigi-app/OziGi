@@ -138,6 +138,13 @@ export default function Distillery({
     }
   };
 
+  // Live counts for the context textarea. Long inputs get a soft warning since
+  // the model trims very large contexts.
+  const WORD_WARN_THRESHOLD = 2000;
+  const trimmedText = inputs.text.trim();
+  const wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
+  const charCount = inputs.text.length;
+
   if (loading) {
     return (
       <section className="flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden min-h-[400px]">
@@ -162,6 +169,17 @@ export default function Distillery({
               value={inputs.text}
               onChange={(e) => setInputs({ ...inputs, text: e.target.value })}
             />
+            <div className="mt-1.5 flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-[10px] font-medium tabular-nums">
+              {wordCount > WORD_WARN_THRESHOLD && (
+                <span className="text-amber-500 mr-auto">
+                  Long inputs may be trimmed — try to keep it under 2,000 words
+                </span>
+              )}
+              <span className="text-slate-400">
+                {wordCount.toLocaleString()} {wordCount === 1 ? "word" : "words"} ·{" "}
+                {charCount.toLocaleString()} {charCount === 1 ? "character" : "characters"}
+              </span>
+            </div>
           </div>
 
           {/* File upload toggle link */}
