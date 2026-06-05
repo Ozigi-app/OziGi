@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Sparkles, User, FileText, Store, LayoutDashboard, Megaphone, ListOrdered, Clock, Settings, Send, UserPlus, AtSign } from "lucide-react";
 import Distillery from "@/components/ContextEngine";
 import DistributionGrid from "@/components/DistributionGrid";
+import OutputEmptyState from "@/components/OutputEmptyState";
 import GuestModeBanner from "@/components/GuestModeBanner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -640,6 +641,12 @@ useEffect(() => {
                   onOpenPersonas={() => setIsPersonasOpen(true)}
                   onGenerate={handleGenerate}
                 />
+              )}
+
+              {!loading && campaign.length === 0 && (
+                <div className="mt-6">
+                  <OutputEmptyState />
+                </div>
               )}
 
               {loading && (
