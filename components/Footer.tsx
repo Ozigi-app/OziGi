@@ -21,7 +21,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
-              The AI that makes your content sound like you — not like ChatGPT. Drop in raw notes, links, or PDFs and get platform-ready posts that actually sound human.
+              Find leads, reach out without sounding like a robot, and publish content that sounds like you. Built for small teams who are doing it themselves.
             </p>
           </div>
 

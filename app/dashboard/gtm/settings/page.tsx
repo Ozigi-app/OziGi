@@ -260,8 +260,8 @@ function SettingsContent() {
   return (
     <div style={{ padding: '2rem', maxWidth: 680 }}>
       <div style={{ marginBottom: '1.5rem' }}>
-        <Link href="/dashboard/gtm/new" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Back to GTM</Link>
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.5rem' }}>GTM Settings</h1>
+        <Link href="/dashboard/gtm/new" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Back to Outreach</Link>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.5rem' }}>Outreach Settings</h1>
       </div>
 
       {connected === 'gmail' && (

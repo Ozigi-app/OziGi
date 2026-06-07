@@ -22,8 +22,8 @@ const C = {
 
 /* ─── Sample inputs ──────────────────────────────────────────────── */
 const SAMPLES = [
-  { label: "Product update",    text: `We just shipped Ozigi v3 — the GTM suite. Outbound email sequences, LinkedIn automation, lead scraping from GitHub and Dev.to, CRM sync (HubSpot, Zoho, Salesforce). Plus the content engine you already know. One platform, full pipeline.` },
-  { label: "Release notes",     text: `Ozigi v3 ships with: Gemini-powered ICP scoring on every scraped lead, email sequences with reply detection, LinkedIn DM automation, and a new overview dashboard showing your full GTM stats in one view. Rolling out to all users this week.` },
+  { label: "Product update",    text: `We just shipped Ozigi v3 — find leads, run outbound sequences, and publish content that sounds like you. Outbound email, LinkedIn automation, lead scraping from GitHub and Dev.to, CRM sync (HubSpot, Zoho, Salesforce). Plus the content engine you already know. One platform, full pipeline.` },
+  { label: "Release notes",     text: `Ozigi v3 ships with: AI-powered ICP scoring on every scraped lead, email sequences with reply detection, LinkedIn DM automation, and a new overview dashboard showing your leads, outreach, and content in one view. Rolling out to all users this week.` },
   { label: "Founder insight",   text: `Most outbound fails because it's generic. If your cold email could have been sent to 10,000 people, it reads that way. We built Ozigi's outbound engine to personalise every message from the lead's actual GitHub profile — their repos, commit messages, what they're building.` },
 ];
 
@@ -85,13 +85,13 @@ function DemoGate({ onSignUp, onViewPrevious }: { onSignUp: () => void; onViewPr
             That's the content engine.
           </h2>
           <p className="text-slate-500 text-sm leading-relaxed mb-2">
-            Sign up free to save your campaign, run unlimited generations, and unlock the full GTM suite — outbound email, LinkedIn sequences, lead scraping, and CRM sync.
+            Sign up free to save your campaign, run unlimited generations, and unlock outbound — email sequences, LinkedIn outreach, lead scraping, and CRM sync.
           </p>
           <p className="text-xs text-slate-400 mb-6">7-day full trial. No credit card.</p>
           <button onClick={onSignUp}
             className="block w-full text-white font-black uppercase tracking-widest text-sm px-6 py-4 rounded-xl transition-all active:scale-[0.98] mb-3"
             style={{ background: `linear-gradient(135deg, ${C.red} 0%, #c52000 100%)` }}>
-            Start Free — Get the Full GTM Suite →
+            Start Free — Find Leads & Run Outreach →
           </button>
           <button onClick={onViewPrevious}
             className="mt-2 text-sm text-slate-400 hover:text-slate-700 underline underline-offset-2 transition-colors">
@@ -117,7 +117,7 @@ function PostGenCTA({ onSignUp }: { onSignUp: () => void }) {
           Content engine: done. Now run the outbound side.
         </p>
         <p className="text-slate-300 text-sm leading-relaxed max-w-xl">
-          Sign up to save this campaign, unlock outbound email sequences, LinkedIn automation, lead scraping, and CRM sync — the full GTM suite.
+          Sign up to save this campaign, then unlock outbound — email sequences, LinkedIn automation, lead scraping, and CRM sync.
         </p>
       </div>
       <div className="flex flex-col gap-2 shrink-0">
@@ -251,7 +251,7 @@ export default function DemoPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter mb-5"
             style={{ color: C.navy }}>
-            The GTM Suite in action
+            Find leads. Run outreach. Publish content.
           </h1>
           <p className="text-lg font-medium leading-relaxed max-w-2xl mx-auto" style={{ color: C.muted }}>
             Watch the full loop — find leads, run outbound sequences, publish content — then try the content engine live yourself.

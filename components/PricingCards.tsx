@@ -14,7 +14,7 @@ interface FeatureItem {
 }
 
 interface FeatureSection {
-  label: "GTM" | "Content";
+  label: "Outreach" | "Content";
   items: FeatureItem[];
 }
 
@@ -33,14 +33,14 @@ interface PricingTier {
 const tiers: PricingTier[] = [
   {
     name: "Free",
-    highlight: "Try the GTM engine and content tools before you pay.",
+    highlight: "Find leads, run outreach, and publish content — before you pay.",
     priceMonthly: 0,
     priceYearly: 0,
     buttonText: "Start for free",
     planId: "free",
     sections: [
       {
-        label: "GTM",
+        label: "Outreach",
         items: [
           { text: "50 credits/mo (1 lead scraped + scored)", included: true },
           { text: "1 active campaign", included: true },
@@ -68,16 +68,16 @@ const tiers: PricingTier[] = [
   },
   {
     name: "Starter",
-    highlight: "The full content engine. Add GTM credits when you need them.",
+    highlight: "The full content engine. Add outreach credits when you need them.",
     priceMonthly: 19,
     priceYearly: 182,
     buttonText: "Get Starter",
     planId: "starter",
     sections: [
       {
-        label: "GTM",
+        label: "Outreach",
         items: [
-          { text: "No GTM (buy credit bundles below)", included: false },
+          { text: "No outreach (buy credit bundles below)", included: false },
         ],
       },
       {
@@ -104,7 +104,7 @@ const tiers: PricingTier[] = [
     planId: "growth",
     sections: [
       {
-        label: "GTM",
+        label: "Outreach",
         items: [
           { text: "1,000 credits/mo", included: true },
           { text: "Unlimited active campaigns", included: true },
@@ -141,7 +141,7 @@ const tiers: PricingTier[] = [
     popular: true,
     sections: [
       {
-        label: "GTM",
+        label: "Outreach",
         items: [
           { text: "Unlimited credits", included: true },
           { text: "Unlimited active campaigns", included: true },
@@ -178,7 +178,7 @@ const tiers: PricingTier[] = [
     planId: "enterprise",
     sections: [
       {
-        label: "GTM",
+        label: "Outreach",
         items: [
           { text: "Everything in Pro", included: true },
           { text: "Custom credit + send volume", included: true },
@@ -254,10 +254,10 @@ function CreditBundles({ onOpenAuthModal }: { onOpenAuthModal?: () => void }) {
     <div className="max-w-3xl mx-auto mt-16 px-4">
       <div className="text-center mb-6">
         <h3 className="text-xl font-black italic uppercase tracking-tighter text-foreground mb-1">
-          GTM Credit Bundles
+          Outreach Credit Bundles
         </h3>
         <p className="text-sm text-foreground-subtle">
-          For Starter users who need outbound without upgrading — credits stack on top of your plan and never expire.
+          For Starter users who want to reach more people without upgrading — credits stack on top of your plan and never expire.
         </p>
       </div>
 
