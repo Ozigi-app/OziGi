@@ -21,7 +21,7 @@ import http from 'http'
 import { createClient } from '@supabase/supabase-js'
 import ws from 'ws'
 import { loadSession, saveSession, markSessionExpired, isLoggedIn } from './browser'
-import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp } from './actions'
+import { sendConnectionRequest, sendLinkedInMessage, sendFollowUp, checkConnectionAccepted } from './actions'
 import { loginLinkedIn } from './login'
 import { searchAndSaveLeads } from './search'
 import type { BrowserContext } from 'patchright'
@@ -108,6 +108,7 @@ const server = http.createServer(async (req, res) => {
       try {
         if (!await isLoggedIn(context)) {
           await markSessionExpired(session.id)
+          notifySessionExpired(userId, session.linkedin_email).catch(() => {})
           await context.close().catch(() => {})
           contextCache.delete(userId)
           console.warn(`[worker:search] session expired for ${session.linkedin_email}`); return
@@ -168,7 +169,7 @@ server.listen(process.env.PORT ?? 8080, () => {
 })
 
 const POLL_INTERVAL_MS    = 90_000
-const ACTION_DELAY_MS     = [120_000, 240_000] as const
+const ACTION_DELAY_MS     = [180_000, 420_000] as const  // 3–7 min — wider range looks more human
 const MAX_ACTIONS_PER_RUN = 1
 
 function getSupabase() {
@@ -177,6 +178,37 @@ function getSupabase() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { realtime: { transport: ws as unknown as typeof WebSocket } }
   )
+}
+
+/**
+ * Notify the user by email that their LinkedIn session expired and they need
+ * to reconnect. Called after markSessionExpired so the user doesn't sit
+ * wondering why their pipeline stopped.
+ *
+ * Best-effort — never throws so it never blocks the worker loop.
+ */
+async function notifySessionExpired(userId: string, linkedinEmail: string): Promise<void> {
+  try {
+    const appUrl   = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL
+    const secret   = process.env.WORKER_SECRET
+    if (!appUrl || !secret) {
+      console.warn('[worker] NEXT_PUBLIC_APP_URL or WORKER_SECRET not set — skipping session-expired notification')
+      return
+    }
+    const res = await fetch(`${appUrl}/api/gtm/notify/session-expired`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${secret}` },
+      body:    JSON.stringify({ userId, linkedinEmail }),
+    })
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      console.error(`[worker] session-expired notification failed (${res.status}):`, body)
+    } else {
+      console.log(`[worker] session-expired notification sent for ${linkedinEmail}`)
+    }
+  } catch (err) {
+    console.error('[worker] session-expired notification threw:', err)
+  }
 }
 
 function randomDelay(minMs: number, maxMs: number): Promise<void> {
@@ -249,14 +281,23 @@ async function processItem(
       break
 
     case 'message':
-      if (!profileId) throw new Error('Cannot message: no linkedin_profile_id and could not extract from URL')
-      await sendLinkedInMessage(context, profileId, item.message ?? '')
+    case 'follow_up': {
+      if (!profileId) throw new Error(`Cannot ${item.action}: no linkedin_profile_id and could not extract from URL`)
+      // Before sending a follow-up, confirm the connection was accepted.
+      // If they haven't accepted yet the message will fail (can't DM a non-connection).
+      // Throw NOT_YET_CONNECTED so the caller can reschedule without burning an attempt.
+      const profileUrl = lead.linkedin_url || `https://www.linkedin.com/in/${profileId}/`
+      const accepted = await checkConnectionAccepted(context, profileUrl)
+      if (!accepted) {
+        throw new Error(`NOT_YET_CONNECTED: ${profileId} has not accepted the invitation yet — rescheduling`)
+      }
+      if (item.action === 'message') {
+        await sendLinkedInMessage(context, profileId, item.message ?? '')
+      } else {
+        await sendFollowUp(context, profileId, item.message ?? '')
+      }
       break
-
-    case 'follow_up':
-      if (!profileId) throw new Error('Cannot follow_up: no linkedin_profile_id and could not extract from URL')
-      await sendFollowUp(context, profileId, item.message ?? '')
-      break
+    }
 
     default:
       throw new Error(`Unknown action: ${item.action}`)
@@ -346,6 +387,7 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
     if (feedUrl.includes('/login') || feedUrl.includes('/checkpoint') || feedUrl.includes('/authwall')) {
       console.warn(`[worker] feed redirected to ${feedUrl} — session expired for ${session.linkedin_email}`)
       await markSessionExpired(session.id)
+      notifySessionExpired(userId, session.linkedin_email).catch(() => {})
       await context.close().catch(() => {})
       contextCache.delete(userId)
       return
@@ -366,6 +408,7 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
     if (!sessionValid) {
       console.warn(`[worker] feed loaded but no authenticated content — session invalid for ${session.linkedin_email}`)
       await markSessionExpired(session.id)
+      notifySessionExpired(userId, session.linkedin_email).catch(() => {})
       await context.close().catch(() => {})
       contextCache.delete(userId)
       return
@@ -431,16 +474,38 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
 
       if (msg.includes('SESSION_EXPIRED')) {
         await markSessionExpired(session.id)
+        notifySessionExpired(userId, session.linkedin_email).catch(() => {})
         await context.close().catch(() => {})
         contextCache.delete(userId)
         console.warn(`[worker] session expired mid-run for ${session.linkedin_email} — stopping`)
         break
       }
 
-      // Auth wall is NOT a session expiry — the session is valid but the SPA
-      // didn't bootstrap properly. Don't mark expired; just let it retry.
+      // Connection not yet accepted — reschedule for 24h later without
+      // consuming an attempt. We'll keep checking daily until accepted.
+      if (msg.includes('NOT_YET_CONNECTED')) {
+        const retryAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        console.log(`[worker] connection pending for item ${item.id} — rescheduling for ${retryAt}`)
+        await supabase
+          .from('linkedin_queue')
+          .update({
+            status: 'queued',
+            scheduled_at: retryAt,
+            attempts: item.attempts, // reset — don't count pending-check as an attempt
+            error: null,
+          })
+          .eq('id', item.id)
+        continue
+      }
+
+      // Auth wall and blank page are NOT session expiries — the session is valid
+      // but LinkedIn temporarily blocked the request (bot detection / rate limit).
+      // Don't mark expired; just let the item retry on the next cycle.
       if (msg.includes('AUTHWALL')) {
         console.warn(`[worker] auth wall for item ${item.id} — will retry without expiring session`)
+      }
+      if (msg.includes('BLANK_PAGE')) {
+        console.warn(`[worker] blank page for item ${item.id} — temporary block, will retry`)
       }
 
       const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'

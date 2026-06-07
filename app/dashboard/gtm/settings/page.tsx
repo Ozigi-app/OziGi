@@ -82,12 +82,6 @@ function SettingsContent() {
   const [twoFaCode, setTwoFaCode] = useState('')
   const [twoFaSubmitting, setTwoFaSubmitting] = useState(false)
   const [liMsg, setLiMsg] = useState('')
-  const [liMode, setLiMode] = useState<'password' | 'cookie'>('cookie')
-  const [liCookieValue, setLiCookieValue] = useState('')
-  const [liCookieEmail, setLiCookieEmail] = useState('')
-  const [liJsessionId, setLiJsessionId] = useState('')
-  const [liBcookie, setLiBcookie] = useState('')
-  const [liLiA, setLiLiA] = useState('')
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -221,32 +215,6 @@ function SettingsContent() {
       startPolling()
     } else {
       setLiMsg('Could not start LinkedIn login — please check your credentials and try again.')
-    }
-    setLiConnecting(false)
-  }
-
-  async function connectLinkedInCookie(e: React.FormEvent) {
-    e.preventDefault()
-    setLiConnecting(true)
-    setLiMsg('')
-    const res = await fetch('/api/gtm/linkedin/cookie', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        li_at: liCookieValue,
-        linkedin_email: liCookieEmail,
-        jsessionid: liJsessionId || undefined,
-        bcookie: liBcookie || undefined,
-        li_a: liLiA || undefined,
-      }),
-    })
-    const d = await res.json()
-    if (res.ok) {
-      setLiMsg('LinkedIn connected via session cookie.')
-      setLiCookieValue('')
-      loadLinkedIn()
-    } else {
-      setLiMsg(d.error ?? 'Failed to save cookie — please try again.')
     }
     setLiConnecting(false)
   }
@@ -524,7 +492,7 @@ function SettingsContent() {
                 onClick={() => disconnectLinkedIn(s.id)}
                 style={{ padding: '0.3rem 0.7rem', border: '1px solid #fca5a5', borderRadius: 5, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem', flexShrink: 0 }}
               >
-                {s.status === 'active' ? 'Disconnect' : 'Reconnect'}
+                {s.status === 'active' ? 'Disconnect' : 'Remove'}
               </button>
             </div>
           </div>
@@ -577,129 +545,33 @@ function SettingsContent() {
         {/* Connect form — shown if no active session */}
         {!activeSession && !pendingTwoFa && liSessions.every(s => s.status !== 'logging_in') && (
           <div style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem' }}>
-            <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Connect a LinkedIn account</div>
-
-            {/* Mode toggle */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', marginTop: '0.75rem' }}>
-              {(['cookie', 'password'] as const).map(mode => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setLiMode(mode)}
-                  style={{
-                    padding: '0.3rem 0.8rem', borderRadius: 5, fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer',
-                    border: liMode === mode ? '1px solid #0a66c2' : '1px solid #ccc',
-                    background: liMode === mode ? '#eff6ff' : 'white',
-                    color: liMode === mode ? '#0a66c2' : '#555',
-                  }}
-                >
-                  {mode === 'cookie' ? 'Session cookie (recommended)' : 'Email & password'}
-                </button>
-              ))}
+            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Connect a LinkedIn account</div>
+            <div style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>
+              We log into LinkedIn on your behalf using your credentials. Your password is encrypted at rest and never shared.
             </div>
-
-            {liMode === 'cookie' ? (
-              <>
-                <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '1rem', lineHeight: 1.7, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6, padding: '0.75rem 1rem' }}>
-                  <strong>How to get your session cookie:</strong>
-                  <ol style={{ margin: '0.4rem 0 0 1.2rem', padding: 0 }}>
-                    <li>Open <strong>LinkedIn.com</strong> in your browser and make sure you&apos;re logged in.</li>
-                    <li>Open DevTools:
-                      <ul style={{ margin: '0.2rem 0 0 1rem', padding: 0, listStyle: 'disc' }}>
-                        <li><strong>Windows / Linux:</strong> press <strong>F12</strong> or <strong>Ctrl + Shift + I</strong></li>
-                        <li><strong>Mac:</strong> press <strong>Cmd + Option + I</strong></li>
-                        <li>Or: right-click anywhere on the page → <strong>Inspect</strong></li>
-                      </ul>
-                    </li>
-                    <li>Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox).</li>
-                    <li>In the left sidebar, expand <strong>Cookies</strong> → click <strong>https://www.linkedin.com</strong>.</li>
-                    <li>Copy the <strong>Value</strong> for each of these cookies into the fields below:
-                      <ul style={{ margin: '0.2rem 0 0 1rem', padding: 0, listStyle: 'disc' }}>
-                        <li><strong>li_at</strong> — required (your auth token)</li>
-                        <li><strong>JSESSIONID</strong> — recommended (session ID, helps keep you logged in)</li>
-                        <li><strong>bcookie</strong> — recommended (browser ID, prevents session drops)</li>
-                      </ul>
-                    </li>
-                  </ol>
-                </div>
-                <form onSubmit={connectLinkedInCookie} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <input
-                    type="email"
-                    value={liCookieEmail}
-                    onChange={e => setLiCookieEmail(e.target.value)}
-                    placeholder="Your LinkedIn email address"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
-                  />
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>li_at <span style={{ color: '#dc2626' }}>*</span></span>
-                    <input
-                      type="text"
-                      value={liCookieValue}
-                      onChange={e => setLiCookieValue(e.target.value)}
-                      placeholder="AQEDATd8MXcF..."
-                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                    />
-                  </label>
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>JSESSIONID <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 400 }}>recommended</span></span>
-                    <input
-                      type="text"
-                      value={liJsessionId}
-                      onChange={e => setLiJsessionId(e.target.value)}
-                      placeholder="ajax:1234567890123456789"
-                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                    />
-                  </label>
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#444' }}>bcookie <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 400 }}>recommended</span></span>
-                    <input
-                      type="text"
-                      value={liBcookie}
-                      onChange={e => setLiBcookie(e.target.value)}
-                      placeholder="v=2&amp;26d6ae18-f2b4-4d4a-..."
-                      style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.85rem', fontFamily: 'monospace' }}
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    disabled={liConnecting || !liCookieEmail || !liCookieValue}
-                    style={{ padding: '0.55rem 1.25rem', background: liConnecting ? '#999' : '#0a66c2', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
-                  >
-                    {liConnecting ? 'Saving…' : 'Connect LinkedIn'}
-                  </button>
-                </form>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>
-                  We log into LinkedIn on your behalf using your credentials.
-                  Your password is encrypted at rest and never shared.
-                </div>
-                <form onSubmit={connectLinkedIn} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <input
-                    type="email"
-                    value={liEmail}
-                    onChange={e => setLiEmail(e.target.value)}
-                    placeholder="LinkedIn email"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
-                  />
-                  <input
-                    type="password"
-                    value={liPassword}
-                    onChange={e => setLiPassword(e.target.value)}
-                    placeholder="LinkedIn password"
-                    style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={liConnecting || !liEmail || !liPassword}
-                    style={{ padding: '0.55rem 1.25rem', background: liConnecting ? '#999' : '#0a66c2', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
-                  >
-                    {liConnecting ? 'Connecting…' : 'Connect LinkedIn'}
-                  </button>
-                </form>
-              </>
-            )}
+            <form onSubmit={connectLinkedIn} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <input
+                type="email"
+                value={liEmail}
+                onChange={e => setLiEmail(e.target.value)}
+                placeholder="LinkedIn email"
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
+              />
+              <input
+                type="password"
+                value={liPassword}
+                onChange={e => setLiPassword(e.target.value)}
+                placeholder="LinkedIn password"
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
+              />
+              <button
+                type="submit"
+                disabled={liConnecting || !liEmail || !liPassword}
+                style={{ padding: '0.55rem 1.25rem', background: liConnecting ? '#999' : '#0a66c2', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
+              >
+                {liConnecting ? 'Connecting…' : 'Connect LinkedIn'}
+              </button>
+            </form>
           </div>
         )}
       </section>
