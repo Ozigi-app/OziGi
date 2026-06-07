@@ -205,6 +205,21 @@ export async function loginLinkedIn(userId: string): Promise<void> {
   const userDataDir = path.join(PROFILES_DIR, userId)
   fs.mkdirSync(userDataDir, { recursive: true })
 
+  // Kill any Chrome process that still has this profile directory open.
+  // This can happen when a previous login attempt timed out or was interrupted
+  // while the browser was still running (e.g. waiting for push-notification 2FA).
+  // Without this, launchPersistentContext throws "Opening in existing browser session".
+  try {
+    const { execSync } = await import('child_process')
+    // pkill -f matches the full command line; || true prevents non-zero exit when no match
+    execSync(`pkill -f "user-data-dir=${userDataDir}" 2>/dev/null || true`, { stdio: 'ignore' })
+    // Give Chrome 2 s to fully exit and release file handles
+    await new Promise(r => setTimeout(r, 2000))
+  } catch { /* not on Linux or no matching process — safe to ignore */ }
+
+  // Remove Chrome's SingletonLock if it wasn't cleaned up (crash / SIGKILL)
+  try { fs.unlinkSync(path.join(userDataDir, 'SingletonLock')) } catch { /* already gone */ }
+
   // Prefer Google Chrome — better JA3/JA4 TLS fingerprint than Playwright Chromium
   const chromeExecutable = process.env.CHROME_EXECUTABLE_PATH ??
     ['/usr/bin/google-chrome-stable', '/usr/bin/google-chrome', '/usr/bin/chromium-browser']
@@ -236,10 +251,38 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     // Navigate to login page
     await page.goto('https://www.linkedin.com/login', { waitUntil: 'load', timeout: 60_000 })
 
-    // Wait for any input to be attached (in DOM) — not necessarily Playwright-"visible"
-    await page.waitForSelector('input', { state: 'attached', timeout: 30_000 }).catch(async () => {
+    // If LinkedIn redirected us to /feed/ it means the persistent profile
+    // directory already has a valid session — skip the form entirely.
+    if (page.url().includes('/feed') || page.url() === 'https://www.linkedin.com/') {
+      console.log(`[login] already authenticated in profile dir — saving existing cookies`)
+      const cookies = await context.cookies()
+      const liAt = cookies.find(c => c.name === 'li_at')
+      if (liAt) {
+        const sessionData = { cookies, userAgent: DEFAULT_UA }
+        const encrypted = encrypt(JSON.stringify(sessionData))
+        await setSessionStatus(sessionId, 'active', { login_error: null, verification_code: null })
+        await getSupabase()
+          .from('linkedin_sessions')
+          .update({ session_cookies: encrypted, last_used_at: new Date().toISOString() })
+          .eq('id', sessionId)
+        console.log(`[login] ✓ logged in successfully as ${email} (existing session)`)
+        return
+      }
+      // li_at missing despite being on feed — fall through to login form
+      console.log(`[login] on feed but no li_at cookie — proceeding with login form`)
+      await page.goto('https://www.linkedin.com/login', { waitUntil: 'load', timeout: 60_000 })
+    }
+
+    // Wait for the visible email input to be ready — LinkedIn renders two copies
+    // of the form (a hidden server-rendered version and a visible React-hydrated
+    // version). Playwright's :visible pseudo-class targets the hydrated one.
+    const emailInput = page.locator(
+      // autocomplete may be "username webauthn" — use ~= (word match) not exact =
+      'input[type="email"]:visible, input#username:visible, input[autocomplete~="username"]:visible'
+    ).first()
+    await emailInput.waitFor({ state: 'visible', timeout: 30_000 }).catch(async () => {
       const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
-      console.error(`[login] no inputs found. url=${page.url()} body="${bodySnippet}"`)
+      console.error(`[login] email field not found. url=${page.url()} body="${bodySnippet}"`)
       throw new Error('LinkedIn login page did not load — please try again.')
     })
 
@@ -253,82 +296,34 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     ).catch(() => 'evaluate failed')
     console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
 
-    // LinkedIn's login page renders two copies of the form: a server-rendered
-    // (hidden) version and a React-hydrated (visible) version. The hidden fields
-    // have offsetParent===null; we must target the visible ones, otherwise
-    // credentials are typed into the hidden form and nothing submits.
-    const emailFocused = await page.evaluate(() => {
-      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      const field = (
-        document.querySelector('input#username') ||
-        document.querySelector('input[name="session_key"]') ||
-        document.querySelector('input[autocomplete="username"]') ||
-        // Prefer the first VISIBLE email/text input
-        Array.from(document.querySelectorAll('input[type="email"]')).find(visible) ||
-        Array.from(document.querySelectorAll('input[type="text"]')).find(visible)
-      ) as HTMLInputElement | null
-      if (!field) return false
-      field.focus()
-      return true
-    })
-
-    if (!emailFocused) {
-      const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
-      console.error(`[login] email field not found in DOM. url=${page.url()} body="${bodySnippet}"`)
-      throw new Error('LinkedIn login page did not load — please try again.')
-    }
-
-    await page.keyboard.type(email, { delay: 40 + Math.random() * 60 })
+    // fill() sets the value AND fires the input/change events React needs to
+    // update its controlled-component state. evaluate(focus)+keyboard.type()
+    // only updates the DOM value — React never sees it, so it submits empty.
+    await emailInput.fill(email)
     console.log('[login] email filled')
     await page.waitForTimeout(500 + Math.random() * 500)
 
-    // Focus the first VISIBLE password input
-    await page.evaluate(() => {
-      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      const field = (
-        document.querySelector('input#password') ||
-        document.querySelector('input[name="session_password"]') ||
-        Array.from(document.querySelectorAll('input[type="password"]')).find(visible)
-      ) as HTMLInputElement | null
-      field?.focus()
-    })
-    await page.keyboard.type(password, { delay: 40 + Math.random() * 60 })
+    const passwordInput = page.locator('input[type="password"]:visible').first()
+    await passwordInput.waitFor({ state: 'visible', timeout: 10_000 })
+    await passwordInput.fill(password)
     console.log('[login] password filled')
     await page.waitForTimeout(1000 + Math.random() * 500)
 
-    // Log the button that's inside the email/password form (for diagnostics)
-    const btnInfo = await page.evaluate(() => {
-      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      // Walk from the visible password field up to its parent <form>
-      const pwField = Array.from(document.querySelectorAll('input[type="password"]'))
-        .find(visible) as HTMLElement | null
-      const form = pwField?.closest('form') as HTMLFormElement | null
-      const btn = (form?.querySelector('button[type="submit"]') ||
-                   form?.querySelector('button')) as HTMLButtonElement | null
-      return btn ? `disabled=${btn.disabled} text="${btn.textContent?.trim()}"` : 'NOT FOUND'
-    })
-    console.log(`[login] submit button: ${btnInfo}`)
-
-    // Submit via Enter key (most natural — fires on the focused password field)
-    await page.keyboard.press('Enter')
+    // Submit: press Enter on the focused password locator (natural form submission)
+    await passwordInput.press('Enter')
     await page.waitForTimeout(1000)
 
-    // Fallback: click the submit button INSIDE the email/password form.
-    // We find it by walking from the visible password input to its <form>, then
-    // clicking that form's button. This avoids the SSO buttons ("Sign in with
-    // Microsoft / Apple") that appear first in the DOM as visible buttons and
-    // would otherwise be selected by a naïve find(visible) search.
-    await page.evaluate(() => {
-      const visible = (el: Element) => (el as HTMLElement).offsetParent !== null
-      const pwField = Array.from(document.querySelectorAll('input[type="password"]'))
-        .find(visible) as HTMLElement | null
-      const form = pwField?.closest('form') as HTMLFormElement | null
-      if (form) {
-        const btn = (form.querySelector('button[type="submit"]') ||
-                     form.querySelector('button')) as HTMLButtonElement | null
-        btn ? btn.click() : form.submit()
-      }
-    })
+    // Fallback: click the Sign-In button using exact-text match to avoid selecting
+    // SSO buttons ("Sign in with Microsoft / Apple" etc.).
+    // Covers English, Portuguese, Spanish, French, German variants.
+    const signInBtn = page.locator('button').filter({
+      hasText: /^(Sign in|Sign In|Log in|Entrar|Iniciar sesión|Se connecter|Anmelden|Ingresar|Submit|Accedi|Inloggen)$/i,
+    }).first()
+    const signInBtnText = await signInBtn.textContent({ timeout: 2_000 }).catch(() => null)
+    console.log(`[login] submit button: ${signInBtnText ? `found — "${signInBtnText.trim()}"` : 'NOT FOUND (Enter already sent)'}`)
+    if (signInBtnText) {
+      await signInBtn.click()
+    }
     await page.waitForTimeout(4000)
 
     const postLoginUrl = page.url()
