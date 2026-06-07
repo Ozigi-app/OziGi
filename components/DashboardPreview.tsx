@@ -259,7 +259,7 @@ function OverviewPhase({ progress }: { progress: number }) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>Overview</h3>
-            <p className="text-[10px]" style={{ color: C.dim }}>Your GTM dashboard at a glance</p>
+            <p className="text-[10px]" style={{ color: C.dim }}>Your leads, outreach, and content at a glance</p>
           </div>
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest"
             style={{ background: "rgba(34,197,94,0.1)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.25)" }}>
@@ -324,7 +324,7 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>
-              Ozigi GTM — Dev Tool Founders
+              Ozigi Outreach — Dev Tool Founders
             </h3>
             <p className="text-[10px]" style={{ color: C.dim }}>GitHub + Dev.to · 5 leads · email + LinkedIn sequence</p>
           </div>
@@ -489,7 +489,7 @@ function ContentPhase({ typedInput, buttonPulsing }: { typedInput: string; butto
           <p className="text-[9px] font-black uppercase tracking-[0.18em] mb-2" style={{ color: C.dim }}>Recent — Social Posts</p>
           <div className="flex flex-col gap-1.5">
             {[
-              { name: "GTM launch announcement", date: "Today" },
+              { name: "Product launch announcement", date: "Today" },
               { name: "Lead scraping deep-dive thread", date: "Yesterday" },
               { name: "Newsletter: Outbound OS #12", date: "3 days ago" },
             ].map((h) => (

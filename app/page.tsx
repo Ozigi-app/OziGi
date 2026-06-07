@@ -214,7 +214,7 @@ export default function Home() {
                 style={{ background: C.redSoft, color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}
               >
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-                GTM Content Suite
+                Lead Gen · Outreach · Content
               </motion.div>
 
               {/* Headline */}
@@ -247,7 +247,7 @@ export default function Home() {
                 className="text-base md:text-xl font-medium leading-relaxed max-w-2xl text-pretty"
                 style={{ color: C.muted }}
               >
-                Ozigi is the GTM engine for founders and small teams. Outbound email and LinkedIn sequences, lead scraping, and a full content engine — all in one place.
+                Find the people who need what you sell, reach out without sounding like a robot, and stay visible with content that actually sounds like you. Built for small teams with no SDR floor.
               </motion.p>
 
               {/* CTAs */}
@@ -258,7 +258,7 @@ export default function Home() {
                 className="flex flex-wrap items-center justify-center gap-3"
               >
                 <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
-                  Start your GTM engine →
+                  Start finding leads →
                 </MagneticBtn>
                 <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
                   Sign in
@@ -354,7 +354,7 @@ export default function Home() {
                 Source. Reach out.<br />Convert.
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-md mx-auto" style={{ color: C.muted }}>
-                One GTM loop — from finding the right people to closing them.
+                Find the right people, start the conversation, then close — without a sales team.
               </p>
             </motion.div>
 
@@ -420,12 +420,12 @@ export default function Home() {
           <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}
               className="text-center mb-16">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>The platform</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>What you can do</p>
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                Two engines.<br />One pipeline.
+                Find leads.<br />Publish content.<br />Do both.
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-lg mx-auto" style={{ color: C.muted }}>
-                Outbound growth and content generation work together. Reach cold leads while your content warms them up.
+                Run outreach to cold leads while your content warms them up. Two things that compound — in one place.
               </p>
             </motion.div>
 
@@ -441,12 +441,12 @@ export default function Home() {
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"
                   style={{ background: `radial-gradient(ellipse at top right, rgba(232,50,10,0.08), transparent 65%)` }} />
                 <div className="relative z-10">
-                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>01 — Outbound Growth</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>01 — Lead Sourcing & Outreach</p>
                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-4">
-                    Find leads.<br />Run sequences.
+                    Find buyers.<br />Reach them first.
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
-                    Scrape GitHub, Dev.to, and LinkedIn for ICP-matched leads. Launch personalised email and LinkedIn sequences automatically. Track opens, replies, and bounces.
+                    Scrape GitHub, Dev.to, and LinkedIn for people who match your ideal customer. Launch personalised email and LinkedIn sequences automatically — track opens, replies, and bounces.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -465,12 +465,12 @@ export default function Home() {
                 <div className="absolute top-0 right-0 w-1 h-full"
                   style={{ background: `linear-gradient(to bottom, transparent, ${C.red}50, transparent)` }} />
                 <div className="relative z-10">
-                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>02 — Content Engine</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>02 — Content Marketing</p>
                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-4">
-                    Publish content.<br />Sound human.
+                    Publish more.<br />Sound like you.
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
-                    Generate newsletters, LinkedIn posts, X threads, and blog posts that sound like you — not AI. Schedule and publish directly from the dashboard. Your voice, on autopilot.
+                    Write newsletters, LinkedIn posts, X threads, and blog posts that sound like you — not AI. Schedule and publish from the dashboard. Stay consistent without burning out.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -489,7 +489,7 @@ export default function Home() {
                 { bg: C.cardG,  title: "Persona system",    desc: "Define your voice once. Every email, post, and message inherits it automatically." },
                 { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho, Salesforce. Leads sync on first contact — no manual imports." },
                 { bg: C.cardS,  title: "Gmail & SMTP",      desc: "Connect any sending account. Rotate across multiple inboxes to protect deliverability." },
-                { bg: C.cardB,  title: "Gemini-powered",    desc: "ICP scoring, email writing, content generation — all Gemini under the hood." },
+                { bg: C.cardB,  title: "AI scoring",         desc: "Every lead is scored against your ideal customer before it hits your pipeline — no manual filtering." },
               ].map((f, i) => (
                 <motion.div key={i} variants={springUp}
                   whileHover={{ y: -4, transition: { type: "spring", stiffness: 280, damping: 18 } }}
@@ -567,7 +567,7 @@ export default function Home() {
                   price: "$29",
                   period: "/mo",
                   highlight: "Active outbound",
-                  bullets: ["1,000 GTM credits/mo", "Unlimited sends", "LinkedIn outreach", "CRM sync · reply detection"],
+                  bullets: ["1,000 outreach credits/mo", "Unlimited sends", "LinkedIn outreach", "CRM sync · reply detection"],
                   cta: "Get Growth",
                   popular: false,
                 },
@@ -681,12 +681,12 @@ export default function Home() {
                   Built for
                 </p>
                 <h3 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                  Founders.<br />Small GTM teams.<br />
-                  <span style={{ color: C.muted }}>Anyone doing<br />their own pipeline.</span>
+                  Founders.<br />Small teams.<br />
+                  <span style={{ color: C.muted }}>Anyone doing<br />their own outreach.</span>
                 </h3>
                 <p className="text-base font-medium leading-relaxed max-w-md" style={{ color: C.muted }}>
-                  If you&apos;re doing outbound without a 10-person SDR team, Ozigi is your force multiplier.
-                  Scrape leads, run sequences, and publish content that keeps your brand warm — all without hiring.
+                  If you&apos;re finding leads and sending outreach without a 10-person SDR team, Ozigi is what closes the gap.
+                  Source leads, run sequences, and publish content that keeps you top of mind — all without hiring.
                 </p>
               </motion.div>
               <motion.div variants={fadeUp}>
@@ -715,7 +715,7 @@ export default function Home() {
                 Founder&apos;s<br />Thoughts
               </h2>
               <p className="text-base font-medium mb-8 max-w-md mx-auto" style={{ color: C.muted }}>
-                GTM tactics, product thinking, and what we&apos;re building — straight to your inbox. No noise, no fluff.
+                Outreach tactics, content strategy, and what we&apos;re building — straight to your inbox. No noise, no fluff.
               </p>
 
               {nlStatus === "success" ? (

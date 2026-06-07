@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing — Free GTM Suite, Upgrade When You Scale",
+  title: "Pricing — Free for Small Teams, Scale When Ready",
   description:
-    "Ozigi is free. LinkedIn outreach, email campaigns, and AI content generation at no cost. Upgrade for unlimited usage and advanced features when you're ready to scale.",
+    "Ozigi is free to start. Find leads, run email and LinkedIn outreach, and publish content that sounds human — upgrade for more volume when you're ready.",
   keywords: [
     "Ozigi pricing",
-    "free GTM tools",
-    "free outreach platform",
-    "go-to-market tools pricing",
-    "affordable startup marketing",
+    "free lead generation tools",
+    "free outreach platform for small teams",
+    "affordable content marketing tools",
     "free LinkedIn outreach tool",
     "free email campaign software",
+    "small business outreach tools",
   ],
   openGraph: {
-    title: "Pricing — Free GTM Suite, Upgrade When You Scale",
+    title: "Pricing — Free for Small Teams, Scale When Ready",
     description:
-      "Free LinkedIn outreach, email campaigns, and AI content. Upgrade when you're ready to scale.",
+      "Find leads, run outreach, and publish content that sounds human — free to start. Upgrade when you need more volume.",
     url: "https://ozigi.app/pricing",
     siteName: "Ozigi",
     type: "website",
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pricing — Free GTM Suite, Upgrade When You Scale",
-    description: "Free outreach, campaigns, and AI content. Upgrade when you're ready to scale.",
+    title: "Pricing — Free for Small Teams, Scale When Ready",
+    description: "Find leads, run outreach, and publish content that sounds human — free for small teams.",
     images: ["https://ozigi.app/opengraph-image.png"],
   },
   alternates: { canonical: "https://ozigi.app/pricing" },
