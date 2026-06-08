@@ -15,26 +15,39 @@ function requireAppUrl(): string {
 
 export async function createCampaignSchedules(campaignId: string): Promise<void> {
   const appUrl = requireAppUrl()
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CRON_SECRET}` }
+
+  // check-replies is global (no campaignId in body) — reuse an existing schedule
+  // rather than spawning a duplicate on every campaign creation.
+  const { data: existingReplies } = await supabaseAdmin
+    .from('campaign_schedules')
+    .select('replies_schedule_id')
+    .not('replies_schedule_id', 'is', null)
+    .limit(1)
+    .maybeSingle()
 
   const [scrapeSchedule, sendSchedule, repliesSchedule] = await Promise.all([
     qstashClient.schedules.create({
       destination: `${appUrl}/api/gtm/cron/scrape`,
       cron: SCRAPE_CRON, retries: 2,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CRON_SECRET}` },
+      headers,
       body: JSON.stringify({ campaignId }),
     }),
     qstashClient.schedules.create({
       destination: `${appUrl}/api/gtm/cron/send`,
       cron: SEND_CRON, retries: 2,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CRON_SECRET}` },
+      headers,
       body: JSON.stringify({ campaignId }),
     }),
-    qstashClient.schedules.create({
-      destination: `${appUrl}/api/gtm/cron/check-replies`,
-      cron: CHECK_REPLIES_CRON, retries: 1,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CRON_SECRET}` },
-      body: JSON.stringify({}),
-    }),
+    existingReplies?.replies_schedule_id
+      // Reuse the shared global schedule — no new QStash schedule needed
+      ? Promise.resolve({ scheduleId: existingReplies.replies_schedule_id })
+      : qstashClient.schedules.create({
+          destination: `${appUrl}/api/gtm/cron/check-replies`,
+          cron: CHECK_REPLIES_CRON, retries: 1,
+          headers,
+          body: JSON.stringify({}),
+        }),
   ])
 
   await supabaseAdmin.from('campaign_schedules').upsert({
