@@ -540,65 +540,105 @@ export async function sendLinkedInMessage(
   const page = await context.newPage()
 
   try {
-    const messageUrl = `https://www.linkedin.com/messaging/thread/new/?recipients=${linkedinProfileId}`
-    await page.goto(messageUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 })
-    await delay(2000, 3500)
+    // ── Navigate to the person's profile and click Message ────────────────────
+    //
+    // We deliberately avoid /messaging/thread/new/?recipients=<slug> because
+    // that URL opens a "To:" typeahead which — even with Enter to confirm —
+    // can select the wrong person (whoever ranks top in the search results).
+    // Going via the profile page means LinkedIn pre-fills the exact recipient
+    // from the page context with zero ambiguity.
+    const profileUrl = `https://www.linkedin.com/in/${linkedinProfileId}/`
+    await page.goto(profileUrl, { waitUntil: 'commit', timeout: 30_000 })
+    await page.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {})
 
-    const inputSelector = '.msg-form__contenteditable, [data-placeholder*="Write a message"], [contenteditable="true"]'
+    const landedUrl = page.url()
+    if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
+      throw new Error('SESSION_EXPIRED: LinkedIn redirected to login during message attempt')
+    }
+
+    // Wait for the profile to render its action buttons
+    await page.waitForFunction(
+      () => !!document.querySelector('.pvs-profile-actions, [data-member-id]') ||
+            (document.title !== 'LinkedIn' && document.title.length > 0),
+      { timeout: 60_000 }
+    ).catch(() => {})
+    await delay(1500, 2500)
+
+    // ── Click the Message button ───────────────────────────────────────────────
+    // The button is the primary action on connected (1st-degree) profiles.
+    // aria-label contains "Message" or the localised equivalent.
+    const messageBtn = page.getByRole('button', { name: /^Message$/i })
+      .or(page.locator('button[aria-label*="Message"], button[aria-label*="Mensagem"], button[aria-label*="Mensaje"]'))
+      .first()
+
+    const btnVisible = await messageBtn.isVisible({ timeout: 6_000 }).catch(() => false)
+
+    if (!btnVisible) {
+      // Message may be hidden under the "More actions" dropdown
+      const moreBtn = page.getByRole('button', { name: /More actions|Mais ações|Más acciones/i })
+        .or(page.locator('button').filter({ hasText: /^(More|Mais|Más)$/ }))
+        .first()
+      const moreVisible = await moreBtn.isVisible({ timeout: 3_000 }).catch(() => false)
+      if (moreVisible) {
+        await moreBtn.click()
+        await delay(400, 700)
+        const dropdownMsg = page.locator('.artdeco-dropdown__content-inner li')
+          .filter({ hasText: /Message|Mensagem|Mensaje/i })
+          .first()
+        if (await dropdownMsg.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await dropdownMsg.click()
+        } else {
+          await page.keyboard.press('Escape')
+          throw new Error(`Message option not found in More dropdown for ${linkedinProfileId}`)
+        }
+      } else {
+        // Diagnose: log visible buttons so we know the profile state
+        const btns = await page.evaluate(() =>
+          Array.from(document.querySelectorAll('button'))
+            .filter(b => (b as HTMLElement).offsetParent !== null)
+            .map(b => (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 40))
+            .filter(Boolean).slice(0, 15).join(' | ')
+        ).catch(() => 'evaluate failed')
+        console.log(`[actions] Message button not found for ${linkedinProfileId} — visible buttons: ${btns}`)
+        throw new Error(`Message button not visible for ${linkedinProfileId} — profile may not be connected`)
+      }
+    } else {
+      await messageBtn.click()
+    }
+
+    console.log(`[actions] Message button clicked for ${linkedinProfileId}`)
+
+    // ── Wait for the compose panel / modal to appear ──────────────────────────
+    // LinkedIn opens a floating message panel at the bottom of the page.
+    // The compose area is .msg-form__contenteditable (same selector as the
+    // full messaging page).
+    const inputSelector = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
     const inputReady = await page.locator(inputSelector).first()
-      .waitFor({ state: 'visible', timeout: 8_000 })
+      .waitFor({ state: 'visible', timeout: 10_000 })
       .then(() => true)
       .catch(() => false)
 
     if (!inputReady) {
-      await page.goto(`https://www.linkedin.com/in/${linkedinProfileId}/`, { waitUntil: 'domcontentloaded', timeout: 20_000 })
-      await delay(1500, 2500)
-      await page.locator('button:has-text("Message")').first().click({ timeout: 5_000 })
-      await delay(1000, 2000)
-    }
-
-    // Wait for LinkedIn's recipient typeahead to resolve and close on its own.
-    // When navigating to /messaging/thread/new/?recipients=<slug>, LinkedIn
-    // auto-populates and auto-selects the recipient — the typeahead overlay
-    // (.msg-connections-typeahead-container) disappears once the recipient is
-    // confirmed.  We wait up to 6 s for this natural close.
-    //
-    // IMPORTANT: do NOT press Escape here. Escape cancels the recipient selection
-    // which keeps the Send button disabled even if message text is typed.
-    // If still showing after 6 s, press Enter to confirm the top suggestion instead.
-    const typeaheadGone = await page.locator('.msg-connections-typeahead-container')
-      .waitFor({ state: 'hidden', timeout: 6_000 })
-      .then(() => true)
-      .catch(() => false)
-
-    if (!typeaheadGone) {
-      console.log('[actions] typeahead still present after 6 s — pressing Enter to confirm recipient')
-      await page.keyboard.press('Enter')
-      await page.locator('.msg-connections-typeahead-container')
-        .waitFor({ state: 'hidden', timeout: 3_000 })
-        .catch(() => {})
+      throw new Error(`Message compose panel did not appear for ${linkedinProfileId}`)
     }
     await delay(500, 800)
 
+    // ── Type the message ───────────────────────────────────────────────────────
+    // Click the input first to ensure focus, then use execCommand('insertText')
+    // which is the most reliable way to insert text into LinkedIn's ProseMirror
+    // contenteditable (keyboard.type() can silently fail if focus drifts).
     const msgInput = page.locator(inputSelector).first()
     await msgInput.click({ timeout: 5_000 }).catch(async () => {
       console.log('[actions] msg input click failed — using evaluate focus')
       await page.evaluate(() => {
-        const el = document.querySelector<HTMLElement>(
-          '.msg-form__contenteditable, [contenteditable="true"]'
-        )
+        const el = document.querySelector<HTMLElement>('.msg-form__contenteditable')
         el?.focus()
       })
     })
     await delay(300, 600)
 
-    // Use execCommand('insertText') for reliable input into LinkedIn's ProseMirror
-    // contenteditable. keyboard.type() can fail silently when focus drifts after
-    // the typeahead interaction, leaving the Send button disabled.
     const inserted = await page.evaluate((msg: string) => {
-      const el = document.querySelector<HTMLElement>(
-        '.msg-form__contenteditable, [contenteditable="true"]'
-      )
+      const el = document.querySelector<HTMLElement>('.msg-form__contenteditable')
       if (!el) return false
       el.focus()
       return document.execCommand('insertText', false, msg)
@@ -615,18 +655,22 @@ export async function sendLinkedInMessage(
 
     await delay(800, 1500)
 
+    // ── Send ──────────────────────────────────────────────────────────────────
     const sendBtn = page.locator('.msg-form__send-button, button[type="submit"]:has-text("Send")').first()
-    if (await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      // waitFor enabled state before clicking — if still disabled after 5 s, Enter is the fallback
+    const sendVisible = await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)
+    if (sendVisible) {
       const enabled = await sendBtn.isEnabled({ timeout: 5_000 }).catch(() => false)
       if (enabled) {
         await sendBtn.click()
+        console.log(`[actions] message sent to ${linkedinProfileId} ✓`)
       } else {
-        console.log('[actions] send button still disabled — message may not have been typed; pressing Enter')
+        console.log('[actions] send button still disabled after typing — pressing Enter as fallback')
         await page.keyboard.press('Enter')
       }
     } else {
+      // Some LinkedIn layouts use Ctrl+Enter / Enter to send
       await page.keyboard.press('Enter')
+      console.log(`[actions] message sent via Enter to ${linkedinProfileId}`)
     }
 
     await delay(1000, 2000)
