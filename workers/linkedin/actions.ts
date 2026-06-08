@@ -557,44 +557,74 @@ export async function sendLinkedInMessage(
       await delay(1000, 2000)
     }
 
-    // Dismiss the recipient typeahead overlay.
-    // LinkedIn's new-message composer opens a contact-search typeahead
-    // (.msg-connections-typeahead-container) that floats over the text input and
-    // intercepts pointer events, causing locator.click() to time out (30 s).
-    // Pressing Escape closes it, then we wait for it to detach before clicking.
-    await page.keyboard.press('Escape')
-    await page.locator('.msg-connections-typeahead-container')
-      .waitFor({ state: 'hidden', timeout: 2_000 })
-      .catch(() => {})  // may already be gone — that's fine
-    await delay(300, 600)
+    // Wait for LinkedIn's recipient typeahead to resolve and close on its own.
+    // When navigating to /messaging/thread/new/?recipients=<slug>, LinkedIn
+    // auto-populates and auto-selects the recipient — the typeahead overlay
+    // (.msg-connections-typeahead-container) disappears once the recipient is
+    // confirmed.  We wait up to 6 s for this natural close.
+    //
+    // IMPORTANT: do NOT press Escape here. Escape cancels the recipient selection
+    // which keeps the Send button disabled even if message text is typed.
+    // If still showing after 6 s, press Enter to confirm the top suggestion instead.
+    const typeaheadGone = await page.locator('.msg-connections-typeahead-container')
+      .waitFor({ state: 'hidden', timeout: 6_000 })
+      .then(() => true)
+      .catch(() => false)
+
+    if (!typeaheadGone) {
+      console.log('[actions] typeahead still present after 6 s — pressing Enter to confirm recipient')
+      await page.keyboard.press('Enter')
+      await page.locator('.msg-connections-typeahead-container')
+        .waitFor({ state: 'hidden', timeout: 3_000 })
+        .catch(() => {})
+    }
+    await delay(500, 800)
 
     const msgInput = page.locator(inputSelector).first()
-    // Try a normal click first; if the overlay is still intercepting, fall back
-    // to programmatic focus so typing still works.
-    try {
-      await msgInput.click({ timeout: 5_000 })
-    } catch {
-      console.log('[actions] msg input click intercepted — falling back to evaluate focus')
+    await msgInput.click({ timeout: 5_000 }).catch(async () => {
+      console.log('[actions] msg input click failed — using evaluate focus')
       await page.evaluate(() => {
         const el = document.querySelector<HTMLElement>(
           '.msg-form__contenteditable, [contenteditable="true"]'
         )
         el?.focus()
       })
-    }
-    await delay(300, 700)
+    })
+    await delay(300, 600)
 
-    const chunks = message.match(/.{1,20}/g) ?? [message]
-    for (const chunk of chunks) {
-      await page.keyboard.type(chunk)
-      await delay(80, 200)
+    // Use execCommand('insertText') for reliable input into LinkedIn's ProseMirror
+    // contenteditable. keyboard.type() can fail silently when focus drifts after
+    // the typeahead interaction, leaving the Send button disabled.
+    const inserted = await page.evaluate((msg: string) => {
+      const el = document.querySelector<HTMLElement>(
+        '.msg-form__contenteditable, [contenteditable="true"]'
+      )
+      if (!el) return false
+      el.focus()
+      return document.execCommand('insertText', false, msg)
+    }, message)
+
+    if (!inserted) {
+      console.log('[actions] execCommand insertText returned false — falling back to keyboard.type()')
+      const chunks = message.match(/.{1,20}/g) ?? [message]
+      for (const chunk of chunks) {
+        await page.keyboard.type(chunk)
+        await delay(80, 200)
+      }
     }
 
     await delay(800, 1500)
 
     const sendBtn = page.locator('.msg-form__send-button, button[type="submit"]:has-text("Send")').first()
     if (await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await sendBtn.click()
+      // waitFor enabled state before clicking — if still disabled after 5 s, Enter is the fallback
+      const enabled = await sendBtn.isEnabled({ timeout: 5_000 }).catch(() => false)
+      if (enabled) {
+        await sendBtn.click()
+      } else {
+        console.log('[actions] send button still disabled — message may not have been typed; pressing Enter')
+        await page.keyboard.press('Enter')
+      }
     } else {
       await page.keyboard.press('Enter')
     }
