@@ -377,8 +377,12 @@ async function getLeadsDueForStep(
   const prevStep = allSteps.find(s => s.step === step.step - 1)
   if (!prevStep) return []
 
+  // End-of-day cutoff: a lead sent any time on day D is eligible starting on day D+delay.
+  // Without setHours(23,59,59) the cutoff is midnight, which misses sends that happened
+  // later in the same day (e.g. cron runs at 00:30, sends happened at 09:30 three days ago).
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - step.delay_days)
+  cutoff.setHours(23, 59, 59, 999)
 
   const { data } = await supabaseAdmin
     .from('leads')
@@ -443,8 +447,12 @@ async function getLinkedInLeadsDueForStep(
   const prevStep = allSteps.find(s => s.step === step.step - 1)
   if (!prevStep) return []
 
+  // End-of-day cutoff: a lead sent any time on day D is eligible starting on day D+delay.
+  // Without setHours(23,59,59) the cutoff is midnight, which misses sends that happened
+  // later in the same day (e.g. cron runs at 00:30, sends happened at 09:30 three days ago).
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - step.delay_days)
+  cutoff.setHours(23, 59, 59, 999)
 
   // Previous step sent (or queued for worker) and delay has passed
   const { data } = await supabaseAdmin
