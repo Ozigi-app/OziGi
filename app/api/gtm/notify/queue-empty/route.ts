@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     await mailClient.sendMail({
       from: {
         address: process.env.WELCOME_EMAIL_FROM_ADDRESS || 'hello@ozigi.app',
-        name:    process.env.WELCOME_EMAIL_FROM_NAME    || 'Ozigi',
+        name:    process.env.WELCOME_EMAIL_FROM_NAME    || 'Ozigi Reminders',
       },
       to: [{
         email_address: {
