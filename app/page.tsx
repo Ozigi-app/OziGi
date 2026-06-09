@@ -268,6 +268,17 @@ export default function Home() {
 
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-20 md:py-32">
             <div className="flex flex-col items-center text-center gap-8 max-w-5xl mx-auto">
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest"
+                style={{ background: C.redSoft, color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
+                Lead Gen · Outreach · Content
+              </motion.div>
 
               {/* Headline */}
               <motion.div style={{ y: heroParallaxY }}>
@@ -300,6 +311,7 @@ export default function Home() {
                 style={{ color: C.muted }}
               >
                 Ozigi puts you in front of your ideal buyer, starts the conversation, and keeps you visible until they&apos;re ready to say yes.
+                Find the people who need what you sell, reach out without sounding like a robot, and stay visible with content that actually sounds like you. Built for small teams with no SDR floor.
               </motion.p>
 
               {/* CTAs */}
@@ -311,6 +323,7 @@ export default function Home() {
               >
                 <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
                   Fill my pipeline →
+                  Start finding leads →
                 </MagneticBtn>
                 <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
                   Sign in
@@ -410,6 +423,7 @@ export default function Home() {
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-md mx-auto" style={{ color: C.muted }}>
                 Three steps that turn a cold list into closed deals — while you focus on the work that actually needs you.
+                Find the right people, start the conversation, then close — without a sales team.
               </p>
             </motion.div>
 
@@ -476,6 +490,12 @@ export default function Home() {
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-lg mx-auto" style={{ color: C.muted }}>
                 Cold outreach fills your calendar. Content keeps you top of mind between conversations. Both compound — and neither requires a team.
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>What you can do</p>
+              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
+                Find leads.<br />Publish content.<br />Do both.
+              </h2>
+              <p className="text-base md:text-lg font-medium mt-5 max-w-lg mx-auto" style={{ color: C.muted }}>
+                Run outreach to cold leads while your content warms them up. Two things that compound — in one place.
               </p>
             </motion.div>
 
@@ -497,6 +517,10 @@ export default function Home() {
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
                     You get a pipeline of pre-qualified leads and personalised sequences that actually get replied to — without writing a single cold message yourself or manually filtering a spreadsheet.
+                    Find buyers.<br />Reach them first.
+                  </h3>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
+                    Scrape GitHub, Dev.to, and LinkedIn for people who match your ideal customer. Launch personalised email and LinkedIn sequences automatically — track opens, replies, and bounces.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -521,6 +545,10 @@ export default function Home() {
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
                     You become the founder people see everywhere — newsletters, LinkedIn, X, and your blog — without writing from scratch every week. Your voice. Your ideas. Running while you sleep.
+                    Publish more.<br />Sound like you.
+                  </h3>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
+                    Write newsletters, LinkedIn posts, X threads, and blog posts that sound like you — not AI. Schedule and publish from the dashboard. Stay consistent without burning out.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -736,6 +764,13 @@ export default function Home() {
                 </h3>
                 <p className="text-base font-medium leading-relaxed max-w-md" style={{ color: C.muted }}>
                   You go from spending hours manually prospecting and staring at a blank content calendar — to having a full pipeline and a brand that runs itself. No SDR. No content team. Just results.
+                <h3 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
+                  Founders.<br />Small teams.<br />
+                  <span style={{ color: C.muted }}>Anyone doing<br />their own outreach.</span>
+                </h3>
+                <p className="text-base font-medium leading-relaxed max-w-md" style={{ color: C.muted }}>
+                  If you&apos;re finding leads and sending outreach without a 10-person SDR team, Ozigi is what closes the gap.
+                  Source leads, run sequences, and publish content that keeps you top of mind — all without hiring.
                 </p>
               </motion.div>
               <motion.div variants={fadeUp}>

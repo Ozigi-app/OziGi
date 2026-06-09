@@ -9,7 +9,7 @@ import type { Campaign, Lead } from '@/lib/types/gtm'
 function friendlyActionError(raw: string): string {
   if (raw.includes('credits'))           return 'No credits remaining — purchase a bundle to continue.'
   if (raw.includes('limit'))             return 'Monthly send limit reached — upgrade your plan.'
-  if (raw.includes('GTM features'))      return 'GTM features require a Growth or Pro plan.'
+  if (raw.includes('GTM features'))      return 'Lead outreach requires a Growth or Pro plan.'
   if (raw.includes('No active Gmail') || raw.includes('email account')) return 'No email account connected — check Settings.'
   return 'Something went wrong — please try again.'
 }

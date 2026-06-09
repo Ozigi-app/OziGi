@@ -62,7 +62,7 @@ export default function GtmSidebar() {
           <img src="/logo.png" alt="Ozigi" className="h-8 w-auto logo-spin" />
           <div>
             <div className="text-foreground font-bold text-base leading-none">zigi</div>
-            <div className="text-foreground-subtle text-[10px] leading-none mt-0.5 uppercase tracking-widest">GTM Suite</div>
+            <div className="text-foreground-subtle text-[10px] leading-none mt-0.5 uppercase tracking-widest">Lead Outreach</div>
           </div>
         </Link>
       </div>

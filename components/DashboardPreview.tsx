@@ -260,6 +260,8 @@ function OverviewPhase({ progress }: { progress: number }) {
           <div>
             <h3 className="text-sm sm:text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>Overview</h3>
             <p className="text-[9px] sm:text-[10px]" style={{ color: C.dim }}>Leads, outreach & content at a glance</p>
+            <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>Overview</h3>
+            <p className="text-[10px]" style={{ color: C.dim }}>Your leads, outreach, and content at a glance</p>
           </div>
           <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest"
             style={{ background: "rgba(34,197,94,0.1)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.25)" }}>
@@ -325,6 +327,10 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
           <div className="min-w-0">
             <h3 className="text-sm sm:text-base font-black italic uppercase tracking-tight truncate" style={{ color: C.text }}>
               Ozigi Outreach — Dev Founders
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>
+              Ozigi Outreach — Dev Tool Founders
             </h3>
             <p className="text-[9px] sm:text-[10px]" style={{ color: C.dim }}>GitHub + Dev.to · 5 leads · email + LinkedIn</p>
           </div>

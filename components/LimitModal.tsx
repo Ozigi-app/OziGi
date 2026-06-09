@@ -18,7 +18,7 @@ const COPY: Record<LimitReason, { heading: string; body: string }> = {
     body: "You've used all your content campaigns for this month. Upgrade to Pro for unlimited campaigns, long-form articles, and image generation.",
   },
   gtm_limit: {
-    heading: "GTM limit reached",
+    heading: "Outreach limit reached",
     body: "You've used your available credits or campaign slots. Upgrade to Growth or Pro for more credits and unlimited campaigns.",
   },
   feature_gate: {

@@ -17,7 +17,7 @@ const TOUR_KEY = "ozigi_tour_v2";
 const allSteps: TourStep[] = [
   {
     target: "[data-tour='overview-stats']",
-    title: "Welcome to Your GTM Dashboard",
+    title: "Welcome to Your Dashboard",
     description:
       "This is your command centre. Every stat — social campaigns, newsletters, leads sourced, emails sent, reply rate — lives here and updates in real time.",
     position: "bottom",

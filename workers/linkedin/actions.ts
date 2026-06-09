@@ -557,8 +557,31 @@ export async function sendLinkedInMessage(
       await delay(1000, 2000)
     }
 
+    // Dismiss the recipient typeahead overlay.
+    // LinkedIn's new-message composer opens a contact-search typeahead
+    // (.msg-connections-typeahead-container) that floats over the text input and
+    // intercepts pointer events, causing locator.click() to time out (30 s).
+    // Pressing Escape closes it, then we wait for it to detach before clicking.
+    await page.keyboard.press('Escape')
+    await page.locator('.msg-connections-typeahead-container')
+      .waitFor({ state: 'hidden', timeout: 2_000 })
+      .catch(() => {})  // may already be gone — that's fine
+    await delay(300, 600)
+
     const msgInput = page.locator(inputSelector).first()
-    await msgInput.click()
+    // Try a normal click first; if the overlay is still intercepting, fall back
+    // to programmatic focus so typing still works.
+    try {
+      await msgInput.click({ timeout: 5_000 })
+    } catch {
+      console.log('[actions] msg input click intercepted — falling back to evaluate focus')
+      await page.evaluate(() => {
+        const el = document.querySelector<HTMLElement>(
+          '.msg-form__contenteditable, [contenteditable="true"]'
+        )
+        el?.focus()
+      })
+    }
     await delay(300, 700)
 
     const chunks = message.match(/.{1,20}/g) ?? [message]

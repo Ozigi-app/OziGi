@@ -168,9 +168,14 @@ server.listen(process.env.PORT ?? 8080, () => {
   console.log(`[worker] listening on port ${process.env.PORT ?? 8080}`)
 })
 
-const POLL_INTERVAL_MS    = 90_000
-const ACTION_DELAY_MS     = [180_000, 420_000] as const  // 3–7 min — wider range looks more human
-const MAX_ACTIONS_PER_RUN = 1
+const POLL_INTERVAL_MS              = 90_000
+const ACTION_DELAY_MS               = [180_000, 420_000] as const  // 3–7 min — wider range looks more human
+const MAX_ACTIONS_PER_RUN           = 1
+const QUEUE_EMPTY_NOTIFY_COOLDOWN   = 24 * 60 * 60 * 1000  // notify at most once per 24 h per user
+
+// Track the last time we sent a queue-empty nudge for each user.
+// In-memory is fine — if the worker restarts the user gets at most one extra email.
+const lastQueueEmptyNotified = new Map<string, number>()
 
 function getSupabase() {
   return createClient(
@@ -208,6 +213,36 @@ async function notifySessionExpired(userId: string, linkedinEmail: string): Prom
     }
   } catch (err) {
     console.error('[worker] session-expired notification threw:', err)
+  }
+}
+
+/**
+ * Notify the user that their LinkedIn outreach queue is empty and they should
+ * add more leads. Rate-limited to once per 24 h per user (in-memory).
+ *
+ * Best-effort — never throws so it never blocks the worker loop.
+ */
+async function notifyQueueEmpty(userId: string, linkedinEmail: string): Promise<void> {
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL
+    const secret = process.env.WORKER_SECRET
+    if (!appUrl || !secret) {
+      console.warn('[worker] NEXT_PUBLIC_APP_URL or WORKER_SECRET not set — skipping queue-empty notification')
+      return
+    }
+    const res = await fetch(`${appUrl}/api/gtm/notify/queue-empty`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${secret}` },
+      body:    JSON.stringify({ userId, linkedinEmail }),
+    })
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      console.error(`[worker] queue-empty notification failed (${res.status}):`, body)
+    } else {
+      console.log(`[worker] queue-empty notification sent for ${linkedinEmail}`)
+    }
+  } catch (err) {
+    console.error('[worker] queue-empty notification threw:', err)
   }
 }
 
@@ -545,7 +580,23 @@ async function poll(): Promise<void> {
     return
   }
 
-  if (!items?.length) return
+  if (!items?.length) {
+    // Queue is globally empty — nudge any active users who haven't heard in 24 h.
+    const { data: activeSessions } = await supabase
+      .from('linkedin_sessions')
+      .select('user_id, linkedin_email')
+      .eq('status', 'active')
+
+    for (const s of activeSessions ?? []) {
+      const lastNotified = lastQueueEmptyNotified.get(s.user_id) ?? 0
+      if (Date.now() - lastNotified > QUEUE_EMPTY_NOTIFY_COOLDOWN) {
+        lastQueueEmptyNotified.set(s.user_id, Date.now())
+        console.log(`[worker] queue empty for ${s.linkedin_email} — sending nudge email`)
+        notifyQueueEmpty(s.user_id, s.linkedin_email).catch(() => {})
+      }
+    }
+    return
+  }
 
   console.log(`[worker] ${items.length} item(s) in queue`)
 

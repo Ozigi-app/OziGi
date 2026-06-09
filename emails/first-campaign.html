@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your first campaign is live</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; background-color: #fafafa; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff; border-radius: 24px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .header { text-align: center; margin-bottom: 32px; }
+    .logo { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; color: #0a1628; text-decoration: none; }
+    .logo span { color: #e8320a; }
+    .hero-icon { font-size: 48px; text-align: center; margin: 16px 0; }
+    h1 { font-size: 24px; font-weight: 800; margin: 16px 0; letter-spacing: -0.01em; }
+    p { color: #475569; margin: 12px 0; }
+    .step-list { list-style: none; padding: 0; margin: 20px 0; }
+    .step-list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+    .step-icon { font-size: 20px; line-height: 1.4; flex-shrink: 0; }
+    .step-text { color: #475569; font-size: 15px; }
+    .step-text strong { color: #1e293b; }
+    .button-wrap { text-align: center; margin: 32px 0; }
+    .button { display: inline-block; background-color: #e8320a; color: white !important; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; }
+    .tip-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px 20px; margin: 24px 0; }
+    .tip-box p { color: #0c4a6e; font-size: 14px; margin: 0; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+    .footer { text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Ozigi<span>.</span></div>
+    </div>
+
+    <div class="hero-icon">🚀</div>
+    <h1>Your first campaign just went live</h1>
+
+    <p>Hi {{name}},</p>
+
+    <p>Congrats — your first outreach campaign is running. Here's what happens next so you know exactly what to expect:</p>
+
+    <ul class="step-list">
+      <li>
+        <span class="step-icon">📤</span>
+        <span class="step-text"><strong>Requests are going out now.</strong> LinkedIn connection requests are spread across business hours to look natural. You won't see them all fire at once — that's by design.</span>
+      </li>
+      <li>
+        <span class="step-icon">📝</span>
+        <span class="step-text"><strong>Notes are attached where LinkedIn allows it.</strong> Most leads will receive your connection note. A small number (LinkedIn Premium users with Open Profiles) get a direct send — LinkedIn doesn't show a note option for those.</span>
+      </li>
+      <li>
+        <span class="step-icon">⏳</span>
+        <span class="step-text"><strong>Expect 3–7 days for acceptance.</strong> People check LinkedIn at different cadences. Don't worry if the first few days are quiet — responses usually come in waves.</span>
+      </li>
+      <li>
+        <span class="step-icon">🔁</span>
+        <span class="step-text"><strong>Follow-ups trigger automatically.</strong> Once a connection is accepted, Ozigi will send your follow-up messages on the schedule you set — no action needed from you.</span>
+      </li>
+      <li>
+        <span class="step-icon">📋</span>
+        <span class="step-text"><strong>Keep the queue topped up.</strong> The pipeline works through leads quickly. Check back every few days to add a new batch so momentum never stops.</span>
+      </li>
+    </ul>
+
+    <div class="button-wrap">
+      <a href="{{campaign_url}}" class="button">View your campaign →</a>
+    </div>
+
+    <div class="tip-box">
+      <p>💡 <strong>Pro tip:</strong> LinkedIn's weekly connection limit is around 100–200 requests. Ozigi spreads them out to stay well within that — but if you're running multiple campaigns, they share the same pool. Keep an eye on your total queue size.</p>
+    </div>
+
+    <hr class="divider">
+
+    <p style="font-size: 14px; color: #64748b;">Questions or something looks off? Reply to this email and we'll sort it out.</p>
+
+    <div class="footer">
+      <p>Ozigi · Automated outreach, done right</p>
+    </div>
+  </div>
+</body>
+</html>

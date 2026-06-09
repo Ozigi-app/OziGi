@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: "Dashboard | Ozigi",
     template: "%s | Ozigi",
   },
-  description: "Your Ozigi GTM dashboard — run outreach campaigns, generate content, and manage your go-to-market from one place.",
+  description: "Your Ozigi dashboard — find leads, run outreach campaigns, generate content, and reach more people from one place.",
   robots: { index: false, follow: false },
 };
 

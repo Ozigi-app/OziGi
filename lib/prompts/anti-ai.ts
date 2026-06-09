@@ -189,6 +189,19 @@ Every single pattern below is banned. Gemini 2.5 defaults to all of them.
 - Do NOT use "at scale" without a specific number attached.
 - Do NOT mirror the task back before answering. Start with the content.
 
+### 1L. Community-Sourced 2026 Additions (LinkedIn / cold-email / Gemini Flash)
+Tells spotted in the wild since the last review. Banned like everything above.
+- Words: elevate, elevating, frictionless, bespoke, turnkey, hyper-personalized
+- Phrases: "at the end of the day", "when it comes to", "here's the thing",
+  "unlock the potential", "take it to the next level", "level the playing field",
+  "best of both worlds", "the takeaway is"
+- Openers (never start a sentence or post with these): "In short,", "Simply put,",
+  "Long story short,", "Bottom line,", "Here's the deal,", "Plain and simple,",
+  "Real talk,"
+- Engagement-bait closers (never end a post with these): "Follow for more",
+  "Save this for later", "Save this post", "Who's with me?", "Agree or disagree?",
+  "Like and subscribe", "Hit the follow button"
+
 ---
 
 ## 2. BURSTINESS (CADENCE ENGINEERING)
@@ -323,6 +336,9 @@ export const BANNED_WORDS: readonly string[] = [
   'otherworldly', 'breathtaking', 'awe-inspiring', 'spearhead', 'spearheads',
   'spearheading', 'groundbreaking', 'trailblazing', 'pioneering',
   'profound', 'profoundly',
+  // 1L — community-sourced 2026 additions
+  'elevate', 'elevating', 'frictionless', 'bespoke', 'turnkey',
+  'hyper-personalized',
   // 1J — Gemini affirmations as standalone tells
   // (handled by opener regex below, not by word-list)
 ];
@@ -391,6 +407,10 @@ export const BANNED_PHRASES: readonly string[] = [
   "I can't stress this enough", 'mark my words', 'the bottom line is',
   // 1K — moral coda
   "and that's why",
+  // 1L — community-sourced 2026 additions
+  'at the end of the day', 'when it comes to', "here's the thing",
+  'unlock the potential', 'take it to the next level',
+  'level the playing field', 'best of both worlds', 'the takeaway is',
 ];
 
 /**
@@ -419,6 +439,9 @@ export const BANNED_OPENERS: readonly string[] = [
   'Have you ever wondered', 'Wouldn\'t you agree that',
   'Isn\'t it obvious that', 'More importantly,', 'Even more importantly,',
   'Are you tired of',
+  // 1L — community-sourced 2026 additions
+  'In short,', 'Simply put,', 'Long story short,', 'Bottom line,',
+  "Here's the deal,", 'Plain and simple,', 'Real talk,',
 ];
 
 /** Engagement-bait closers — flagged when they appear at the end of a post. */
@@ -428,6 +451,10 @@ export const BANNED_CLOSERS: readonly string[] = [
   'Tag someone who needs this', 'Tag someone',
   'Repost if you found this valuable', 'Repost if',
   'Comment YES', 'Comment below',
+  // 1L — community-sourced 2026 additions
+  'Follow for more', 'Save this for later', 'Save this post',
+  "Who's with me?", 'Agree or disagree?', 'Like and subscribe',
+  'Hit the follow button',
 ];
 
 /** Regex anti-patterns. Each gets a label for the violation report. */
