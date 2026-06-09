@@ -159,7 +159,7 @@ export default function DashboardPreview() {
         </div>
 
         {/* Phase content */}
-        <div className="relative overflow-hidden" style={{ height: 560 }}>
+        <div className="relative overflow-hidden" style={{ height: 480 }}>
           <AnimatePresence mode="wait" initial={false}>
             {visiblePhase === "overview" && (
               <motion.div key="overview"
@@ -252,16 +252,18 @@ function OverviewPhase({ progress }: { progress: number }) {
   ];
 
   return (
-    <div className="flex" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
+    <div className="flex" style={{ background: C.bg, height: 480, overflow: "hidden" }}>
       <DemoSidebar active="Overview" />
-      <div className="flex-1 p-5 overflow-hidden">
+      <div className="flex-1 p-3 sm:p-5 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div>
+            <h3 className="text-sm sm:text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>Overview</h3>
+            <p className="text-[9px] sm:text-[10px]" style={{ color: C.dim }}>Leads, outreach & content at a glance</p>
             <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>Overview</h3>
             <p className="text-[10px]" style={{ color: C.dim }}>Your leads, outreach, and content at a glance</p>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest"
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest"
             style={{ background: "rgba(34,197,94,0.1)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.25)" }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#16a34a" }} />
             Live
@@ -269,23 +271,23 @@ function OverviewPhase({ progress }: { progress: number }) {
         </div>
 
         {/* Content Studio */}
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: C.dim }}>Content Studio</p>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: C.dim }}>Content Studio</p>
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3">
           {contentStats.map((s) => (
-            <div key={s.label} className="rounded-lg p-2.5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
-              <div className="text-lg font-black tabular-nums leading-none" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[9px] font-medium mt-0.5 leading-snug" style={{ color: C.dim }}>{s.label}</div>
+            <div key={s.label} className="rounded-lg p-2" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-base sm:text-lg font-black tabular-nums leading-none" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[8px] sm:text-[9px] font-medium mt-0.5 leading-snug" style={{ color: C.dim }}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Outbound Growth */}
-        <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: C.dim }}>Outbound Growth</p>
-        <div className="grid grid-cols-3 gap-2">
+        <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: C.dim }}>Outbound Growth</p>
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
           {outboundStats.map((s) => (
-            <div key={s.label} className="rounded-lg p-2.5" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
-              <div className="text-lg font-black tabular-nums leading-none" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[9px] font-medium mt-0.5 leading-snug" style={{ color: C.dim }}>{s.label}</div>
+            <div key={s.label} className="rounded-lg p-2" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-base sm:text-lg font-black tabular-nums leading-none" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[8px] sm:text-[9px] font-medium mt-0.5 leading-snug" style={{ color: C.dim }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -317,44 +319,48 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
   ];
 
   return (
-    <div className="flex" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
+    <div className="flex" style={{ background: C.bg, height: 480, overflow: "hidden" }}>
       <DemoSidebar active="Email Outreach" />
-      <div className="flex-1 p-5 overflow-hidden">
+      <div className="flex-1 p-3 sm:p-5 overflow-hidden">
         {/* Header */}
+        <div className="flex items-start justify-between mb-2 gap-2">
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-black italic uppercase tracking-tight truncate" style={{ color: C.text }}>
+              Ozigi Outreach — Dev Founders
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="text-base font-black italic uppercase tracking-tight" style={{ color: C.text }}>
               Ozigi Outreach — Dev Tool Founders
             </h3>
-            <p className="text-[10px]" style={{ color: C.dim }}>GitHub + Dev.to · 5 leads · email + LinkedIn sequence</p>
+            <p className="text-[9px] sm:text-[10px]" style={{ color: C.dim }}>GitHub + Dev.to · 5 leads · email + LinkedIn</p>
           </div>
-          <div className="flex items-center gap-1.5">
-            <button className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-md"
-              style={{ background: C.inner, color: C.muted, border: `1px solid ${C.border}` }}>Run Scrape</button>
-            <button className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-md text-white"
-              style={{ background: C.red }}>Run Send</button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button className="text-[9px] font-black uppercase tracking-widest px-2 py-1.5 rounded-md"
+              style={{ background: C.inner, color: C.muted, border: `1px solid ${C.border}` }}>Scrape</button>
+            <button className="text-[9px] font-black uppercase tracking-widest px-2 py-1.5 rounded-md text-white"
+              style={{ background: C.red }}>Send</button>
           </div>
         </div>
 
         {/* Stats strip */}
-        <div className="grid grid-cols-4 gap-2 mb-3">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2.5">
           {[
-            { label: "Leads",    value: "5" },
-            { label: "Sent",     value: String(Math.min(Math.floor(outboundElapsed / 600), 5)) },
-            { label: "Replies",  value: "1" },
-            { label: "Rate",     value: outboundElapsed > 1200 ? "20%" : "0%" },
+            { label: "Leads",   value: "5" },
+            { label: "Sent",    value: String(Math.min(Math.floor(outboundElapsed / 600), 5)) },
+            { label: "Replies", value: "1" },
+            { label: "Rate",    value: outboundElapsed > 1200 ? "20%" : "0%" },
           ].map(s => (
-            <div key={s.label} className="rounded-lg p-2 text-center" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
-              <div className="text-base font-black tabular-nums" style={{ color: C.ink }}>{s.value}</div>
-              <div className="text-[9px] font-black uppercase tracking-widest mt-0.5" style={{ color: C.dim }}>{s.label}</div>
+            <div key={s.label} className="rounded-lg p-1.5 sm:p-2 text-center" style={{ background: C.panel, border: `1px solid ${C.border}` }}>
+              <div className="text-sm sm:text-base font-black tabular-nums" style={{ color: C.ink }}>{s.value}</div>
+              <div className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest mt-0.5" style={{ color: C.dim }}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-3 border-b pb-2" style={{ borderColor: C.border }}>
+        <div className="flex gap-1 mb-2.5 border-b pb-1.5" style={{ borderColor: C.border }}>
           {["Leads (5)", "Email Sends", "LinkedIn"].map((t, i) => (
-            <span key={t} className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md"
+            <span key={t} className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md"
               style={{ background: i === 0 ? "rgba(232,50,10,0.10)" : "transparent", color: i === 0 ? C.red : C.muted,
                 border: `1px solid ${i === 0 ? "rgba(232,50,10,0.3)" : "transparent"}` }}>
               {t}
@@ -363,12 +369,14 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
         </div>
 
         {/* Leads table */}
-        <table className="w-full text-[10px]">
+        <table className="w-full text-[9px] sm:text-[10px]">
           <thead>
             <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-              {["Name", "Company", "ICP Score", "Status", "Email"].map(h => (
-                <th key={h} className="text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>{h}</th>
-              ))}
+              <th className="text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>Name</th>
+              <th className="text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>Company</th>
+              <th className="text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>Score</th>
+              <th className="text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>Status</th>
+              <th className="hidden sm:table-cell text-left pb-1.5 font-black uppercase tracking-widest" style={{ color: C.dim }}>Email</th>
             </tr>
           </thead>
           <tbody>
@@ -379,7 +387,7 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
                   initial={{ opacity: 0 }} animate={visible ? { opacity: 1 } : { opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   style={{ borderBottom: `1px solid ${C.border}` }}>
-                  <td className="py-1.5 font-semibold" style={{ color: C.ink }}>{l.name}</td>
+                  <td className="py-1.5 font-semibold truncate max-w-[80px] sm:max-w-none" style={{ color: C.ink }}>{l.name}</td>
                   <td className="py-1.5" style={{ color: C.muted }}>{l.company}</td>
                   <td className="py-1.5 font-black" style={{ color: "#16a34a" }}>{l.score}</td>
                   <td className="py-1.5">
@@ -388,7 +396,7 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
                       {l.status}
                     </span>
                   </td>
-                  <td className="py-1.5" style={{ color: C.dim }}>{l.email}</td>
+                  <td className="hidden sm:table-cell py-1.5" style={{ color: C.dim }}>{l.email}</td>
                 </motion.tr>
               );
             })}
@@ -396,16 +404,16 @@ function OutboundPhase({ outboundElapsed }: { outboundElapsed: number }) {
         </table>
 
         {/* Email send progress */}
-        <div className="mt-3 flex flex-col gap-1.5">
+        <div className="mt-2.5 flex flex-col gap-1.5">
           {emailSends.map((s) => (
-            <div key={s.step} className="flex items-center gap-3">
-              <span className="text-[9px] font-black uppercase tracking-widest w-32 shrink-0" style={{ color: C.muted }}>{s.step}</span>
+            <div key={s.step} className="flex items-center gap-2">
+              <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest w-20 sm:w-28 shrink-0 truncate" style={{ color: C.muted }}>{s.step}</span>
               <div className="flex-1 rounded-full h-1.5" style={{ background: C.inner }}>
                 <motion.div className="h-full rounded-full" style={{ background: C.red }}
                   animate={{ width: `${(s.sent / s.total) * 100}%` }}
                   transition={{ duration: 0.6, ease: "easeOut" }} />
               </div>
-              <span className="text-[9px] font-black w-8 text-right tabular-nums" style={{ color: C.dim }}>
+              <span className="text-[8px] sm:text-[9px] font-black w-7 text-right tabular-nums" style={{ color: C.dim }}>
                 {s.sent}/{s.total}
               </span>
             </div>
@@ -421,9 +429,9 @@ const SAMPLE_URL = "https://ozigi.app/changelog/v3-gtm-launch";
 
 function ContentPhase({ typedInput, buttonPulsing }: { typedInput: string; buttonPulsing: boolean }) {
   return (
-    <div className="flex" style={{ background: C.bg, height: 560, overflow: "hidden" }}>
+    <div className="flex" style={{ background: C.bg, height: 480, overflow: "hidden" }}>
       <DemoSidebar active="Social Posts" />
-      <div className="flex-1 p-5 md:p-6">
+      <div className="flex-1 p-3 sm:p-5">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: "rgba(232,50,10,0.12)" }}>
@@ -624,7 +632,7 @@ function VideoControls({ elapsed, total, playing, chapters, onPlayPause, onSeek 
           const isActive = i === chapterIdx;
           return (
             <button key={ch.label} onClick={() => onSeek(ch.startMs)}
-              className="absolute text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-colors duration-200"
+              className="absolute text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-colors duration-200 whitespace-nowrap"
               style={{ left: i === 0 ? 0 : `calc(${pct}% + 28px)`, color: isActive ? "#fff" : "rgba(255,255,255,0.35)", transform: i === 0 ? "none" : "translateX(-50%)" }}>
               {ch.label}
             </button>
