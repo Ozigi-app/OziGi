@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Ozigi — AI Content That Sounds Human';
+export const alt = 'Ozigi — A full pipeline. Without hiring anyone.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -14,46 +14,61 @@ export default async function Image() {
           height: 630,
           display: 'flex',
           flexDirection: 'column',
-          background: '#f9f8f7',
+          background: '#070E1C',
           position: 'relative',
           overflow: 'hidden',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
+        {/* Subtle grid */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+            display: 'flex',
+          }}
+        />
+
+        {/* Red radial glow — top right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: -120,
+            right: -120,
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(232,50,10,0.18) 0%, transparent 65%)',
+            display: 'flex',
+          }}
+        />
+
+        {/* Blue radial glow — bottom left */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -80,
+            left: -80,
+            width: 480,
+            height: 480,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(30,74,138,0.22) 0%, transparent 65%)',
+            display: 'flex',
+          }}
+        />
+
         {/* Red left accent bar */}
         <div
           style={{
             position: 'absolute',
             left: 0,
             top: 0,
-            width: 8,
+            width: 6,
             height: '100%',
-            background: '#dc2626',
-          }}
-        />
-
-        {/* Decorative large "O" watermark */}
-        <div
-          style={{
-            position: 'absolute',
-            right: -60,
-            bottom: -80,
-            width: 420,
-            height: 420,
-            borderRadius: '50%',
-            border: '48px solid rgba(15,23,42,0.04)',
-            display: 'flex',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            right: 40,
-            bottom: 0,
-            width: 280,
-            height: 280,
-            borderRadius: '50%',
-            border: '32px solid rgba(220,38,38,0.07)',
+            background: '#E8320A',
             display: 'flex',
           }}
         />
@@ -71,17 +86,17 @@ export default async function Image() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://ozigi.app/logo.png"
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               alt=""
-              style={{ borderRadius: 10 }}
+              style={{ borderRadius: 8 }}
             />
             <span
               style={{
-                color: '#0f172a',
-                fontSize: 30,
+                color: '#ffffff',
+                fontSize: 26,
                 fontWeight: 900,
-                letterSpacing: '-1.5px',
+                letterSpacing: '-1px',
                 textTransform: 'uppercase',
               }}
             >
@@ -91,7 +106,7 @@ export default async function Image() {
 
           <span
             style={{
-              color: '#94a3b8',
+              color: 'rgba(255,255,255,0.3)',
               fontSize: 15,
               fontWeight: 600,
               letterSpacing: '0.06em',
@@ -111,7 +126,7 @@ export default async function Image() {
             padding: '0 80px',
           }}
         >
-          {/* Eyebrow tag */}
+          {/* Eyebrow */}
           <div
             style={{
               display: 'flex',
@@ -122,80 +137,79 @@ export default async function Image() {
           >
             <div
               style={{
-                width: 10,
-                height: 10,
+                width: 8,
+                height: 8,
                 borderRadius: '50%',
-                background: '#dc2626',
+                background: '#E8320A',
               }}
             />
             <span
               style={{
-                color: '#dc2626',
-                fontSize: 15,
+                color: '#E8320A',
+                fontSize: 14,
                 fontWeight: 900,
                 letterSpacing: '0.22em',
                 textTransform: 'uppercase',
               }}
             >
-              AI Content Engine
+              Outbound · Content · Pipeline
             </span>
           </div>
 
           {/* Headline line 1 */}
           <div
             style={{
-              fontSize: 96,
+              fontSize: 92,
               fontWeight: 900,
-              color: '#0f172a',
-              letterSpacing: '-4px',
+              color: '#ffffff',
+              letterSpacing: '-3.5px',
               lineHeight: 0.95,
               textTransform: 'uppercase',
               display: 'flex',
             }}
           >
-            Content that
+            A full pipeline.
           </div>
 
-          {/* Headline line 2 — "sounds like" white on red slab + "you." */}
+          {/* Headline line 2 — on red slab */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'baseline',
-              gap: 20,
-              marginTop: 6,
+              marginTop: 8,
               lineHeight: 0.95,
             }}
           >
             <div
               style={{
-                background: '#dc2626',
-                padding: '4px 24px 10px 0',
+                background: '#E8320A',
+                padding: '6px 28px 12px 0',
                 display: 'flex',
                 alignItems: 'baseline',
               }}
             >
               <span
                 style={{
-                  fontSize: 96,
+                  fontSize: 92,
                   fontWeight: 900,
                   color: '#ffffff',
-                  letterSpacing: '-4px',
+                  letterSpacing: '-3.5px',
                   textTransform: 'uppercase',
                 }}
               >
-                sounds like
+                Without hiring
               </span>
             </div>
             <span
               style={{
-                fontSize: 96,
+                fontSize: 92,
                 fontWeight: 900,
-                color: '#dc2626',
-                letterSpacing: '-4px',
+                color: '#E8320A',
+                letterSpacing: '-3.5px',
                 textTransform: 'uppercase',
+                marginLeft: 16,
               }}
             >
-              you.
+              anyone.
             </span>
           </div>
 
@@ -203,16 +217,16 @@ export default async function Image() {
           <div
             style={{
               marginTop: 32,
-              fontSize: 22,
-              fontWeight: 500,
-              color: '#64748b',
-              lineHeight: 1.45,
-              maxWidth: 680,
+              fontSize: 20,
+              fontWeight: 400,
+              color: 'rgba(255,255,255,0.55)',
+              lineHeight: 1.5,
+              maxWidth: 700,
               display: 'flex',
             }}
           >
-            Turn raw notes, URLs & ideas into posts that pass for human.
-            No AI aftertaste.
+            Ozigi puts you in front of your ideal buyer, starts the conversation,
+            and keeps you visible until they're ready to say yes.
           </div>
         </div>
 
@@ -222,23 +236,23 @@ export default async function Image() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '22px 80px',
-            borderTop: '1px solid rgba(15,23,42,0.08)',
+            padding: '20px 80px',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
           }}
         >
-          {/* Platform pills */}
-          <div style={{ display: 'flex', gap: 10 }}>
-            {['𝕏', 'LinkedIn', 'Discord', 'Slack', 'Email'].map((p) => (
+          {/* Channel pills */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {['LinkedIn', 'Cold Email', 'Content', 'Follow-up'].map((p) => (
               <div
                 key={p}
                 style={{
-                  background: 'rgba(15,23,42,0.05)',
-                  border: '1px solid rgba(15,23,42,0.1)',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: 100,
-                  padding: '7px 18px',
-                  color: '#475569',
+                  padding: '7px 16px',
+                  color: 'rgba(255,255,255,0.6)',
                   fontSize: 13,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   display: 'flex',
                 }}
               >
@@ -247,21 +261,21 @@ export default async function Image() {
             ))}
           </div>
 
-          {/* "Try free" badge */}
+          {/* CTA badge */}
           <div
             style={{
-              background: '#0f172a',
+              background: '#E8320A',
               borderRadius: 100,
               padding: '10px 24px',
               color: '#ffffff',
               fontSize: 13,
               fontWeight: 900,
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
               display: 'flex',
             }}
           >
-            Try free →
+            Fill my pipeline →
           </div>
         </div>
       </div>

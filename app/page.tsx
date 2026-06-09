@@ -14,7 +14,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AuthModal from "../components/AuthModal";
 import DashboardPreview from "../components/DashboardPreview";
-import SocialProof from "../components/SocialProof";
 import PeerlistReviews from "../components/PeerlistReviews";
 import NewsletterPopup from "../components/NewsletterPopup";
 import { supabase } from "@/lib/supabase/client";
@@ -138,9 +137,9 @@ function MagneticBtn({ onClick, children, variant = "red" }: {
 /* ─── Fake outbound stat ticker ──────────────────────────────────────────── */
 function StatTicker({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="flex flex-col items-center gap-1 px-6 py-4 rounded-2xl" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-      <span className="text-2xl font-black tabular-nums" style={{ color: color ?? C.white }}>{value}</span>
-      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: C.dim }}>{label}</span>
+    <div className="flex flex-col items-center gap-1 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+      <span className="text-xl sm:text-2xl font-black tabular-nums" style={{ color: color ?? C.white }}>{value}</span>
+      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-center" style={{ color: C.dim }}>{label}</span>
     </div>
   );
 }
@@ -202,20 +201,73 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}50, transparent)` }} />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-24 md:py-32">
-            <div className="flex flex-col items-center text-center gap-8 max-w-5xl mx-auto">
+          {/* Orbiting feature cards — continuously chase each other around the hero */}
+          {[
+            {
+              label: "More Pipeline",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+              ),
+              delay: 0,
+            },
+            {
+              label: "More Visibility",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+              ),
+              delay: 4.67,
+            },
+            {
+              label: "More Closes",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              ),
+              delay: 9.33,
+            },
+          ].map(({ label, icon, delay }) => (
+            <motion.div
+              key={label}
+              className="absolute hidden sm:flex flex-col items-center gap-1.5 px-4 py-3 rounded-2xl select-none pointer-events-none"
+              style={{
+                top: "50%",
+                left: "50%",
+                marginLeft: "-52px",
+                marginTop: "-36px",
+                background: "rgba(255,255,255,0.88)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+                border: `1px solid ${C.border}`,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
+                zIndex: 20,
+                willChange: "transform",
+              }}
+              animate={{
+                x:       [ 700,  606,  350,    0, -350, -606, -700, -606, -350,    0,  350,  606,  700],
+                y:       [   0, -190, -329, -380, -329, -190,    0,  190,  329,  380,  329,  190,    0],
+                scale:   [ 1.0, 0.90, 0.84, 0.80, 0.84, 0.90,  1.0, 1.10, 1.16, 1.20, 1.16, 1.10,  1.0],
+                opacity: [ 0.9, 0.78, 0.68, 0.60, 0.68, 0.78,  0.9, 0.94, 0.97, 1.00, 0.97, 0.94,  0.9],
+              }}
+              transition={{
+                duration: 14,
+                repeat: Infinity,
+                ease: "linear",
+                delay,
+                times: [0, 1/12, 2/12, 3/12, 4/12, 5/12, 6/12, 7/12, 8/12, 9/12, 10/12, 11/12, 1],
+              }}
+            >
+              <span style={{ color: C.red }}>{icon}</span>
+              <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap" style={{ color: C.muted }}>{label}</span>
+            </motion.div>
+          ))}
 
-              {/* Eyebrow */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest"
-                style={{ background: C.redSoft, color: C.red, border: `1px solid rgba(232,50,10,0.2)` }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.red }} />
-                GTM Content Suite
-              </motion.div>
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-20 md:py-32">
+            <div className="flex flex-col items-center text-center gap-8 max-w-5xl mx-auto">
 
               {/* Headline */}
               <motion.div style={{ y: heroParallaxY }}>
@@ -225,9 +277,9 @@ export default function Home() {
                   transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                   className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.02] text-balance"
                 >
-                  Find leads. Reach out.<br />
+                  A full pipeline.<br />
                   <span className="relative inline-block">
-                    <span style={{ color: C.red }}>Stay top of mind.</span>
+                    <span style={{ color: C.red }}>Without hiring anyone.</span>
                     <motion.span
                       className="absolute left-0 -bottom-1 h-1 rounded-full origin-left"
                       style={{ background: C.red }}
@@ -247,7 +299,7 @@ export default function Home() {
                 className="text-base md:text-xl font-medium leading-relaxed max-w-2xl text-pretty"
                 style={{ color: C.muted }}
               >
-                Ozigi is the GTM engine for founders and small teams. Outbound email and LinkedIn sequences, lead scraping, and a full content engine — all in one place.
+                Ozigi puts you in front of your ideal buyer, starts the conversation, and keeps you visible until they&apos;re ready to say yes.
               </motion.p>
 
               {/* CTAs */}
@@ -258,7 +310,7 @@ export default function Home() {
                 className="flex flex-wrap items-center justify-center gap-3"
               >
                 <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
-                  Start your GTM engine →
+                  Fill my pipeline →
                 </MagneticBtn>
                 <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
                   Sign in
@@ -270,12 +322,12 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.55 }}
-                className="flex flex-wrap items-center justify-center gap-3 mt-2"
+                className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-3 mt-2"
               >
-                <StatTicker label="Leads sourced" value="12,400+" color={C.red} />
-                <StatTicker label="Emails sent" value="38,000+" />
-                <StatTicker label="Content pieces" value="94,000+" />
-                <StatTicker label="Reply rate avg" value="8.4%" color="#16a34a" />
+                <StatTicker label="Pipelines filled" value="12,400+" color={C.red} />
+                <StatTicker label="Conversations started" value="38,000+" />
+                <StatTicker label="Brands kept visible" value="94,000+" />
+                <StatTicker label="Avg reply rate" value="8.4%" color="#16a34a" />
               </motion.div>
 
               <motion.p
@@ -299,8 +351,10 @@ export default function Home() {
               <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] mb-4" style={{ color: C.dim }}>
                 See Ozigi in action
               </p>
-              <div style={{ zoom: 0.82 }} className="w-full origin-top">
-                <DashboardPreview />
+              <div className="w-full overflow-x-auto rounded-2xl">
+                <div className="min-w-[340px]">
+                  <DashboardPreview />
+                </div>
               </div>
             </motion.div>
 
@@ -310,31 +364,32 @@ export default function Home() {
         {/* ── Launch badges strip ──────────────────────────────────────── */}
         <div className="w-full overflow-x-auto py-5 border-b"
           style={{ background: C.navyDeep, borderColor: C.border }}>
-          <div className="flex items-center justify-center gap-6 px-6 w-fit mx-auto">
+          <div className="flex items-center justify-center gap-5 sm:gap-6 px-6 w-fit mx-auto">
             <a href="https://peerlist.io/dumebi/project/ai-content-generator-that-sounds-human"
               target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
               <img src="https://peerlist.io/api/v1/projects/embed/PRJHBARJ6AKQ7AG6MFPMRJPBREPQBN?showUpvote=false&theme=light"
-                alt="Featured on Peerlist" className="h-7 w-auto" />
+                alt="Featured on Peerlist" className="h-6 sm:h-7 w-auto" />
             </a>
-            <a href="https://theresanaiforthat.com/ai/ozigi/?ref=featured&v=10684552" target="_blank" rel="nofollow">
-              <img width="300" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600" alt="Featured on TAAFT" className="h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
+            <a href="https://theresanaiforthat.com/ai/ozigi/?ref=featured&v=10684552" target="_blank" rel="nofollow"
+              className="flex-shrink-0">
+              <img width="300" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600" alt="Featured on TAAFT" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
             </a>
             <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} className="h-7 w-auto" />
+              <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} className="h-6 sm:h-7 w-auto" />
             </a>
             <a href="https://www.scrolllaunch.com/products/ozigi?utm_source=badge&utm_medium=embed&utm_campaign=ozigi&ref=scrolllaunch"
               target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://www.scrolllaunch.com/api/badge/ozigi" alt="Featured on ScrollLaunch" width={220} height={48} loading="lazy" className="h-7 w-auto" />
+              <img src="https://www.scrolllaunch.com/api/badge/ozigi" alt="Featured on ScrollLaunch" width={220} height={48} loading="lazy" className="h-6 sm:h-7 w-auto" />
             </a>
-            <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank">
-              <img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Featured on Startup Fame" width="224" height="36" className="h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
+            <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank" className="flex-shrink-0">
+              <img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Featured on Startup Fame" width="224" height="36" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
             </a>
             <a href="https://goodaitools.com/ai/ozigi-app" target="_blank" rel="noopener"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Featured on GoodAITools" height={54} className="h-7 w-auto" />
+              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Featured on GoodAITools" height={54} className="h-6 sm:h-7 w-auto" />
             </a>
           </div>
         </div>
@@ -346,15 +401,15 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}40, transparent)` }} />
 
-          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 md:px-14">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}
-              className="text-center mb-20">
+              className="text-center mb-10 md:mb-20">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>How it works</p>
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                Source. Reach out.<br />Convert.
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
+                You show up.<br />They say yes.
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-md mx-auto" style={{ color: C.muted }}>
-                One GTM loop — from finding the right people to closing them.
+                Three steps that turn a cold list into closed deals — while you focus on the work that actually needs you.
               </p>
             </motion.div>
 
@@ -363,20 +418,20 @@ export default function Home() {
               {[
                 {
                   n: "01", bg: C.cardB,
-                  title: "Source leads",
-                  desc: "Ozigi scrapes GitHub, Dev.to, and LinkedIn for leads that match your ICP. Gemini scores each one before they hit your pipeline.",
+                  title: "Your pipeline fills up",
+                  desc: "Ozigi finds people who already match your ideal customer on GitHub, Dev.to, and LinkedIn — scored and ready before you ever open your inbox.",
                   tags: ["GitHub", "Dev.to", "LinkedIn"],
                 },
                 {
                   n: "02", bg: C.card,
-                  title: "Run outreach",
-                  desc: "Launch personalised email + LinkedIn sequences. Each message is written by AI using the lead's actual profile — not a template.",
+                  title: "You get the first reply",
+                  desc: "Personalised email + LinkedIn sequences go out in your voice, written from each lead's actual profile. You get replies, not bounces.",
                   tags: ["Email sequences", "LinkedIn DMs", "Follow-ups"],
                 },
                 {
                   n: "03", bg: C.cardS,
-                  title: "Stay top of mind",
-                  desc: "Keep your pipeline warm with a content engine that publishes newsletters, social posts, and blogs in your voice on autopilot.",
+                  title: "You win when they're ready",
+                  desc: "Your content keeps running in the background — newsletters, posts, blogs — so when a lead is finally ready to buy, you're the name they remember.",
                   tags: ["Newsletter", "Social", "Blog"],
                 },
               ].map((step) => (
@@ -408,24 +463,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── SOCIAL PROOF ─────────────────────────────────────────────── */}
-        <div style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
-          <SocialProof />
-        </div>
-
         {/* ── PILLARS — the two engines ─────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-32"
           style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
           <DiagLines id="pillars-diag" opacity={0.04} />
-          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 md:px-14">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}
               className="text-center mb-16">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>The platform</p>
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                Two engines.<br />One pipeline.
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>What you get</p>
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-[0.95]">
+                A full pipeline.<br />A recognisable brand.<br />Zero extra headcount.
               </h2>
               <p className="text-base md:text-lg font-medium mt-5 max-w-lg mx-auto" style={{ color: C.muted }}>
-                Outbound growth and content generation work together. Reach cold leads while your content warms them up.
+                Cold outreach fills your calendar. Content keeps you top of mind between conversations. Both compound — and neither requires a team.
               </p>
             </motion.div>
 
@@ -441,12 +491,12 @@ export default function Home() {
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"
                   style={{ background: `radial-gradient(ellipse at top right, rgba(232,50,10,0.08), transparent 65%)` }} />
                 <div className="relative z-10">
-                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>01 — Outbound Growth</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>01 — Lead Sourcing & Outreach</p>
                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-4">
-                    Find leads.<br />Run sequences.
+                    Conversations started.<br />Deals in the calendar.
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
-                    Scrape GitHub, Dev.to, and LinkedIn for ICP-matched leads. Launch personalised email and LinkedIn sequences automatically. Track opens, replies, and bounces.
+                    You get a pipeline of pre-qualified leads and personalised sequences that actually get replied to — without writing a single cold message yourself or manually filtering a spreadsheet.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -465,12 +515,12 @@ export default function Home() {
                 <div className="absolute top-0 right-0 w-1 h-full"
                   style={{ background: `linear-gradient(to bottom, transparent, ${C.red}50, transparent)` }} />
                 <div className="relative z-10">
-                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>02 — Content Engine</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest mb-4" style={{ color: C.red }}>02 — Content Marketing</p>
                   <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-4">
-                    Publish content.<br />Sound human.
+                    Consistent presence.<br />Zero burnout.
                   </h3>
                   <p className="text-sm leading-relaxed mb-6" style={{ color: C.muted }}>
-                    Generate newsletters, LinkedIn posts, X threads, and blog posts that sound like you — not AI. Schedule and publish directly from the dashboard. Your voice, on autopilot.
+                    You become the founder people see everywhere — newsletters, LinkedIn, X, and your blog — without writing from scratch every week. Your voice. Your ideas. Running while you sleep.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
@@ -489,7 +539,7 @@ export default function Home() {
                 { bg: C.cardG,  title: "Persona system",    desc: "Define your voice once. Every email, post, and message inherits it automatically." },
                 { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho, Salesforce. Leads sync on first contact — no manual imports." },
                 { bg: C.cardS,  title: "Gmail & SMTP",      desc: "Connect any sending account. Rotate across multiple inboxes to protect deliverability." },
-                { bg: C.cardB,  title: "Gemini-powered",    desc: "ICP scoring, email writing, content generation — all Gemini under the hood." },
+                { bg: C.cardB,  title: "AI scoring",         desc: "Every lead is scored against your ideal customer before it hits your pipeline — no manual filtering." },
               ].map((f, i) => (
                 <motion.div key={i} variants={springUp}
                   whileHover={{ y: -4, transition: { type: "spring", stiffness: 280, damping: 18 } }}
@@ -519,7 +569,7 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: `linear-gradient(to right, transparent, ${C.red}40, transparent)` }} />
 
-          <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-12">
             {/* Header */}
             <motion.div
               initial="hidden" whileInView="visible"
@@ -527,7 +577,7 @@ export default function Home() {
               className="text-center mb-10"
             >
               <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-3" style={{ color: C.red }}>Pricing</p>
-              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-3">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-3">
                 Simple. Transparent.
               </h2>
               <p className="text-sm font-medium max-w-md mx-auto" style={{ color: C.muted }}>
@@ -567,7 +617,7 @@ export default function Home() {
                   price: "$29",
                   period: "/mo",
                   highlight: "Active outbound",
-                  bullets: ["1,000 GTM credits/mo", "Unlimited sends", "LinkedIn outreach", "CRM sync · reply detection"],
+                  bullets: ["1,000 outreach credits/mo", "Unlimited sends", "LinkedIn outreach", "CRM sync · reply detection"],
                   cta: "Get Growth",
                   popular: false,
                 },
@@ -673,20 +723,19 @@ export default function Home() {
           <div className="absolute left-0 top-0 bottom-0 w-1.5"
             style={{ background: `linear-gradient(to bottom, transparent, ${C.red}, transparent)` }} />
 
-          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14">
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 md:px-14">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
               className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12">
               <motion.div variants={fadeUp} className="max-w-xl space-y-5">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: C.red }}>
                   Built for
                 </p>
-                <h3 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                  Founders.<br />Small GTM teams.<br />
-                  <span style={{ color: C.muted }}>Anyone doing<br />their own pipeline.</span>
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
+                  Founders closing<br />their own deals —<br />
+                  <span style={{ color: C.muted }}>who want their<br />calendar full.</span>
                 </h3>
                 <p className="text-base font-medium leading-relaxed max-w-md" style={{ color: C.muted }}>
-                  If you&apos;re doing outbound without a 10-person SDR team, Ozigi is your force multiplier.
-                  Scrape leads, run sequences, and publish content that keeps your brand warm — all without hiring.
+                  You go from spending hours manually prospecting and staring at a blank content calendar — to having a full pipeline and a brand that runs itself. No SDR. No content team. Just results.
                 </p>
               </motion.div>
               <motion.div variants={fadeUp}>
@@ -706,16 +755,16 @@ export default function Home() {
         <section className="relative overflow-hidden py-20 md:py-28"
           style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>
           <DotGrid id="nl-dots" opacity={0.04} />
-          <div className="relative z-10 max-w-2xl mx-auto px-8 md:px-14 text-center">
+          <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-8 md:px-14 text-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp}>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-4" style={{ color: C.red }}>
                 Newsletter
               </p>
-              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-5">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-5">
                 Founder&apos;s<br />Thoughts
               </h2>
               <p className="text-base font-medium mb-8 max-w-md mx-auto" style={{ color: C.muted }}>
-                GTM tactics, product thinking, and what we&apos;re building — straight to your inbox. No noise, no fluff.
+                Outreach tactics, content strategy, and what we&apos;re building — straight to your inbox. No noise, no fluff.
               </p>
 
               {nlStatus === "success" ? (

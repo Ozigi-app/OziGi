@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="22%" r="30%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <!-- Jurisdiction cards -->
+  <!-- US — CAN-SPAM -->
+  <rect x="640" y="80" width="480" height="80" rx="8" fill="#1A2540" stroke="#16a34a" stroke-width="1"/>
+  <text x="660" y="103" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#16a34a" letter-spacing="1">🇺🇸  US — CAN-SPAM</text>
+  <text x="660" y="123" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#FAFAFA">Opt-out model · no prior consent needed</text>
+  <text x="660" y="143" font-family="'DM Sans','Inter',monospace" font-size="11" fill="#94A3B8">Include: real identity · postal address · working unsubscribe</text>
+  <rect x="1070" y="92" width="32" height="20" rx="4" fill="rgba(22,163,74,0.15)" stroke="#16a34a" stroke-width="1"/>
+  <text x="1086" y="106" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="10" font-weight="700" fill="#16a34a">✓</text>
+
+  <!-- EU/UK — GDPR -->
+  <rect x="640" y="172" width="480" height="80" rx="8" fill="#1A2540" stroke="#16a34a" stroke-width="1"/>
+  <text x="660" y="195" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#16a34a" letter-spacing="1">🇪🇺  EU / UK — GDPR</text>
+  <text x="660" y="215" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#FAFAFA">Legitimate interest basis · document purpose + balance</text>
+  <text x="660" y="235" font-family="'DM Sans','Inter',monospace" font-size="11" fill="#94A3B8">B2B relevant outreach · professional contact · privacy policy</text>
+  <rect x="1070" y="184" width="32" height="20" rx="4" fill="rgba(22,163,74,0.15)" stroke="#16a34a" stroke-width="1"/>
+  <text x="1086" y="198" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="10" font-weight="700" fill="#16a34a">✓</text>
+
+  <!-- Canada — CASL -->
+  <rect x="640" y="264" width="480" height="80" rx="8" fill="#1A2540" stroke="#E8320A" stroke-width="1"/>
+  <text x="660" y="287" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">🇨🇦  CANADA — CASL</text>
+  <text x="660" y="307" font-family="'DM Sans','Inter',monospace" font-size="13" fill="#FAFAFA">Consent required before first message</text>
+  <text x="660" y="327" font-family="'DM Sans','Inter',monospace" font-size="11" fill="#94A3B8">Strict outlier · express or implied consent · penalties in millions</text>
+  <rect x="1070" y="276" width="32" height="20" rx="4" fill="rgba(232,50,10,0.15)" stroke="#E8320A" stroke-width="1"/>
+  <text x="1086" y="290" text-anchor="middle" font-family="'DM Sans','Inter',monospace" font-size="10" font-weight="700" fill="#E8320A">!</text>
+
+  <!-- Compliant email checklist -->
+  <rect x="640" y="362" width="480" height="96" rx="8" fill="#0F1828" stroke="#1E293B" stroke-width="1"/>
+  <text x="660" y="383" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">EVERY COMPLIANT EMAIL NEEDS</text>
+  <text x="660" y="403" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">✓  Real identity · company · postal address</text>
+  <text x="660" y="421" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">✓  Honest subject line · one-click opt-out</text>
+  <text x="660" y="439" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">✓  Professional source · relevant to their job</text>
+  <text x="660" y="457" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">+  Privacy policy link (EU/UK recipients)</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M710 478 L710 550 L790 550"/>
+    <path d="M950 478 L950 550 L1030 550 L1030 478"/>
+    <path d="M1110 478 L1110 550"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="1030" cy="478" r="4"/></g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3"><circle cx="1030" cy="478" r="11"/></g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="112" height="30" rx="6" fill="#E8320A"/>
+  <text x="136" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">MARKETING</text>
+  <text x="206" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="205" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#FAFAFA">Is Cold</text>
+  <text x="80" y="283" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#FAFAFA">Email</text>
+  <text x="80" y="361" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="66" font-weight="800" fill="#16a34a">Legal?</text>
+
+  <text x="80" y="410" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">Yes. Here is what the</text>
+  <text x="80" y="438" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">law actually says.</text>
+
+  <line x1="80" y1="466" x2="460" y2="466" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="482" width="100" height="36" rx="18" fill="#1E293B"/>
+  <text x="130" y="505" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">CAN-SPAM</text>
+  <rect x="192" y="482" width="80" height="36" rx="18" fill="#1E293B"/>
+  <text x="232" y="505" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">GDPR</text>
+  <rect x="284" y="482" width="76" height="36" rx="18" fill="#1E293B"/>
+  <text x="322" y="505" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">CASL</text>
+  <rect x="372" y="482" width="100" height="36" rx="18" fill="#1E293B"/>
+  <text x="422" y="505" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">compliance</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>
