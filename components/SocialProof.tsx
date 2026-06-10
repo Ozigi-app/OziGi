@@ -92,7 +92,7 @@ export default function SocialProof() {
           transition={{ duration: 0.5 }}
           className="text-center text-[10px] font-black uppercase tracking-[0.22em] text-foreground-muted"
         >
-          Trusted by teams building in public
+          Used by small teams doing their own outreach
         </motion.p>
       </div>
 

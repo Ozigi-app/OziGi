@@ -14,6 +14,11 @@ import { phCapture } from '@/lib/posthog'
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
 
+// Track whether each user has sent outreach before this run.
+// Populated lazily: true = has prior sends (not their first), false = never sent before.
+// Scoped per-request via a local variable below, not module-level (serverless safe).
+type FirstSendCache = Map<string, boolean> // userId → hasEverSentBefore
+
 export const maxDuration = 300
 
 // Max emails per cron run — keeps us well within the 5-min serverless limit
@@ -48,6 +53,7 @@ export async function POST(req: Request) {
   if (!campaigns?.length) return NextResponse.json({ ok: true, message: 'No active campaigns' })
 
   planCache.clear()
+  const firstSendCache: FirstSendCache = new Map()
   const results: Record<string, { emailSent: number; liEnqueued: number; skipped: number; error?: string }> = {}
 
   for (const campaign of campaigns as Campaign[]) {
@@ -57,6 +63,19 @@ export async function POST(req: Request) {
         planCache.set(campaign.user_id, await getPlanStatus(campaign.user_id))
       }
       const ps = planCache.get(campaign.user_id)!
+
+      // ── First-campaign detection ───────────────────────────────────────────
+      // Check BEFORE any sends so the count is the user's true prior history.
+      // If they have zero prior sequence_sends (sent or queued), this will be
+      // their first ever outreach — we'll send a "now what" onboarding email.
+      if (!firstSendCache.has(campaign.user_id)) {
+        const { count } = await supabaseAdmin
+          .from('sequence_sends')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', campaign.user_id)
+          .in('status', ['sent', 'queued'])
+        firstSendCache.set(campaign.user_id, (count ?? 0) > 0)
+      }
 
       if (!ps.hasGtm) {
         results[campaign.id] = { emailSent: 0, liEnqueued: 0, skipped: 0, error: 'No GTM access on current plan' }
@@ -276,6 +295,23 @@ export async function POST(req: Request) {
       results[campaign.id] = { emailSent: campaignEmailSent, liEnqueued: campaignLiEnqueued, skipped: campaignSkipped }
 
       if (campaignEmailSent > 0 || campaignLiEnqueued > 0) {
+        // First-ever campaign: send the onboarding "here's what happens next" email.
+        // Only fires if the user had zero prior sends before this run.
+        const hadNoPriorSends = firstSendCache.get(campaign.user_id) === false
+        if (hadNoPriorSends) {
+          // Mark as sent so a second campaign in the same cron run doesn't re-trigger.
+          firstSendCache.set(campaign.user_id, true)
+          const origin = new URL(req.url).origin
+          fetch(`${origin}/api/gtm/notify/first-campaign`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${process.env.CRON_SECRET}`,
+            },
+            body: JSON.stringify({ userId: campaign.user_id, campaignId: campaign.id }),
+          }).catch(e => console.error('[gtm/cron/send] first-campaign notify failed:', e))
+        }
+
         phCapture(campaign.user_id, 'gtm_outreach_sent', {
           campaignId: campaign.id,
           emailsSent: campaignEmailSent,
@@ -341,8 +377,12 @@ async function getLeadsDueForStep(
   const prevStep = allSteps.find(s => s.step === step.step - 1)
   if (!prevStep) return []
 
+  // End-of-day cutoff: a lead sent any time on day D is eligible starting on day D+delay.
+  // Without setHours(23,59,59) the cutoff is midnight, which misses sends that happened
+  // later in the same day (e.g. cron runs at 00:30, sends happened at 09:30 three days ago).
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - step.delay_days)
+  cutoff.setHours(23, 59, 59, 999)
 
   const { data } = await supabaseAdmin
     .from('leads')
@@ -407,8 +447,12 @@ async function getLinkedInLeadsDueForStep(
   const prevStep = allSteps.find(s => s.step === step.step - 1)
   if (!prevStep) return []
 
+  // End-of-day cutoff: a lead sent any time on day D is eligible starting on day D+delay.
+  // Without setHours(23,59,59) the cutoff is midnight, which misses sends that happened
+  // later in the same day (e.g. cron runs at 00:30, sends happened at 09:30 three days ago).
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - step.delay_days)
+  cutoff.setHours(23, 59, 59, 999)
 
   // Previous step sent (or queued for worker) and delay has passed
   const { data } = await supabaseAdmin

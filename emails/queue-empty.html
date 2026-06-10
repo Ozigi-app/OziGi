@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your outreach queue is empty</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1e293b; background-color: #fafafa; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff; border-radius: 24px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .header { text-align: center; margin-bottom: 32px; }
+    .logo { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; color: #0a1628; text-decoration: none; }
+    .logo span { color: #e8320a; }
+    .alert-icon { font-size: 48px; text-align: center; margin: 16px 0; }
+    h1 { font-size: 24px; font-weight: 800; margin: 16px 0; letter-spacing: -0.01em; }
+    p { color: #475569; margin: 12px 0; }
+    .account-badge { display: inline-block; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: 14px; font-weight: 600; color: #0a1628; margin: 8px 0; }
+    .button-wrap { text-align: center; margin: 32px 0; }
+    .button { display: inline-block; background-color: #e8320a; color: white !important; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; }
+    .tip-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px 20px; margin: 24px 0; }
+    .tip-box p { color: #166534; font-size: 14px; margin: 0; }
+    .footer { text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Ozigi<span>.</span></div>
+    </div>
+
+    <div class="alert-icon">📋</div>
+    <h1>Your outreach queue is empty</h1>
+
+    <p>Hi {{name}},</p>
+
+    <p>Your LinkedIn outreach pipeline for:</p>
+
+    <p><span class="account-badge">{{linkedin_email}}</span></p>
+
+    <p>...has finished working through all its leads. No new connection requests will go out until you add more.</p>
+
+    <p>This is a good sign — it means the pipeline ran without issues. Pop back into Ozigi, add a new batch of leads to your campaign, and your outreach will pick up right where it left off.</p>
+
+    <div class="button-wrap">
+      <a href="{{dashboard_url}}" class="button">Add more leads →</a>
+    </div>
+
+    <div class="tip-box">
+      <p>💡 <strong>Tip:</strong> We recommend checking in every few days to keep your pipeline topped up. LinkedIn limits daily connection requests, so a steady drip of fresh leads keeps your outreach consistent.</p>
+    </div>
+
+    <p style="font-size: 14px; color: #94a3b8;">You're receiving this because you have an active LinkedIn outreach campaign on Ozigi. If this doesn't look right, you can safely ignore it.</p>
+
+    <div class="footer">
+      <p>Ozigi · Automated outreach, done right</p>
+    </div>
+  </div>
+</body>
+</html>

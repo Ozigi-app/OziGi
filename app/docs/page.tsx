@@ -2,8 +2,8 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 
 export const metadata = {
-  title: "Ozigi Docs — GTM Content Suite",
-  description: "Learn how to use Ozigi's GTM suite: outbound email and LinkedIn sequences, lead scraping, content engine (social posts, newsletters, blog), and CRM integrations.",
+  title: "Ozigi Docs — Find Leads, Run Outreach & Publish Content",
+  description: "Learn how to use Ozigi: find leads from GitHub, Dev.to & LinkedIn, run email and LinkedIn outreach sequences, and publish content that sounds like you — not AI.",
   alternates: { canonical: "https://ozigi.app/docs" },
 };
 
@@ -59,7 +59,7 @@ export default function DocsPage() {
               Platform Documentation
             </h1>
             <p className="text-lg text-slate-600 font-medium leading-relaxed">
-              Ozigi is a GTM content suite for founders and small teams. Two engines work together: an <strong>Outbound Growth</strong> engine that finds leads and runs personalised email + LinkedIn sequences, and a <strong>Content Engine</strong> that publishes newsletters, social posts, and blog articles in your voice.
+              Ozigi helps small teams find leads, run outreach, and publish content that sounds human. Two pieces work together: an <strong>Outbound Growth</strong> engine that finds leads and runs personalised email + LinkedIn sequences, and a <strong>Content Engine</strong> that publishes newsletters, social posts, and blog articles in your voice.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export default function DocsPage() {
                     Quick Start Guide
                   </span>
                   <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter mb-4">
-                    Running your first GTM campaign
+                    Running your first outreach campaign
                   </h2>
                   <p className="text-white/80 text-lg max-w-xl">
                     Get outbound running and your first content piece live in under 10 minutes.

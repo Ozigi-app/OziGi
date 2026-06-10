@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="73%" cy="50%" r="42%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="20%" r="32%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <!-- Filter scoring signals -->
+  <text x="660" y="98" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">SPAM FILTER SIGNALS  (highest → lowest weight)</text>
+
+  <!-- Signal bars -->
+  <rect x="660" y="110" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="110" width="390" height="10" rx="2" fill="#E8320A" opacity="0.9"/>
+  <text x="660" y="136" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">Sender reputation  <tspan fill="#94A3B8">— complaint rate, bounce history, past engagement</tspan></text>
+
+  <rect x="660" y="152" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="152" width="355" height="10" rx="2" fill="#E8320A" opacity="0.75"/>
+  <text x="660" y="178" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">Domain reputation  <tspan fill="#94A3B8">— age, history, mail performance</tspan></text>
+
+  <rect x="660" y="194" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="194" width="300" height="10" rx="2" fill="#E8320A" opacity="0.62"/>
+  <text x="660" y="220" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">Authentication  <tspan fill="#94A3B8">— SPF, DKIM, DMARC pass/fail</tspan></text>
+
+  <rect x="660" y="236" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="236" width="240" height="10" rx="2" fill="#E8320A" opacity="0.50"/>
+  <text x="660" y="262" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">Engagement  <tspan fill="#94A3B8">— opens, replies, spam complaint absence</tspan></text>
+
+  <rect x="660" y="278" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="278" width="160" height="10" rx="2" fill="#94A3B8" opacity="0.5"/>
+  <text x="660" y="304" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">Content  <tspan fill="#4B5E77">— AI signature, template patterns, trigger phrases</tspan></text>
+
+  <rect x="660" y="320" width="420" height="10" rx="2" fill="#1E293B"/>
+  <rect x="660" y="320" width="100" height="10" rx="2" fill="#94A3B8" opacity="0.35"/>
+  <text x="660" y="346" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">Behavior  <tspan fill="#4B5E77">— volume spikes, sending consistency</tspan></text>
+
+  <!-- Verdict panel -->
+  <rect x="660" y="372" width="480" height="68" rx="8" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="680" y="396" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">THE VERDICT</text>
+  <text x="680" y="420" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Filters punish what bad AI looks like —</text>
+  <text x="680" y="436" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">generic, templated, bulk, weak infra. Not AI itself.</text>
+
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M710 470 L710 550 L790 550"/>
+    <path d="M950 470 L950 550 L1030 550 L1030 470"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="1030" cy="470" r="4"/></g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3"><circle cx="1030" cy="470" r="11"/></g>
+
+  <!-- Left side text -->
+  <rect x="80" y="88" width="112" height="30" rx="6" fill="#E8320A"/>
+  <text x="136" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">MARKETING</text>
+  <text x="206" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  JUNE 2026</text>
+
+  <text x="80" y="205" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="64" font-weight="800" fill="#FAFAFA">Does AI</text>
+  <text x="80" y="280" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="64" font-weight="800" fill="#FAFAFA">Email Get</text>
+  <text x="80" y="355" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="64" font-weight="800" fill="#E8320A">Flagged?</text>
+
+  <text x="80" y="404" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">What filters score.</text>
+  <text x="80" y="432" font-family="'DM Sans','Inter',sans-serif" font-size="22" fill="#94A3B8">What actually gets caught.</text>
+
+  <line x1="80" y1="460" x2="460" y2="460" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="476" width="120" height="36" rx="18" fill="#1E293B"/>
+  <text x="140" y="499" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">6 signals</text>
+  <rect x="212" y="476" width="140" height="36" rx="18" fill="#1E293B"/>
+  <text x="282" y="499" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">infra first</text>
+  <rect x="364" y="476" width="110" height="36" rx="18" fill="#1E293B"/>
+  <text x="419" y="499" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">be specific</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>
