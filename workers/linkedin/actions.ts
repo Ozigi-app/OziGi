@@ -81,6 +81,33 @@ async function humanType(page: import('playwright').Page, selector: string, text
 }
 
 /**
+ * Dismisses any open LinkedIn messaging overlays (conversation bubble or compose panel).
+ *
+ * The messaging overlay list bubble (.msg-overlay-list-bubble) floats above profile
+ * action buttons and intercepts pointer events — Playwright throws "subtree intercepts
+ * pointer events" when trying to click Connect or Message. This helper closes every
+ * open overlay and presses Escape before we attempt button clicks.
+ */
+async function dismissMessagingOverlay(page: Page, profileId: string): Promise<void> {
+  const broadClose = page.locator([
+    '.msg-overlay-bubble-header__controls button',
+    'button[data-control-name="close"]',
+    '.msg-overlay-list-bubble__header button',
+    '.msg-overlay-conversation-bubble__header button',
+  ].join(', '))
+  const closeCount = await broadClose.count().catch(() => 0)
+  if (closeCount > 0) {
+    console.log(`[actions] dismissing ${closeCount} messaging overlay button(s) for ${profileId}`)
+    for (let i = 0; i < Math.min(closeCount, 6); i++) {
+      await broadClose.nth(i).click({ timeout: 1_500 }).catch(() => {})
+      await delay(150, 250)
+    }
+  }
+  await page.keyboard.press('Escape').catch(() => {})
+  await delay(300, 500)
+}
+
+/**
  * Tries every known LinkedIn pattern to click the Connect button.
  * Returns true if clicked, false if not found.
  */
@@ -220,6 +247,7 @@ export async function sendConnectionRequest(
   note?: string
 ): Promise<void> {
   const page = await context.newPage()
+  page.setDefaultTimeout(30_000)
 
   try {
     // Visit the feed to prime localStorage AND wander like a real user.
@@ -322,6 +350,10 @@ export async function sendConnectionRequest(
     // Scroll back up so the top action buttons are in view
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })).catch(() => {})
     await delay(500, 900)
+
+    // Dismiss any open messaging overlays — the conversation list bubble floats over
+    // the Connect button and intercepts pointer events, causing Playwright to time out.
+    await dismissMessagingOverlay(page, linkedinUrl.split('/in/')[1]?.replace(/\/.*/, '') ?? linkedinUrl)
 
     const connectClicked = await clickConnectButton(page)
 
@@ -491,7 +523,10 @@ export async function sendConnectionRequest(
     await delay(1000, 2000)
 
   } finally {
-    await page.close()
+    await Promise.race([
+      page.close(),
+      new Promise<void>(resolve => setTimeout(resolve, 5_000)),
+    ]).catch(() => {})
   }
 }
 
@@ -511,22 +546,48 @@ export async function checkConnectionAccepted(
   try {
     await page.goto(linkedinUrl, { waitUntil: 'commit', timeout: 30_000 })
     await page.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {})
+
+    // Detect auth redirects immediately — session expired or checkpoint
+    const landedUrl = page.url()
+    if (
+      landedUrl.includes('/login') ||
+      landedUrl.includes('/authwall') ||
+      landedUrl.includes('/checkpoint')
+    ) {
+      throw new Error(`SESSION_EXPIRED: redirected to ${landedUrl} while checking connection for ${linkedinUrl}`)
+    }
+
     // Give React a moment to render the connection degree badge
     await page.waitForTimeout(3000)
 
-    return await page.evaluate(() => {
+    const result = await page.evaluate(() => {
       const body = document.body.textContent ?? ''
+      const bodyLen = body.trim().length
+
+      // Detect blank / rate-limited page — real profiles have hundreds of chars
+      if (bodyLen < 300) return { blocked: true, connected: false }
+
       // LinkedIn shows "1st" degree badge on connected profiles.
-      // Check the body text AND the aria-label on the degree indicator.
       const bodyHas1st = /\b1st\b/.test(body)
       const has1stLabel = !!document.querySelector(
         '[aria-label*="1st degree"], [aria-label*="1º grau"], [aria-label*="1er degré"]'
       )
-      // The "Message" button present + no "Connect" button = 1st degree
+      // Message button present + no Connect button = 1st degree (connected)
       const hasMessage = !!document.querySelector('button[aria-label*="Message"], button[aria-label*="Mensagem"]')
       const hasConnect = !!document.querySelector('button[aria-label*="Connect"], button[aria-label*="Conectar"]')
-      return bodyHas1st || has1stLabel || (hasMessage && !hasConnect)
-    }).catch(() => false)
+      return {
+        blocked: false,
+        connected: bodyHas1st || has1stLabel || (hasMessage && !hasConnect),
+      }
+    }).catch(() => ({ blocked: true, connected: false }))
+
+    // Blocked/rate-limited — throw so the caller retries later,
+    // NOT treated as "not yet connected" (which would reschedule +24h)
+    if (result.blocked) {
+      throw new Error(`BLANK_PAGE: LinkedIn served a near-empty page for ${linkedinUrl} — temporary block`)
+    }
+
+    return result.connected
   } finally {
     await page.close()
   }
@@ -538,70 +599,165 @@ export async function sendLinkedInMessage(
   message: string
 ): Promise<void> {
   const page = await context.newPage()
+  page.setDefaultTimeout(30_000)
 
   try {
-    const messageUrl = `https://www.linkedin.com/messaging/thread/new/?recipients=${linkedinProfileId}`
-    await page.goto(messageUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 })
-    await delay(2000, 3500)
+    // ── 1. Feed visit — prime localStorage auth state ────────────────────────
+    // LinkedIn's SPA checks localStorage for voyager-web:* keys before rendering
+    // a profile. Without visiting /feed/ first, profiles may serve a blank page.
+    await page.goto('https://www.linkedin.com/feed/', {
+      waitUntil: 'commit',
+      timeout: 15_000,
+    }).catch(() => {})
+    await page.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {})
+    await page.waitForFunction(
+      () => Object.keys(localStorage).some(k => k.startsWith('voyager-web:')),
+      { timeout: 12_000 }
+    ).catch(() => {})
+    await delay(2_000, 4_000)
 
-    const inputSelector = '.msg-form__contenteditable, [data-placeholder*="Write a message"], [contenteditable="true"]'
-    const inputReady = await page.locator(inputSelector).first()
-      .waitFor({ state: 'visible', timeout: 8_000 })
+    const feedUrl = page.url()
+    if (feedUrl.includes('/login') || feedUrl.includes('/authwall') || feedUrl.includes('/checkpoint')) {
+      throw new Error('SESSION_EXPIRED: LinkedIn redirected feed visit to login')
+    }
+
+    // ── 2. Navigate to profile page ──────────────────────────────────────────
+    // NOT /messaging/thread/new/?recipients= — that opens a typeahead that can
+    // resolve to the wrong person when the profileId doesn't exactly match.
+    const profileUrl = `https://www.linkedin.com/in/${linkedinProfileId}/`
+    await page.goto(profileUrl, { waitUntil: 'commit', timeout: 30_000 })
+    await page.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {})
+
+    const landedUrl = page.url()
+    if (landedUrl.includes('/login') || landedUrl.includes('/authwall') || landedUrl.includes('/checkpoint')) {
+      throw new Error('SESSION_EXPIRED: LinkedIn redirected profile to login during message send')
+    }
+
+    // Wait for the profile to fully render (profile actions or data-member-id)
+    await page.waitForFunction(
+      () => !!document.querySelector('.pvs-profile-actions, [data-member-id]') ||
+            (document.title !== 'LinkedIn' && document.title.length > 0),
+      { timeout: 60_000 }
+    ).catch(() => {})
+    await delay(1_500, 2_500)
+
+    // ── 3. Dismiss any open messaging overlays ───────────────────────────────
+    await dismissMessagingOverlay(page, linkedinProfileId)
+
+    // ── 4. Find and click the Message button ─────────────────────────────────
+    const visibleBtns = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('button'))
+        .filter(b => (b as HTMLElement).offsetParent !== null)
+        .map(b => (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 50))
+        .filter(Boolean)
+        .slice(0, 20)
+    ).catch(() => [] as string[])
+    console.log(`[actions] profile buttons for ${linkedinProfileId}: ${visibleBtns.join(' | ')}`)
+
+    // If only Connect is visible but no Message, the connection wasn't accepted yet
+    const hasConnect = visibleBtns.some((b: string) => /\bconnect\b/i.test(b))
+    const hasMessage = visibleBtns.some((b: string) => /\bmessage\b|\bmensagem\b|\bmensaje\b/i.test(b))
+    if (hasConnect && !hasMessage) {
+      throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows Connect button — connection not yet accepted`)
+    }
+
+    const msgBtn = page.getByRole('button', {
+      name: /^(Message|Mensagem|Mensaje|Envoyer un message)$/i,
+    }).or(page.locator('button[aria-label*="Message"]:not([aria-label*="More"])')).first()
+
+    const msgBtnVisible = await msgBtn.isVisible({ timeout: 10_000 }).catch(() => false)
+    if (!msgBtnVisible) {
+      throw new Error(`Message button not found for ${linkedinProfileId} — may not be connected yet`)
+    }
+    await msgBtn.click({ timeout: 10_000 })
+    console.log(`[actions] Message button clicked for ${linkedinProfileId}`)
+
+    // ── 5. Wait for compose panel ────────────────────────────────────────────
+    const inputSel = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+    const composeVisible = await page.locator(inputSel).first()
+      .waitFor({ state: 'visible', timeout: 25_000 })
       .then(() => true)
       .catch(() => false)
 
-    if (!inputReady) {
-      await page.goto(`https://www.linkedin.com/in/${linkedinProfileId}/`, { waitUntil: 'domcontentloaded', timeout: 20_000 })
-      await delay(1500, 2500)
-      await page.locator('button:has-text("Message")').first().click({ timeout: 5_000 })
-      await delay(1000, 2000)
+    if (!composeVisible) {
+      throw new Error(`Compose panel did not open for ${linkedinProfileId}`)
+    }
+    await delay(500, 1_000)
+
+    // ── 6. Type message via execCommand (reliable with LinkedIn's ProseMirror editor)
+    const msgInput = page.locator(inputSel).first()
+    await msgInput.click({ timeout: 5_000 })
+    await page.keyboard.press('Control+a')
+    await page.keyboard.press('Delete')
+    await delay(200, 400)
+
+    await page.evaluate((text: string) => {
+      const el = document.querySelector<HTMLElement>(
+        '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+      )
+      if (el) {
+        el.focus()
+        document.execCommand('selectAll', false)
+        document.execCommand('delete', false)
+        document.execCommand('insertText', false, text)
+      }
+    }, message).catch(() => {})
+    await delay(500, 1_000)
+
+    // Verify the text actually landed in the box
+    const boxText = await page.evaluate(() => {
+      const el = document.querySelector<HTMLElement>(
+        '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+      )
+      return (el?.textContent ?? '').trim()
+    }).catch(() => '')
+    if (boxText.length < message.length * 0.7) {
+      throw new Error(`Message text incomplete in compose box (got ${boxText.length}/${message.length} chars) — aborting`)
     }
 
-    // Dismiss the recipient typeahead overlay.
-    // LinkedIn's new-message composer opens a contact-search typeahead
-    // (.msg-connections-typeahead-container) that floats over the text input and
-    // intercepts pointer events, causing locator.click() to time out (30 s).
-    // Pressing Escape closes it, then we wait for it to detach before clicking.
-    await page.keyboard.press('Escape')
-    await page.locator('.msg-connections-typeahead-container')
-      .waitFor({ state: 'hidden', timeout: 2_000 })
-      .catch(() => {})  // may already be gone — that's fine
-    await delay(300, 600)
+    // ── 7. Send ──────────────────────────────────────────────────────────────
+    const sendBtn = page.locator(
+      '.msg-form__send-button, button.msg-form__send-button, ' +
+      'button[aria-label*="Send"], button[aria-label*="Enviar"], button[aria-label*="Envoyer"]'
+    ).first()
 
-    const msgInput = page.locator(inputSelector).first()
-    // Try a normal click first; if the overlay is still intercepting, fall back
-    // to programmatic focus so typing still works.
-    try {
-      await msgInput.click({ timeout: 5_000 })
-    } catch {
-      console.log('[actions] msg input click intercepted — falling back to evaluate focus')
-      await page.evaluate(() => {
-        const el = document.querySelector<HTMLElement>(
-          '.msg-form__contenteditable, [contenteditable="true"]'
-        )
-        el?.focus()
-      })
-    }
-    await delay(300, 700)
-
-    const chunks = message.match(/.{1,20}/g) ?? [message]
-    for (const chunk of chunks) {
-      await page.keyboard.type(chunk)
-      await delay(80, 200)
-    }
-
-    await delay(800, 1500)
-
-    const sendBtn = page.locator('.msg-form__send-button, button[type="submit"]:has-text("Send")').first()
     if (await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await sendBtn.click()
     } else {
-      await page.keyboard.press('Enter')
+      await msgInput.press('Enter')
     }
 
-    await delay(1000, 2000)
+    // ── 8. Verify box cleared (confirms send succeeded) ──────────────────────
+    const boxCleared = await page.waitForFunction(
+      (origLen: number) => {
+        const el = document.querySelector<HTMLElement>(
+          '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+        )
+        return (el?.textContent ?? '').trim().length < origLen * 0.3
+      },
+      message.length,
+      { timeout: 10_000 }
+    ).then(() => true).catch(() => false)
+
+    if (!boxCleared) {
+      const remaining = await page.evaluate(() => {
+        const el = document.querySelector<HTMLElement>(
+          '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+        )
+        return (el?.textContent ?? '').trim().slice(0, 100)
+      }).catch(() => '?')
+      throw new Error(`Message send may have failed — compose box still has content: "${remaining}"`)
+    }
+
+    console.log(`[actions] message sent to ${linkedinProfileId} ✓`)
+    await dismissMessagingOverlay(page, linkedinProfileId)
+    await delay(1_000, 2_000)
+
   } finally {
-    await page.close()
+    await Promise.race([
+      page.close(),
+      new Promise<void>(resolve => setTimeout(resolve, 5_000)),
+    ]).catch(() => {})
   }
 }
 

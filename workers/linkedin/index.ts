@@ -616,17 +616,41 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-04-v1')
+  console.log('[worker] LinkedIn worker started — build 2026-06-12-v30')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
-  let isPolling = false
+  let isPolling    = false
+  let pollStartedAt = 0
+  const POLL_WATCHDOG_MS = 8 * 60 * 1000  // 8 minutes — kill if Chrome hangs
 
   async function safePoll() {
     if (isPolling) {
+      const elapsed = Date.now() - pollStartedAt
+      if (elapsed > POLL_WATCHDOG_MS) {
+        console.error(`[worker] WATCHDOG: poll stuck for ${Math.round(elapsed / 1000)}s — forcing restart`)
+        // Schedule unconditional exit in 5 s — this fires even if the Supabase
+        // update below hangs (fetch has no built-in timeout on Node.js).
+        setTimeout(() => process.exit(1), 5_000).unref()
+        try {
+          const supabase = getSupabase()
+          await Promise.race([
+            supabase
+              .from('linkedin_queue')
+              .update({
+                status: 'queued',
+                error: `WATCHDOG: worker stuck for ${Math.round(elapsed / 1000)}s — browser likely hung`,
+              })
+              .eq('status', 'in_progress'),
+            new Promise<void>(resolve => setTimeout(resolve, 4_000)),
+          ])
+        } catch { /* best-effort */ }
+        process.exit(1)
+      }
       console.log('[worker] previous poll still running — skipping this tick')
       return
     }
-    isPolling = true
+    isPolling     = true
+    pollStartedAt = Date.now()
     try {
       await poll()
     } catch (err) {

@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="48%" r="42%">
+      <stop offset="0%" stop-color="#0A66C2" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0A66C2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="14%" cy="24%" r="34%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Grid lines right side -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.45">
+    <line x1="600" y1="60"  x2="1160" y2="60"/>
+    <line x1="600" y1="150" x2="1160" y2="150"/>
+    <line x1="600" y1="240" x2="1160" y2="240"/>
+    <line x1="600" y1="330" x2="1160" y2="330"/>
+    <line x1="600" y1="420" x2="1160" y2="420"/>
+    <line x1="600" y1="510" x2="1160" y2="510"/>
+    <line x1="600" y1="600" x2="1160" y2="600"/>
+    <line x1="640"  y1="40" x2="640"  y2="590"/>
+    <line x1="730"  y1="40" x2="730"  y2="590"/>
+    <line x1="820"  y1="40" x2="820"  y2="590"/>
+    <line x1="1000" y1="40" x2="1000" y2="590"/>
+    <line x1="1090" y1="40" x2="1090" y2="590"/>
+  </g>
+
+  <!-- Circuit traces feeding the pipeline -->
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.6">
+    <path d="M640 150 L730 150 L730 240 L820 240"/>
+    <path d="M640 330 L730 330 L730 420"/>
+    <path d="M640 510 L820 510 L820 600"/>
+    <path d="M730 420 L820 420"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.9">
+    <circle cx="730" cy="150" r="4"/>
+    <circle cx="730" cy="330" r="4"/>
+    <circle cx="820" cy="420" r="4"/>
+    <circle cx="820" cy="510" r="4"/>
+  </g>
+  <g fill="#0A66C2" opacity="0.85">
+    <circle cx="820" cy="240" r="6"/>
+  </g>
+  <g fill="none" stroke="#0A66C2" stroke-width="1" opacity="0.3">
+    <circle cx="820" cy="240" r="14"/>
+  </g>
+
+  <!-- Pipeline header -->
+  <text x="903" y="106" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="2">OUTREACH PIPELINE  ·  90s LOOP</text>
+
+  <!-- Pipeline connector -->
+  <line x1="903" y1="150" x2="903" y2="420" stroke="#1E3A5F" stroke-width="2" opacity="0.7"/>
+
+  <!-- Stage 1: persistent session (hero, red) -->
+  <circle cx="903" cy="150" r="13" fill="none" stroke="#E8320A" stroke-width="1" opacity="0.35"/>
+  <circle cx="903" cy="150" r="6" fill="#E8320A"/>
+  <rect x="928" y="130" width="200" height="40" rx="20" fill="#1A2540" stroke="#E8320A" stroke-width="1.5"/>
+  <text x="950" y="155" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#FAFAFA" letter-spacing="1">PERSISTENT SESSION</text>
+
+  <!-- Stage 2: open profile -->
+  <circle cx="903" cy="240" r="13" fill="none" stroke="#0A66C2" stroke-width="1" opacity="0.3"/>
+  <circle cx="903" cy="240" r="6" fill="#0A66C2"/>
+  <rect x="928" y="220" width="200" height="40" rx="20" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="950" y="245" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#94A3B8" letter-spacing="1">OPEN PROFILE</text>
+
+  <!-- Stage 3: connect / message -->
+  <circle cx="903" cy="330" r="13" fill="none" stroke="#0A66C2" stroke-width="1" opacity="0.3"/>
+  <circle cx="903" cy="330" r="6" fill="#0A66C2"/>
+  <rect x="928" y="310" width="200" height="40" rx="20" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="950" y="335" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#94A3B8" letter-spacing="1">CONNECT / MESSAGE</text>
+
+  <!-- Stage 4: post to feed -->
+  <circle cx="903" cy="420" r="13" fill="none" stroke="#0A66C2" stroke-width="1" opacity="0.3"/>
+  <circle cx="903" cy="420" r="6" fill="#0A66C2"/>
+  <rect x="928" y="400" width="200" height="40" rx="20" fill="#1A2540" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="950" y="425" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="600" fill="#94A3B8" letter-spacing="1">POST TO FEED</text>
+
+  <!-- Build version chip -->
+  <rect x="903" y="468" width="120" height="34" rx="17" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="963" y="490" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#FAFAFA" letter-spacing="1">v11 → v19</text>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category label -->
+  <text x="80" y="118" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">ENGINEERING  ·  JUNE 2026</text>
+
+  <!-- Title -->
+  <text x="80" y="210" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">Building a</text>
+  <text x="80" y="295" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#FAFAFA">LinkedIn</text>
+  <text x="80" y="380" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="72" font-weight="800" fill="#0A66C2">pipeline.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="430" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="26" font-weight="400" fill="#94A3B8">Nineteen builds to a session</text>
+  <text x="80" y="464" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="26" font-weight="400" fill="#94A3B8">that survives detection.</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="494" x2="460" y2="494" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Stat pills -->
+  <rect x="80"  y="510" width="178" height="36" rx="18" fill="#1E293B"/>
+  <text x="169" y="533" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="500" fill="#FAFAFA">19 builds · 2 weeks</text>
+  <rect x="270" y="510" width="132" height="36" rx="18" fill="#1E293B"/>
+  <text x="336" y="533" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="500" fill="#FAFAFA">15 min read</text>
+
+  <!-- Wordmark -->
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+</svg>

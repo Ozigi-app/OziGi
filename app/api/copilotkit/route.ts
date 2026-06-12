@@ -1,3 +1,5 @@
+export const maxDuration = 60; // Cap streaming AI sessions to 60s on Hobby plan
+
 import { streamText } from "ai";
 import { createVertex } from "@ai-sdk/google-vertex";
 import { ExternalAccountClient } from "google-auth-library";

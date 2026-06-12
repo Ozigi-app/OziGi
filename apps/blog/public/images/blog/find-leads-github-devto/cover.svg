@@ -51,7 +51,7 @@
   <text x="654" y="138" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">$ # Search GitHub for your ICP</text>
   <text x="654" y="162" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">$ gh api search/users \</text>
   <text x="654" y="182" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">    -f q=<tspan fill="#E8320A">"backend engineer api</tspan></text>
-  <text x="654" y="202" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#E8320A">    in:bio language:typescript"</tspan></text>
+  <text x="654" y="202" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#E8320A">    in:bio language:typescript"</text>
 
   <!-- Result output -->
   <text x="654" y="232" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#6B7E99">→ 2,847 results</text>

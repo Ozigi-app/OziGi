@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { NextResponse } from 'next/server';
 import { getVertexAIClient } from '@/lib/genai-client';
 

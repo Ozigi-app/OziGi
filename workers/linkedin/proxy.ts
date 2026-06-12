@@ -48,9 +48,15 @@ export async function getProxyConfig(
   }
   console.log(`[proxy] ✓ ${host}:${socksPort} is reachable`)
 
-  // Stable per-user session ID → same residential IP every time for this user
+  // Daily-rotating session ID → fresh residential IP each day, stable within the day.
+  // A fixed session ID meant the same IP was reused indefinitely — LinkedIn flags it
+  // after enough profile visits, causing ERR_CONNECTION_CLOSED on all /in/ navigations.
+  // Rotating daily gives a clean IP each morning while keeping the fingerprint consistent
+  // within any single worker run.
   // Smartproxy sticky format: {base_username}_session-{id}
-  const sessionId      = userId.replace(/[^a-z0-9]/gi, '').slice(0, 8).toLowerCase()
+  const shortUserId    = userId.replace(/[^a-z0-9]/gi, '').slice(0, 6).toLowerCase()
+  const dayStamp       = Math.floor(Date.now() / (24 * 60 * 60 * 1000))  // changes at UTC midnight
+  const sessionId      = `${shortUserId}${dayStamp.toString(36)}`          // e.g. "abc123kqf"
   const stickyUsername = `${username}_session-${sessionId}`
 
   // Start (or reuse) the local HTTP→HTTP proxy tunnel that sends auth upfront
