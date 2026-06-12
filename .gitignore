@@ -71,8 +71,15 @@ linkedin_cap.py
 linkedin_tracking.csv
 linkedin_daily_tracker.json
 linkedin_queue_*.txt
+linkedin_debug.py
 start_chrome_debug.bat
 __pycache__/
+
+# Local debug/scrape dump files
+*_dump.html
+
+# Local utility scripts
+minify.js
 
 # Development and testing
 emails/
@@ -88,6 +95,9 @@ scripts/
 
 # Database migrations (local only - not for public repo)
 supabase/migrations/
+
+# Local tracking/marker files
+apps/blog/SETUP_COMPLETE.md
 
 # Worker configurations
 worker/
