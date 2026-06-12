@@ -98,6 +98,15 @@ supabase/migrations/
 
 # Local tracking/marker files
 apps/blog/SETUP_COMPLETE.md
+apps/blog/AGENTS.md
+apps/blog/CLAUDE.md
+apps/blog/BLOG_STRUCTURE.md
+apps/blog/SECTION_MAP.md
+
+# Local image preview/render artifacts
+apps/blog/public/images/**/_*.html
+apps/blog/public/images/**/_*.png
+apps/blog/public/images/**/*_preview.*
 
 # Worker configurations
 worker/
