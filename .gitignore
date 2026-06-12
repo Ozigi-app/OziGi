@@ -102,6 +102,12 @@ apps/blog/AGENTS.md
 apps/blog/CLAUDE.md
 apps/blog/BLOG_STRUCTURE.md
 apps/blog/SECTION_MAP.md
+workers/linkedin/ARTICLE_SPEC.md
+workers/linkedin/BUG_HISTORY.md
+workers/linkedin/EXTRACT_CONTEXT_SPEC.md
+
+# Local automation scripts
+run_daily_outreach.ps1
 
 # Local image preview/render artifacts
 apps/blog/public/images/**/_*.html
