@@ -52,12 +52,16 @@ export async function composeEmail(
   const voiceLine   = campaign.persona_voice
     ? `\nWRITING VOICE / PERSONA:\n${campaign.persona_voice}\nAdapt your tone to match this persona.`
     : ''
+  const knowledgeBase = campaign.product_context
+    ? `\nPRODUCT KNOWLEDGE BASE (use this to write specific, compelling copy — don't be generic):\n${campaign.product_context}`
+    : ''
 
   const stepPrompts: Record<number, string> = {
     1: `You are writing a cold outreach email on behalf of ${sender}${title ? ` (${title})` : ''}.
 
 PRODUCT:
 ${product}${pitch ? ` — ${pitch}` : ''}
+${knowledgeBase}
 ${voiceLine}
 CAMPAIGN ICP:
 ${icpSummary}
@@ -77,6 +81,7 @@ Return JSON: {"subject": "...", "body": "..."}`,
 
     2: `You are writing a follow-up email (step 2 of 3) for ${product}.
 The recipient did not reply to the first email.
+${knowledgeBase}
 ${voiceLine}
 LEAD PROFILE:
 ${leadContext}
@@ -93,6 +98,7 @@ Return JSON: {"subject": "...", "body": "..."}`,
 
     3: `You are writing a final breakup email (step 3 of 3) for ${product}.
 The recipient did not reply to two previous emails.
+${knowledgeBase}
 ${voiceLine}
 LEAD PROFILE:
 ${leadContext}
@@ -157,6 +163,9 @@ export async function composeLinkedInMessage(
   const cta     = campaign.cta_url            || ''
   const signoff = title ? `${sender}, ${title}` : sender
   const ctaLine = cta ? `check out ${cta} or reply to chat` : 'reply to chat'
+  const liKnowledgeBase = campaign.product_context
+    ? `\nPRODUCT KNOWLEDGE BASE (use concrete details from this when writing — avoid generic claims):\n${campaign.product_context}\n`
+    : ''
 
   const prompts: Record<typeof action, string> = {
     connect: `Write a short LinkedIn connection request note from ${sender}${title ? `, ${title}` : ''}.
@@ -178,13 +187,14 @@ Good example: "Your work on open-source TypeScript tooling caught my eye — I'm
 Return ONLY the note text, nothing else.`,
 
     message: `Write a LinkedIn direct message (step ${step.step}) from ${sender} about ${product}${pitch ? ` — ${pitch}` : ''}.
-
+${liKnowledgeBase}
 LEAD PROFILE:
 ${leadContext}
 
 Rules:
 - 2-3 short sentences. Get to the point fast.
 - Reference something from their profile to show you looked.
+- Make at least one specific claim about ${product} using the knowledge base above — not a generic pitch.
 - One soft CTA: ${ctaLine}
 - Sign off as "${signoff}"
 - Plain text only — no HTML, no markdown, no bullet points
@@ -192,13 +202,13 @@ Rules:
 Return ONLY the message text, nothing else.`,
 
     follow_up: `Write a LinkedIn follow-up message from ${sender} about ${product}. They haven't replied to your previous message.
-
+${liKnowledgeBase}
 LEAD PROFILE:
 ${leadContext}
 
 Rules:
 - Very short: 2 sentences max
-- Different angle from the first message
+- Come from a different angle — pick a specific feature or outcome from the knowledge base the first message might not have covered
 - Light touch, not pushy
 - Sign off as "${signoff}"
 - Plain text only — no HTML, no markdown

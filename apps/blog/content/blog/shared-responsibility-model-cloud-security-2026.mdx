@@ -65,6 +65,8 @@ The tools are not identical across AWS, GCP, and Azure, but the workflow is cons
 
 **On GCP:** Enable Cloud Audit Logs for Admin Activity and Data Access across all services. Use the Security Command Center to get a continuous view of misconfigurations, public storage buckets, and over-permissive IAM bindings. GCP enables many security defaults that AWS and Azure leave off by default — but defaults only cover what they cover. Review VPC firewall rules for rules that allow ingress from `0.0.0.0/0` on administrative ports (22, 3389). Check that service accounts follow a one-service-account-per-workload pattern rather than shared accounts with broad permissions.
 
+![Per-provider security checklist showing four rows — logging, IAM, network, and encryption — across AWS, Azure, and GCP columns, with the specific first action to take in each category for each provider](/images/blog/shared-responsibility-model-cloud/aws-shared-responsibility-model.jpg)
+
 ## The Misconfiguration Patterns That Keep Appearing
 
 Cloud breach post-mortems are remarkably repetitive. The same patterns surface across incidents, across providers, and across company sizes.

@@ -318,14 +318,15 @@ async function processItem(
     case 'message':
     case 'follow_up': {
       if (!profileId) throw new Error(`Cannot ${item.action}: no linkedin_profile_id and could not extract from URL`)
-      // Before sending a follow-up, confirm the connection was accepted.
-      // If they haven't accepted yet the message will fail (can't DM a non-connection).
-      // Throw NOT_YET_CONNECTED so the caller can reschedule without burning an attempt.
-      const profileUrl = lead.linkedin_url || `https://www.linkedin.com/in/${profileId}/`
-      const accepted = await checkConnectionAccepted(context, profileUrl)
-      if (!accepted) {
-        throw new Error(`NOT_YET_CONNECTED: ${profileId} has not accepted the invitation yet — rescheduling`)
-      }
+      // sendLinkedInMessage already:
+      //   1. Visits /feed/ to prime the SPA auth state (avoids blank-page blocks)
+      //   2. Navigates to the profile page
+      //   3. Detects Connect-vs-Message buttons and throws NOT_YET_CONNECTED if the
+      //      connection hasn't been accepted yet
+      // A separate checkConnectionAccepted() pre-flight visit was causing BLANK_PAGE
+      // errors for every recipient because it hit profiles directly (no feed warmup),
+      // triggering LinkedIn's bot detection on the new page. Removing the pre-check
+      // eliminates the extra profile visit and lets sendLinkedInMessage handle it all.
       if (item.action === 'message') {
         await sendLinkedInMessage(context, profileId, item.message ?? '')
       } else {
@@ -533,14 +534,23 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
         continue
       }
 
-      // Auth wall and blank page are NOT session expiries — the session is valid
-      // but LinkedIn temporarily blocked the request (bot detection / rate limit).
-      // Don't mark expired; just let the item retry on the next cycle.
+      // Auth wall — session valid but LinkedIn challenged the request.
       if (msg.includes('AUTHWALL')) {
         console.warn(`[worker] auth wall for item ${item.id} — will retry without expiring session`)
       }
+
+      // Blank page = LinkedIn temporarily blocked this IP / rate-limited.
+      // Reschedule 1 hour from now WITHOUT consuming an attempt — same as
+      // NOT_YET_CONNECTED. We don't want to burn the 3-attempt limit on a
+      // transient network block unrelated to the action itself.
       if (msg.includes('BLANK_PAGE')) {
-        console.warn(`[worker] blank page for item ${item.id} — temporary block, will retry`)
+        const retryAt = new Date(Date.now() + 60 * 60 * 1000).toISOString()
+        console.warn(`[worker] blank page for item ${item.id} — rescheduling in 1h (${retryAt})`)
+        await supabase
+          .from('linkedin_queue')
+          .update({ status: 'queued', scheduled_at: retryAt, error: msg, attempts: item.attempts })
+          .eq('id', item.id)
+        continue
       }
 
       const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
@@ -560,18 +570,44 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
 async function poll(): Promise<void> {
   const supabase = getSupabase()
 
-  // Reset items stuck in_progress (browser crashed mid-run).
+  // Reset items stuck in_progress (browser crashed mid-run or watchdog fired).
   // Single worker machine — any in_progress at poll time is a crash remnant.
+  // Respect the 3-attempt ceiling: items that have already used ≥3 attempts
+  // get marked failed instead of retried, preventing infinite retry loops.
   await supabase
     .from('linkedin_queue')
     .update({ status: 'queued' })
     .eq('status', 'in_progress')
+    .lt('attempts', 3)
+
+  await supabase
+    .from('linkedin_queue')
+    .update({
+      status: 'failed',
+      error: 'WATCHDOG: item stuck in_progress after max attempts — forced fail',
+      processed_at: new Date().toISOString(),
+    })
+    .eq('status', 'in_progress')
+    .gte('attempts', 3)
+
+  // Also fail queued items that have ≥3 attempts — these were reset to queued by the
+  // WATCHDOG (which doesn't update attempts), so they'd loop forever if not caught here.
+  await supabase
+    .from('linkedin_queue')
+    .update({
+      status: 'failed',
+      error: 'Exceeded max attempts — forced fail on next poll',
+      processed_at: new Date().toISOString(),
+    })
+    .eq('status', 'queued')
+    .gte('attempts', 3)
 
   const { data: items, error } = await supabase
     .from('linkedin_queue')
     .select('id, lead_id, campaign_id, user_id, action, message, sequence_step, attempts, scheduled_at')
     .eq('status', 'queued')
     .lte('scheduled_at', new Date().toISOString())
+    .lt('attempts', 3)  // defense in depth: never pick up items already at max attempts
     .order('scheduled_at', { ascending: true })
     .limit(50)
 
@@ -616,7 +652,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-12-v30')
+  console.log('[worker] LinkedIn worker started — build 2026-06-15-v44')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false

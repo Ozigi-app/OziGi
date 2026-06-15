@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   const {
     name, icp_description, sources, daily_email_limit, daily_linkedin_limit, sequence_steps,
-    sender_name, sender_title, product_name, product_description, cta_url, persona_voice,
+    sender_name, sender_title, product_name, product_description, product_context, cta_url, persona_voice,
   } = await req.json()
 
   if (!name || !icp_description || !sources?.length) {
@@ -73,6 +73,7 @@ export async function POST(req: Request) {
       sender_title:        sender_title        ?? 'Founder',
       product_name:        product_name        ?? 'Ozigi',
       product_description: product_description ?? '',
+      product_context:     product_context     ?? null,
       cta_url:             cta_url             ?? 'https://ozigi.app',
       persona_voice:       persona_voice       ?? null,
     })

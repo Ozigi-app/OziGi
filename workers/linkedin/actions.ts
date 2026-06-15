@@ -85,9 +85,45 @@ async function humanType(page: import('playwright').Page, selector: string, text
  *
  * The messaging overlay list bubble (.msg-overlay-list-bubble) floats above profile
  * action buttons and intercepts pointer events — Playwright throws "subtree intercepts
- * pointer events" when trying to click Connect or Message. This helper closes every
- * open overlay and presses Escape before we attempt button clicks.
+ * pointer events" when trying to click Connect or Message. This helper:
+ *   1. Closes individual conversation bubbles via their close buttons.
+ *   2. Sets pointer-events:none on the entire overlay container so Playwright can
+ *      click through to profile action buttons even if the list bubble stays visible.
  */
+
+/**
+ * Sets pointer-events:none on all known LinkedIn overlays that intercept Playwright
+ * clicks on profile action buttons (Connect, Message, Send InMail).
+ *
+ * Call this immediately before any click on a profile button — LinkedIn's Ember.js
+ * can re-render overlays between the initial dismissal and the actual click, so we
+ * re-apply right before each click rather than relying on a one-time setup.
+ *
+ * Targets:
+ *  - msg-overlay-list-bubble / __convo-card-content  (messaging panel list)
+ *  - global-nav app-launcher dropdown               (nav menu that pops open on hover)
+ *
+ * We intentionally do NOT disable .msg-overlay-conversation-bubble (the compose
+ * panel) so the message input and Send button remain interactive.
+ */
+async function suppressInterceptors(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const selectors = [
+      '.msg-overlay-list-bubble',
+      '.msg-overlay-list-bubble__convo-card-content',
+      '.global-nav__app-launcher-menu',
+      '.global-nav__primary-item--divider',
+      // Open artdeco dropdowns in the global nav (app-launcher, notifications, etc.)
+      '#global-nav .artdeco-dropdown--is-dropdown-open',
+    ]
+    for (const sel of selectors) {
+      document.querySelectorAll<HTMLElement>(sel).forEach(el =>
+        el.style.setProperty('pointer-events', 'none', 'important')
+      )
+    }
+  }).catch(() => {})
+}
+
 async function dismissMessagingOverlay(page: Page, profileId: string): Promise<void> {
   const broadClose = page.locator([
     '.msg-overlay-bubble-header__controls button',
@@ -105,6 +141,9 @@ async function dismissMessagingOverlay(page: Page, profileId: string): Promise<v
   }
   await page.keyboard.press('Escape').catch(() => {})
   await delay(300, 500)
+
+  // Disable pointer events on overlays so Playwright can reach profile buttons.
+  await suppressInterceptors(page)
 }
 
 /**
@@ -119,7 +158,11 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
     name: /^(Connect|Invite .* to connect|Conectar|Convidar .* para se conectar|Convidar para se conectar|Se connecter|Conectar con)$/i,
   })
   if (await directConnect.first().isVisible({ timeout: 3_000 }).catch(() => false)) {
-    await directConnect.first().click()
+    // Re-apply overlay suppression immediately before the click — LinkedIn's Ember.js
+    // can re-render the messaging overlay between dismissMessagingOverlay() and here,
+    // restoring the high-z-index div that intercepts Playwright pointer events.
+    await suppressInterceptors(page)
+    await directConnect.first().click({ timeout: 8_000 })
     return true
   }
 
@@ -129,7 +172,8 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
     'button[aria-label*="Convidar"][aria-label*="conectar"], button[aria-label*="Conectar"]:not([aria-label*="Mais"])'
   ).first()
   if (await ariaConnect.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await ariaConnect.click()
+    await suppressInterceptors(page)
+    await ariaConnect.click({ timeout: 8_000 })
     return true
   }
 
@@ -159,7 +203,8 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
       .or(page.locator('button').filter({ hasText: new RegExp(`^${connectBtnText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`) }))
       .first()
     if (await jsFoundBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await jsFoundBtn.click()
+      await suppressInterceptors(page)
+      await jsFoundBtn.click({ timeout: 8_000 })
       console.log(`[actions] Connect clicked via JS-found button: "${connectBtnText.slice(0, 40)}"`)
       return true
     }
@@ -174,7 +219,8 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
   const moreVisible = await moreBtn.isVisible({ timeout: 3_000 }).catch(() => false)
   if (!moreVisible) return false
 
-  await moreBtn.click()
+  await suppressInterceptors(page)
+  await moreBtn.click({ timeout: 8_000 })
 
   // Wait for the artdeco dropdown overlay to open.
   // artdeco-dropdown__content-inner is stable across LinkedIn deployments.
@@ -211,7 +257,8 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
         .filter({ hasText: /connect|invite|conectar|convidar/i }).first()
 
   if (await connectItem.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await connectItem.click()
+    await suppressInterceptors(page)
+    await connectItem.click({ timeout: 8_000 })
     return true
   }
 
@@ -419,10 +466,21 @@ export async function sendConnectionRequest(
     // chance to attach a note.  Wait up to 6 s for the modal; only fall back
     // to direct-send detection if it genuinely doesn't appear.
     //
-    // Scope all modal interactions to the invite overlay to avoid false matches
-    // on profile-page pagination buttons and "People Also Viewed" Connect buttons.
+    // Scope all modal interactions to the actual invite DIALOG — NOT the backdrop overlay.
+    //
+    // LinkedIn's modal DOM structure:
+    //   <div class="artdeco-modal-overlay" data-test-modal-id="..." data-test-modal-container>  ← backdrop (full-page)
+    //     <div class="artdeco-modal" role="dialog">                                             ← dialog ✓
+    //       <div class="artdeco-modal__content"> ...buttons... </div>
+    //     </div>
+    //   </div>
+    //
+    // The data-test-modal-id / data-test-modal-container attributes are on the BACKDROP div,
+    // not the dialog.  Scoping to the backdrop means .locator('button:has-text("Next")')
+    // matches ANY "Next" button on the page (e.g. pagination), causing clicks that are
+    // then blocked by the modal overlay itself.  We scope to the dialog element instead.
     const modal = page.locator(
-      '[data-test-modal-id="send-invite-modal"], [data-test-modal-container], .artdeco-modal__content, [role="dialog"]'
+      '[role="dialog"].artdeco-modal, .artdeco-modal:not(.artdeco-modal-overlay), [role="dialog"]'
     ).first()
 
     const modalAppeared = await modal.waitFor({ state: 'visible', timeout: 6_000 })
@@ -641,12 +699,24 @@ export async function sendLinkedInMessage(
     ).catch(() => {})
     await delay(1_500, 2_500)
 
+    // Detect blank / rate-limited page — real profiles have hundreds of chars of text.
+    // Throw BLANK_PAGE so the error handler reschedules in 1h without burning an attempt.
+    const bodyLen = await page.evaluate(() => (document.body.textContent ?? '').trim().length).catch(() => 0)
+    if (bodyLen < 300) {
+      throw new Error(`BLANK_PAGE: LinkedIn served a near-empty page for https://www.linkedin.com/in/${linkedinProfileId}/ — temporary block`)
+    }
+
     // ── 3. Dismiss any open messaging overlays ───────────────────────────────
     await dismissMessagingOverlay(page, linkedinProfileId)
 
     // ── 4. Find and click the Message button ─────────────────────────────────
+    //
+    // LinkedIn renders the Message action as EITHER a <button> OR an <a class="artdeco-button">
+    // depending on the profile layout / A-B test variant. We must query both element types
+    // everywhere — pure button selectors miss the anchor variant and produce false
+    // "Message button not found" errors even for accepted 1st-degree connections.
     const visibleBtns = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('button'))
+      Array.from(document.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]'))
         .filter(b => (b as HTMLElement).offsetParent !== null)
         .map(b => (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 50))
         .filter(Boolean)
@@ -661,16 +731,68 @@ export async function sendLinkedInMessage(
       throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows Connect button — connection not yet accepted`)
     }
 
-    const msgBtn = page.getByRole('button', {
-      name: /^(Message|Mensagem|Mensaje|Envoyer un message)$/i,
-    }).or(page.locator('button[aria-label*="Message"]:not([aria-label*="More"])')).first()
+    // LinkedIn uses "Message [FirstName]" (not just "Message") so match any element
+    // whose aria-label or text content STARTS WITH a message keyword.
+    //
+    // Strategy:
+    //   1. Playwright getByRole — uses computed accessible name (aria-label preferred)
+    //   2. CSS aria-label^= selectors — starts-with match on <button> and <a> variants
+    //   3. Anchor fallback — a.artdeco-button:has-text("Message") covers <a> with no aria-label
+    //   4. JS evaluate fallback — queries button + [role="button"] + a.artdeco-button + a[aria-label],
+    //      fires a native click event so React / LinkedIn's SPA click handlers are notified.
+    const msgKeywordRe = /^(Message|Mensagem|Mensaje|Envoyer un message)\b/i
 
-    const msgBtnVisible = await msgBtn.isVisible({ timeout: 10_000 }).catch(() => false)
-    if (!msgBtnVisible) {
-      throw new Error(`Message button not found for ${linkedinProfileId} — may not be connected yet`)
+    const msgBtn = page.getByRole('button', { name: msgKeywordRe })
+      .or(page.locator('button[aria-label^="Message"]:not([aria-label*="More"])'))
+      .or(page.locator('button[aria-label^="Mensagem"]'))
+      .or(page.locator('button[aria-label^="Mensaje"]'))
+      // Anchor variants — LinkedIn sometimes renders Message as <a class="artdeco-button">
+      .or(page.locator('a[aria-label^="Message"]:not([aria-label*="More"]), a[aria-label^="Mensagem"], a[aria-label^="Mensaje"]'))
+      .or(page.locator('a.artdeco-button').filter({ hasText: msgKeywordRe }))
+      .first()
+
+    const msgBtnVisible = await msgBtn.isVisible({ timeout: 5_000 }).catch(() => false)
+
+    if (msgBtnVisible) {
+      // Re-apply overlay suppression immediately before the Message button click.
+      // LinkedIn's Ember.js can re-render the overlay after dismissMessagingOverlay(),
+      // restoring the high-z-index interception div before Playwright reaches the button.
+      await suppressInterceptors(page)
+      await msgBtn.click({ timeout: 10_000 })
+      console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)
+    } else {
+      // Fallback: JS click — queries button, [role="button"], a.artdeco-button, and a[aria-label]
+      // so that <a> anchor Message buttons (LinkedIn's alternate layout) are also found.
+      console.warn(`[actions] Playwright locators missed Message button for ${linkedinProfileId} — trying JS click`)
+
+      // Log all artdeco anchor elements for diagnostics (helps debug new LinkedIn layouts)
+      const anchorBtns = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('a.artdeco-button, a[aria-label]'))
+          .map(a => `${a.tagName} aria="${a.getAttribute('aria-label')?.slice(0, 40)}" text="${(a.textContent ?? '').trim().slice(0, 30)}"`)
+      ).catch(() => [] as string[])
+      console.log(`[actions] anchor buttons for ${linkedinProfileId}: ${anchorBtns.join(' | ')}`)
+
+      const jsClicked = await page.evaluate((kw: string) => {
+        const re = new RegExp(kw, 'i')
+        const moreRe = /more|options|mais/i
+        // Include <a> anchor buttons — LinkedIn renders Message as <a class="artdeco-button">
+        // in many profile layouts. Without this, the button is invisible to the selector.
+        const candidates = Array.from(
+          document.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]')
+        ).filter(b => (b as HTMLElement).offsetParent !== null)
+        const btn = candidates.find(b => {
+          const label = (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 80)
+          return re.test(label) && !moreRe.test(label)
+        }) as HTMLElement | undefined
+        if (btn) { btn.click(); return true }
+        return false
+      }, '^(Message|Mensagem|Mensaje|Envoyer un message)\\b').catch(() => false)
+
+      if (!jsClicked) {
+        throw new Error(`Message button not found for ${linkedinProfileId} — may not be connected yet`)
+      }
+      console.log(`[actions] Message button JS-clicked for ${linkedinProfileId}`)
     }
-    await msgBtn.click({ timeout: 10_000 })
-    console.log(`[actions] Message button clicked for ${linkedinProfileId}`)
 
     // ── 5. Wait for compose panel ────────────────────────────────────────────
     const inputSel = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
@@ -686,7 +808,24 @@ export async function sendLinkedInMessage(
 
     // ── 6. Type message via execCommand (reliable with LinkedIn's ProseMirror editor)
     const msgInput = page.locator(inputSel).first()
-    await msgInput.click({ timeout: 5_000 })
+    // Scroll into view first — compose panel may open at bottom of page / partially off-screen
+    await msgInput.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {})
+    await delay(200, 400)
+    // Try a real click (establishes focus + caret), but fall back to JS .focus() if blocked.
+    // We only need focus here — execCommand below does the actual typing.
+    // Short timeout: if an overlay is intercepting pointer events (msg-overlay-list-bubble),
+    // Playwright click will block up to the timeout. 1.5s is enough for a clean click,
+    // and we fall back to JS .focus() immediately rather than waiting 10s.
+    const msgInputClicked = await msgInput.click({ timeout: 1_500 }).then(() => true).catch(() => false)
+    if (!msgInputClicked) {
+      console.warn(`[actions] msgInput click timed out for ${linkedinProfileId} — using JS focus fallback`)
+      await page.evaluate(() => {
+        const el = document.querySelector<HTMLElement>(
+          '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+        )
+        if (el) el.focus()
+      })
+    }
     await page.keyboard.press('Control+a')
     await page.keyboard.press('Delete')
     await delay(200, 400)
@@ -716,14 +855,36 @@ export async function sendLinkedInMessage(
     }
 
     // ── 7. Send ──────────────────────────────────────────────────────────────
-    const sendBtn = page.locator(
-      '.msg-form__send-button, button.msg-form__send-button, ' +
-      'button[aria-label*="Send"], button[aria-label*="Enviar"], button[aria-label*="Envoyer"]'
-    ).first()
+    // IMPORTANT: scope within .msg-form to avoid accidentally matching "Send in
+    // a private message" social-action buttons elsewhere on the page.
+    // Use JS click via evaluate to bypass intercepting overlay elements
+    // (msg-form__footer, msg-s-event-listitem__body, etc.) that block Playwright.
+    const sent = await page.evaluate(() => {
+      // Find the compose form — either the full-page overlay or the inline bubble
+      const form = document.querySelector<HTMLElement>(
+        '.msg-overlay-conversation-bubble .msg-form, ' +
+        '.msg-form'
+      )
+      if (!form) return 'no-form'
 
-    if (await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await sendBtn.click()
-    } else {
+      // Exact-class match first, then fall back to submit type within the form
+      const btn = form.querySelector<HTMLElement>(
+        'button.msg-form__send-button, ' +
+        'button[data-control-name="send"], ' +
+        'button[type="submit"]'
+      )
+      if (btn) {
+        btn.click()
+        return 'clicked'
+      }
+      return 'no-btn'
+    }).catch(() => 'error')
+
+    console.log(`[actions] send button JS click result: ${sent}`)
+
+    if (sent !== 'clicked') {
+      // JS click found nothing — fall back to Enter in the compose box
+      console.log(`[actions] send button not found (${sent}) — pressing Enter`)
       await msgInput.press('Enter')
     }
 

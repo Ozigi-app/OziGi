@@ -53,7 +53,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const body = await req.json()
 
   // Only allow patching safe fields
-  const allowed = ['name', 'status', 'daily_email_limit', 'sequence_steps', 'sources', 'icp_config']
+  const allowed = ['name', 'status', 'daily_email_limit', 'sequence_steps', 'sources', 'icp_config', 'product_context', 'product_description', 'sender_name', 'sender_title', 'product_name', 'cta_url', 'persona_voice']
   const updates = Object.fromEntries(
     Object.entries(body).filter(([k]) => allowed.includes(k))
   )

@@ -75,6 +75,7 @@ Extract the following and return as JSON:
 {
   "product_name": "Short name of the product or company (2-4 words max)",
   "product_description": "1-2 sentence pitch: what it does and who it helps. Be specific, not generic.",
+  "product_context": "A rich 3-5 paragraph brief that an AI sales rep would use to write compelling outreach messages. Cover: (1) The core problem this product solves and why it matters, (2) How the product works and its key features, (3) Concrete outcomes / results users get — be specific with numbers or comparisons if the page mentions them, (4) What makes it different from alternatives, (5) Any social proof, pricing signals, notable customers, or other credibility details from the page. Write in plain prose, no bullet points, no headers. This will be injected directly into AI prompts so make it dense with useful facts.",
   "company_name": "The company or founder name to use as the email sender",
   "cta_url": "The best URL for a call-to-action (the homepage URL if no better link is obvious)",
   "icp_description": "2-4 sentence description of the ideal customer. Who would get the most value from this product? Include: role/title, industry, company size, pain points, signals that indicate they're a good fit.",
@@ -98,6 +99,7 @@ Rules:
     const extracted = JSON.parse(raw) as {
       product_name: string
       product_description: string
+      product_context: string
       company_name: string
       cta_url: string
       icp_description: string

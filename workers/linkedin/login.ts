@@ -276,32 +276,52 @@ export async function loginLinkedIn(userId: string): Promise<void> {
     // Wait for the visible email input to be ready — LinkedIn renders two copies
     // of the form (a hidden server-rendered version and a visible React-hydrated
     // version). Playwright's :visible pseudo-class targets the hydrated one.
+    //
+    // "Welcome back" detection: if the session cookie expired but the browser
+    // profile still knows the user's email, LinkedIn shows a condensed form where
+    // the email is pre-filled as text (not an <input>) and only the password field
+    // appears. We detect this by trying the email input with a short timeout and
+    // falling back gracefully instead of throwing.
     const emailInput = page.locator(
       // autocomplete may be "username webauthn" — use ~= (word match) not exact =
-      'input[type="email"]:visible, input#username:visible, input[autocomplete~="username"]:visible'
+      'input[type="email"]:visible, input#username:visible, input[autocomplete~="username"]:visible, input[name="session_key"]:visible'
     ).first()
+
+    // Wait up to 30 s for the email field to appear (React hydration can be slow).
+    // If it never appears, check whether LinkedIn is showing its "Welcome back" form
+    // where the email is pre-filled as text and only the password field is visible.
+    let isWelcomeBackForm = false
     await emailInput.waitFor({ state: 'visible', timeout: 30_000 }).catch(async () => {
-      const bodySnippet = (await page.innerText('body').catch(() => '')).slice(0, 400).replace(/\s+/g, ' ')
+      const bodyText  = await page.innerText('body').catch(() => '')
+      const hasPwdFld = await page.locator('input[type="password"]:visible').first().isVisible({ timeout: 5_000 }).catch(() => false)
+      if (hasPwdFld && (bodyText.includes('Welcome back') || bodyText.includes('Sign in'))) {
+        console.log('[login] "Welcome back" form detected — email pre-filled by LinkedIn, proceeding to password')
+        isWelcomeBackForm = true
+        return   // ← swallow the error; code continues to the password section below
+      }
+      const bodySnippet = bodyText.slice(0, 400).replace(/\s+/g, ' ')
       console.error(`[login] email field not found. url=${page.url()} body="${bodySnippet}"`)
       throw new Error('LinkedIn login page did not load — please try again.')
     })
 
-    // Log inputs + visibility for diagnostics
-    const domInputs = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('input'))
-        .map(i => `${i.tagName}[name=${i.name}][id=${i.id}][type=${i.type}][offsetParent=${
-          (i as HTMLElement).offsetParent !== null
-        }]`)
-        .join(' | ')
-    ).catch(() => 'evaluate failed')
-    console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
+    if (!isWelcomeBackForm) {
+      // Log inputs + visibility for diagnostics
+      const domInputs = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('input'))
+          .map(i => `${i.tagName}[name=${i.name}][id=${i.id}][type=${i.type}][offsetParent=${
+            (i as HTMLElement).offsetParent !== null
+          }]`)
+          .join(' | ')
+      ).catch(() => 'evaluate failed')
+      console.log(`[login] DOM inputs: ${domInputs || 'NONE'}`)
 
-    // fill() sets the value AND fires the input/change events React needs to
-    // update its controlled-component state. evaluate(focus)+keyboard.type()
-    // only updates the DOM value — React never sees it, so it submits empty.
-    await emailInput.fill(email)
-    console.log('[login] email filled')
-    await page.waitForTimeout(500 + Math.random() * 500)
+      // fill() sets the value AND fires the input/change events React needs to
+      // update its controlled-component state. evaluate(focus)+keyboard.type()
+      // only updates the DOM value — React never sees it, so it submits empty.
+      await emailInput.fill(email)
+      console.log('[login] email filled')
+      await page.waitForTimeout(500 + Math.random() * 500)
+    }
 
     const passwordInput = page.locator('input[type="password"]:visible').first()
     await passwordInput.waitFor({ state: 'visible', timeout: 10_000 })

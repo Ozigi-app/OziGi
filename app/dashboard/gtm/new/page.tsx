@@ -57,6 +57,7 @@ export default function NewCampaignPage() {
   const [senderTitle, setSenderTitle]             = useState('')
   const [productName, setProductName]             = useState('')
   const [productDescription, setProductDescription] = useState('')
+  const [productContext, setProductContext]       = useState('')
   const [ctaUrl, setCtaUrl]                       = useState('')
 
   // ── Campaign ─────────────────────────────────────────────────────────────────
@@ -101,6 +102,7 @@ export default function NewCampaignPage() {
     const { extracted } = d
     setProductName(extracted.product_name ?? '')
     setProductDescription(extracted.product_description ?? '')
+    setProductContext(extracted.product_context ?? '')
     setSenderName(extracted.company_name ?? '')
     setCtaUrl(extracted.cta_url ?? websiteUrl)
     setIcpDescription(extracted.icp_description ?? '')
@@ -163,6 +165,7 @@ export default function NewCampaignPage() {
           sender_title: senderTitle,
           product_name: productName,
           product_description: productDescription,
+          product_context: productContext || null,
           cta_url: ctaUrl,
           persona_voice: selectedPersona?.prompt ?? null,
         }),
@@ -242,6 +245,21 @@ export default function NewCampaignPage() {
                 rows={3}
                 placeholder="AI-powered outbound platform that scrapes leads from GitHub and Dev.to and sends personalised email + LinkedIn sequences automatically."
                 style={{ ...inp, resize: 'vertical' as const }} />
+            </label>
+
+            <label style={lbl}>
+              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>AI knowledge base</span>
+              <span style={{ fontSize: '0.8rem', color: '#666' }}>
+                Auto-filled from your website. This is what Gemini reads to write specific, compelling messages —
+                the more detail here, the better the copy. Edit freely.
+              </span>
+              <textarea
+                value={productContext}
+                onChange={e => setProductContext(e.target.value)}
+                rows={6}
+                placeholder="Paste your website URL above and click Analyse — Gemini will generate a rich product brief here automatically. Or write it yourself: describe the core problem you solve, key features, concrete outcomes users get, what makes you different, and any social proof or numbers."
+                style={{ ...inp, resize: 'vertical' as const, fontFamily: 'inherit', fontSize: '0.85rem', lineHeight: 1.6 }}
+              />
             </label>
 
             <label style={lbl}>
