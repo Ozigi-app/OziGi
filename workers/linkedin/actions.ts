@@ -806,16 +806,18 @@ export async function sendLinkedInMessage(
     }
     await delay(500, 1_000)
 
-    // ── 6. Type message via execCommand (reliable with LinkedIn's ProseMirror editor)
+    // ── 6. Type message using real keyboard events ───────────────────────────
+    // WHY keyboard.type() not execCommand:
+    //   execCommand('insertText') puts text in the DOM visually but does NOT
+    //   trigger LinkedIn's React/ProseMirror state update, so the send button
+    //   stays disabled and the send is silently ignored even though the box
+    //   has content. page.keyboard.type() fires real keydown/input/keyup events
+    //   that React processes, enabling the send button properly.
     const msgInput = page.locator(inputSel).first()
-    // Scroll into view first — compose panel may open at bottom of page / partially off-screen
     await msgInput.scrollIntoViewIfNeeded({ timeout: 5_000 }).catch(() => {})
-    await delay(200, 400)
-    // Try a real click (establishes focus + caret), but fall back to JS .focus() if blocked.
-    // We only need focus here — execCommand below does the actual typing.
-    // Short timeout: if an overlay is intercepting pointer events (msg-overlay-list-bubble),
-    // Playwright click will block up to the timeout. 1.5s is enough for a clean click,
-    // and we fall back to JS .focus() immediately rather than waiting 10s.
+    await delay(200, 300)
+
+    // Click to focus — short timeout, fall back to JS focus
     const msgInputClicked = await msgInput.click({ timeout: 1_500 }).then(() => true).catch(() => false)
     if (!msgInputClicked) {
       console.warn(`[actions] msgInput click timed out for ${linkedinProfileId} — using JS focus fallback`)
@@ -826,67 +828,36 @@ export async function sendLinkedInMessage(
         if (el) el.focus()
       })
     }
+
+    // Clear any existing text
     await page.keyboard.press('Control+a')
-    await page.keyboard.press('Delete')
-    await delay(200, 400)
+    await page.keyboard.press('Backspace')
+    await delay(150, 250)
 
-    await page.evaluate((text: string) => {
-      const el = document.querySelector<HTMLElement>(
-        '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
-      )
-      if (el) {
-        el.focus()
-        document.execCommand('selectAll', false)
-        document.execCommand('delete', false)
-        document.execCommand('insertText', false, text)
-      }
-    }, message).catch(() => {})
-    await delay(500, 1_000)
+    // Type the message — real key events enable LinkedIn's send button
+    await page.keyboard.type(message, { delay: 15 })
+    await delay(400, 700)
 
-    // Verify the text actually landed in the box
+    // Verify the text landed in the box
     const boxText = await page.evaluate(() => {
       const el = document.querySelector<HTMLElement>(
         '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
       )
       return (el?.textContent ?? '').trim()
     }).catch(() => '')
+    console.log(`[actions] compose box has ${boxText.length}/${message.length} chars for ${linkedinProfileId}`)
     if (boxText.length < message.length * 0.7) {
       throw new Error(`Message text incomplete in compose box (got ${boxText.length}/${message.length} chars) — aborting`)
     }
 
-    // ── 7. Send ──────────────────────────────────────────────────────────────
-    // IMPORTANT: scope within .msg-form to avoid accidentally matching "Send in
-    // a private message" social-action buttons elsewhere on the page.
-    // Use JS click via evaluate to bypass intercepting overlay elements
-    // (msg-form__footer, msg-s-event-listitem__body, etc.) that block Playwright.
-    const sent = await page.evaluate(() => {
-      // Find the compose form — either the full-page overlay or the inline bubble
-      const form = document.querySelector<HTMLElement>(
-        '.msg-overlay-conversation-bubble .msg-form, ' +
-        '.msg-form'
-      )
-      if (!form) return 'no-form'
-
-      // Exact-class match first, then fall back to submit type within the form
-      const btn = form.querySelector<HTMLElement>(
-        'button.msg-form__send-button, ' +
-        'button[data-control-name="send"], ' +
-        'button[type="submit"]'
-      )
-      if (btn) {
-        btn.click()
-        return 'clicked'
-      }
-      return 'no-btn'
-    }).catch(() => 'error')
-
-    console.log(`[actions] send button JS click result: ${sent}`)
-
-    if (sent !== 'clicked') {
-      // JS click found nothing — fall back to Enter in the compose box
-      console.log(`[actions] send button not found (${sent}) — pressing Enter`)
-      await msgInput.press('Enter')
-    }
+    // ── 7. Send via Enter key ─────────────────────────────────────────────────
+    // Enter is the standard LinkedIn chat send key (Shift+Enter adds a newline).
+    // We use this instead of clicking the send button because:
+    //   a) The button class/selector changes across LinkedIn DOM versions
+    //   b) The button may still register as visually blocked by overlay elements
+    //   c) keyboard.press('Enter') with focus on the compose box is always reliable
+    await page.keyboard.press('Enter')
+    console.log(`[actions] Enter pressed to send for ${linkedinProfileId}`)
 
     // ── 8. Verify box cleared (confirms send succeeded) ──────────────────────
     const boxCleared = await page.waitForFunction(

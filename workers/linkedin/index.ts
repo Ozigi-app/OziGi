@@ -185,6 +185,20 @@ function getSupabase() {
   )
 }
 
+// Node's fetch (used internally by supabase-js) has no built-in timeout — a stalled
+// TCP connection can hang a query forever. The per-item status updates below are in
+// the hot path: if one hangs, the item stays 'in_progress' forever and blocks every
+// item behind it in the queue (only 1 action processed per user per poll). Race each
+// update against a timeout so a hung fetch fails fast instead of stalling the worker.
+function withTimeout<T>(promise: PromiseLike<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`TIMEOUT: ${label} exceeded ${ms}ms`)), ms)
+    ),
+  ])
+}
+
 /**
  * Notify the user by email that their LinkedIn session expired and they need
  * to reconnect. Called after markSessionExpired so the user doesn't sit
@@ -460,11 +474,15 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
   for (const item of items) {
     if (actionsThisRun >= MAX_ACTIONS_PER_RUN) break
 
-    const { error: lockErr } = await supabase
-      .from('linkedin_queue')
-      .update({ status: 'in_progress', attempts: item.attempts + 1 })
-      .eq('id', item.id)
-      .eq('status', 'queued')
+    const { error: lockErr } = await withTimeout(
+      supabase
+        .from('linkedin_queue')
+        .update({ status: 'in_progress', attempts: item.attempts + 1 })
+        .eq('id', item.id)
+        .eq('status', 'queued'),
+      15_000,
+      `lock item ${item.id}`
+    ).catch(err => ({ error: err as Error }))
 
     if (lockErr) {
       console.warn(`[worker] could not lock item ${item.id}:`, lockErr.message)
@@ -474,28 +492,58 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
     try {
       await processItem(item, context)
 
+      // processItem succeeded — the LinkedIn action (message sent, connection
+      // requested, etc.) already happened. From here on we must NOT let a failure
+      // bubble into the outer catch: that path can reset status back to 'queued',
+      // which would retry and send the SAME message/connect a second time.
+      // Retry the bookkeeping updates a few times with fresh timeouts; if they all
+      // fail, log loudly and leave the item 'in_progress' rather than risk a
+      // duplicate send. A stale in_progress row is recoverable manually —
+      // a duplicate LinkedIn message to a lead is not.
       const now = new Date().toISOString()
-
-      await supabase
-        .from('linkedin_queue')
-        .update({ status: 'done', processed_at: now, error: null })
-        .eq('id', item.id)
+      let markedDone = false
+      for (let attempt = 1; attempt <= 3 && !markedDone; attempt++) {
+        try {
+          await withTimeout(
+            supabase
+              .from('linkedin_queue')
+              .update({ status: 'done', processed_at: now, error: null })
+              .eq('id', item.id),
+            15_000,
+            `mark item ${item.id} done (attempt ${attempt})`
+          )
+          markedDone = true
+        } catch (markErr) {
+          console.error(`[worker] failed to mark item ${item.id} done (attempt ${attempt}/3):`, (markErr as Error).message)
+        }
+      }
+      if (!markedDone) {
+        console.error(`[worker] item ${item.id} succeeded on LinkedIn but could not be marked done after 3 attempts — leaving in_progress for manual review`)
+      }
 
       if (item.sequence_step > 0) {
-        await supabase
-          .from('sequence_sends')
-          .update({ status: 'sent', sent_at: now })
-          .eq('lead_id', item.lead_id)
-          .eq('step', item.sequence_step)
-          .eq('channel', 'linkedin')
-          .eq('status', 'queued')
+        await withTimeout(
+          supabase
+            .from('sequence_sends')
+            .update({ status: 'sent', sent_at: now })
+            .eq('lead_id', item.lead_id)
+            .eq('step', item.sequence_step)
+            .eq('channel', 'linkedin')
+            .eq('status', 'queued'),
+          15_000,
+          `mark sequence_send for ${item.lead_id} sent`
+        ).catch(err => console.warn(`[worker] sequence_sends update failed for ${item.id}:`, (err as Error).message))
       }
 
       if (item.action === 'connect') {
-        await supabase
-          .from('leads')
-          .update({ status: 'contacted', updated_at: now })
-          .eq('id', item.lead_id)
+        await withTimeout(
+          supabase
+            .from('leads')
+            .update({ status: 'contacted', updated_at: now })
+            .eq('id', item.lead_id),
+          15_000,
+          `mark lead ${item.lead_id} contacted`
+        ).catch(err => console.warn(`[worker] lead status update failed for ${item.id}:`, (err as Error).message))
       }
 
       actionsThisRun++
@@ -522,15 +570,19 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       if (msg.includes('NOT_YET_CONNECTED')) {
         const retryAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
         console.log(`[worker] connection pending for item ${item.id} — rescheduling for ${retryAt}`)
-        await supabase
-          .from('linkedin_queue')
-          .update({
-            status: 'queued',
-            scheduled_at: retryAt,
-            attempts: item.attempts, // reset — don't count pending-check as an attempt
-            error: null,
-          })
-          .eq('id', item.id)
+        await withTimeout(
+          supabase
+            .from('linkedin_queue')
+            .update({
+              status: 'queued',
+              scheduled_at: retryAt,
+              attempts: item.attempts, // reset — don't count pending-check as an attempt
+              error: null,
+            })
+            .eq('id', item.id),
+          15_000,
+          `reschedule item ${item.id} (NOT_YET_CONNECTED)`
+        ).catch(err => console.error(`[worker] reschedule failed for ${item.id}:`, (err as Error).message))
         continue
       }
 
@@ -546,22 +598,30 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       if (msg.includes('BLANK_PAGE')) {
         const retryAt = new Date(Date.now() + 60 * 60 * 1000).toISOString()
         console.warn(`[worker] blank page for item ${item.id} — rescheduling in 1h (${retryAt})`)
-        await supabase
-          .from('linkedin_queue')
-          .update({ status: 'queued', scheduled_at: retryAt, error: msg, attempts: item.attempts })
-          .eq('id', item.id)
+        await withTimeout(
+          supabase
+            .from('linkedin_queue')
+            .update({ status: 'queued', scheduled_at: retryAt, error: msg, attempts: item.attempts })
+            .eq('id', item.id),
+          15_000,
+          `reschedule item ${item.id} (BLANK_PAGE)`
+        ).catch(err => console.error(`[worker] reschedule failed for ${item.id}:`, (err as Error).message))
         continue
       }
 
       const newStatus = item.attempts + 1 >= 3 ? 'failed' : 'queued'
-      await supabase
-        .from('linkedin_queue')
-        .update({
-          status: newStatus,
-          error: msg,
-          processed_at: newStatus === 'failed' ? new Date().toISOString() : null,
-        })
-        .eq('id', item.id)
+      await withTimeout(
+        supabase
+          .from('linkedin_queue')
+          .update({
+            status: newStatus,
+            error: msg,
+            processed_at: newStatus === 'failed' ? new Date().toISOString() : null,
+          })
+          .eq('id', item.id),
+        15_000,
+        `mark item ${item.id} ${newStatus}`
+      ).catch(err => console.error(`[worker] status update failed for ${item.id}:`, (err as Error).message))
     }
   }
   // Context stays alive in cache — NOT closed here. The next poll reuses it.
@@ -652,7 +712,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-15-v44')
+  console.log('[worker] LinkedIn worker started — build 2026-06-16-v46')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false
