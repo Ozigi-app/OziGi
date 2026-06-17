@@ -82,7 +82,6 @@ __pycache__/
 minify.js
 
 # Development and testing
-emails/
 playwright-report/
 playwright-reports/
 test-results/
