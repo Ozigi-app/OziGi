@@ -101,8 +101,8 @@ export default function EmailOutreachPage() {
         body: JSON.stringify({ to: toEmail, subject, body }),
       })
       if (!res.ok) {
-        const d = await res.json()
-        setComposeError('Failed to send — check your email account is connected in Settings.')
+        const d = await res.json().catch(() => ({}))
+        setComposeError(d.error ?? 'Failed to send — check your email account is connected in Settings.')
       } else {
         setComposeSent(true)
         setToEmail(''); setSubject(''); setBody(''); setContext('')
