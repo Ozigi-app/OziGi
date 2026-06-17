@@ -5,6 +5,19 @@ function delay(minMs: number, maxMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+// page.keyboard.type()/press() have NO timeout option in Playwright — if the CDP
+// connection to Chrome stalls (proxy issues, browser overload), these hang forever
+// with zero protection, unlike locator actions which auto-timeout. Race them against
+// a deadline so a stalled connection throws instead of freezing the whole queue item.
+function withTimeout<T>(promise: PromiseLike<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`TIMEOUT: ${label} exceeded ${ms}ms`)), ms)
+    ),
+  ])
+}
+
 /**
  * Wander the LinkedIn feed like a real user before navigating to a profile.
  *
@@ -75,7 +88,7 @@ async function humanWander(page: Page): Promise<void> {
 async function humanType(page: import('playwright').Page, selector: string, text: string) {
   await page.click(selector)
   for (const char of text) {
-    await page.keyboard.type(char)
+    await withTimeout(page.keyboard.type(char), 5_000, 'humanType keystroke')
     await delay(40, 120)
   }
 }
@@ -521,10 +534,10 @@ export async function sendConnectionRequest(
           await textarea.waitFor({ state: 'visible', timeout: 5_000 })
           await textarea.click()
           await delay(300, 600)
-          for (const char of note) {
-            await page.keyboard.type(char)
-            await delay(40, 120)
-          }
+          // insertText: single CDP call, not sensitive to per-keystroke proxy
+          // latency (see sendLinkedInMessage for the production failure that
+          // motivated this — char-by-char typing reliably exceeded 30s).
+          await withTimeout(page.keyboard.insertText(note), 15_000, 'connection note text')
           await delay(600, 1200)
           await modal.locator(SEND_SELECTOR).first().click({ timeout: 8_000 })
           console.log('[actions] connection sent with note ✓')
@@ -654,7 +667,8 @@ export async function checkConnectionAccepted(
 export async function sendLinkedInMessage(
   context: BrowserContext,
   linkedinProfileId: string,
-  message: string
+  message: string,
+  recipientName?: string | null
 ): Promise<void> {
   const page = await context.newPage()
   page.setDefaultTimeout(30_000)
@@ -678,6 +692,17 @@ export async function sendLinkedInMessage(
     if (feedUrl.includes('/login') || feedUrl.includes('/authwall') || feedUrl.includes('/checkpoint')) {
       throw new Error('SESSION_EXPIRED: LinkedIn redirected feed visit to login')
     }
+
+    // LinkedIn's messaging overlay is session-level, not page-level — a conversation
+    // bubble left open from a PREVIOUS lead's failed send can still render here on a
+    // brand new page. If left alone it can get mistaken for the current lead's
+    // compose panel later (confirmed in production: wrong recipient got another
+    // lead's message). Force-remove any conversation bubbles now, before we ever
+    // navigate to this lead's profile, so only a freshly-opened one can exist later.
+    await page.evaluate(() => {
+      document.querySelectorAll('.msg-overlay-conversation-bubble, .msg-overlay-list-bubble')
+        .forEach(el => el.remove())
+    }).catch(() => {})
 
     // ── 2. Navigate to profile page ──────────────────────────────────────────
     // NOT /messaging/thread/new/?recipients= — that opens a typeahead that can
@@ -806,6 +831,36 @@ export async function sendLinkedInMessage(
     }
     await delay(500, 1_000)
 
+    // ── 5b. SAFETY: verify the open compose panel is actually for this recipient ──
+    // CRITICAL: LinkedIn's messaging overlay can leave a PREVIOUS conversation's
+    // bubble open and interactive after a failed send. If our selectors then grab
+    // that stale bubble instead of the newly-opened one for the current profile,
+    // we'd type and send THIS message into the WRONG person's conversation —
+    // confirmed in production (a message meant for one lead landed in another's
+    // thread). Before typing anything, confirm the conversation container that
+    // encloses our target input actually mentions the intended recipient's name.
+    // Fail closed: if we can't verify, abort rather than risk a misdirected send.
+    const firstName = recipientName?.trim().split(/\s+/)[0]
+    if (firstName && firstName.length >= 2) {
+      const recipientCheck = await page.evaluate(({ inputSel, name }: { inputSel: string; name: string }) => {
+        const input = document.querySelector(inputSel)
+        if (!input) return 'no-input'
+        const bubble =
+          input.closest('.msg-overlay-conversation-bubble') ??
+          input.closest('[class*="overlay"]') ??
+          input.closest('.msg-form')
+        const text = (bubble?.textContent ?? '').toLowerCase()
+        return text.includes(name.toLowerCase()) ? 'match' : `mismatch:${text.slice(0, 150)}`
+      }, { inputSel, name: firstName }).catch(() => 'eval-failed')
+
+      if (recipientCheck !== 'match') {
+        throw new Error(`RECIPIENT_MISMATCH: compose panel for ${linkedinProfileId} does not show "${firstName}" — likely a stale conversation bubble from a previous attempt. Aborting to prevent a misdirected send. (${recipientCheck})`)
+      }
+      console.log(`[actions] recipient verified for ${linkedinProfileId}: "${firstName}" found in compose panel`)
+    } else {
+      console.warn(`[actions] no recipientName provided for ${linkedinProfileId} — skipping recipient verification (less safe)`)
+    }
+
     // ── 6. Type message using real keyboard events ───────────────────────────
     // WHY keyboard.type() not execCommand:
     //   execCommand('insertText') puts text in the DOM visually but does NOT
@@ -829,13 +884,33 @@ export async function sendLinkedInMessage(
       })
     }
 
-    // Clear any existing text
-    await page.keyboard.press('Control+a')
-    await page.keyboard.press('Backspace')
+    // Clear any existing text — keyboard calls have no built-in timeout, so wrap
+    // each one. If the CDP connection to Chrome has stalled, fail fast and let the
+    // queue retry/reschedule instead of freezing this item (and everything behind it).
+    await withTimeout(page.keyboard.press('Control+a'), 10_000, `Control+a for ${linkedinProfileId}`)
+    await withTimeout(page.keyboard.press('Backspace'), 10_000, `Backspace for ${linkedinProfileId}`)
     await delay(150, 250)
 
-    // Type the message — real key events enable LinkedIn's send button
-    await page.keyboard.type(message, { delay: 15 })
+    // Type the message — insertText dispatches a single real `input` event,
+    // which is what enables LinkedIn's send button (same reason execCommand
+    // failed: it doesn't fire that event in a way React picks up).
+    // WHY insertText not type(): keyboard.type() sends one CDP round-trip per
+    // character. Under proxy latency that reliably exceeded 30s for ~200-char
+    // messages (confirmed twice in production — see TIMEOUT errors). insertText
+    // is a single CDP call regardless of message length, so it isn't sensitive
+    // to per-keystroke round-trip latency.
+    await withTimeout(
+      page.keyboard.insertText(message),
+      15_000,
+      `insert message text for ${linkedinProfileId}`
+    )
+    // insertText fires an `input` event but LinkedIn's send button stayed disabled
+    // anyway (confirmed in production — button found, scoped correctly, disabled=true).
+    // It likely also listens for keydown/keyup to enable the button. Fire one real
+    // keystroke (space + backspace) to trigger that — fast (2 round-trips, not N)
+    // while giving LinkedIn whatever real keyboard signal its enable-logic needs.
+    await withTimeout(page.keyboard.press('Space'), 10_000, `wake keystroke for ${linkedinProfileId}`)
+    await withTimeout(page.keyboard.press('Backspace'), 10_000, `wake keystroke cleanup for ${linkedinProfileId}`)
     await delay(400, 700)
 
     // Verify the text landed in the box
@@ -850,14 +925,47 @@ export async function sendLinkedInMessage(
       throw new Error(`Message text incomplete in compose box (got ${boxText.length}/${message.length} chars) — aborting`)
     }
 
-    // ── 7. Send via Enter key ─────────────────────────────────────────────────
-    // Enter is the standard LinkedIn chat send key (Shift+Enter adds a newline).
-    // We use this instead of clicking the send button because:
-    //   a) The button class/selector changes across LinkedIn DOM versions
-    //   b) The button may still register as visually blocked by overlay elements
-    //   c) keyboard.press('Enter') with focus on the compose box is always reliable
-    await page.keyboard.press('Enter')
-    console.log(`[actions] Enter pressed to send for ${linkedinProfileId}`)
+    // ── 7. Send ──────────────────────────────────────────────────────────────
+    // CRITICAL: scope to .msg-form. An unscoped `button[aria-label*="Send"]`
+    // matches "Send {Name}'s profile via message" — a share-profile button
+    // elsewhere on the page — before it ever reaches the real send button.
+    // This was confirmed in production: button found, enabled, clicked, but the
+    // compose box never cleared because we were clicking the wrong element.
+    const sendBtnState = await page.evaluate(() => {
+      const form = document.querySelector<HTMLElement>(
+        '.msg-overlay-conversation-bubble .msg-form, .msg-form'
+      )
+      if (!form) return 'no-form'
+      const btn = form.querySelector<HTMLButtonElement>(
+        '.msg-form__send-button, button.msg-form__send-button, button[aria-label*="Send"]'
+      )
+      if (!btn) return 'not-found-in-form'
+      return `found disabled=${btn.disabled} aria-disabled=${btn.getAttribute('aria-disabled')} text="${btn.textContent?.trim()}"`
+    }).catch(() => 'eval-failed')
+    console.log(`[actions] send button state for ${linkedinProfileId}: ${sendBtnState}`)
+
+    const sendBtn = page.locator(
+      '.msg-overlay-conversation-bubble .msg-form, .msg-form'
+    ).locator(
+      '.msg-form__send-button, button.msg-form__send-button, ' +
+      'button[aria-label*="Send"], button[aria-label*="Enviar"], button[aria-label*="Envoyer"]'
+    ).first()
+    const sendBtnVisible = await sendBtn.isVisible({ timeout: 3_000 }).catch(() => false)
+    if (sendBtnVisible) {
+      await withTimeout(sendBtn.click({ timeout: 5_000 }), 8_000, `send button click for ${linkedinProfileId}`)
+        .then(() => console.log(`[actions] send button clicked for ${linkedinProfileId}`))
+        .catch(async (err) => {
+          console.warn(`[actions] send button click failed for ${linkedinProfileId}: ${(err as Error).message} — falling back to Enter`)
+          await withTimeout(page.keyboard.press('Enter'), 10_000, `Enter press for ${linkedinProfileId}`)
+        })
+    } else {
+      console.log(`[actions] send button not visible for ${linkedinProfileId} — using Enter`)
+      await withTimeout(page.keyboard.press('Enter'), 10_000, `Enter press for ${linkedinProfileId}`)
+    }
+    // Give LinkedIn's send request time to round-trip before checking box-cleared.
+    // The Enter key itself can take up to 10 s under proxy latency, so we need
+    // enough headroom for: keypress CDPconfirm + LinkedIn server + box clear.
+    await delay(4_000, 6_000)
 
     // ── 8. Verify box cleared (confirms send succeeded) ──────────────────────
     const boxCleared = await page.waitForFunction(
@@ -868,7 +976,7 @@ export async function sendLinkedInMessage(
         return (el?.textContent ?? '').trim().length < origLen * 0.3
       },
       message.length,
-      { timeout: 10_000 }
+      { timeout: 20_000 }
     ).then(() => true).catch(() => false)
 
     if (!boxCleared) {
@@ -878,7 +986,12 @@ export async function sendLinkedInMessage(
         )
         return (el?.textContent ?? '').trim().slice(0, 100)
       }).catch(() => '?')
-      throw new Error(`Message send may have failed — compose box still has content: "${remaining}"`)
+      // Empty box means the message sent but we detected it after the polling window.
+      if (remaining === '') {
+        console.log(`[actions] message sent to ${linkedinProfileId} ✓ (late box clear)`)
+      } else {
+        throw new Error(`Message send may have failed — compose box still has content: "${remaining}"`)
+      }
     }
 
     console.log(`[actions] message sent to ${linkedinProfileId} ✓`)

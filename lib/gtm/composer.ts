@@ -180,6 +180,7 @@ Rules:
 - One sentence: briefly say who you are and why you want to connect (shared interest, industry, etc.)
 - End with "— ${sender}" (no title, keep it personal)
 - Plain text only — no HTML, no markdown, no emojis
+- NEVER use placeholder brackets like [company], [name], [role], [product], etc. Write real content or omit the reference.
 
 Bad example: "Hi, I build tools for developers and wanted to connect."
 Good example: "Your work on open-source TypeScript tooling caught my eye — I'm also building in that space and would love to stay in touch. — ${sender}"
@@ -198,6 +199,7 @@ Rules:
 - One soft CTA: ${ctaLine}
 - Sign off as "${signoff}"
 - Plain text only — no HTML, no markdown, no bullet points
+- NEVER use placeholder brackets like [company], [name], [role], [product], etc. Write real content or omit the reference.
 
 Return ONLY the message text, nothing else.`,
 
@@ -212,6 +214,7 @@ Rules:
 - Light touch, not pushy
 - Sign off as "${signoff}"
 - Plain text only — no HTML, no markdown
+- NEVER use placeholder brackets like [company], [name], [role], [product], etc. Write real content or omit the reference.
 
 Return ONLY the message text, nothing else.`,
   }
@@ -224,6 +227,11 @@ Return ONLY the message text, nothing else.`,
 
   const text = (response.text ?? '').trim()
   if (!text) throw new Error(`LinkedIn composer returned empty message for lead ${lead.id}`)
+  // Reject unfilled template placeholders — Gemini sometimes emits [company], [name], etc.
+  // when lead data is sparse. Better to skip the send than deliver a broken message.
+  if (/\[[A-Za-z][A-Za-z _]*\]/.test(text)) {
+    throw new Error(`LinkedIn composer returned message with unfilled placeholder for lead ${lead.id}: "${text.slice(0, 120)}"`)
+  }
   return text
 }
 

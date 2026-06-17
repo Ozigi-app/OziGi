@@ -454,7 +454,10 @@ async function getLinkedInLeadsDueForStep(
   cutoff.setDate(cutoff.getDate() - step.delay_days)
   cutoff.setHours(23, 59, 59, 999)
 
-  // Previous step sent (or queued for worker) and delay has passed
+  // Previous step actually sent (worker confirmed) and delay has passed since execution.
+  // Using sent_at (not created_at) and excluding 'queued' status prevents the next step
+  // from firing while the previous action is still sitting in the linkedin_queue unexecuted —
+  // which caused message + follow-up to be enqueued in the same cron run when delay_days=0.
   const { data } = await supabaseAdmin
     .from('leads')
     .select(`*, prev_send:sequence_sends!inner(sent_at, created_at, step, status)`)
@@ -463,8 +466,9 @@ async function getLinkedInLeadsDueForStep(
     .not('linkedin_url', 'is', null)       // need URL at minimum (profile_id extracted at action time)
     .eq('sequence_sends.step', prevStep.step)
     .eq('sequence_sends.channel', prevStep.channel)
-    .in('sequence_sends.status', ['sent', 'queued'])
-    .lte('sequence_sends.created_at', cutoff.toISOString())
+    .eq('sequence_sends.status', 'sent')
+    .not('sequence_sends.sent_at', 'is', null)
+    .lte('sequence_sends.sent_at', cutoff.toISOString())
     .limit(50)
 
   if (!data?.length) return []

@@ -320,7 +320,7 @@ async function processItem(
           // Open Profile (LinkedIn Premium) — send direct message as first contact
           if (item.message) {
             console.log(`[worker] Open Profile for lead ${item.lead_id} — sending direct message`)
-            await sendLinkedInMessage(context, profileId, item.message)
+            await sendLinkedInMessage(context, profileId, item.message, lead.name)
             return  // success — caller marks item done and lead contacted
           }
           throw new Error('Open Profile detected — no message text configured for direct outreach')
@@ -342,9 +342,9 @@ async function processItem(
       // triggering LinkedIn's bot detection on the new page. Removing the pre-check
       // eliminates the extra profile visit and lets sendLinkedInMessage handle it all.
       if (item.action === 'message') {
-        await sendLinkedInMessage(context, profileId, item.message ?? '')
+        await sendLinkedInMessage(context, profileId, item.message ?? '', lead.name)
       } else {
-        await sendFollowUp(context, profileId, item.message ?? '')
+        await sendFollowUp(context, profileId, item.message ?? '', lead.name)
       }
       break
     }
@@ -712,7 +712,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-16-v46')
+  console.log('[worker] LinkedIn worker started — build 2026-06-17-v54')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false
