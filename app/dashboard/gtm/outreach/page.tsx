@@ -40,6 +40,7 @@ export default function EmailOutreachPage() {
   const [composing, setComposing]   = useState(false)
 
   const [toEmail, setToEmail]         = useState('')
+  const [firstName, setFirstName]     = useState('')
   const [subject, setSubject]         = useState('')
   const [body, setBody]               = useState('')
   const [context, setContext]         = useState('')
@@ -49,9 +50,9 @@ export default function EmailOutreachPage() {
   const [composeSent, setComposeSent]   = useState(false)
 
   useEffect(() => {
-    fetch('/api/gtm/dashboard')
+    fetch('/api/gtm/outreach')
       .then(r => r.json())
-      .then(() => setLoading(false))
+      .then(d => { setEmails(d.emails ?? []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 
@@ -98,14 +99,14 @@ export default function EmailOutreachPage() {
       const res = await fetch('/api/gtm/smtp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: toEmail, subject, body }),
+        body: JSON.stringify({ to: toEmail, subject, body, firstName }),
       })
       if (!res.ok) {
         const d = await res.json().catch(() => ({}))
         setComposeError(d.error ?? 'Failed to send — check your email account is connected in Settings.')
       } else {
         setComposeSent(true)
-        setToEmail(''); setSubject(''); setBody(''); setContext('')
+        setToEmail(''); setFirstName(''); setSubject(''); setBody(''); setContext('')
         setTimeout(() => { setComposeSent(false); setComposing(false) }, 2000)
       }
     } catch {
@@ -180,15 +181,27 @@ export default function EmailOutreachPage() {
 
             {/* Compose fields */}
             <form onSubmit={sendEmail} className="space-y-4">
-              <div>
-                <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">To</label>
-                <input
-                  type="email"
-                  value={toEmail}
-                  onChange={e => setToEmail(e.target.value)}
-                  placeholder="recipient@company.com"
-                  className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent transition-colors"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">To</label>
+                  <input
+                    type="email"
+                    value={toEmail}
+                    onChange={e => setToEmail(e.target.value)}
+                    placeholder="recipient@company.com"
+                    className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">First Name <span className="normal-case font-normal opacity-60">(replaces {'{'}{'{'}}first_name{'}'}{'}'} )</span></label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={e => setFirstName(e.target.value)}
+                    placeholder="Alex"
+                    className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent transition-colors"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">Subject</label>
