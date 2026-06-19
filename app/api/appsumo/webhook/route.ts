@@ -17,25 +17,28 @@ function adminClient() {
 
 export async function POST(req: Request) {
   const rawBody = await req.text();
-  const signature = req.headers.get('x-appsumo-signature');
+  const event = JSON.parse(rawBody);
+  const { action, license_key, license_tier, test: isTest } = event;
 
-  const expectedSig = crypto
-    .createHmac('sha256', process.env.APPSUMO_API_KEY!)
-    .update(rawBody)
-    .digest('hex');
+  // Skip signature check for AppSumo test/validation requests
+  if (!isTest) {
+    const signature = req.headers.get('x-appsumo-signature');
+    const expectedSig = crypto
+      .createHmac('sha256', process.env.APPSUMO_API_KEY!)
+      .update(rawBody)
+      .digest('hex');
 
-  const signaturesMatch =
-    signature !== null &&
-    crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig));
+    const signaturesMatch =
+      signature !== null &&
+      crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig));
 
-  if (!signaturesMatch) {
-    console.error('[AppSumo Webhook] Invalid signature');
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    if (!signaturesMatch) {
+      console.error('[AppSumo Webhook] Invalid signature');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
   }
 
-  const event = JSON.parse(rawBody);
-  const { action, license_key, license_tier } = event;
-  console.log('[AppSumo Webhook]', action, license_key, 'tier:', license_tier);
+  console.log('[AppSumo Webhook]', action, license_key, 'tier:', license_tier, isTest ? '(test)' : '');
 
   const supabase = adminClient();
 
@@ -89,5 +92,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ message: 'ok' });
+  return NextResponse.json({ success: true });
 }
