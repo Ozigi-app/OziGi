@@ -325,6 +325,12 @@ async function processItem(
           }
           throw new Error('Open Profile detected — no message text configured for direct outreach')
         }
+        if (msg.startsWith('ALREADY_DONE')) {
+          // Connect was sent on a prior attempt (now Pending) or was accepted (1st degree).
+          // Mark done so we stop retrying — no action needed.
+          console.log(`[worker] connect already done for lead ${item.lead_id}: ${msg}`)
+          return
+        }
         throw err
       }
       break
@@ -712,7 +718,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-17-v54')
+  console.log('[worker] LinkedIn worker started — build 2026-06-18-v55')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false

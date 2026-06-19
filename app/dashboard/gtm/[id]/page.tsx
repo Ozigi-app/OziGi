@@ -188,6 +188,51 @@ const LI_STATUS_COLOR: Record<string, string> = {
 
 type Tab = 'email' | 'linkedin' | 'leads'
 
+// ── CSV parser ────────────────────────────────────────────────────────────────
+// Handles quoted fields and common delimiters (comma or tab).
+function parseCSV(text: string): Record<string, string>[] {
+  const lines = text.trim().split(/\r?\n/)
+  if (lines.length < 2) return []
+
+  const delimiter = lines[0].includes('\t') ? '\t' : ','
+
+  function splitLine(line: string): string[] {
+    const fields: string[] = []
+    let cur = ''
+    let inQuote = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') { inQuote = !inQuote }
+      else if (ch === delimiter && !inQuote) { fields.push(cur.trim()); cur = '' }
+      else { cur += ch }
+    }
+    fields.push(cur.trim())
+    return fields
+  }
+
+  const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, '_'))
+  return lines.slice(1)
+    .filter(l => l.trim())
+    .map(l => {
+      const vals = splitLine(l)
+      return Object.fromEntries(headers.map((h, i) => [h, vals[i] ?? '']))
+    })
+}
+
+// Map flexible column names to our schema fields
+function normaliseRow(row: Record<string, string>) {
+  const get = (...keys: string[]) => keys.map(k => row[k]).find(v => v) ?? ''
+  return {
+    name:          get('name', 'full_name', 'contact_name'),
+    email:         get('email', 'email_address'),
+    company:       get('company', 'company_name', 'organisation', 'organization'),
+    linkedin_url:  get('linkedin_url', 'linkedin', 'linkedin_profile'),
+    twitter_handle:get('twitter_handle', 'twitter', 'x_handle'),
+    bio:           get('bio', 'about', 'description', 'headline'),
+    location:      get('location', 'city', 'country'),
+  }
+}
+
 export default function CampaignDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [data, setData]       = useState<PageData | null>(null)
@@ -196,6 +241,13 @@ export default function CampaignDetailPage() {
   const [tab, setTab]         = useState<Tab>('leads')
   const [preview, setPreview] = useState<PreviewResult | null>(null)
   const [previewing, setPreviewing] = useState(false)
+
+  // CSV import state
+  const [showImport, setShowImport]   = useState(false)
+  const [csvText, setCsvText]         = useState('')
+  const [parsedRows, setParsedRows]   = useState<ReturnType<typeof normaliseRow>[]>([])
+  const [importing, setImporting]     = useState(false)
+  const [importMsg, setImportMsg]     = useState('')
 
   useEffect(() => {
     fetch(`/api/gtm/campaigns/${id}`)
@@ -254,6 +306,34 @@ export default function CampaignDetailPage() {
     setData(prev => prev ? { ...prev, campaign: d.campaign } : prev)
   }
 
+  function onCsvChange(text: string) {
+    setCsvText(text)
+    setImportMsg('')
+    if (!text.trim()) { setParsedRows([]); return }
+    const raw = parseCSV(text)
+    const rows = raw.map(normaliseRow).filter(r => r.name)
+    setParsedRows(rows)
+  }
+
+  async function handleImport() {
+    if (!parsedRows.length) return
+    setImporting(true)
+    setImportMsg('Scoring leads against your ICP…')
+    const res = await fetch(`/api/gtm/campaigns/${id}/import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rows: parsedRows }),
+    })
+    const d = await res.json()
+    setImporting(false)
+    if (!res.ok) { setImportMsg(d.error ?? 'Import failed'); return }
+    setImportMsg(`Done — ${d.inserted} of ${d.total} leads added ✓`)
+    // Refresh leads list
+    const fresh = await fetch(`/api/gtm/campaigns/${id}`).then(r => r.json()) as PageData
+    setData(fresh)
+    setTimeout(() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }, 2000)
+  }
+
   if (loading) return <div style={{ padding: '2rem' }}>Loading…</div>
   if (!data)   return <div style={{ padding: '2rem', color: 'red' }}>Campaign not found.</div>
 
@@ -284,6 +364,9 @@ export default function CampaignDetailPage() {
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button onClick={() => triggerAction('scrape')} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: 'white', fontSize: '0.85rem' }}>
               Run Scrape
+            </button>
+            <button onClick={() => { setShowImport(true); setImportMsg('') }} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: 'white', fontSize: '0.85rem' }}>
+              Import CSV
             </button>
             <button onClick={previewEmails} disabled={previewing} style={{ padding: '0.4rem 0.8rem', border: '1px solid #6366f1', borderRadius: 5, cursor: 'pointer', background: previewing ? '#f5f3ff' : 'white', color: '#6366f1', fontSize: '0.85rem' }}>
               {previewing ? 'Generating…' : '👁 Preview emails'}
@@ -531,6 +614,96 @@ export default function CampaignDetailPage() {
 
       {/* ── ICP config editor ───────────────────────────────────────────────── */}
       <IcpEditor campaignId={id} icp={campaign.icp_config} onSaved={fresh => setData(prev => prev ? { ...prev, campaign: { ...prev.campaign, icp_config: fresh } } : prev)} />
+
+      {/* ── CSV import modal ─────────────────────────────────────────────────── */}
+      {showImport && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: 'white', borderRadius: 12, maxWidth: 680, width: '100%', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '1rem' }}>Import leads from CSV</div>
+                <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>
+                  Paste a CSV from Peerlist, Product Hunt, or any listing site. Leads are scored against your ICP automatically.
+                </div>
+              </div>
+              <button onClick={() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }}
+                style={{ border: 'none', background: 'none', fontSize: '1.3rem', cursor: 'pointer', color: '#888', lineHeight: 1 }}>✕</button>
+            </div>
+
+            <div style={{ padding: '1.25rem 1.5rem' }}>
+              {/* Column hint */}
+              <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 6, padding: '0.6rem 0.8rem', fontSize: '0.78rem', color: '#555', marginBottom: '0.9rem', fontFamily: 'monospace' }}>
+                Expected columns (any order, extra columns ignored):<br />
+                <strong>name</strong>, email, company, linkedin_url, twitter_handle, bio, location
+              </div>
+
+              <textarea
+                value={csvText}
+                onChange={e => onCsvChange(e.target.value)}
+                placeholder={'name,email,company\nJane Doe,jane@example.com,Acme\nJohn Smith,john@example.com,Startup Inc'}
+                rows={10}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.8rem', padding: '0.6rem 0.8rem', border: '1px solid #ddd', borderRadius: 6, resize: 'vertical', boxSizing: 'border-box' }}
+              />
+
+              {parsedRows.length > 0 && (
+                <div style={{ marginTop: '0.75rem' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#16a34a', marginBottom: '0.5rem', fontWeight: 600 }}>
+                    ✓ {parsedRows.length} valid row{parsedRows.length !== 1 ? 's' : ''} detected
+                    {parsedRows.length > 500 ? ' — capped at 500' : ''}
+                  </div>
+                  <div style={{ overflowX: 'auto', maxHeight: 180, overflowY: 'auto', border: '1px solid #eee', borderRadius: 6 }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid #eee', background: '#fafafa', textAlign: 'left' }}>
+                          {['Name', 'Email', 'Company', 'LinkedIn'].map(h => (
+                            <th key={h} style={{ padding: '0.3rem 0.6rem', fontWeight: 600 }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {parsedRows.slice(0, 10).map((r, i) => (
+                          <tr key={i} style={{ borderBottom: '1px solid #f4f4f4' }}>
+                            <td style={{ padding: '0.3rem 0.6rem' }}>{r.name || <span style={{ color: '#ccc' }}>—</span>}</td>
+                            <td style={{ padding: '0.3rem 0.6rem', color: r.email ? '#111' : '#ccc' }}>{r.email || '—'}</td>
+                            <td style={{ padding: '0.3rem 0.6rem', color: '#555' }}>{r.company || '—'}</td>
+                            <td style={{ padding: '0.3rem 0.6rem' }}>
+                              {r.linkedin_url ? <span style={{ color: '#0a66c2' }}>✓</span> : <span style={{ color: '#ccc' }}>—</span>}
+                            </td>
+                          </tr>
+                        ))}
+                        {parsedRows.length > 10 && (
+                          <tr>
+                            <td colSpan={4} style={{ padding: '0.3rem 0.6rem', color: '#888', fontStyle: 'italic' }}>
+                              …and {parsedRows.length - 10} more
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {importMsg && (
+                <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: importMsg.includes('✓') ? '#16a34a' : '#dc2626' }}>
+                  {importMsg}
+                </p>
+              )}
+            </div>
+
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #eee', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }}
+                style={{ padding: '0.5rem 1rem', border: '1px solid #ccc', borderRadius: 6, background: 'white', cursor: 'pointer', fontSize: '0.9rem' }}>
+                Cancel
+              </button>
+              <button onClick={handleImport} disabled={importing || parsedRows.length === 0}
+                style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: 6, background: parsedRows.length === 0 ? '#d1d5db' : '#111', color: 'white', cursor: parsedRows.length === 0 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+                {importing ? 'Importing…' : `Import ${Math.min(parsedRows.length, 500)} leads`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Email preview modal ──────────────────────────────────────────────── */}
       {preview && (

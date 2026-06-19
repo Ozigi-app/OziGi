@@ -1,14 +1,15 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Send, UserPlus, Settings, ListChecks, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Send, UserPlus, Settings, ListChecks, Megaphone, ChevronRight } from 'lucide-react'
 
 const NAV = [
-  { label: 'Overview',         href: '/dashboard',              icon: LayoutDashboard },
-  { label: 'Email Outreach',   href: '/dashboard/gtm/outreach', icon: Send            },
-  { label: 'LinkedIn',         href: '/dashboard/gtm/linkedin', icon: UserPlus        },
-  { label: 'Review Queue',     href: '/dashboard/gtm/review',   icon: ListChecks      },
-  { label: 'Settings',         href: '/dashboard/gtm/settings', icon: Settings        },
+  { label: 'Overview',         href: '/dashboard',                 icon: LayoutDashboard },
+  { label: 'Campaigns',        href: '/dashboard/gtm',             icon: Megaphone       },
+  { label: 'Email Outreach',   href: '/dashboard/gtm/outreach',    icon: Send            },
+  { label: 'LinkedIn',         href: '/dashboard/gtm/linkedin',    icon: UserPlus        },
+  { label: 'Review Queue',     href: '/dashboard/gtm/review',      icon: ListChecks      },
+  { label: 'Settings',         href: '/dashboard/gtm/settings',    icon: Settings        },
 ]
 
 export default function GtmPageHeader({ title }: { title: string }) {
@@ -28,8 +29,8 @@ export default function GtmPageHeader({ title }: { title: string }) {
       {/* GTM sub-nav */}
       <div className="px-6 flex items-center gap-1 overflow-x-auto">
         {NAV.map(item => {
-          const active = item.href === '/dashboard'
-            ? pathname === '/dashboard'
+          const active = item.href === '/dashboard' || item.href === '/dashboard/gtm'
+            ? pathname === item.href
             : pathname.startsWith(item.href)
           const Icon = item.icon
           return (

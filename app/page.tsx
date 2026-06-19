@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   motion,
+  AnimatePresence,
   Variants,
   useMotionValue,
   useSpring,
@@ -150,6 +151,18 @@ export default function Home() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [nlEmail, setNlEmail] = useState("");
   const [nlStatus, setNlStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [headlineIdx, setHeadlineIdx] = useState(0);
+
+  const HEADLINES = [
+    { pre: "Stop staring at an ",      hl: "empty pipeline."       },
+    { pre: "You build. Ozigi ",        hl: "brings the customers." },
+    { pre: "Wake up to a pipeline that ", hl: "filled itself."     },
+  ] as const;
+
+  useEffect(() => {
+    const t = setInterval(() => setHeadlineIdx(i => (i + 1) % 3), 2800);
+    return () => clearInterval(t);
+  }, []);
 
   const heroRef = useRef<HTMLElement>(null);
   const mouseX = useMotionValue(0);
@@ -269,26 +282,29 @@ export default function Home() {
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-20 md:py-32">
             <div className="flex flex-col items-center text-center gap-8 max-w-5xl mx-auto">
 
-              {/* Headline */}
-              <motion.div style={{ y: heroParallaxY }}>
-                <motion.h1
-                  initial={{ opacity: 0, y: 28 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.02] text-balance"
-                >
-                  A full pipeline.<br />
-                  <span className="relative inline-block">
-                    <span style={{ color: C.red }}>Without hiring anyone.</span>
-                    <motion.span
-                      className="absolute left-0 -bottom-1 h-1 rounded-full origin-left"
-                      style={{ background: C.red }}
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-                    />
-                  </span>
-                </motion.h1>
+              {/* Rotating headline */}
+              <motion.div style={{ y: heroParallaxY }} className="min-h-[6rem] sm:min-h-[7.5rem] md:min-h-[9rem] flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.h1
+                    key={headlineIdx}
+                    initial={{ opacity: 0, y: 22 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -18 }}
+                    transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.02] text-balance text-center"
+                  >
+                    {HEADLINES[headlineIdx].pre}
+                    <span
+                      className="relative inline"
+                      style={{
+                        background: `linear-gradient(180deg, transparent 58%, rgba(232,50,10,0.42) 58%)`,
+                        paddingBottom: "0.04em",
+                      }}
+                    >
+                      {HEADLINES[headlineIdx].hl}
+                    </span>
+                  </motion.h1>
+                </AnimatePresence>
               </motion.div>
 
               {/* Subheadline */}
@@ -529,6 +545,47 @@ export default function Home() {
                       style={{ background: "rgba(232,50,10,0.06)", color: C.red }}>{t}</span>
                   ))}
                 </div>
+
+                {/* Lexicon — anti-AI-speak widget */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="relative z-10 mt-6 rounded-xl overflow-hidden"
+                  style={{ border: `1px solid ${C.border}`, background: C.card }}
+                >
+                  <div className="px-4 py-2.5 border-b text-[9px] font-black uppercase tracking-widest"
+                    style={{ borderColor: C.border, color: C.dim, background: C.navyDeep }}>
+                    Why it never sounds like a bot
+                  </div>
+                  <div className="px-4 py-3 space-y-2">
+                    {[
+                      { bad: "delve into",           good: "dig into"               },
+                      { bad: "seamlessly",            good: "without the headache"   },
+                      { bad: "robust solution",       good: "something that holds up" },
+                      { bad: "in today's fast-paced", good: null                     },
+                    ].map(({ bad, good }, i) => (
+                      <motion.div
+                        key={bad}
+                        initial={{ opacity: 0, x: -8 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 + i * 0.08 }}
+                        className="flex items-center gap-2 text-xs flex-wrap"
+                      >
+                        <span className="line-through font-mono" style={{ color: C.red }}>{bad}</span>
+                        <span style={{ color: C.dim }}>→</span>
+                        {good
+                          ? <span className="font-bold" style={{ color: C.white }}>{good}</span>
+                          : <span className="italic" style={{ color: C.dim }}>cut entirely</span>}
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className="px-4 pb-3 text-[10px] leading-relaxed" style={{ color: C.dim }}>
+                    Ozigi blocks AI-speak at generation — what ships reads like you wrote it.
+                  </div>
+                </motion.div>
               </motion.div>
             </motion.div>
 
@@ -551,6 +608,44 @@ export default function Home() {
                   <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{f.desc}</p>
                 </motion.div>
               ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── NIGHT BAND — while you build ─────────────────────────────── */}
+        <section className="relative overflow-hidden py-20 md:py-28"
+          style={{ background: "#071020", color: "#E2E8F0" }}>
+          <div className="absolute -right-24 -top-20 w-80 h-80 rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(232,50,10,0.18), transparent 62%)" }} />
+          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-8 md:px-14">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}
+              className="space-y-6">
+              <motion.p variants={fadeUp} className="text-[10px] font-black uppercase tracking-[0.22em]"
+                style={{ color: C.red }}>While you build</motion.p>
+              <motion.h2 variants={fadeUp}
+                className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] text-white max-w-2xl">
+                The work that fills your pipeline shouldn&apos;t need you awake for it.
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-base font-medium leading-relaxed max-w-xl"
+                style={{ color: "#CBD5E1" }}>
+                Outreach goes out. Replies come in. Posts publish. Your name compounds. Ozigi runs the whole machine in the background — growth stops depending on whether you found a spare hour today.
+              </motion.p>
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-3 pt-2">
+                {[
+                  { time: "03:14", label: "7 emails sent",          bold: true  },
+                  { time: "06:02", label: "2 replies caught → CRM", bold: true  },
+                  { time: "07:30", label: "LinkedIn post live",      bold: true  },
+                  { time: "09:00", label: "you open your laptop",    bold: false },
+                ].map(({ time, label, bold }) => (
+                  <div key={time}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono"
+                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#CBD5E1" }}>
+                    <span style={{ color: "#64748B" }}>{time}</span>
+                    <span style={{ color: "#334155" }}>·</span>
+                    <span style={bold ? { color: "#fff", fontWeight: 700 } : {}}>{label}</span>
+                  </div>
+                ))}
+              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -728,14 +823,13 @@ export default function Home() {
               className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12">
               <motion.div variants={fadeUp} className="max-w-xl space-y-5">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: C.red }}>
-                  Built for
+                  For the founder doing it all
                 </p>
                 <h3 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95]">
-                  Founders closing<br />their own deals —<br />
-                  <span style={{ color: C.muted }}>who want their<br />calendar full.</span>
+                  Who&apos;s done<br />doing it alone.
                 </h3>
                 <p className="text-base font-medium leading-relaxed max-w-md" style={{ color: C.muted }}>
-                  You go from spending hours manually prospecting and staring at a blank content calendar — to having a full pipeline and a brand that runs itself. No SDR. No content team. Just results.
+                  You didn&apos;t start this to spend your nights prospecting and your weekends fighting a blank content calendar. Ozigi gives you the pipeline and the presence of a full go-to-market team — without the team. You stay in the work only you can do. The rest runs itself.
                 </p>
               </motion.div>
               <motion.div variants={fadeUp}>

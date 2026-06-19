@@ -193,7 +193,7 @@ export default function EmailOutreachPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">First Name <span className="normal-case font-normal opacity-60">(replaces {'{'}{'{'}}first_name{'}'}{'}'} )</span></label>
+                  <label className="block text-foreground-subtle text-xs font-semibold uppercase tracking-widest mb-1.5">First Name <span className="normal-case font-normal opacity-60">{'(replaces {{first_name}})'}</span></label>
                   <input
                     type="text"
                     value={firstName}

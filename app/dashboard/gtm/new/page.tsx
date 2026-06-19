@@ -63,8 +63,8 @@ export default function NewCampaignPage() {
   // ── Campaign ─────────────────────────────────────────────────────────────────
   const [name, setName]                   = useState('')
   const [icpDescription, setIcpDescription] = useState('')
-  // Sources are always all three — no picker shown to users
-  const sources = ['github', 'devto', 'linkedin']
+  // Sources are always all — no picker shown to users
+  const sources = ['github', 'devto', 'linkedin', 'hackernews', 'npm']
   const [dailyEmailLimit, setDailyEmailLimit] = useState(40)
   const [dailyLinkedInLimit, setDailyLinkedInLimit] = useState(20)
   const [steps, setSteps]                 = useState<SequenceStep[]>(DEFAULT_STEPS)

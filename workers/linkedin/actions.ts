@@ -444,11 +444,16 @@ export async function sendConnectionRequest(
       }).catch(() => null)
       console.log(`[actions] connect not found — url=${finalUrl} 1st=${is1stDegree} state=${JSON.stringify(pageState)}`)
 
-      if (isPending)   throw new Error('Connection request already pending')
-      if (isFollowing) throw new Error('Creator profile — Follow only, no Connect option')
+      // Already pending / already connected → treat as success (connect was sent on
+      // a prior attempt that got marked failed due to timing issues). Use a prefix the
+      // caller recognises so it marks the queue item done rather than failed.
+      if (isPending)    throw new Error('ALREADY_DONE: Connection request already pending')
+      if (isFollowing)  throw new Error('Creator profile — Follow only, no Connect option')
 
-      if (isMessage && is1stDegree) {
-        throw new Error('Already connected — 1st degree, Message button visible')
+      if (is1stDegree) {
+        // 1st-degree regardless of whether the Message button loaded — the connect
+        // was accepted. Mark done so we don't keep retrying.
+        throw new Error('ALREADY_DONE: Already 1st-degree connection')
       }
 
       if (isMessage && !is1stDegree) {

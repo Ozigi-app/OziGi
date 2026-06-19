@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { verifyQStashRequest } from '@/lib/qstash'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { scrapeGitHub, scrapeDevTo, scoreLeads } from '@/lib/gtm/scraper'
+import { scrapeGitHub, scrapeDevTo, scrapeHackerNews, scrapeNpm, scoreLeads } from '@/lib/gtm/scraper'
 import { getPlanStatus, incrementLeadsScraped, deductAddonCredits } from '@/lib/plan'
 import type { Campaign } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
@@ -69,6 +69,16 @@ export async function POST(req: Request) {
 
       if (campaign.sources.includes('devto')) {
         const leads = await scrapeDevTo(campaign.icp_config, 30)
+        allLeads.push(...leads)
+      }
+
+      if (campaign.sources.includes('hackernews')) {
+        const leads = await scrapeHackerNews(campaign.icp_config, 30)
+        allLeads.push(...leads)
+      }
+
+      if (campaign.sources.includes('npm')) {
+        const leads = await scrapeNpm(campaign.icp_config, 30)
         allLeads.push(...leads)
       }
 

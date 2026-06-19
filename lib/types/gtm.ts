@@ -1,5 +1,5 @@
 export type CampaignStatus = 'active' | 'paused' | 'completed' | 'draft'
-export type LeadSource = 'github' | 'devto' | 'linkedin' | 'manual'
+export type LeadSource = 'github' | 'devto' | 'linkedin' | 'hackernews' | 'npm' | 'manual'
 export type LeadStatus = 'pending' | 'contacted' | 'replied' | 'bounced' | 'opted_out' | 'not_qualified'
 export type SendChannel = 'email' | 'linkedin'
 export type SendStatus = 'queued' | 'sent' | 'failed' | 'opened' | 'clicked' | 'replied'

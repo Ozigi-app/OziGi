@@ -156,6 +156,136 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
   return leads
 }
 
+// Search Hacker News stories/comments via Algolia, extract unique active authors.
+export async function scrapeHackerNews(icpConfig: IcpConfig, limit = 30): Promise<RawLead[]> {
+  const keywords = [
+    ...(icpConfig.keywords ?? []),
+    ...(icpConfig.job_titles ?? []),
+  ].slice(0, 4).join(' ')
+
+  const url = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(keywords)}&tags=story&hitsPerPage=100`
+  const res = await fetch(url)
+  if (!res.ok) {
+    console.error('[scraper:hn] search failed', await res.text())
+    return []
+  }
+
+  const data = await res.json() as { hits: Array<{ author: string }> }
+
+  const seen = new Set<string>()
+  const leads: RawLead[] = []
+
+  for (const hit of data.hits) {
+    if (!hit.author || seen.has(hit.author)) continue
+    seen.add(hit.author)
+
+    if (leads.length >= limit) break
+
+    try {
+      const userRes = await fetch(`https://hacker-news.firebaseio.com/v0/user/${hit.author}.json`)
+      if (!userRes.ok) continue
+
+      const user = await userRes.json() as {
+        id: string
+        about?: string
+      } | null
+      if (!user?.id) continue
+
+      const bio = user.about ? stripHtml(user.about) : null
+
+      // Some HN users embed their email in the about field
+      const emailMatch = bio?.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+      const email = emailMatch && isValidEmail(emailMatch[0]) ? emailMatch[0] : null
+
+      leads.push({
+        source: 'hackernews',
+        source_id: user.id,
+        name: user.id,
+        email,
+        github_username: null,
+        linkedin_url: null,
+        linkedin_profile_id: null,
+        twitter_handle: null,
+        bio,
+        company: null,
+        location: null,
+        tags: extractTagsFromBio(bio ?? ''),
+        icp_match_score: null,
+      })
+
+      await sleep(100)
+    } catch {
+      continue
+    }
+  }
+
+  return leads
+}
+
+// Search npm packages by keyword, extract package authors/publishers.
+// npm is particularly valuable because authors often include real emails in package metadata.
+export async function scrapeNpm(icpConfig: IcpConfig, limit = 30): Promise<RawLead[]> {
+  const keywords = (icpConfig.keywords ?? []).slice(0, 3).join(' ')
+  if (!keywords) return []
+
+  const url = `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(keywords)}&size=100`
+  const res = await fetch(url)
+  if (!res.ok) {
+    console.error('[scraper:npm] search failed', await res.text())
+    return []
+  }
+
+  const data = await res.json() as {
+    objects: Array<{
+      package: {
+        name: string
+        description: string
+        keywords?: string[]
+        author?: { name?: string; email?: string }
+        publisher: { username: string; email: string }
+        links: { homepage?: string; repository?: string }
+      }
+    }>
+  }
+
+  const seen = new Set<string>()
+  const leads: RawLead[] = []
+
+  for (const obj of data.objects) {
+    const pkg = obj.package
+    const username = pkg.publisher?.username
+    if (!username || seen.has(username)) continue
+    seen.add(username)
+
+    // Prefer publisher email (always present) over author email
+    const email = pkg.publisher?.email ?? pkg.author?.email ?? null
+    // npm publisher emails are almost always real — still validate
+    if (!isValidEmail(email ?? '')) continue
+
+    const name = pkg.author?.name ?? username
+
+    leads.push({
+      source: 'npm',
+      source_id: username,
+      name,
+      email,
+      github_username: null,
+      linkedin_url: null,
+      linkedin_profile_id: null,
+      twitter_handle: null,
+      bio: pkg.description ?? null,
+      company: null,
+      location: null,
+      tags: pkg.keywords?.slice(0, 10) ?? extractTagsFromBio(pkg.description ?? ''),
+      icp_match_score: null,
+    })
+
+    if (leads.length >= limit) break
+  }
+
+  return leads
+}
+
 // Score a batch of leads against the ICP using Gemini — returns leads with icp_match_score filled
 export async function scoreLeads(leads: RawLead[], icpConfig: IcpConfig): Promise<RawLead[]> {
   if (leads.length === 0) return []
@@ -252,6 +382,19 @@ function extractTagsFromBio(bio: string): string[] {
   const techTerms = /\b(react|vue|angular|node|python|typescript|javascript|rust|go|java|kotlin|swift|aws|gcp|azure|docker|kubernetes|postgres|redis|graphql|api|saas|startup|founder|developer|engineer|cto|fullstack|backend|frontend|ml|ai|open.?source)\b/gi
   const matches = bio.match(techTerms) ?? []
   return [...new Set(matches.map(m => m.toLowerCase()))]
+}
+
+// Strip HTML tags from HN "about" fields, which are stored as raw HTML.
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function sleep(ms: number): Promise<void> {
