@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-export type Plan = "free" | "starter" | "growth" | "pro" | "enterprise";
+export type Plan = "free" | "starter" | "growth" | "pro" | "enterprise" | "appsumo_launch" | "appsumo_builder" | "appsumo_dominate";
 
 export interface PlanStatus {
   plan: Plan;
@@ -46,6 +46,9 @@ const GENERATION_LIMITS: Record<Plan, number> = {
   growth: 10,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 5,
+  appsumo_builder: 15,
+  appsumo_dominate: -1,
 };
 
 const LONG_FORM_LIMITS: Record<Plan, number> = {
@@ -54,6 +57,9 @@ const LONG_FORM_LIMITS: Record<Plan, number> = {
   growth: 1,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 1,
+  appsumo_builder: 1,
+  appsumo_dominate: -1,
 };
 
 const IMAGE_GEN_LIMITS: Record<Plan, number> = {
@@ -62,6 +68,9 @@ const IMAGE_GEN_LIMITS: Record<Plan, number> = {
   growth: 0,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 0,
+  appsumo_builder: 0,
+  appsumo_dominate: -1,
 };
 
 const EMAIL_SEND_LIMITS: Record<Plan, number> = {
@@ -70,6 +79,9 @@ const EMAIL_SEND_LIMITS: Record<Plan, number> = {
   growth: 0,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 0,
+  appsumo_builder: 500,
+  appsumo_dominate: 2000,
 };
 
 const HAS_SCHEDULING: Record<Plan, boolean> = {
@@ -78,6 +90,9 @@ const HAS_SCHEDULING: Record<Plan, boolean> = {
   growth: true,
   pro: true,
   enterprise: true,
+  appsumo_launch: true,
+  appsumo_builder: true,
+  appsumo_dominate: true,
 };
 
 const HAS_COPILOT: Record<Plan, boolean> = {
@@ -86,6 +101,9 @@ const HAS_COPILOT: Record<Plan, boolean> = {
   growth: false,
   pro: true,
   enterprise: true,
+  appsumo_launch: false,
+  appsumo_builder: false,
+  appsumo_dominate: true,
 };
 
 const HAS_GTM: Record<Plan, boolean> = {
@@ -94,6 +112,9 @@ const HAS_GTM: Record<Plan, boolean> = {
   growth: true,
   pro: true,
   enterprise: true,
+  appsumo_launch: true,
+  appsumo_builder: true,
+  appsumo_dominate: true,
 };
 
 const CREDITS_LIMITS: Record<Plan, number> = {
@@ -102,6 +123,9 @@ const CREDITS_LIMITS: Record<Plan, number> = {
   growth: 1000,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 200,
+  appsumo_builder: 500,
+  appsumo_dominate: 1500,
 };
 
 const ACTIVE_CAMPAIGNS_LIMITS: Record<Plan, number> = {
@@ -110,6 +134,9 @@ const ACTIVE_CAMPAIGNS_LIMITS: Record<Plan, number> = {
   growth: -1,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 2,
+  appsumo_builder: -1,
+  appsumo_dominate: -1,
 };
 
 const SEQUENCE_SENDS_LIMITS: Record<Plan, number> = {
@@ -118,6 +145,9 @@ const SEQUENCE_SENDS_LIMITS: Record<Plan, number> = {
   growth: -1,
   pro: -1,
   enterprise: -1,
+  appsumo_launch: 150,
+  appsumo_builder: 500,
+  appsumo_dominate: -1,
 };
 
 const HAS_LINKEDIN_OUTREACH: Record<Plan, boolean> = {
@@ -126,6 +156,9 @@ const HAS_LINKEDIN_OUTREACH: Record<Plan, boolean> = {
   growth: true,
   pro: true,
   enterprise: true,
+  appsumo_launch: false,
+  appsumo_builder: true,
+  appsumo_dominate: true,
 };
 
 const HAS_CRM_SYNC: Record<Plan, boolean> = {
@@ -134,6 +167,9 @@ const HAS_CRM_SYNC: Record<Plan, boolean> = {
   growth: true,
   pro: true,
   enterprise: true,
+  appsumo_launch: false,
+  appsumo_builder: true,
+  appsumo_dominate: true,
 };
 
 const HAS_MULTI_INBOX: Record<Plan, boolean> = {
@@ -142,6 +178,9 @@ const HAS_MULTI_INBOX: Record<Plan, boolean> = {
   growth: false,
   pro: true,
   enterprise: true,
+  appsumo_launch: false,
+  appsumo_builder: false,
+  appsumo_dominate: true,
 };
 
 const HAS_REPLY_DETECTION: Record<Plan, boolean> = {
@@ -150,9 +189,15 @@ const HAS_REPLY_DETECTION: Record<Plan, boolean> = {
   growth: true,
   pro: true,
   enterprise: true,
+  appsumo_launch: true,
+  appsumo_builder: true,
+  appsumo_dominate: true,
 };
 
-const VALID_PLANS = new Set<string>(['free', 'starter', 'growth', 'pro', 'enterprise']);
+const VALID_PLANS = new Set<string>([
+  'free', 'starter', 'growth', 'pro', 'enterprise',
+  'appsumo_launch', 'appsumo_builder', 'appsumo_dominate',
+]);
 
 function adminClient() {
   return createClient(
