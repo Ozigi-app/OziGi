@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
@@ -10,7 +10,7 @@ const TIER_NAMES: Record<number, string> = {
   3: "Dominate",
 };
 
-export default function AppSumoActivatePage() {
+function ActivateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -135,5 +135,13 @@ export default function AppSumoActivatePage() {
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </div>
+  );
+}
+
+export default function AppSumoActivatePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
+      <ActivateForm />
+    </Suspense>
   );
 }
