@@ -22,18 +22,24 @@ export async function POST(req: Request) {
 
   // Skip signature check for AppSumo test/validation requests
   if (!isTest) {
-    const signature = req.headers.get('x-appsumo-signature');
+    const signature = req.headers.get('x-appsumo-signature') ?? '';
     const expectedSig = crypto
       .createHmac('sha256', process.env.APPSUMO_API_KEY!)
       .update(rawBody)
       .digest('hex');
 
-    const signaturesMatch =
-      signature !== null &&
-      crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig));
+    let signaturesMatch = false;
+    try {
+      const sigBuf = Buffer.from(signature);
+      const expBuf = Buffer.from(expectedSig);
+      signaturesMatch = sigBuf.length === expBuf.length &&
+        crypto.timingSafeEqual(sigBuf, expBuf);
+    } catch {
+      signaturesMatch = false;
+    }
 
     if (!signaturesMatch) {
-      console.error('[AppSumo Webhook] Invalid signature');
+      console.error('[AppSumo Webhook] Invalid signature — received:', signature, 'expected:', expectedSig);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
   }
