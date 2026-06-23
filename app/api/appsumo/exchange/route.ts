@@ -28,23 +28,33 @@ export async function POST(req: Request) {
   const { access_token } = await tokenRes.json();
 
   // 2. Fetch license info with access token
-  const infoRes = await fetch('https://appsumo.com/openid/userinfo/', {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  const infoRes = await fetch(`https://appsumo.com/openid/license_key/?access_token=${access_token}`);
 
   if (!infoRes.ok) {
     const body = await infoRes.text();
-    console.error('[AppSumo Exchange] Userinfo error:', body);
+    console.error('[AppSumo Exchange] License key error:', body);
     return NextResponse.json({ error: 'Failed to fetch license info' }, { status: 502 });
   }
 
   const info = await infoRes.json();
-  // Returns: { email, appsumo_license_key, license_status, plan_id, ... }
+  // Returns: { license_key, license_status, tier, ... }
   console.log('[AppSumo Exchange] License info:', JSON.stringify(info));
 
+  // Also fetch email via userinfo
+  let email: string | undefined;
+  try {
+    const userRes = await fetch('https://appsumo.com/openid/userinfo/', {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    if (userRes.ok) {
+      const user = await userRes.json();
+      email = user.email;
+    }
+  } catch {}
+
   return NextResponse.json({
-    email: info.email,
-    license_key: info.appsumo_license_key ?? info.license_key,
-    tier: info.plan_id ?? null,
+    email,
+    license_key: info.license_key,
+    tier: info.tier ?? null,
   });
 }

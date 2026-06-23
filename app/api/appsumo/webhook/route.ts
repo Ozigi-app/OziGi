@@ -18,14 +18,15 @@ function adminClient() {
 export async function POST(req: Request) {
   const rawBody = await req.text();
   const event = JSON.parse(rawBody);
-  const { action, license_key, license_tier, test: isTest } = event;
+  const { event: action, license_key, tier: license_tier, test: isTest } = event;
 
   // Skip signature check for AppSumo test/validation requests
   if (!isTest) {
     const signature = req.headers.get('x-appsumo-signature') ?? '';
+    const timestamp = req.headers.get('x-appsumo-timestamp') ?? '';
     const expectedSig = crypto
       .createHmac('sha256', process.env.APPSUMO_API_KEY!)
-      .update(rawBody)
+      .update(timestamp + rawBody)
       .digest('hex');
 
     let signaturesMatch = false;
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
     }
   }
 
-  if (action === 'disable') {
+  if (action === 'deactivate') {
     await supabase
       .from('appsumo_licenses')
       .update({ status: 'disabled', updated_at: new Date().toISOString() })
@@ -98,5 +99,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ event: action, success: true });
 }
