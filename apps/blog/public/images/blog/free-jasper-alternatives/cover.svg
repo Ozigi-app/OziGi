@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glowR" cx="80%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowR)"/>
+
+  <!-- Grid -->
+  <g stroke="#1E293B" stroke-width="1" opacity="0.35">
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="450" x2="1200" y2="450"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="100" y1="0" x2="100" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="500" y1="0" x2="500" y2="630"/>
+    <line x1="700" y1="0" x2="700" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1100" y1="0" x2="1100" y2="630"/>
+  </g>
+
+  <!-- Circuit decorations -->
+  <g fill="none" stroke="#1E2A3F" stroke-width="1.5" opacity="0.45">
+    <path d="M900 90 L900 180 L1000 180 L1000 270"/>
+    <path d="M1100 90 L1100 180"/>
+    <path d="M800 360 L800 450 L900 450"/>
+    <path d="M1000 450 L1100 450 L1100 540"/>
+  </g>
+  <g fill="#1E3A5F" opacity="0.9">
+    <circle cx="900" cy="180" r="4"/>
+    <circle cx="1000" cy="270" r="4"/>
+    <circle cx="800" cy="450" r="4"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85">
+    <circle cx="1100" cy="180" r="5"/>
+    <circle cx="1100" cy="450" r="5"/>
+    <circle cx="900" cy="450" r="5"/>
+  </g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.2">
+    <circle cx="1100" cy="180" r="13"/>
+    <circle cx="1100" cy="450" r="13"/>
+  </g>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+
+  <!-- Category -->
+  <text x="80" y="118" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="600" fill="#E8320A" letter-spacing="3">MARKETING  ·  2026</text>
+
+  <!-- Title -->
+  <text x="80" y="208" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#FAFAFA">Free Jasper</text>
+  <text x="80" y="280" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="62" font-weight="800" fill="#E8320A">Alternatives.</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="330" font-family="'DM Sans','Inter',sans-serif" font-size="19" fill="#94A3B8">6 AI writers that actually sound human</text>
+  <text x="80" y="356" font-family="'DM Sans','Inter',sans-serif" font-size="19" fill="#94A3B8">— and are genuinely free to start.</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="384" x2="490" y2="384" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Pills -->
+  <rect x="80" y="398" width="110" height="32" rx="16" fill="#1E293B"/>
+  <text x="135" y="419" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">AI Writing</text>
+  <rect x="202" y="398" width="110" height="32" rx="16" fill="#1E293B"/>
+  <text x="257" y="419" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">Free Tools</text>
+  <rect x="324" y="398" width="134" height="32" rx="16" fill="#1E293B"/>
+  <text x="391" y="419" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#FAFAFA">No Credit Card</text>
+
+  <!-- Wordmark -->
+  <text x="80" y="596" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="596" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <!-- === RIGHT PANEL === -->
+  <text x="660" y="90" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8" letter-spacing="2" opacity="0.7">TOOLS COMPARED</text>
+
+  <!-- Row 1: Jasper, Copy.ai, Rytr -->
+  <rect x="660" y="106" width="118" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="719" y="128" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Jasper</text>
+  <line x1="671" y1="123" x2="767" y2="123" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <rect x="790" y="106" width="118" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="849" y="128" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Copy.ai</text>
+  <line x1="801" y1="123" x2="897" y2="123" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <rect x="920" y="106" width="118" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="979" y="128" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Rytr</text>
+  <line x1="931" y1="123" x2="1027" y2="123" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <!-- Row 2: Writesonic, ChatGPT, Gemini -->
+  <rect x="660" y="152" width="130" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="725" y="174" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Writesonic</text>
+  <line x1="671" y1="169" x2="779" y2="169" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <rect x="802" y="152" width="118" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="861" y="174" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">ChatGPT</text>
+  <line x1="813" y1="169" x2="909" y2="169" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <rect x="932" y="152" width="108" height="34" rx="7" fill="#1E293B" stroke="#1E3A5F" stroke-width="1"/>
+  <text x="986" y="174" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Gemini</text>
+  <line x1="943" y1="169" x2="1029" y2="169" stroke="#94A3B8" stroke-width="0.8" opacity="0.3"/>
+
+  <!-- VS -->
+  <text x="740" y="220" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="2" opacity="0.5">VS</text>
+
+  <!-- Ozigi winner badge -->
+  <rect x="660" y="232" width="490" height="76" rx="10" fill="#1E293B" stroke="#E8320A" stroke-width="2"/>
+  <rect x="660" y="232" width="6" height="76" rx="3" fill="#E8320A"/>
+  <text x="684" y="260" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A" letter-spacing="1">OZIGI  ·  THE ONE BUILT FOR THIS</text>
+  <text x="684" y="281" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">Content that sounds like you, not like AI.</text>
+  <text x="684" y="298" font-family="'DM Sans','Inter',sans-serif" font-size="11" fill="#94A3B8">Persona-driven  ·  Banned lexicon  ·  Multi-platform  ·  Free</text>
+
+  <!-- Signal rows -->
+  <rect x="660" y="326" width="490" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="343" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="1.5">FREE, NO CARD NEEDED</text>
+  <text x="676" y="360" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Jasper: trial only · Writesonic: limited one-time</text>
+  <rect x="982" y="332" width="66" height="22" rx="5" fill="#1E293B"/>
+  <text x="1015" y="347" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Varies</text>
+  <rect x="1054" y="332" width="84" height="22" rx="5" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="347" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#E8320A">Ozigi: Yes</text>
+
+  <rect x="660" y="378" width="490" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="395" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="1.5">SOUNDS LIKE YOU, NOT AI</text>
+  <text x="676" y="412" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Others need manual editing to strip AI tone</text>
+  <rect x="982" y="384" width="66" height="22" rx="5" fill="#1E293B"/>
+  <text x="1015" y="399" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Edit it</text>
+  <rect x="1054" y="384" width="84" height="22" rx="5" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="399" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#E8320A">Enforced</text>
+
+  <rect x="660" y="430" width="490" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="447" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="1.5">OUTREACH INCLUDED</text>
+  <text x="676" y="464" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Content writers only — no leads or emails</text>
+  <rect x="982" y="436" width="66" height="22" rx="5" fill="#1E293B"/>
+  <text x="1015" y="451" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">None</text>
+  <rect x="1054" y="436" width="84" height="22" rx="5" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="451" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#E8320A">Included</text>
+
+  <rect x="660" y="482" width="490" height="44" rx="6" fill="#0A1628" stroke="#1E293B" stroke-width="1"/>
+  <text x="676" y="499" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="700" fill="#94A3B8" letter-spacing="1.5">MULTI-PLATFORM PUBLISHING</text>
+  <text x="676" y="516" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">X · LinkedIn · Discord · Slack · Newsletter</text>
+  <rect x="982" y="488" width="66" height="22" rx="5" fill="#1E293B"/>
+  <text x="1015" y="503" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Partly</text>
+  <rect x="1054" y="488" width="84" height="22" rx="5" fill="#E8320A" opacity="0.15" stroke="#E8320A" stroke-width="1"/>
+  <text x="1096" y="503" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#E8320A">All 5</text>
+</svg>

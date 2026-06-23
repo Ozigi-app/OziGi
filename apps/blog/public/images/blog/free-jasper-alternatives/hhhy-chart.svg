@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="580" viewBox="0 0 1200 580">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0B1628"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="580" fill="url(#bg)" rx="12"/>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="5" height="580" rx="3" fill="#E8320A"/>
+
+  <!-- Header -->
+  <text x="40" y="44" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="3">HHHÝ FRAMEWORK  ·  PICKING YOUR FREE JASPER ALTERNATIVE</text>
+  <text x="40" y="68" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8">Human voice  ·  Hassle-free start  ·  Hub reach  ·  Your outreach</text>
+
+  <!-- Column header bg -->
+  <rect x="30" y="84" width="1140" height="46" rx="6" fill="#0F1A2E"/>
+
+  <!-- Column headers -->
+  <text x="200" y="112" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1.5">TOOL</text>
+
+  <!-- H1: Human Voice -->
+  <text x="420" y="100" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="20" font-weight="800" fill="#E8320A">H</text>
+  <text x="420" y="118" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="1">HUMAN VOICE</text>
+
+  <!-- H2: Hassle-free -->
+  <text x="640" y="100" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="20" font-weight="800" fill="#E8320A">H</text>
+  <text x="640" y="118" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="1">HASSLE-FREE START</text>
+
+  <!-- H3: Hub reach -->
+  <text x="860" y="100" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="20" font-weight="800" fill="#E8320A">H</text>
+  <text x="860" y="118" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="1">HUB REACH</text>
+
+  <!-- y: Outreach -->
+  <text x="1080" y="100" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="20" font-weight="800" fill="#E8320A">y</text>
+  <text x="1080" y="118" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" font-weight="600" fill="#94A3B8" letter-spacing="1">YOUR OUTREACH</text>
+
+  <!-- Vertical column dividers -->
+  <line x1="300" y1="84" x2="300" y2="564" stroke="#1E293B" stroke-width="1"/>
+  <line x1="520" y1="84" x2="520" y2="564" stroke="#1E293B" stroke-width="1"/>
+  <line x1="740" y1="84" x2="740" y2="564" stroke="#1E293B" stroke-width="1"/>
+  <line x1="960" y1="84" x2="960" y2="564" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- ===== ROW 1: OZIGI — highlighted ===== -->
+  <rect x="30" y="130" width="1140" height="70" rx="6" fill="#1A0D08" stroke="#E8320A" stroke-width="1.5"/>
+  <!-- Tool name -->
+  <text x="50" y="158" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="800" fill="#E8320A">Ozigi</text>
+  <rect x="50" y="166" width="100" height="18" rx="4" fill="#E8320A" opacity="0.15"/>
+  <text x="100" y="179" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="9" font-weight="700" fill="#E8320A">START HERE</text>
+  <!-- H1: Human Voice -->
+  <rect x="322" y="143" width="176" height="44" rx="6" fill="#E8320A" opacity="0.12" stroke="#E8320A" stroke-width="1"/>
+  <text x="410" y="162" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A">Enforced</text>
+  <text x="410" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#E8320A" opacity="0.8">Banned lexicon pass</text>
+  <!-- H2: Hassle-free -->
+  <rect x="542" y="143" width="176" height="44" rx="6" fill="#E8320A" opacity="0.12" stroke="#E8320A" stroke-width="1"/>
+  <text x="630" y="162" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A">Yes, no card</text>
+  <text x="630" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#E8320A" opacity="0.8">Permanent free tier</text>
+  <!-- H3: Hub reach -->
+  <rect x="762" y="143" width="176" height="44" rx="6" fill="#E8320A" opacity="0.12" stroke="#E8320A" stroke-width="1"/>
+  <text x="850" y="162" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A">All 5 platforms</text>
+  <text x="850" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#E8320A" opacity="0.8">X · LinkedIn · Discord · Slack · Email</text>
+  <!-- y: Outreach -->
+  <rect x="982" y="143" width="176" height="44" rx="6" fill="#E8320A" opacity="0.12" stroke="#E8320A" stroke-width="1"/>
+  <text x="1070" y="162" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#E8320A">Yes</text>
+  <text x="1070" y="178" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#E8320A" opacity="0.8">Leads + email in your voice</text>
+
+  <!-- ===== ROW 2: Copy.ai ===== -->
+  <rect x="30" y="208" width="1140" height="70" rx="6" fill="#0A1320"/>
+  <text x="50" y="240" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">Copy.ai</text>
+  <text x="50" y="258" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Best free volume</text>
+  <!-- H1 -->
+  <rect x="322" y="219" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="410" y="238" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Needs editing</text>
+  <text x="410" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Generic marketing voice</text>
+  <!-- H2 -->
+  <rect x="542" y="219" width="176" height="44" rx="6" fill="#1E3A5F" opacity="0.6"/>
+  <text x="630" y="238" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#93C5FD">Yes, no card</text>
+  <text x="630" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">~2,000 words / month</text>
+  <!-- H3 -->
+  <rect x="762" y="219" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="850" y="238" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Partly</text>
+  <text x="850" y="254" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Templates, not per-platform</text>
+  <!-- y -->
+  <rect x="982" y="219" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="1070" y="244" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#475569">No</text>
+
+  <!-- ===== ROW 3: Rytr ===== -->
+  <rect x="30" y="286" width="1140" height="70" rx="6" fill="#0D1828"/>
+  <text x="50" y="318" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">Rytr</text>
+  <text x="50" y="336" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Simplest free tier</text>
+  <!-- H1 -->
+  <rect x="322" y="297" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="410" y="316" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Needs editing</text>
+  <text x="410" y="332" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Tone slider, not your voice</text>
+  <!-- H2 -->
+  <rect x="542" y="297" width="176" height="44" rx="6" fill="#1E3A5F" opacity="0.6"/>
+  <text x="630" y="316" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#93C5FD">Yes, no card</text>
+  <text x="630" y="332" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">~10k characters / month</text>
+  <!-- H3 -->
+  <rect x="762" y="297" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="850" y="316" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Partly</text>
+  <text x="850" y="332" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Short-form focus</text>
+  <!-- y -->
+  <rect x="982" y="297" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="1070" y="322" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#475569">No</text>
+
+  <!-- ===== ROW 4: Writesonic ===== -->
+  <rect x="30" y="364" width="1140" height="70" rx="6" fill="#0A1320"/>
+  <text x="50" y="396" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">Writesonic</text>
+  <text x="50" y="414" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Best for SEO</text>
+  <!-- H1 -->
+  <rect x="322" y="375" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="410" y="394" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Needs editing</text>
+  <text x="410" y="410" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">SEO-tuned, AI tone</text>
+  <!-- H2 -->
+  <rect x="542" y="375" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="630" y="394" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Limited</text>
+  <text x="630" y="410" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">One-time allocation only</text>
+  <!-- H3 -->
+  <rect x="762" y="375" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="850" y="394" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Partly</text>
+  <text x="850" y="410" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Blog + some social</text>
+  <!-- y -->
+  <rect x="982" y="375" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="1070" y="400" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#475569">No</text>
+
+  <!-- ===== ROW 5: ChatGPT ===== -->
+  <rect x="30" y="442" width="1140" height="70" rx="6" fill="#0D1828"/>
+  <text x="50" y="474" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">ChatGPT</text>
+  <text x="50" y="492" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Best generalist</text>
+  <!-- H1 -->
+  <rect x="322" y="453" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="410" y="472" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">You prompt it</text>
+  <text x="410" y="488" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">No persona, no enforcement</text>
+  <!-- H2 -->
+  <rect x="542" y="453" width="176" height="44" rx="6" fill="#1E3A5F" opacity="0.6"/>
+  <text x="630" y="472" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#93C5FD">Yes, no card</text>
+  <text x="630" y="488" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Generous free tier</text>
+  <!-- H3 -->
+  <rect x="762" y="453" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="850" y="472" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Manual</text>
+  <text x="850" y="488" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">You format per platform</text>
+  <!-- y -->
+  <rect x="982" y="453" width="176" height="44" rx="6" fill="#1E293B"/>
+  <text x="1070" y="478" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#475569">No</text>
+
+  <!-- ===== ROW 6: Gemini ===== -->
+  <rect x="30" y="520" width="1140" height="44" rx="6" fill="#0A1320"/>
+  <text x="50" y="544" font-family="'DM Sans','Inter',sans-serif" font-size="14" font-weight="700" fill="#CBD5E1">Gemini</text>
+  <text x="160" y="544" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Best for Google Workspace</text>
+  <!-- H1 -->
+  <rect x="322" y="531" width="176" height="26" rx="5" fill="#1E293B"/>
+  <text x="410" y="548" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">You prompt it</text>
+  <!-- H2 -->
+  <rect x="542" y="531" width="176" height="26" rx="5" fill="#1E3A5F" opacity="0.6"/>
+  <text x="630" y="548" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#93C5FD">Yes, no card</text>
+  <!-- H3 -->
+  <rect x="762" y="531" width="176" height="26" rx="5" fill="#1E293B"/>
+  <text x="850" y="548" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Manual</text>
+  <!-- y -->
+  <rect x="982" y="531" width="176" height="26" rx="5" fill="#1E293B"/>
+  <text x="1070" y="548" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="600" fill="#475569">No</text>
+
+  <!-- Bottom legend -->
+  <rect x="922" y="556" width="12" height="12" rx="2" fill="#E8320A" opacity="0.25" stroke="#E8320A" stroke-width="1"/>
+  <text x="940" y="566" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#94A3B8">Ozigi advantage</text>
+  <rect x="1040" y="556" width="12" height="12" rx="2" fill="#1E3A5F" opacity="0.8"/>
+  <text x="1058" y="566" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#64748B">Good, not unique</text>
+  <text x="1155" y="566" font-family="'DM Sans','Inter',sans-serif" font-size="10" fill="#E8320A" font-weight="700">blog.ozigi.app</text>
+</svg>
