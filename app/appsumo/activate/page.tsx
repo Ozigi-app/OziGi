@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import AuthModal from "@/components/AuthModal";
@@ -10,44 +10,88 @@ const TIER_NAMES: Record<number, string> = {
   3: "Dominate",
 };
 
+const SESSION_KEY = "appsumo_pending_license_key";
+
+async function redeemKey(licenseKey: string) {
+  const res = await fetch("/api/appsumo/redeem", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ license_key: licenseKey.trim() }),
+  });
+  return { ok: res.ok, data: await res.json() };
+}
+
 function ActivateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const urlKey = searchParams.get("license_key") ?? "";
   const [session, setSession] = useState<any>(null);
-  const [licenseKey, setLicenseKey] = useState(searchParams.get("license_key") ?? "");
+  const [licenseKey, setLicenseKey] = useState(
+    urlKey || (typeof window !== "undefined" ? sessionStorage.getItem(SESSION_KEY) ?? "" : "")
+  );
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [activatedTier, setActivatedTier] = useState<number | null>(null);
   const [showAuth, setShowAuth] = useState(false);
+  const autoSubmittedRef = useRef(false);
+
+  // Persist key to sessionStorage whenever it changes so it survives email-confirmation redirects
+  useEffect(() => {
+    if (licenseKey) sessionStorage.setItem(SESSION_KEY, licenseKey);
+  }, [licenseKey]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+
+      // Auto-submit the moment the user becomes logged in, if a key is already present
+      if (s && !autoSubmittedRef.current) {
+        const key = licenseKey || sessionStorage.getItem(SESSION_KEY) || "";
+        if (key) {
+          autoSubmittedRef.current = true;
+          setLicenseKey(key);
+          setStatus("loading");
+          redeemKey(key).then(({ ok, data }) => {
+            if (ok) {
+              sessionStorage.removeItem(SESSION_KEY);
+              setActivatedTier(data.tier);
+              setStatus("success");
+              setTimeout(() => router.push("/dashboard"), 2500);
+            } else {
+              setStatus("error");
+              setErrorMsg(data.error ?? "Something went wrong. Please try again.");
+            }
+          });
+        }
+      }
+    });
+
     return () => subscription.unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleRedeem(e: React.FormEvent) {
     e.preventDefault();
-    if (!session) { setShowAuth(true); return; }
+    if (!session) {
+      sessionStorage.setItem(SESSION_KEY, licenseKey);
+      setShowAuth(true);
+      return;
+    }
 
     setStatus("loading");
     setErrorMsg("");
+    const { ok, data } = await redeemKey(licenseKey);
 
-    const res = await fetch("/api/appsumo/redeem", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ license_key: licenseKey.trim() }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
+    if (!ok) {
       setStatus("error");
       setErrorMsg(data.error ?? "Something went wrong. Please try again.");
       return;
     }
 
+    sessionStorage.removeItem(SESSION_KEY);
     setActivatedTier(data.tier);
     setStatus("success");
     setTimeout(() => router.push("/dashboard"), 2500);
@@ -74,6 +118,11 @@ function ActivateForm() {
               Taking you to your dashboard…
             </p>
           </div>
+        ) : status === "loading" ? (
+          <div className="text-center py-8">
+            <div className="w-8 h-8 border-4 border-slate-200 border-t-[#E8320A] rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-sm text-slate-500">Activating your license…</p>
+          </div>
         ) : (
           <>
             <h1 className="text-2xl font-black text-slate-900 mb-1">Activate your license</h1>
@@ -85,7 +134,7 @@ function ActivateForm() {
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5 text-sm text-amber-800">
                 You need to be signed in to activate your license.{" "}
                 <button
-                  onClick={() => setShowAuth(true)}
+                  onClick={() => { sessionStorage.setItem(SESSION_KEY, licenseKey); setShowAuth(true); }}
                   className="font-semibold underline underline-offset-2"
                 >
                   Sign in or create an account
@@ -116,10 +165,10 @@ function ActivateForm() {
 
               <button
                 type="submit"
-                disabled={status === "loading" || !licenseKey.trim()}
+                disabled={!licenseKey.trim()}
                 className="w-full bg-[#E8320A] text-white font-bold py-3 rounded-xl text-sm hover:bg-[#d12d08] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {status === "loading" ? "Activating…" : "Activate license"}
+                Activate license
               </button>
             </form>
 
