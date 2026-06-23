@@ -25,7 +25,7 @@ function ActivateForm() {
   const searchParams = useSearchParams();
 
   const [licenseKey, setLicenseKey] = useState(
-    typeof window !== "undefined" ? sessionStorage.getItem(SESSION_KEY) ?? "" : ""
+    typeof window !== "undefined" ? localStorage.getItem(SESSION_KEY) ?? "" : ""
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,12 +37,22 @@ function ActivateForm() {
   const autoSubmittedRef = useRef(false);
   const codeExchangedRef = useRef(false);
 
-  // On mount: if AppSumo redirected with ?code=, exchange it for license details
+  // On mount: if AppSumo redirected with ?code=, exchange it for license details.
+  // NOTE: Supabase's PKCE email-confirmation flow ALSO returns a ?code= param.
+  // We mark our email-redirect URLs with ?confirmed=1 and skip the AppSumo
+  // exchange in that case, otherwise we'd send Supabase's code to AppSumo and
+  // get a (harmless but confusing) "Failed to exchange code" error.
   useEffect(() => {
     const code = searchParams.get("code");
-    if (code && !codeExchangedRef.current) {
+    const isEmailConfirmation = searchParams.get("confirmed") === "1";
+    if (code && !isEmailConfirmation && !codeExchangedRef.current) {
       codeExchangedRef.current = true;
       setStatus("loading-code");
+      const finish = () => {
+        // Strip the single-use code from the URL so a refresh or back-nav
+        // never re-attempts the (now-consumed) exchange.
+        window.history.replaceState({}, "", "/appsumo/activate");
+      };
       fetch("/api/appsumo/exchange", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,19 +60,25 @@ function ActivateForm() {
       })
         .then((r) => r.json())
         .then((data) => {
+          finish();
           if (data.error) {
+            // Non-fatal: if a key was already captured, just fall through to
+            // the form/auto-redeem instead of showing a scary error.
+            if (localStorage.getItem(SESSION_KEY)) { setStatus("idle"); return; }
             setErrorMsg(`Could not load your license: ${data.error}`);
             setStatus("error");
             return;
           }
           if (data.license_key) {
             setLicenseKey(data.license_key);
-            sessionStorage.setItem(SESSION_KEY, data.license_key);
+            localStorage.setItem(SESSION_KEY, data.license_key);
           }
           if (data.email) setEmail(data.email);
           setStatus("idle");
         })
         .catch((err) => {
+          finish();
+          if (localStorage.getItem(SESSION_KEY)) { setStatus("idle"); return; }
           setErrorMsg(`Network error: ${err?.message ?? "unknown"}`);
           setStatus("error");
         });
@@ -70,23 +86,24 @@ function ActivateForm() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Persist key to sessionStorage so it survives email-confirmation redirects
+  // Persist key to localStorage (shared across tabs) so it survives the
+  // email-confirmation redirect, which opens in a separate tab.
   useEffect(() => {
-    if (licenseKey) sessionStorage.setItem(SESSION_KEY, licenseKey);
+    if (licenseKey) localStorage.setItem(SESSION_KEY, licenseKey);
   }, [licenseKey]);
 
   // Auto-redeem when user becomes logged in (handles email confirmation return)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
       if (s && !autoSubmittedRef.current) {
-        const key = licenseKey || sessionStorage.getItem(SESSION_KEY) || "";
+        const key = licenseKey || localStorage.getItem(SESSION_KEY) || "";
         if (key) {
           autoSubmittedRef.current = true;
           setLicenseKey(key);
           setStatus("activating");
           redeemKey(key).then(({ ok, data }) => {
             if (ok) {
-              sessionStorage.removeItem(SESSION_KEY);
+              localStorage.removeItem(SESSION_KEY);
               setActivatedTier(data.tier);
               setStatus("success");
               setTimeout(() => router.push("/dashboard"), 2500);
@@ -106,13 +123,15 @@ function ActivateForm() {
     e.preventDefault();
     setStatus("signing-up");
     setErrorMsg("");
-    sessionStorage.setItem(SESSION_KEY, licenseKey);
+    localStorage.setItem(SESSION_KEY, licenseKey);
 
     const { error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/appsumo/activate`,
+        // ?confirmed=1 tells our mount effect this return carries a Supabase
+        // PKCE code (not an AppSumo OAuth code), so we don't try to exchange it.
+        emailRedirectTo: `${window.location.origin}/appsumo/activate?confirmed=1`,
       },
     });
 
