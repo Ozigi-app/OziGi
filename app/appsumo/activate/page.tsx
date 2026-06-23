@@ -50,6 +50,11 @@ function ActivateForm() {
       })
         .then((r) => r.json())
         .then((data) => {
+          if (data.error) {
+            setErrorMsg(`Could not load your license: ${data.error}`);
+            setStatus("error");
+            return;
+          }
           if (data.license_key) {
             setLicenseKey(data.license_key);
             sessionStorage.setItem(SESSION_KEY, data.license_key);
@@ -57,7 +62,10 @@ function ActivateForm() {
           if (data.email) setEmail(data.email);
           setStatus("idle");
         })
-        .catch(() => setStatus("idle"));
+        .catch((err) => {
+          setErrorMsg(`Network error: ${err?.message ?? "unknown"}`);
+          setStatus("error");
+        });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -125,6 +133,24 @@ function ActivateForm() {
         <div className="text-center py-8">
           <div className="w-8 h-8 border-4 border-slate-200 border-t-[#E8320A] rounded-full animate-spin mx-auto mb-4" />
           <p className="text-sm text-slate-500">Loading your license details…</p>
+        </div>
+      </Shell>
+    );
+  }
+
+  if (status === "error" && !licenseKey) {
+    return (
+      <Shell>
+        <div className="text-center py-4">
+          <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">
+            {errorMsg || "Something went wrong loading your license."}
+          </p>
+          <button
+            onClick={() => { setStatus("idle"); setErrorMsg(""); }}
+            className="text-sm text-slate-500 underline underline-offset-2"
+          >
+            Continue manually
+          </button>
         </div>
       </Shell>
     );
