@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import { UserPlus, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-react'
+import { UserPlus, CheckCircle, Clock, RefreshCw } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
 import Link from 'next/link'
@@ -16,10 +16,9 @@ interface QueueItem {
 }
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
-  done:        <CheckCircle size={14} className="text-green-500"  />,
-  queued:      <Clock       size={14} className="text-amber-500"  />,
-  in_progress: <Clock       size={14} className="text-accent"     />,
-  failed:      <XCircle     size={14} className="text-red-500"    />,
+  done:        <CheckCircle size={14} className="text-green-500" />,
+  queued:      <Clock       size={14} className="text-amber-500" />,
+  in_progress: <Clock       size={14} className="text-accent"    />,
 }
 
 function formatScheduled(iso: string): string {
@@ -38,13 +37,10 @@ function formatScheduled(iso: string): string {
 }
 
 export default function LinkedInOutreachPage() {
-  const [items, setItems]         = useState<QueueItem[]>([])
-  const [loading, setLoading]     = useState(true)
-  const [retrying, setRetrying]   = useState(false)
-  const [retryMsg, setRetryMsg]   = useState<string | null>(null)
+  const [items, setItems]     = useState<QueueItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
-    // Return the promise so callers can await actual completion
     return fetch('/api/gtm/linkedin/queue')
       .then(r => r.json())
       .then(d => { setItems(d.items ?? []); setLoading(false) })
@@ -55,32 +51,13 @@ export default function LinkedInOutreachPage() {
 
   const today = new Date().toDateString()
   const sentToday  = items.filter(i => i.status === 'done' && i.processed_at && new Date(i.processed_at).toDateString() === today).length
-  const scheduled  = items.filter(i => i.status === 'queued').length
-  const inProgress = items.filter(i => i.status === 'in_progress').length
-  const failed     = items.filter(i => i.status === 'failed').length
-  const done       = items.filter(i => i.status === 'done').length
+  const scheduled  = items.filter(i => i.status === 'queued' || i.status === 'in_progress').length
+  const totalSent  = items.filter(i => i.status === 'done').length
 
-  // Next scheduled send
   const nextItem = items
     .filter(i => i.status === 'queued')
     .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())[0]
   const nextSend = nextItem ? formatScheduled(nextItem.scheduled_at) : null
-
-  async function retryFailed() {
-    setRetrying(true)
-    setRetryMsg(null)
-    const res  = await fetch('/api/gtm/linkedin/retry-failed', { method: 'POST' })
-    const data = await res.json()
-    await load()
-    setRetrying(false)
-    if (!res.ok) {
-      setRetryMsg(`Error: ${data.error ?? 'retry failed'}`)
-    } else if (data.reset === 0) {
-      setRetryMsg('No failed items to retry.')
-    } else {
-      setRetryMsg(`${data.reset} item${data.reset === 1 ? '' : 's'} re-queued.`)
-    }
-  }
 
   return (
     <div>
@@ -105,42 +82,21 @@ export default function LinkedInOutreachPage() {
         <FreeAgentBanner />
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="text-2xl font-bold text-green-600">{sentToday}</div>
             <div className="text-foreground-subtle text-xs mt-0.5">Sent today</div>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold text-amber-600">{scheduled + inProgress}</div>
+            <div className="text-2xl font-bold text-amber-600">{scheduled}</div>
             <div className="text-foreground-subtle text-xs mt-0.5">
               Scheduled
               {nextSend && <span className="ml-1 text-foreground-subtle">· next: {nextSend}</span>}
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold text-foreground">{done}</div>
+            <div className="text-2xl font-bold text-foreground">{totalSent}</div>
             <div className="text-foreground-subtle text-xs mt-0.5">Total sent</div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-4 flex items-center justify-between">
-            <div>
-              <div className="text-2xl font-bold text-red-500">{failed}</div>
-              <div className="text-foreground-subtle text-xs mt-0.5">Failed</div>
-              {retryMsg && (
-                <div className="text-xs mt-1 text-foreground-subtle">{retryMsg}</div>
-              )}
-            </div>
-            {failed > 0 && (
-              <button
-                onClick={retryFailed}
-                disabled={retrying}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:bg-surface-2 transition-colors disabled:opacity-50"
-              >
-                <RefreshCw size={12} className={retrying ? 'animate-spin' : ''} />
-                {retrying ? 'Retrying…' : 'Retry all'}
-              </button>
-            )}
           </div>
         </div>
 

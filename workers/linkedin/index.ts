@@ -528,28 +528,54 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
       }
 
       if (item.sequence_step > 0) {
-        await withTimeout(
-          supabase
-            .from('sequence_sends')
-            .update({ status: 'sent', sent_at: now })
-            .eq('lead_id', item.lead_id)
-            .eq('step', item.sequence_step)
-            .eq('channel', 'linkedin')
-            .eq('status', 'queued'),
-          15_000,
-          `mark sequence_send for ${item.lead_id} sent`
-        ).catch(err => console.warn(`[worker] sequence_sends update failed for ${item.id}:`, (err as Error).message))
+        // Retry up to 3× — a silent .catch() here causes sequence_sends to stay
+        // 'queued' forever, which blocks the cron from queuing the next step.
+        let ssMarked = false
+        for (let attempt = 1; attempt <= 3 && !ssMarked; attempt++) {
+          try {
+            await withTimeout(
+              supabase
+                .from('sequence_sends')
+                .update({ status: 'sent', sent_at: now })
+                .eq('lead_id', item.lead_id)
+                .eq('step', item.sequence_step)
+                .eq('channel', 'linkedin')
+                .eq('status', 'queued'),
+              15_000,
+              `mark sequence_send for ${item.lead_id} sent (attempt ${attempt})`
+            )
+            ssMarked = true
+          } catch (ssErr) {
+            console.error(`[worker] sequence_sends update failed for ${item.id} (attempt ${attempt}/3):`, (ssErr as Error).message)
+          }
+        }
+        if (!ssMarked) {
+          console.error(`[worker] could not mark sequence_send sent for ${item.id} after 3 attempts — pipeline will stall for this lead`)
+        }
       }
 
       if (item.action === 'connect') {
-        await withTimeout(
-          supabase
-            .from('leads')
-            .update({ status: 'contacted', updated_at: now })
-            .eq('id', item.lead_id),
-          15_000,
-          `mark lead ${item.lead_id} contacted`
-        ).catch(err => console.warn(`[worker] lead status update failed for ${item.id}:`, (err as Error).message))
+        // Retry up to 3× — a silent .catch() here leaves the lead at 'pending',
+        // which blocks the message step (requires status='contacted').
+        let leadMarked = false
+        for (let attempt = 1; attempt <= 3 && !leadMarked; attempt++) {
+          try {
+            await withTimeout(
+              supabase
+                .from('leads')
+                .update({ status: 'contacted', updated_at: now })
+                .eq('id', item.lead_id),
+              15_000,
+              `mark lead ${item.lead_id} contacted (attempt ${attempt})`
+            )
+            leadMarked = true
+          } catch (leadErr) {
+            console.error(`[worker] lead status update failed for ${item.id} (attempt ${attempt}/3):`, (leadErr as Error).message)
+          }
+        }
+        if (!leadMarked) {
+          console.error(`[worker] could not mark lead ${item.lead_id} contacted after 3 attempts — message step will be blocked`)
+        }
       }
 
       actionsThisRun++
@@ -628,6 +654,20 @@ async function runForUser(userId: string, items: QueueItem[]): Promise<void> {
         15_000,
         `mark item ${item.id} ${newStatus}`
       ).catch(err => console.error(`[worker] status update failed for ${item.id}:`, (err as Error).message))
+
+      // When permanently failed: mark sequence_sends as 'failed' too so the cron
+      // doesn't see a stale 'queued' row and permanently block the next step.
+      if (newStatus === 'failed' && item.sequence_step > 0) {
+        supabase
+          .from('sequence_sends')
+          .update({ status: 'failed', error: msg })
+          .eq('lead_id', item.lead_id)
+          .eq('step', item.sequence_step)
+          .eq('channel', 'linkedin')
+          .eq('status', 'queued')
+          .then()
+          .catch(err => console.warn(`[worker] sequence_sends fail-mark failed for ${item.id}:`, (err as Error).message))
+      }
     }
   }
   // Context stays alive in cache — NOT closed here. The next poll reuses it.
@@ -683,7 +723,10 @@ async function poll(): Promise<void> {
   }
 
   if (!items?.length) {
-    // Queue is globally empty — nudge any active users who haven't heard in 24 h.
+    // Queue is globally empty. Only nudge users who have genuinely run out of
+    // leads — not users whose queue will simply refill at tomorrow's 9am cron.
+    // Check: any leads in 'pending' or 'contacted' state with a linkedin_url
+    // means the cron will re-queue them tomorrow, so no email needed.
     const { data: activeSessions } = await supabase
       .from('linkedin_sessions')
       .select('user_id, linkedin_email')
@@ -691,11 +734,32 @@ async function poll(): Promise<void> {
 
     for (const s of activeSessions ?? []) {
       const lastNotified = lastQueueEmptyNotified.get(s.user_id) ?? 0
-      if (Date.now() - lastNotified > QUEUE_EMPTY_NOTIFY_COOLDOWN) {
-        lastQueueEmptyNotified.set(s.user_id, Date.now())
-        console.log(`[worker] queue empty for ${s.linkedin_email} — sending nudge email`)
-        notifyQueueEmpty(s.user_id, s.linkedin_email).catch(() => {})
+      if (Date.now() - lastNotified <= QUEUE_EMPTY_NOTIFY_COOLDOWN) continue
+
+      // Check if there are leads still in the pipeline for this user
+      const { data: userCampaigns } = await supabase
+        .from('campaigns')
+        .select('id')
+        .eq('user_id', s.user_id)
+        .eq('status', 'active')
+      const campaignIds = (userCampaigns ?? []).map((c: { id: string }) => c.id)
+
+      const { count: remainingLeads } = campaignIds.length ? await supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .in('campaign_id', campaignIds)
+        .in('status', ['pending', 'contacted'])
+        .not('linkedin_url', 'is', null) : { count: 0 }
+
+      if (remainingLeads && remainingLeads > 0) {
+        // Leads exist — queue will refill at 9am. Don't spam.
+        console.log(`[worker] queue empty for ${s.linkedin_email} but ${remainingLeads} leads remain — skipping nudge`)
+        continue
       }
+
+      lastQueueEmptyNotified.set(s.user_id, Date.now())
+      console.log(`[worker] queue empty for ${s.linkedin_email} and no leads remain — sending nudge email`)
+      notifyQueueEmpty(s.user_id, s.linkedin_email).catch(() => {})
     }
     return
   }
@@ -718,7 +782,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-06-18-v55')
+  console.log('[worker] LinkedIn worker started — build 2026-06-24-v60')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false

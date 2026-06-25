@@ -590,9 +590,26 @@ export async function sendConnectionRequest(
         console.log('[actions] connection sent directly by LinkedIn (no note modal — no note attached)')
         await delay(500, 1000)
       } else {
-        // Neither modal nor direct-send signal — log the state but don't throw;
-        // the connection may still have gone through silently.
-        console.log('[actions] WARNING: no modal and no direct-send signal — connection state unclear')
+        // No modal AND no direct-send signal. Wait 3s then re-check whether the
+        // button flipped to Pending — LinkedIn sometimes sends silently with a
+        // short delay before updating the UI.
+        console.log('[actions] WARNING: no modal and no direct-send signal — waiting 3s then re-checking')
+        await delay(3_000, 3_000)
+        const recheckPending = await page.evaluate(() => {
+          const body = (document.body.textContent ?? '').toLowerCase()
+          const hasPendingBtn = Array.from(document.querySelectorAll('button')).slice(0, 20)
+            .some(b => /^(pending|pendente|pendiente)$/i.test((b.textContent ?? '').trim()))
+          const hasPendingAria = !!document.querySelector('button[aria-label*="Pending"]')
+          const hasToast = ['invitation sent', 'request sent', 'connection request sent', 'solicitação enviada', 'solicitud enviada'].some(s => body.includes(s))
+          return hasPendingBtn || hasPendingAria || hasToast
+        }).catch(() => false)
+
+        if (recheckPending) {
+          console.log('[actions] re-check confirmed: connection is now Pending ✓')
+        } else {
+          // Still no confirmation after 3s — LinkedIn likely soft-blocked this request.
+          throw new Error('CONNECT_UNCONFIRMED: no modal, no Pending button, no toast after 3s re-check — LinkedIn may be rate-limiting this account')
+        }
       }
     }
 
@@ -788,8 +805,23 @@ export async function sendLinkedInMessage(
       // LinkedIn's Ember.js can re-render the overlay after dismissMessagingOverlay(),
       // restoring the high-z-index interception div before Playwright reaches the button.
       await suppressInterceptors(page)
-      await msgBtn.click({ timeout: 10_000 })
-      console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)
+
+      // LinkedIn sometimes renders Message as <a href="/messaging/compose/..."> rather
+      // than a <button>. Playwright's locator.click() on an <a> element can time out:
+      // bot-detection intercepts the mouse event, performing click action hangs until
+      // the 10s timeout fires. Fix: extract href and navigate directly — same compose
+      // panel opens, click entirely bypassed.
+      const msgBtnHref = await msgBtn.getAttribute('href').catch(() => null)
+      if (msgBtnHref?.includes('/messaging/compose/')) {
+        const composeUrl = `https://www.linkedin.com${msgBtnHref}`
+        console.log(`[actions] Message button is <a> link — navigating to compose URL for ${linkedinProfileId}`)
+        await page.goto(composeUrl, { waitUntil: 'commit', timeout: 20_000 })
+        await page.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {})
+        await delay(1_500, 2_500)
+      } else {
+        await msgBtn.click({ timeout: 10_000 })
+        console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)
+      }
     } else {
       // Fallback: JS click — queries button, [role="button"], a.artdeco-button, and a[aria-label]
       // so that <a> anchor Message buttons (LinkedIn's alternate layout) are also found.

@@ -1,5 +1,5 @@
 /**
- * Local HTTP CONNECT proxy → IPRoyal HTTP proxy (auth sent upfront).
+ * Local HTTP CONNECT proxy → upstream proxy HTTP proxy (auth sent upfront).
  */
 import http from 'http'
 import net from 'net'
@@ -32,7 +32,7 @@ export async function startLocalProxy(
     const auth = Buffer.from(`${username}:${password}`).toString('base64')
 
     const proxySocket = net.connect(proxyPort, proxyHost, () => {
-      console.log(`[local-proxy] connected to IPRoyal, sending CONNECT for ${target}`)
+      console.log(`[local-proxy] connected to upstream proxy, sending CONNECT for ${target}`)
       proxySocket.write(
         `CONNECT ${targetHost}:${targetPort} HTTP/1.1\r\n` +
         `Host: ${targetHost}:${targetPort}\r\n` +
@@ -42,7 +42,7 @@ export async function startLocalProxy(
     })
 
     proxySocket.on('error', err => {
-      console.error(`[local-proxy] IPRoyal socket error for ${target} — ${err.message}`)
+      console.error(`[local-proxy] upstream proxy socket error for ${target} — ${err.message}`)
       try { clientSocket.write('HTTP/1.1 502 Bad Gateway\r\n\r\n') } catch {}
       clientSocket.destroy()
     })
@@ -63,7 +63,7 @@ export async function startLocalProxy(
       const statusLine = headerBuf.slice(0, headerBuf.indexOf('\r\n'))
       const remainder  = Buffer.from(headerBuf.slice(sep + 4), 'binary')
 
-      console.log(`[local-proxy] IPRoyal response for ${target}: ${statusLine}`)
+      console.log(`[local-proxy] upstream proxy response for ${target}: ${statusLine}`)
 
       if (statusLine.includes('200')) {
         clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n')
@@ -78,7 +78,7 @@ export async function startLocalProxy(
 
         console.log(`[local-proxy] tunnel established for ${target}`)
       } else {
-        console.error(`[local-proxy] IPRoyal rejected ${target}: ${statusLine}`)
+        console.error(`[local-proxy] upstream proxy rejected ${target}: ${statusLine}`)
         try { clientSocket.write('HTTP/1.1 502 Bad Gateway\r\n\r\n') } catch {}
         clientSocket.destroy()
         proxySocket.destroy()

@@ -11,6 +11,7 @@ export async function GET() {
     .from('linkedin_queue')
     .select('id, lead_id, campaign_id, action, status, attempts, error, scheduled_at, processed_at')
     .eq('user_id', user.id)
+    .neq('status', 'failed')
     .order('created_at', { ascending: false })
     .limit(200)
 

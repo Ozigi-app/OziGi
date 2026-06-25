@@ -236,6 +236,16 @@ export async function POST(req: Request) {
             try {
               const message = await composeLinkedInMessage(lead, campaign, step, action)
 
+              // Clear any 'failed' sequence_send so we can re-queue the lead.
+              // 'sent' and 'queued' rows are intentionally left alone.
+              await supabaseAdmin
+                .from('sequence_sends')
+                .delete()
+                .eq('lead_id', lead.id)
+                .eq('step', step.step)
+                .eq('channel', 'linkedin')
+                .eq('status', 'failed')
+
               // Idempotency: unique(lead_id, step, channel='linkedin')
               const { data: sendRecord, error: insertErr } = await supabaseAdmin
                 .from('sequence_sends')
@@ -473,7 +483,8 @@ async function getLinkedInLeadsDueForStep(
 
   if (!data?.length) return []
 
-  // Exclude leads already queued/sent for this step
+  // Exclude leads already queued or sent for this step.
+  // 'failed' is retryable — the cron will delete it and re-insert.
   const leadIds = data.map((l: Lead) => l.id)
   const { data: alreadyQueued } = await supabaseAdmin
     .from('sequence_sends')
@@ -481,6 +492,7 @@ async function getLinkedInLeadsDueForStep(
     .in('lead_id', leadIds)
     .eq('step', step.step)
     .eq('channel', 'linkedin')
+    .in('status', ['queued', 'sent'])
 
   const alreadyQueuedIds = new Set((alreadyQueued ?? []).map((s: { lead_id: string }) => s.lead_id))
   return (data as Lead[]).filter(l => !alreadyQueuedIds.has(l.id))
