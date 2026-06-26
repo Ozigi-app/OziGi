@@ -15,6 +15,11 @@ const mailClient = new SendMailClient({
 
 const PROMO_FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS || "hello@ozigi.app";
 const PROMO_FROM_NAME = process.env.EMAIL_FROM_NAME || "Ozigi";
+// Where replies land. EMAIL_FROM_ADDRESS may be an unmonitored/no-reply
+// sender (e.g. reminders@), so always set an explicit Reply-To to a
+// monitored inbox so user replies aren't lost.
+const PROMO_REPLY_TO_ADDRESS = process.env.EMAIL_REPLY_TO_ADDRESS || "hello@ozigi.app";
+const PROMO_REPLY_TO_NAME = process.env.EMAIL_REPLY_TO_NAME || PROMO_FROM_NAME;
 
 /**
  * GET /api/cron/promotional
@@ -142,6 +147,7 @@ async function sendEmail(to: string, subject: string, htmlBody: string) {
   await mailClient.sendMail({
     from: { address: PROMO_FROM_ADDRESS, name: PROMO_FROM_NAME },
     to: [{ email_address: { address: to, name: "" } }],
+    reply_to: [{ address: PROMO_REPLY_TO_ADDRESS, name: PROMO_REPLY_TO_NAME }],
     subject,
     htmlbody: htmlBody,
   });
