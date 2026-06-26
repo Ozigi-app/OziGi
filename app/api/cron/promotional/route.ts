@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
-import { buildPromotionalEmail, buildGTMLaunchAnnouncementEmail } from "@/lib/email-templates";
+import { buildPromotionalEmail, buildGTMLaunchAnnouncementEmail, buildUserSurveyEmail } from "@/lib/email-templates";
 import { verifyQStashRequest } from "@/lib/qstash";
 
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -97,6 +97,8 @@ export async function GET(req: Request) {
         let html: string;
         if (campaign.template === 'founders_thoughts') {
           html = buildGTMLaunchAnnouncementEmail(unsubscribeUrl);
+        } else if (campaign.template === 'user_survey') {
+          html = buildUserSurveyEmail(user.display_name, unsubscribeUrl);
         } else {
           html = buildPromotionalEmail(
             campaign.subject,

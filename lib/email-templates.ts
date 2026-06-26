@@ -7,6 +7,42 @@
 export const ANNOUNCEMENT_EMAIL_SUBJECT =
   "Ozigi changed. Here’s everything that’s new.";
 
+// ==========================================
+// USER SURVEY EMAIL ("why aren't you using it?")
+// Sender: Dumebi (founder), from hello@ozigi.app
+// Plain, personal, reply-driven — deliberately no logo/CTA so it
+// reads like a normal 1:1 note and invites a reply.
+// ==========================================
+
+export const USER_SURVEY_SUBJECT = "quick question about Ozigi";
+
+export function buildUserSurveyEmail(displayName: string | null | undefined, unsubscribeUrl: string) {
+  const firstName = (displayName || "").trim().split(/\s+/)[0] || "there";
+  const greeting = escapeHtml(firstName);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${USER_SURVEY_SUBJECT}</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#1f2937;max-width:560px;margin:0 auto;padding:24px 20px;">
+  <p style="margin:0 0 16px;">Hey ${greeting},</p>
+  <p style="margin:0 0 16px;">I'm Dumebi, founder of Ozigi. I saw you signed up but haven't had a chance to really use it yet — and honestly, that's on me, not you.</p>
+  <p style="margin:0 0 16px;">I'm trying to figure out where the experience breaks down so I can fix it. Would you mind telling me: what made you sign up in the first place, and what stopped you from going further?</p>
+  <p style="margin:0 0 16px;">Even a one-line reply helps a lot. And if you're up for a 10-min call instead, I'll send you a link — happy to just listen.</p>
+  <p style="margin:0 0 4px;">Thanks for giving Ozigi a shot,</p>
+  <p style="margin:0;">Dumebi</p>
+  <div style="margin-top:32px;padding-top:14px;border-top:1px solid #f1f5f9;font-size:12px;color:#9ca3af;">
+    <a href="${unsubscribeUrl}" style="color:#9ca3af;">Unsubscribe</a>
+  </div>
+</div>
+</body>
+</html>`;
+}
+
 export function buildGTMLaunchAnnouncementEmail(unsubscribeUrl: string) {
   const appUrl = process.env.APP_URL || 'https://ozigi.app';
   const dashboardUrl = `${appUrl}/dashboard`;
