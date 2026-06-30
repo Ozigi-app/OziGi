@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Copy, Check, Linkedin } from "lucide-react";
+import { Loader2, Copy, Check, Share2 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { supabase } from "@/lib/supabase/client";
@@ -129,7 +129,7 @@ export default function LinkedInOutreachPage() {
       <main className="max-w-4xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-[#0077B5]/10 text-[#0077B5] text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full mb-6">
-            <Linkedin className="w-3.5 h-3.5" />
+            <Share2 className="w-3.5 h-3.5" />
             LinkedIn Outreach Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
