@@ -8,6 +8,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    webpackBuildWorker: true,
+  },
   // Email templates are read at runtime with fs.readFileSync — Next.js won't
   // trace them automatically because the path is dynamic. Explicitly include
   // them so Vercel bundles the files into the notify serverless functions.
