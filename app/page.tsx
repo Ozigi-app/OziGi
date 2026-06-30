@@ -846,6 +846,81 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── FREE TOOLS ────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden py-20 md:py-32"
+          style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 md:px-14">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
+              <motion.p variants={fadeUp} className="text-[10px] font-black uppercase tracking-[0.22em] mb-3" style={{ color: C.red }}>
+                Try before you commit
+              </motion.p>
+              <motion.h2 variants={fadeUp}
+                className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-[0.95] mb-4">
+                Free tools. Real output.
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-base font-medium leading-relaxed max-w-xl mb-12" style={{ color: C.muted }}>
+                No sign-up needed. Generate one piece of content for free — then see the pipeline that fills itself.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    label: "Article Generator",
+                    href: "/long-form",
+                    desc: "800–2,500 word articles that don't sound like AI wrote them.",
+                    tag: "Long-form",
+                    bg: C.cardB,
+                  },
+                  {
+                    label: "Cold Email Generator",
+                    href: "/email-outreach",
+                    desc: "Personalised first-touch emails with subject lines that earn replies.",
+                    tag: "Outreach",
+                    bg: C.cardR,
+                    accent: true,
+                  },
+                  {
+                    label: "LinkedIn Message Generator",
+                    href: "/linkedin-outreach",
+                    desc: "Connection requests and DMs under the character limit — specific, not spammy.",
+                    tag: "LinkedIn",
+                    bg: C.cardS,
+                  },
+                  {
+                    label: "Newsletter Generator",
+                    href: "/newsletter",
+                    desc: "Full newsletter issues — hook, body, takeaway, and a subject line that earns opens.",
+                    tag: "Newsletter",
+                    bg: C.cardG,
+                  },
+                ].map(({ label, href, desc, tag, bg, accent }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="group relative rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    style={{ background: bg, border: `1px solid ${accent ? "rgba(232,50,10,0.2)" : C.border}` }}
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl"
+                      style={{ background: `linear-gradient(90deg, ${C.red}, transparent)` }} />
+                    <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full w-fit"
+                      style={{ background: accent ? "rgba(232,50,10,0.12)" : "rgba(15,23,42,0.06)", color: accent ? C.red : C.muted }}>
+                      {tag}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-black text-base tracking-tight mb-2" style={{ color: C.white }}>{label}</p>
+                      <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{desc}</p>
+                    </div>
+                    <span className="text-xs font-black uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all"
+                      style={{ color: C.red }}>
+                      Try free <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                    </span>
+                  </Link>
+                ))}
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── NEWSLETTER ────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-28"
           style={{ background: C.navyDeep, borderTop: `1px solid ${C.border}` }}>

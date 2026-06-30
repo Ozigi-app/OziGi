@@ -16,9 +16,11 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState(false);
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const featuresDropdownRef = useRef<HTMLDivElement>(null);
+  const toolsDropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isDashboard = pathname === "/dashboard";
   const showNav = pathname !== "/dashboard";
@@ -33,6 +35,13 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
     { name: "Human‑in‑the‑Loop", href: "/docs/human-in-the-loop" },
   ];
 
+  const tools = [
+    { name: "Long-Form Article Generator", href: "/long-form" },
+    { name: "Cold Email Generator", href: "/email-outreach" },
+    { name: "LinkedIn Message Generator", href: "/linkedin-outreach" },
+    { name: "Newsletter Generator", href: "/newsletter" },
+  ];
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,6 +50,9 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
       }
       if (featuresDropdownRef.current && !featuresDropdownRef.current.contains(event.target as Node)) {
         setIsFeaturesDropdownOpen(false);
+      }
+      if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(event.target as Node)) {
+        setIsToolsDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -128,6 +140,36 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
                 <Link href="/pricing" className="text-sm font-semibold text-foreground-muted hover:text-foreground transition">
                   Pricing
                 </Link>
+
+                {/* Tools Dropdown */}
+                <div
+                  className="relative"
+                  ref={toolsDropdownRef}
+                  onMouseEnter={() => setIsToolsDropdownOpen(true)}
+                  onMouseLeave={() => setIsToolsDropdownOpen(false)}
+                >
+                  <button className="text-sm font-semibold text-foreground-muted hover:text-foreground transition flex items-center gap-1">
+                    Free Tools
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isToolsDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 rounded-xl py-2 z-50"
+                      style={{ background: "#FFFFFF", border: "1px solid rgba(15,23,42,0.1)", boxShadow: "0 20px 60px rgba(15,23,42,0.12)" }}>
+                      {tools.map((tool) => (
+                        <Link
+                          key={tool.href}
+                          href={tool.href}
+                          className="block px-4 py-2.5 text-sm text-foreground-muted hover:text-foreground hover:bg-surface-2 transition"
+                          onClick={() => setIsToolsDropdownOpen(false)}
+                        >
+                          {tool.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Features Dropdown - opens on hover */}
                 <div

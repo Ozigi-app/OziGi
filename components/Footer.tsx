@@ -25,23 +25,23 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Product */}
+          {/* Free Tools */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-foreground mb-5">
-              Features
+              Free Tools
             </h4>
             <div className="flex flex-col gap-3">
-              <Link href="/docs/multimodal-pipeline" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
-                Multimodal Ingestion
+              <Link href="/long-form" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
+                Article Generator
               </Link>
-              <Link href="/docs/the-banned-lexicon" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
-                Banned Lexicon
+              <Link href="/email-outreach" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
+                Cold Email Generator
               </Link>
-              <Link href="/docs/system-personas" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
-                System Personas
+              <Link href="/linkedin-outreach" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
+                LinkedIn Message Generator
               </Link>
-              <Link href="/docs/human-in-the-loop" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
-                Human‑in‑the‑Loop
+              <Link href="/newsletter" className="text-sm text-foreground-subtle hover:text-accent transition-colors">
+                Newsletter Generator
               </Link>
             </div>
           </div>
