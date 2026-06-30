@@ -154,15 +154,16 @@ export default function Home() {
   const [headlineIdx, setHeadlineIdx] = useState(0);
 
   const HEADLINES = [
-    { pre: "Stop staring at an ",      hl: "empty pipeline."       },
-    { pre: "You build. Ozigi ",        hl: "brings the customers." },
-    { pre: "Wake up to a pipeline that ", hl: "filled itself."     },
+    { pre: "Send cold emails that ",   hl: "actually get replies." },
+    { pre: "Automate your ",            hl: "content engine."       },
+    { pre: "Grow your ",                hl: "social presence."      },
+    { pre: "Fill your pipeline with ",  hl: "qualified leads."      },
   ] as const;
 
   useEffect(() => {
-    const t = setInterval(() => setHeadlineIdx(i => (i + 1) % 3), 2800);
+    const t = setInterval(() => setHeadlineIdx(i => (i + 1) % HEADLINES.length), 2800);
     return () => clearInterval(t);
-  }, []);
+  }, [HEADLINES.length]);
 
   const heroRef = useRef<HTMLElement>(null);
   const mouseX = useMotionValue(0);
@@ -315,7 +316,7 @@ export default function Home() {
                 className="text-base md:text-xl font-medium leading-relaxed max-w-2xl text-pretty"
                 style={{ color: C.muted }}
               >
-                Ozigi puts you in front of your ideal buyer, starts the conversation, and keeps you visible until they&apos;re ready to say yes.
+                Ozigi runs your outbound and your content from one place — sourcing leads, sending cold emails, and publishing posts that keep you visible until your buyer is ready to say yes.
               </motion.p>
 
               {/* CTAs */}
@@ -326,7 +327,7 @@ export default function Home() {
                 className="flex flex-wrap items-center justify-center gap-3"
               >
                 <MagneticBtn variant="red" onClick={() => setIsAuthModalOpen(true)}>
-                  Fill my pipeline →
+                  Put growth on autopilot →
                 </MagneticBtn>
                 <MagneticBtn variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
                   Sign in
