@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Loader2, Copy, Check, Share2 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
+import { LeadListTeaser } from "@/components/demo/LeadListTeaser";
 import { supabase } from "@/lib/supabase/client";
 
 const STORAGE_KEY = "ozigi_demo_linkedin_outreach";
@@ -272,6 +273,19 @@ export default function LinkedInOutreachPage() {
                   onSignUp={() => { setIsAuthModalOpen(true); track("demo_signup_clicked", { page: "linkedin_outreach", location: "post_generation" }); }}
                 />
               )}
+
+              <LeadListTeaser
+                type="linkedin"
+                isAuthenticated={isAuthenticated}
+                onSignUp={() => {
+                  if (isAuthenticated) {
+                    window.location.href = "/dashboard/gtm/linkedin";
+                  } else {
+                    setIsAuthModalOpen(true);
+                    track("demo_signup_clicked", { page: "linkedin_outreach", location: "lead_teaser" });
+                  }
+                }}
+              />
             </motion.div>
           )}
         </AnimatePresence>
