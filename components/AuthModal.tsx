@@ -7,12 +7,15 @@ import { X, Mail, ArrowRight, AlertCircle, CheckCircle2, Eye, EyeOff } from "luc
 
 type AuthView = "signin" | "signup" | "reset";
 
-export default function AuthModal({ 
+export default function AuthModal({
   onClose,
-  defaultView = "signin" 
-}: { 
+  defaultView = "signin",
+  redirectTo,
+}: {
   onClose: () => void;
   defaultView?: AuthView;
+  /** After sign-in/up, redirect here instead of /dashboard. Defaults to /dashboard. */
+  redirectTo?: string;
 }) {
   const [view, setView] = useState<AuthView>(defaultView);
   const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
@@ -37,10 +40,11 @@ export default function AuthModal({
       scopes = OAUTH_SCOPES.LINKEDIN;
     }
 
+    const next = redirectTo ?? window.location.pathname;
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`,
         scopes: scopes,
       },
     });
@@ -76,7 +80,7 @@ export default function AuthModal({
       }
       
       onClose();
-      window.location.href = "/dashboard";
+      window.location.href = redirectTo ?? "/dashboard";
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
