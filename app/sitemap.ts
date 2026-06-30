@@ -10,6 +10,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Highest-value conversion pages
     { url: BASE,                            lastModified: new Date("2026-06-09"), changeFrequency: "weekly",  priority: 1.0 },
     { url: `${BASE}/pricing`,               lastModified: new Date("2026-06-01"), changeFrequency: "monthly", priority: 0.9 },
+
+    // High-intent public tool pages (SEO landing + demo gate)
+    { url: `${BASE}/long-form`,             lastModified: new Date("2026-06-30"), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/email-outreach`,        lastModified: new Date("2026-06-30"), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/linkedin-outreach`,     lastModified: new Date("2026-06-30"), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/newsletter`,            lastModified: new Date("2026-06-30"), changeFrequency: "monthly", priority: 0.9 },
+
     { url: `${BASE}/demo`,                  lastModified: new Date("2026-05-20"), changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/content-engine`,        lastModified: new Date("2026-05-20"), changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/from-youtube`,          lastModified: new Date("2026-05-20"), changeFrequency: "monthly", priority: 0.8 },

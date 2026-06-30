@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Turn a topic into a full newsletter issue — subject line, hook, body, and takeaway — in seconds. Conversational, opinionated, or analytical. Try free, no sign-up required.",
     type: "website",
-    url: "https://ozigi.com/newsletter",
+    url: "https://ozigi.app/newsletter",
   },
   twitter: {
     card: "summary_large_image",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       "Turn a topic into a full newsletter issue — subject line, hook, body, and takeaway — in seconds. Conversational, opinionated, or analytical.",
   },
   alternates: {
-    canonical: "https://ozigi.com/newsletter",
+    canonical: "https://ozigi.app/newsletter",
   },
 };
 

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       "Write publish-ready 800–2,500 word articles in seconds. Pick your tone, format, and depth — the AI does the rest. Try free, no sign-up required.",
     type: "website",
-    url: "https://ozigi.com/long-form",
+    url: "https://ozigi.app/long-form",
   },
   twitter: {
     card: "summary_large_image",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       "Write publish-ready 800–2,500 word articles in seconds. Pick your tone, format, and depth — the AI does the rest.",
   },
   alternates: {
-    canonical: "https://ozigi.com/long-form",
+    canonical: "https://ozigi.app/long-form",
   },
 };
 

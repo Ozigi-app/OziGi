@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description:
       "Write LinkedIn connection requests and DMs that get accepted. Personalised to your product and target — under the character limit. Try free, no sign-up required.",
     type: "website",
-    url: "https://ozigi.com/linkedin-outreach",
+    url: "https://ozigi.app/linkedin-outreach",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
       "Write LinkedIn connection requests and DMs that get accepted. Personalised to your product and target — under the character limit.",
   },
   alternates: {
-    canonical: "https://ozigi.com/linkedin-outreach",
+    canonical: "https://ozigi.app/linkedin-outreach",
   },
 };
 

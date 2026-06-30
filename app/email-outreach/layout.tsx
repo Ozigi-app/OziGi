@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description:
       "Stop sending ignored emails. Generate personalised cold emails with compelling subject lines — specific to your product and target. Try free, no sign-up required.",
     type: "website",
-    url: "https://ozigi.com/email-outreach",
+    url: "https://ozigi.app/email-outreach",
   },
   twitter: {
     card: "summary_large_image",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
       "Stop sending ignored emails. Generate personalised cold emails with compelling subject lines — specific to your product and target.",
   },
   alternates: {
-    canonical: "https://ozigi.com/email-outreach",
+    canonical: "https://ozigi.app/email-outreach",
   },
 };
 
