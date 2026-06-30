@@ -1,4 +1,4 @@
-export const maxDuration = 20;
+export const maxDuration = 30;
 
 import { NextResponse } from 'next/server'
 import { Ratelimit } from '@upstash/ratelimit'
@@ -68,13 +68,13 @@ Return ONLY the message text, nothing else.`
     const response = await client.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: messageType === 'connect' ? connectPrompt : messagePrompt }] }],
-      config: { temperature: 0.7, maxOutputTokens: 512 },
+      config: { temperature: 0.7, maxOutputTokens: 4096 },
     })
 
     const message: string =
+      response.candidates?.[0]?.content?.parts?.[0]?.text ??
       (response as any).text?.() ??
       (response as any).text ??
-      response.candidates?.[0]?.content?.parts?.[0]?.text ??
       ''
 
     phCapture(distinctId, 'demo_linkedin_outreach_generated', {

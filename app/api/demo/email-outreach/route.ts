@@ -58,11 +58,13 @@ Return ONLY valid JSON: {"subject": "...", "body": "..."}`
       config: { temperature: 0.7, maxOutputTokens: 2048, responseMimeType: 'application/json' },
     })
 
-    const text: string =
-      (response as any).text?.() ??
-      (response as any).text ??
-      response.candidates?.[0]?.content?.parts?.[0]?.text ??
-      ''
+    let text: string
+    try {
+      text = (response as any).text?.() ?? (response as any).text ?? ''
+    } catch {
+      text = (response as any).text ?? response.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    }
+    if (!text) text = response.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
 
     const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim()
     const result = JSON.parse(clean)

@@ -61,12 +61,18 @@ export async function POST(req: Request) {
     })
 
     const text: string =
+      response.candidates?.[0]?.content?.parts?.[0]?.text ??
       (response as any).text?.() ??
       (response as any).text ??
-      response.candidates?.[0]?.content?.parts?.[0]?.text ??
       ''
 
+    console.log('[longform] finishReason:', response.candidates?.[0]?.finishReason, '| text length:', text.length)
+
     const article = parseLongFormResponse(text)
+    if (!article) {
+      console.log('[longform] parse failed, raw text:', text.slice(0, 300))
+      return NextResponse.json({ error: 'Generation failed. Please try again.' }, { status: 500 })
+    }
 
     phCapture(distinctId, 'demo_longform_generated', {
       tone, structure, depth, targetLength,
@@ -75,6 +81,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ article })
   } catch (err: any) {
+    console.log('[longform] exception:', err?.message, err?.stack?.slice(0, 500))
     phCapture(distinctId, 'demo_longform_error', { error: err?.message }).catch(() => {})
     return NextResponse.json({ error: 'Generation failed. Please try again.' }, { status: 500 })
   }

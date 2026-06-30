@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Copy, Check, Share2 } from "lucide-react";
+import { Loader2, Copy, Check, Share2, Search, UserPlus, MessageSquare, TrendingUp } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { LeadListTeaser } from "@/components/demo/LeadListTeaser";
@@ -18,6 +18,13 @@ function track(event: string, properties?: Record<string, unknown>) {
     body: JSON.stringify({ event, properties }),
   }).catch(() => {});
 }
+
+const STEPS = [
+  { icon: Search,       label: "Find profiles",    desc: "Ozigi finds LinkedIn profiles matching your ideal customer." },
+  { icon: UserPlus,     label: "Connect at scale",  desc: "Personalised connection requests — under the 300 char limit." },
+  { icon: MessageSquare,label: "Follow up",         desc: "Auto DMs once they accept. No manual copy-paste." },
+  { icon: TrendingUp,   label: "Track replies",     desc: "See who responded and move warm leads to your CRM." },
+];
 
 export default function LinkedInOutreachPage() {
   const [senderName, setSenderName] = useState("");
@@ -45,8 +52,10 @@ export default function LinkedInOutreachPage() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setMessage(parsed.message);
-        setHasGeneratedOnce(true);
+        if (parsed.message) {
+          setMessage(parsed.message);
+          setHasGeneratedOnce(true);
+        }
       } catch {}
     }
   }, []);
@@ -90,6 +99,7 @@ export default function LinkedInOutreachPage() {
       }
 
       const data = await res.json();
+      if (!data.message) throw new Error("Generation failed. Please try again.");
       setMessage(data.message);
       setHasGeneratedOnce(true);
 
@@ -127,23 +137,42 @@ export default function LinkedInOutreachPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        {/* Hero */}
+        <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-[#0077B5]/10 text-[#0077B5] text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full mb-6">
             <Share2 className="w-3.5 h-3.5" />
-            LinkedIn Outreach Generator
+            LinkedIn Outreach Automation
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            LinkedIn messages that
+            Find leads. Connect.
             <br />
-            <span className="text-[#E8320A]">don't get ignored.</span>
+            <span className="text-[#E8320A]">Close — while you sleep.</span>
           </h1>
-          <p className="text-slate-600 text-lg max-w-xl mx-auto">
-            Generate personalised connection requests and follow-up messages — specific, human, and under the character limit.
+          <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
+            Ozigi finds LinkedIn profiles matching your ideal customer, sends personalised connection requests to each one, and follows up automatically once they accept.
           </p>
+
+          {/* Pipeline steps */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2">
+            {STEPS.map(({ icon: Icon, label }, i) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5">
+                  <Icon className="w-3.5 h-3.5 text-[#0077B5]" />
+                  <span className="text-xs font-bold text-slate-700">{label}</span>
+                </div>
+                {i < STEPS.length - 1 && <span className="text-slate-300 text-xs">→</span>}
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Demo form */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 mb-8">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
+            Try it — generate a sample message for your pipeline
+          </p>
+
           {/* Message type toggle */}
           <div className="flex gap-2 mb-6 p-1 bg-slate-100 rounded-xl w-fit">
             {(["connect", "message"] as const).map((type) => (
@@ -151,9 +180,7 @@ export default function LinkedInOutreachPage() {
                 key={type}
                 onClick={() => setMessageType(type)}
                 className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
-                  messageType === type
-                    ? "bg-white text-[#0A1628] shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
+                  messageType === type ? "bg-white text-[#0A1628] shadow-sm" : "text-slate-500 hover:text-slate-700"
                 }`}
               >
                 {type === "connect" ? "Connection Request" : "Direct Message"}
@@ -196,7 +223,7 @@ export default function LinkedInOutreachPage() {
               <textarea
                 value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
-                placeholder="e.g. Automates cold outreach by finding technical leads from GitHub and writing personalised messages."
+                placeholder="e.g. Automates cold outreach by finding leads from LinkedIn and sending personalised messages."
                 rows={2}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30 resize-none"
               />
@@ -204,12 +231,12 @@ export default function LinkedInOutreachPage() {
           )}
 
           <div className="mb-6">
-            <label className="block text-xs font-bold text-slate-600 mb-1.5">Who are you reaching out to? *</label>
+            <label className="block text-xs font-bold text-slate-600 mb-1.5">Describe your ideal customer *</label>
             <textarea
               value={targetDescription}
               onChange={(e) => setTargetDescription(e.target.value)}
-              placeholder="e.g. Founder of an early-stage DevTools startup, open-source contributor on GitHub, based in London, building a CI/CD product."
-              rows={3}
+              placeholder="e.g. Founder of an early-stage DevTools startup, open-source contributor on GitHub, based in London."
+              rows={2}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30 resize-none"
             />
           </div>
@@ -219,10 +246,11 @@ export default function LinkedInOutreachPage() {
             disabled={loading}
             className="w-full bg-[#E8320A] hover:bg-[#C5280A] disabled:opacity-60 text-white font-black uppercase tracking-widest text-sm px-6 py-4 rounded-xl transition-all flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</> : "Generate Message →"}
+            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</> : "Generate Sample Message →"}
           </button>
         </div>
 
+        {/* Gate */}
         <AnimatePresence>
           {showGate && (
             <motion.div
@@ -240,6 +268,7 @@ export default function LinkedInOutreachPage() {
           )}
         </AnimatePresence>
 
+        {/* Result */}
         <AnimatePresence>
           {message && !showGate && (
             <motion.div

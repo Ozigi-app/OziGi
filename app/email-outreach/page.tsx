@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Loader2, Copy, Check, Mail } from "lucide-react";
+import { Loader2, Copy, Check, Mail, Search, Send, BarChart2 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { LeadListTeaser } from "@/components/demo/LeadListTeaser";
@@ -18,6 +18,13 @@ function track(event: string, properties?: Record<string, unknown>) {
     body: JSON.stringify({ event, properties }),
   }).catch(() => {});
 }
+
+const STEPS = [
+  { icon: Search, label: "Find leads", desc: "Ozigi sources verified emails matching your ideal customer." },
+  { icon: Mail,   label: "Write emails", desc: "Personalised first-touch emails — no templates, no placeholders." },
+  { icon: Send,   label: "Send automatically", desc: "Emails go out on a schedule while you focus on replies." },
+  { icon: BarChart2, label: "Track results", desc: "Opens, replies, and booked calls — all in one dashboard." },
+];
 
 export default function EmailOutreachPage() {
   const [senderName, setSenderName] = useState("");
@@ -45,8 +52,10 @@ export default function EmailOutreachPage() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setResult(parsed.result);
-        setHasGeneratedOnce(true);
+        if (parsed.result?.subject) {
+          setResult(parsed.result);
+          setHasGeneratedOnce(true);
+        }
       } catch {}
     }
   }, []);
@@ -90,6 +99,7 @@ export default function EmailOutreachPage() {
       }
 
       const data = await res.json();
+      if (!data.subject || !data.body) throw new Error("Generation failed. Please try again.");
       setResult(data);
       setHasGeneratedOnce(true);
 
@@ -124,23 +134,41 @@ export default function EmailOutreachPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        {/* Hero */}
+        <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-[#E8320A]/10 text-[#E8320A] text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full mb-6">
             <Mail className="w-3.5 h-3.5" />
-            Cold Email Generator
+            Automated Cold Outreach
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            Cold emails that get
+            Find leads. Send emails.
             <br />
-            <span className="text-[#E8320A]">replies, not unsubscribes.</span>
+            <span className="text-[#E8320A]">Close deals. Automatically.</span>
           </h1>
-          <p className="text-slate-600 text-lg max-w-xl mx-auto">
-            Describe your product and who you're targeting — get a personalised first-touch email in seconds.
+          <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
+            Ozigi finds verified email addresses for your ideal customers, writes a personalised email to each one, and sends them on autopilot — while you focus on replies.
           </p>
+
+          {/* Pipeline steps */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2">
+            {STEPS.map(({ icon: Icon, label }, i) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5">
+                  <Icon className="w-3.5 h-3.5 text-[#E8320A]" />
+                  <span className="text-xs font-bold text-slate-700">{label}</span>
+                </div>
+                {i < STEPS.length - 1 && <span className="text-slate-300 text-xs">→</span>}
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Demo form */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 mb-8">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
+            Try it — generate a sample email for your pipeline
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-bold text-slate-600 mb-1.5">Your Name *</label>
@@ -169,19 +197,19 @@ export default function EmailOutreachPage() {
             <textarea
               value={productDescription}
               onChange={(e) => setProductDescription(e.target.value)}
-              placeholder="e.g. Ozigi helps founders automate cold outreach by scraping leads from GitHub and generating personalised emails and LinkedIn messages."
-              rows={3}
+              placeholder="e.g. Ozigi automates cold outreach — finding leads, writing personalised emails, and sending them automatically."
+              rows={2}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30 resize-none"
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-xs font-bold text-slate-600 mb-1.5">Who are you targeting? *</label>
+            <label className="block text-xs font-bold text-slate-600 mb-1.5">Describe your ideal customer *</label>
             <textarea
               value={targetDescription}
               onChange={(e) => setTargetDescription(e.target.value)}
-              placeholder="e.g. CTOs at early-stage B2B SaaS startups who are actively hiring engineers and building their go-to-market motion."
-              rows={3}
+              placeholder="e.g. CTOs at early-stage B2B SaaS startups who are actively hiring and building their go-to-market motion."
+              rows={2}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30 resize-none"
             />
           </div>
@@ -191,10 +219,11 @@ export default function EmailOutreachPage() {
             disabled={loading}
             className="w-full bg-[#E8320A] hover:bg-[#C5280A] disabled:opacity-60 text-white font-black uppercase tracking-widest text-sm px-6 py-4 rounded-xl transition-all flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</> : "Generate Email →"}
+            {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</> : "Generate Sample Email →"}
           </button>
         </div>
 
+        {/* Gate */}
         <AnimatePresence>
           {showGate && (
             <motion.div
@@ -212,6 +241,7 @@ export default function EmailOutreachPage() {
           )}
         </AnimatePresence>
 
+        {/* Result */}
         <AnimatePresence>
           {result && !showGate && (
             <motion.div
@@ -221,7 +251,6 @@ export default function EmailOutreachPage() {
               transition={{ duration: 0.4 }}
             >
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-                {/* Subject */}
                 <div className="mb-6 pb-6 border-b border-slate-100">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Subject Line</span>
@@ -235,8 +264,6 @@ export default function EmailOutreachPage() {
                   </div>
                   <p className="font-bold text-lg text-[#0A1628]">{result.subject}</p>
                 </div>
-
-                {/* Body */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Body</span>
@@ -253,10 +280,7 @@ export default function EmailOutreachPage() {
                       {copiedBody ? "Copied" : "Copy"}
                     </button>
                   </div>
-                  <div
-                    className="prose prose-sm prose-slate max-w-none"
-                    dangerouslySetInnerHTML={{ __html: result.body }}
-                  />
+                  <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: result.body }} />
                 </div>
               </div>
 

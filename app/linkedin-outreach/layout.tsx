@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free AI LinkedIn Message Generator — Connection Requests & DMs That Get Accepted | Ozigi",
+  title: "Free AI LinkedIn Message Generator — Find Leads, Connect at Scale & Close on Autopilot | Ozigi",
   description:
-    "Generate LinkedIn connection requests and direct messages that don't get ignored. Describe who you're reaching out to — get a personalised, under-the-limit message in seconds. Try free, no sign-up required.",
+    "Write LinkedIn connection requests that get accepted — then let Ozigi find the profiles, connect at scale, and follow up automatically once they accept. Try the message generator free, no sign-up required.",
   keywords: [
     "LinkedIn message generator",
     "AI LinkedIn outreach tool",
@@ -15,12 +15,13 @@ export const metadata: Metadata = {
     "personalised LinkedIn message AI",
     "LinkedIn connection note generator",
     "B2B LinkedIn outreach AI",
-    "LinkedIn sales message generator",
+    "automated LinkedIn outreach",
+    "LinkedIn lead generation tool",
   ],
   openGraph: {
     title: "Free AI LinkedIn Message Generator | Ozigi",
     description:
-      "Write LinkedIn connection requests and DMs that get accepted. Personalised to your product and target — under the character limit. Try free, no sign-up required.",
+      "Write LinkedIn connection requests that get accepted — then let Ozigi find the profiles, connect at scale, and follow up automatically. Try free, no sign-up required.",
     type: "website",
     url: "https://ozigi.app/linkedin-outreach",
   },
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free AI LinkedIn Message Generator | Ozigi",
     description:
-      "Write LinkedIn connection requests and DMs that get accepted. Personalised to your product and target — under the character limit.",
+      "Write LinkedIn connection requests that get accepted — then let Ozigi find the profiles, connect at scale, and follow up automatically.",
   },
   alternates: {
     canonical: "https://ozigi.app/linkedin-outreach",

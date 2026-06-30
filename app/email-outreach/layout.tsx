@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free AI Cold Email Generator — Write Cold Emails That Get Replies | Ozigi",
+  title: "Free AI Cold Email Generator — Find Leads, Write Emails & Send on Autopilot | Ozigi",
   description:
-    "Generate personalised cold emails that get responses, not spam reports. Describe your product and target — get a tailored subject line and email body in seconds. No templates, no placeholders. Try free.",
+    "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically. No templates, no placeholders. Try the email generator free, no sign-up required.",
   keywords: [
     "cold email generator",
     "AI cold email writer",
@@ -14,13 +14,14 @@ export const metadata: Metadata = {
     "outreach email writer",
     "cold outreach email AI",
     "personalised cold email generator",
-    "email copywriting AI",
+    "automated cold outreach",
     "cold email subject line generator",
+    "B2B lead generation email tool",
   ],
   openGraph: {
     title: "Free AI Cold Email Generator | Ozigi",
     description:
-      "Stop sending ignored emails. Generate personalised cold emails with compelling subject lines — specific to your product and target. Try free, no sign-up required.",
+      "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically. Try free, no sign-up required.",
     type: "website",
     url: "https://ozigi.app/email-outreach",
   },
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free AI Cold Email Generator | Ozigi",
     description:
-      "Stop sending ignored emails. Generate personalised cold emails with compelling subject lines — specific to your product and target.",
+      "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically.",
   },
   alternates: {
     canonical: "https://ozigi.app/email-outreach",
