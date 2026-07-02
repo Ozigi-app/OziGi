@@ -28,7 +28,7 @@ primary_region = "lax"
 
 # Keep exactly one instance running at all times — this is a persistent worker
 [[vm]]
-  memory = "2gb"     # Chromium + Xvfb + stealth plugin (shared CPU max)
+  memory = "1gb"     # Chromium + Xvfb + stealth plugin (scale to 2gb when under load)
   cpu_kind = "shared"
   cpus = 1
 
