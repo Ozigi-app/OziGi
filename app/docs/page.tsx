@@ -136,7 +136,7 @@ export default function DocsPage() {
                     <li>→ Personalised email sequences (cold intro → follow-ups)</li>
                     <li>→ LinkedIn connection requests + DMs (automated)</li>
                     <li>→ Reply detection, open tracking, bounce handling</li>
-                    <li>→ CRM sync (HubSpot, Zoho, Salesforce)</li>
+                    <li>→ CRM sync (HubSpot, Zoho)</li>
                   </ul>
                 </div>
                 <div className="bg-white border-2 border-slate-200 p-6 rounded-2xl">
@@ -312,9 +312,8 @@ export default function DocsPage() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
                 {[
-                  { name: "HubSpot",    color: "#ff7a59", note: "OAuth ready — click Connect HubSpot" },
-                  { name: "Zoho CRM",   color: "#e42527", note: "Create auth config in Composio dashboard first" },
-                  { name: "Salesforce", color: "#00a1e0", note: "Create auth config in Composio dashboard first" },
+                  { name: "HubSpot",  color: "#ff7a59", note: "OAuth ready — click Connect HubSpot" },
+                  { name: "Zoho CRM", color: "#e42527", note: "Create auth config in Composio dashboard first" },
                 ].map(c => (
                   <div key={c.name} className="bg-white border border-slate-200 p-5 rounded-2xl">
                     <div className="flex items-center gap-2 mb-2">
@@ -451,7 +450,7 @@ export default function DocsPage() {
                   },
                   {
                     q: "CRM OAuth flow fails",
-                    a: "HubSpot works out of the box. For Zoho CRM and Salesforce, you must create an OAuth 2.0 auth config in your Composio dashboard (app.composio.dev) before the flow will work."
+                    a: "HubSpot works out of the box. For Zoho CRM, you must create an OAuth 2.0 auth config in your Composio dashboard (app.composio.dev) before the flow will work."
                   },
                   {
                     q: "Discord / Slack posts aren't appearing",

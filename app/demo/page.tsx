@@ -22,7 +22,7 @@ const C = {
 
 /* ─── Sample inputs ──────────────────────────────────────────────── */
 const SAMPLES = [
-  { label: "Product update",    text: `We just shipped Ozigi v3 — find leads, run outbound sequences, and publish content that sounds like you. Outbound email, LinkedIn automation, lead scraping from GitHub and Dev.to, CRM sync (HubSpot, Zoho, Salesforce). Plus the content engine you already know. One platform, full pipeline.` },
+  { label: "Product update",    text: `We just shipped Ozigi v3 — find leads, run outbound sequences, and publish content that sounds like you. Outbound email, LinkedIn automation, lead scraping from GitHub and Dev.to, CRM sync (HubSpot, Zoho). Plus the content engine you already know. One platform, full pipeline.` },
   { label: "Release notes",     text: `Ozigi v3 ships with: AI-powered ICP scoring on every scraped lead, email sequences with reply detection, LinkedIn DM automation, and a new overview dashboard showing your leads, outreach, and content in one view. Rolling out to all users this week.` },
   { label: "Founder insight",   text: `Most outbound fails because it's generic. If your cold email could have been sent to 10,000 people, it reads that way. We built Ozigi's outbound engine to personalise every message from the lead's actual GitHub profile — their repos, commit messages, what they're building.` },
 ];
@@ -53,7 +53,7 @@ const GTM_FEATURES = [
   {
     icon: <BarChart3 className="w-5 h-5" />,
     title: "CRM Sync",
-    desc: "HubSpot, Zoho, Salesforce — leads sync automatically on first contact.",
+    desc: "HubSpot, Zoho — leads sync automatically on first contact.",
     note: "Requires sign-up",
     locked: true,
   },

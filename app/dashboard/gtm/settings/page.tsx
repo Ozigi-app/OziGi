@@ -410,7 +410,7 @@ function SettingsContent() {
           <div key={c.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontWeight: 600 }}>
-                {{ hubspot: 'HubSpot', zoho: 'Zoho CRM', salesforce: 'Salesforce', pipedrive: 'Pipedrive' }[c.provider] ?? c.provider}
+                {{ hubspot: 'HubSpot', zoho: 'Zoho CRM', pipedrive: 'Pipedrive' }[c.provider] ?? c.provider}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.2rem' }}>
                 {c.is_active ? '● Connected via OAuth' : '○ Inactive'}
@@ -430,9 +430,8 @@ function SettingsContent() {
         )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {[
-            { provider: 'hubspot',    label: 'HubSpot',    color: '#ff7a59' },
-            { provider: 'zoho',       label: 'Zoho CRM',   color: '#e42527' },
-            { provider: 'salesforce', label: 'Salesforce', color: '#00a1e0' },
+            { provider: 'hubspot', label: 'HubSpot',  color: '#ff7a59' },
+            { provider: 'zoho',    label: 'Zoho CRM', color: '#e42527' },
           ].map(({ provider, label, color }) => {
             const already = crmConnections.some(c => c.provider === provider && c.is_active)
             const busy = crmConnecting === provider
