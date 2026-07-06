@@ -1,13 +1,19 @@
 /**
- * CRM integration — HubSpot, Zoho, and Swipe One adapters.
+ * CRM integration — HubSpot, Zoho, Salesforce, and Swipe One adapters.
  *
  * Credentials are stored per-user in crm_connections (encrypted).
  * syncLeadToCRM fetches whichever provider is active for that user.
  * Silent no-op if the user has no CRM connected.
+ *
+ * Salesforce auth is Composio-managed (OAuth via connected account), unlike
+ * HubSpot/Zoho/Swipe One which store an API key / refresh token directly.
+ * Salesforce writes go through Composio's proxy so we never handle the raw
+ * access token.
  */
 
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { decrypt } from '@/lib/gtm/encrypt'
+import { Composio } from '@composio/core'
 import type { Lead } from '@/lib/types/gtm'
 
 // ─── Zoho token cache (in-process, per refresh token) ────────────────────────
@@ -101,6 +107,36 @@ async function zohoUpsert(lead: Lead, clientId: string, clientSecret: string, re
   return null
 }
 
+// ─── Salesforce ───────────────────────────────────────────────────────────────
+
+async function salesforceUpsert(lead: Lead, connectedAccountId: string): Promise<string | null> {
+  const apiKey = process.env.COMPOSIO_API_KEY
+  if (!apiKey) return null
+
+  const [first, ...rest] = (lead.name ?? '').trim().split(' ')
+  const composio = new Composio({ apiKey })
+
+  const res = await composio.tools.proxyExecute({
+    endpoint: '/services/data/v59.0/sobjects/Lead',
+    method: 'POST',
+    connectedAccountId,
+    body: {
+      FirstName:   first ?? '',
+      LastName:    rest.join(' ') || '.',
+      Company:     lead.company ?? lead.github_username ?? 'Independent',
+      Email:       lead.email ?? '',
+      Description: (lead.bio ?? '').slice(0, 1000),
+      LeadSource:  `Ozigi – ${lead.source}`,
+    },
+  })
+
+  const data = res.data as { id?: string; success?: boolean } | undefined
+  if (res.status === 201 && data?.id) return data.id
+
+  console.error('[crm:salesforce] upsert failed:', res.status, JSON.stringify(data))
+  return null
+}
+
 // ─── Swipe One ────────────────────────────────────────────────────────────────
 
 async function swipeoneUpsert(lead: Lead, apiKey: string): Promise<string | null> {
@@ -129,7 +165,7 @@ export async function syncLeadToCRM(lead: Lead, userId: string): Promise<string 
 
   const { data: conn } = await supabaseAdmin
     .from('crm_connections')
-    .select('provider, api_key_enc, zoho_client_id, zoho_client_secret_enc, zoho_refresh_token_enc')
+    .select('provider, api_key_enc, zoho_client_id, zoho_client_secret_enc, zoho_refresh_token_enc, composio_account_id')
     .eq('user_id', userId)
     .eq('is_active', true)
     .order('created_at', { ascending: true })
@@ -154,6 +190,10 @@ export async function syncLeadToCRM(lead: Lead, userId: string): Promise<string 
         decrypt(conn.zoho_client_secret_enc),
         decrypt(conn.zoho_refresh_token_enc)
       )
+    }
+
+    if (conn.provider === 'salesforce' && conn.composio_account_id) {
+      return salesforceUpsert(lead, conn.composio_account_id)
     }
   } catch (e) {
     console.error('[crm] sync error:', e)

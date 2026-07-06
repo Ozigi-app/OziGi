@@ -7,14 +7,14 @@ import { usePlanStatus } from '@/components/hooks/usePlanStatus'
 
 interface CrmConnection {
   id: string
-  provider: 'hubspot' | 'zoho' | 'swipeone'
+  provider: 'hubspot' | 'zoho' | 'salesforce' | 'swipeone'
   zoho_client_id: string | null
   is_active: boolean
   created_at: string
 }
 
 const CRM_LABELS: Record<string, string> = {
-  hubspot: 'HubSpot', zoho: 'Zoho CRM', pipedrive: 'Pipedrive', swipeone: 'Swipe One',
+  hubspot: 'HubSpot', zoho: 'Zoho CRM', salesforce: 'Salesforce', pipedrive: 'Pipedrive', swipeone: 'Swipe One',
 }
 
 interface EmailAccount {
@@ -459,8 +459,9 @@ function SettingsContent() {
         )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {[
-            { provider: 'hubspot', label: 'HubSpot',  color: '#ff7a59' },
-            { provider: 'zoho',    label: 'Zoho CRM', color: '#e42527' },
+            { provider: 'hubspot',    label: 'HubSpot',    color: '#ff7a59' },
+            { provider: 'zoho',       label: 'Zoho CRM',   color: '#e42527' },
+            { provider: 'salesforce', label: 'Salesforce', color: '#00a1e0' },
           ].map(({ provider, label, color }) => {
             const already = crmConnections.some(c => c.provider === provider && c.is_active)
             const busy = crmConnecting === provider

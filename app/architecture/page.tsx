@@ -240,7 +240,7 @@ export default function Architecture() {
                   },
                   {
                     step: "5", label: "CRM Sync", color: "slate",
-                    detail: "First-contact write to HubSpot or Zoho via Composio. The CRM stays the pipeline source of truth; Ozigi writes once and stops.",
+                    detail: "First-contact write to HubSpot, Zoho, or Salesforce via Composio. The CRM stays the pipeline source of truth; Ozigi writes once and stops.",
                   },
                 ].map(s => (
                   <div key={s.step} className="flex gap-4 items-start">

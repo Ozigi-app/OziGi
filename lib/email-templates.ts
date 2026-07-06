@@ -621,7 +621,7 @@ export function buildUpgradeWelcomeEmail({ userName, plan }: UpgradeEmailConfig)
         { icon: "&#x1F3AF;", title: "1,000 credits/mo", desc: "Scrape and score leads with Gemini AI" },
         { icon: "&#x221E;", title: "Unlimited campaigns + sends", desc: "No caps on outbound sequences" },
         { icon: "&#x1F517;", title: "Email + LinkedIn outreach", desc: "Reach leads on every channel" },
-        { icon: "&#x1F4CB;", title: "CRM sync (HubSpot, Zoho)", desc: "Keep your CRM updated automatically" },
+        { icon: "&#x1F4CB;", title: "CRM sync (HubSpot, Zoho, Salesforce)", desc: "Keep your CRM updated automatically" },
         { icon: "&#x1F4CA;", title: "Reply detection", desc: "Know the moment a lead responds" },
         { icon: "&#x1F4DD;", title: "10 content campaigns/mo", desc: "Stay visible while the pipeline runs" },
       ],
