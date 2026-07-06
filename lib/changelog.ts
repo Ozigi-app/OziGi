@@ -108,7 +108,7 @@ export const changelog: ChangelogEntry[] = [
       },
       {
         label: "Feature",
-        text: "CRM sync: first-contact write to HubSpot or Zoho via Composio. Available on Growth and Pro.",
+        text: "CRM sync: first-contact write to HubSpot, Zoho, or Salesforce via Composio. Available on Growth and Pro.",
       },
       {
         label: "AI",

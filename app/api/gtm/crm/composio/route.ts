@@ -5,13 +5,14 @@ import { getPlanStatus } from '@/lib/plan'
 
 // Composio toolkit slugs for supported CRMs
 const TOOLKIT: Record<string, string> = {
-  hubspot: 'hubspot',
-  zoho:    'zoho',
+  hubspot:    'hubspot',
+  zoho:       'zoho',
+  salesforce: 'salesforce',
 }
 
 /**
  * POST /api/gtm/crm/composio
- * Body: { provider: 'hubspot' | 'zoho' }
+ * Body: { provider: 'hubspot' | 'zoho' | 'salesforce' }
  *
  * Uses the Composio SDK to initiate an OAuth flow.
  * The SDK auto-discovers (or creates) the managed auth config for the toolkit.

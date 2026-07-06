@@ -630,7 +630,7 @@ export default function Home() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { bg: C.cardG,  title: "Persona system",    desc: "Define your voice once. Every email, post, and message inherits it automatically." },
-                { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho. Leads sync on first contact — no manual imports." },
+                { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho, Salesforce. Leads sync on first contact — no manual imports." },
                 { bg: C.cardS,  title: "Gmail & SMTP",      desc: "Connect any sending account. Rotate across multiple inboxes to protect deliverability." },
                 { bg: C.cardB,  title: "AI scoring",         desc: "Every lead is scored against your ideal customer before it hits your pipeline — no manual filtering." },
               ].map((f, i) => (

@@ -75,7 +75,7 @@ const allSteps: TourStep[] = [
     target: "[data-tour='sidebar-outreach-settings']",
     title: "Outreach Settings",
     description:
-      "Connect Gmail or SMTP, link your CRM (HubSpot, Zoho), and connect LinkedIn. Set up once — Ozigi handles the rest automatically.",
+      "Connect Gmail or SMTP, link your CRM (HubSpot, Zoho, Salesforce), and connect LinkedIn. Set up once — Ozigi handles the rest automatically.",
     position: "right",
   },
   {
