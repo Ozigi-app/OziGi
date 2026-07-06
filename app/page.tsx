@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   motion,
   AnimatePresence,
@@ -177,6 +179,39 @@ export default function Home() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
+
+  const router = useRouter();
+
+  async function handlePricingClick(planId: string) {
+    if (planId === "free") {
+      if (!session) { setIsAuthModalOpen(true); return; }
+      router.push("/dashboard");
+      return;
+    }
+
+    if (planId === "enterprise") {
+      window.location.href = "mailto:hello@ozigi.app?subject=Enterprise Inquiry";
+      return;
+    }
+
+    if (!session) { setIsAuthModalOpen(true); return; }
+
+    try {
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId, interval: "monthly" }),
+      });
+      const data = await res.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        toast.error("Failed to create checkout. Please try again.");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    }
+  }
 
   async function subscribeNewsletter(e: React.FormEvent) {
     e.preventDefault();
@@ -595,7 +630,7 @@ export default function Home() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { bg: C.cardG,  title: "Persona system",    desc: "Define your voice once. Every email, post, and message inherits it automatically." },
-                { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho, Salesforce. Leads sync on first contact — no manual imports." },
+                { bg: C.card,   title: "CRM sync",          desc: "HubSpot, Zoho. Leads sync on first contact — no manual imports." },
                 { bg: C.cardS,  title: "Gmail & SMTP",      desc: "Connect any sending account. Rotate across multiple inboxes to protect deliverability." },
                 { bg: C.cardB,  title: "AI scoring",         desc: "Every lead is scored against your ideal customer before it hits your pipeline — no manual filtering." },
               ].map((f, i) => (
@@ -692,6 +727,7 @@ export default function Home() {
               {([
                 {
                   name: "Free",
+                  planId: "free",
                   price: "$0",
                   period: "",
                   highlight: "Try both engines",
@@ -701,6 +737,7 @@ export default function Home() {
                 },
                 {
                   name: "Starter",
+                  planId: "starter",
                   price: "$19",
                   period: "/mo",
                   highlight: "Content engine only",
@@ -710,6 +747,7 @@ export default function Home() {
                 },
                 {
                   name: "Growth",
+                  planId: "growth",
                   price: "$29",
                   period: "/mo",
                   highlight: "Active outbound",
@@ -719,6 +757,7 @@ export default function Home() {
                 },
                 {
                   name: "Pro",
+                  planId: "pro",
                   price: "$49",
                   period: "/mo",
                   highlight: "Both engines, no limits",
@@ -728,6 +767,7 @@ export default function Home() {
                 },
                 {
                   name: "Enterprise",
+                  planId: "enterprise",
                   price: "Custom",
                   period: "",
                   highlight: "Volume teams",
@@ -787,7 +827,7 @@ export default function Home() {
                   </ul>
 
                   <button
-                    onClick={() => setIsAuthModalOpen(true)}
+                    onClick={() => handlePricingClick(tier.planId)}
                     className="w-full py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all active:scale-95 cursor-pointer"
                     style={
                       tier.popular
