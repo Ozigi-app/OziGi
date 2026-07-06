@@ -25,8 +25,8 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json() as {
-    provider: 'hubspot' | 'zoho'
-    api_key?: string           // HubSpot
+    provider: 'hubspot' | 'zoho' | 'swipeone'
+    api_key?: string           // HubSpot, Swipe One
     zoho_client_id?: string    // Zoho
     zoho_client_secret?: string
     zoho_refresh_token?: string
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
 
   let row: Record<string, unknown> = { user_id: user.id, provider, is_active: true }
 
-  if (provider === 'hubspot') {
-    if (!body.api_key) return NextResponse.json({ error: 'api_key is required for HubSpot' }, { status: 400 })
+  if (provider === 'hubspot' || provider === 'swipeone') {
+    if (!body.api_key) return NextResponse.json({ error: `api_key is required for ${provider === 'hubspot' ? 'HubSpot' : 'Swipe One'}` }, { status: 400 })
     row.api_key_enc = encrypt(body.api_key)
   } else if (provider === 'zoho') {
     if (!body.zoho_client_id || !body.zoho_client_secret || !body.zoho_refresh_token) {
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     row.zoho_client_secret_enc = encrypt(body.zoho_client_secret)
     row.zoho_refresh_token_enc = encrypt(body.zoho_refresh_token)
   } else {
-    return NextResponse.json({ error: 'provider must be hubspot or zoho' }, { status: 400 })
+    return NextResponse.json({ error: 'provider must be hubspot, zoho, or swipeone' }, { status: 400 })
   }
 
   // Verify credentials before saving
@@ -88,6 +88,13 @@ async function testConnection(
       )
       const data = await tokenRes.json() as { access_token?: string; error?: string }
       if (!data.access_token) return `Zoho auth failed: ${data.error ?? 'invalid credentials'}`
+    }
+
+    if (provider === 'swipeone') {
+      const res = await fetch('https://api.swipeone.com/zapier/fields', {
+        headers: { 'x-api-key': body.api_key ?? '' },
+      })
+      if (!res.ok) return `Swipe One returned ${res.status} — check your API key`
     }
 
     return null

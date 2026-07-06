@@ -27,7 +27,7 @@ Source leads directly from GitHub, Dev.to, and LinkedIn based on an ICP you defi
 Every sourced lead is scored by Gemini against your ICP on a 0.0–1.0 scale. Only leads above your threshold enter the sequence. This keeps your sending lists clean and your reply rates high without manual filtering.
 
 **Email + LinkedIn sequences**
-Campaigns run multi-step sequences from your own accounts with delays you control. Per-channel daily limits protect your domain reputation and LinkedIn standing. Reply detection pauses a sequence the moment someone responds on either channel. CRM sync (HubSpot, Zoho, Salesforce) pushes leads on first contact via Composio.
+Campaigns run multi-step sequences from your own accounts with delays you control. Per-channel daily limits protect your domain reputation and LinkedIn standing. Reply detection pauses a sequence the moment someone responds on either channel. CRM sync (HubSpot, Zoho, Salesforce via Composio OAuth; Swipe One via API key) pushes leads on first contact.
 
 ### Content Engine
 
@@ -84,7 +84,7 @@ Payments are processed by **Dodo Payments**. Subscriptions and bundles both go t
 | Object Storage | Cloudflare R2 |
 | Rate Limiting & Scheduling | Upstash Redis + QStash |
 | Payments | Dodo Payments |
-| CRM Integration | Composio (HubSpot · Zoho · Salesforce) |
+| CRM Integration | Composio (HubSpot · Zoho · Salesforce) · Swipe One (API key) |
 | Analytics | Vercel Analytics · Google Ads (AW tag) · Ahrefs · Ghostly |
 | Email | ZeptoMail |
 | Testing | Playwright |

@@ -1,13 +1,14 @@
 /**
- * CRM integration — HubSpot, Zoho, and Salesforce adapters.
+ * CRM integration — HubSpot, Zoho, Salesforce, and Swipe One adapters.
  *
  * Credentials are stored per-user in crm_connections (encrypted).
  * syncLeadToCRM fetches whichever provider is active for that user.
  * Silent no-op if the user has no CRM connected.
  *
  * Salesforce auth is Composio-managed (OAuth via connected account), unlike
- * HubSpot/Zoho which store an API key / refresh token directly. Salesforce
- * writes go through Composio's proxy so we never handle the raw access token.
+ * HubSpot/Zoho/Swipe One which store an API key / refresh token directly.
+ * Salesforce writes go through Composio's proxy so we never handle the raw
+ * access token.
  */
 
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -136,6 +137,23 @@ async function salesforceUpsert(lead: Lead, connectedAccountId: string): Promise
   return null
 }
 
+// ─── Swipe One ────────────────────────────────────────────────────────────────
+
+async function swipeoneUpsert(lead: Lead, apiKey: string): Promise<string | null> {
+  const tags = [...lead.tags, `Ozigi – ${lead.source}`].filter(Boolean).join(',')
+
+  const res = await fetch('https://api.swipeone.com/zapier/contact', {
+    method:  'POST',
+    headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: lead.email, tags }),
+  })
+
+  if (res.status === 201) return lead.email
+
+  console.error('[crm:swipeone] upsert failed:', res.status)
+  return null
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -159,6 +177,10 @@ export async function syncLeadToCRM(lead: Lead, userId: string): Promise<string 
   try {
     if (conn.provider === 'hubspot' && conn.api_key_enc) {
       return hubspotUpsert(lead, decrypt(conn.api_key_enc))
+    }
+
+    if (conn.provider === 'swipeone' && conn.api_key_enc) {
+      return swipeoneUpsert(lead, decrypt(conn.api_key_enc))
     }
 
     if (conn.provider === 'zoho' && conn.zoho_client_id && conn.zoho_client_secret_enc && conn.zoho_refresh_token_enc) {
