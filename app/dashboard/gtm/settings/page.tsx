@@ -7,10 +7,14 @@ import { usePlanStatus } from '@/components/hooks/usePlanStatus'
 
 interface CrmConnection {
   id: string
-  provider: 'hubspot' | 'zoho'
+  provider: 'hubspot' | 'zoho' | 'swipeone'
   zoho_client_id: string | null
   is_active: boolean
   created_at: string
+}
+
+const CRM_LABELS: Record<string, string> = {
+  hubspot: 'HubSpot', zoho: 'Zoho CRM', pipedrive: 'Pipedrive', swipeone: 'Swipe One',
 }
 
 interface EmailAccount {
@@ -73,6 +77,11 @@ function SettingsContent() {
   const [crmConnections, setCrmConnections] = useState<CrmConnection[]>([])
   const [crmConnecting, setCrmConnecting]   = useState<string | null>(null)
   const [crmMsg, setCrmMsg]                 = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // ── Swipe One (manual API key — no OAuth support) ───────────────────────────
+  const [showSwipeone, setShowSwipeone]         = useState(false)
+  const [swipeoneApiKey, setSwipeoneApiKey]     = useState('')
+  const [swipeoneSaving, setSwipeoneSaving]     = useState(false)
 
   // ── LinkedIn state ───────────────────────────────────────────────────────────
   const [liSessions, setLiSessions] = useState<LinkedInSession[]>([])
@@ -155,9 +164,29 @@ function SettingsContent() {
   }
 
   async function disconnectCrm(id: string, provider: string) {
-    if (!confirm(`Disconnect ${provider === 'hubspot' ? 'HubSpot' : 'Zoho CRM'}?`)) return
+    if (!confirm(`Disconnect ${CRM_LABELS[provider] ?? provider}?`)) return
     await fetch(`/api/gtm/crm/connections/${id}`, { method: 'DELETE' })
     setCrmConnections(prev => prev.filter(c => c.id !== id))
+  }
+
+  async function connectSwipeOne(e: React.FormEvent) {
+    e.preventDefault()
+    setSwipeoneSaving(true); setCrmMsg(null)
+    const res = await fetch('/api/gtm/crm/connections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'swipeone', api_key: swipeoneApiKey }),
+    })
+    const d = await res.json()
+    if (res.ok) {
+      setCrmMsg({ type: 'success', text: 'Swipe One connected.' })
+      setSwipeoneApiKey(''); setShowSwipeone(false)
+      const updated = await fetch('/api/gtm/crm/connections').then(r => r.json())
+      setCrmConnections(updated.connections ?? [])
+    } else {
+      setCrmMsg({ type: 'error', text: d.error ?? 'Failed to connect.' })
+    }
+    setSwipeoneSaving(false)
   }
 
   // ── Load + poll LinkedIn sessions ────────────────────────────────────────────
@@ -396,7 +425,7 @@ function SettingsContent() {
       <section style={{ marginBottom: '2.5rem' }}>
         <h2 style={{ fontWeight: 700, marginBottom: '0.35rem' }}>CRM</h2>
         <p style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>
-          Connect your CRM via OAuth — no API keys needed. Leads are synced automatically when first contacted.
+          Connect your CRM via OAuth, or paste an API key for CRMs that don&apos;t support it. Leads are synced automatically when first contacted.
         </p>
 
         {crmMsg && (
@@ -410,7 +439,7 @@ function SettingsContent() {
           <div key={c.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontWeight: 600 }}>
-                {{ hubspot: 'HubSpot', zoho: 'Zoho CRM', pipedrive: 'Pipedrive' }[c.provider] ?? c.provider}
+                {CRM_LABELS[c.provider] ?? c.provider}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.2rem' }}>
                 {c.is_active ? '● Connected via OAuth' : '○ Inactive'}
@@ -460,6 +489,45 @@ function SettingsContent() {
             )
           })}
         </div>
+
+        {/* Swipe One — no OAuth support, manual API key */}
+        {!crmConnections.some(c => c.provider === 'swipeone' && c.is_active) && (
+          <div style={{ marginTop: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => planStatus?.hasCrmSync && setShowSwipeone(v => !v)}
+              disabled={!planStatus?.hasCrmSync}
+              style={{ padding: '0.4rem 0.9rem', background: 'white', border: '1px solid #ccc', borderRadius: 6, cursor: planStatus?.hasCrmSync ? 'pointer' : 'default', fontSize: '0.9rem', opacity: planStatus?.hasCrmSync ? 1 : 0.5 }}
+            >
+              {showSwipeone ? 'Cancel' : '+ Connect Swipe One'}
+            </button>
+
+            {showSwipeone && (
+              <form onSubmit={connectSwipeOne} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem', marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ fontSize: '0.82rem', color: '#666', lineHeight: 1.6 }}>
+                  Swipe One doesn&apos;t support OAuth — paste your API key from Swipe One → Settings → API.
+                </div>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>API key</span>
+                  <input
+                    type="password"
+                    value={swipeoneApiKey}
+                    onChange={e => setSwipeoneApiKey(e.target.value)}
+                    placeholder="Paste your Swipe One API key"
+                    style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }}
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={swipeoneSaving || !swipeoneApiKey}
+                  style={{ padding: '0.55rem 1.25rem', background: swipeoneSaving ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
+                >
+                  {swipeoneSaving ? 'Testing & saving…' : 'Connect'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
       </section>
 
       {/* ── LinkedIn ──────────────────────────────────────────────────────── */}

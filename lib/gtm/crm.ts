@@ -1,5 +1,5 @@
 /**
- * CRM integration — HubSpot and Zoho adapters.
+ * CRM integration — HubSpot, Zoho, and Swipe One adapters.
  *
  * Credentials are stored per-user in crm_connections (encrypted).
  * syncLeadToCRM fetches whichever provider is active for that user.
@@ -101,6 +101,23 @@ async function zohoUpsert(lead: Lead, clientId: string, clientSecret: string, re
   return null
 }
 
+// ─── Swipe One ────────────────────────────────────────────────────────────────
+
+async function swipeoneUpsert(lead: Lead, apiKey: string): Promise<string | null> {
+  const tags = [...lead.tags, `Ozigi – ${lead.source}`].filter(Boolean).join(',')
+
+  const res = await fetch('https://api.swipeone.com/zapier/contact', {
+    method:  'POST',
+    headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: lead.email, tags }),
+  })
+
+  if (res.status === 201) return lead.email
+
+  console.error('[crm:swipeone] upsert failed:', res.status)
+  return null
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -124,6 +141,10 @@ export async function syncLeadToCRM(lead: Lead, userId: string): Promise<string 
   try {
     if (conn.provider === 'hubspot' && conn.api_key_enc) {
       return hubspotUpsert(lead, decrypt(conn.api_key_enc))
+    }
+
+    if (conn.provider === 'swipeone' && conn.api_key_enc) {
+      return swipeoneUpsert(lead, decrypt(conn.api_key_enc))
     }
 
     if (conn.provider === 'zoho' && conn.zoho_client_id && conn.zoho_client_secret_enc && conn.zoho_refresh_token_enc) {
