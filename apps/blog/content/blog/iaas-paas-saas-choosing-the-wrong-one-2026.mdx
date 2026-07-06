@@ -61,7 +61,7 @@ The mistake was applying a solution suited to a 20-person engineering team with 
 
 The signal they missed: if you do not have an engineer whose primary focus can include infrastructure operations, IaaS is probably not the right model yet. The question is not "do we know how to run IaaS?" it is "can we afford the time cost of running it at this stage?"
 
-![Stacked bar chart comparing engineering time allocation for a 2-person team on AWS IaaS versus Railway PaaS over four months. IaaS: 15% spent on infra maintenance, 85% on product. PaaS: near 0% infra, effectively 100% product. Activities lost on IaaS listed below: EC2 patching, RDS tuning, ALB misconfiguration.](/images/blog/iaas-paas-saas-wrong-choice/engineering-time-split-iaas-vs-paas.png)
+![Stacked bar chart comparing engineering time allocation for a 2-person team on AWS IaaS versus Railway PaaS over four months. IaaS: 15% spent on infra maintenance, 85% on product. PaaS: near 0% infra, effectively 100% product. Activities lost on IaaS listed below: EC2 patching, RDS tuning, ALB misconfiguration.](/images/blog/iaas-paas-saas-wrong-choice/engineering-time-split-iaas-vs-paas.jpg)
 
 **Warning signals this team missed:**
 - Team size (2 engineers) had no room to absorb infrastructure incidents without product impact
@@ -110,3 +110,7 @@ The model that fits your situation today is probably not the model that fits in 
 None of these were catastrophic failures. The PaaS team migrated successfully and came out ahead. The IaaS startup shipped a good product. The company that built its own support tooling eventually fixed it. But in each case, the cost of the wrong choice, paid in engineering time, in dollars, in delayed features, was significantly higher than it needed to be.
 
 The right question is not "which model is best?" It is "what does our team actually need to operate this, and what will that cost us when the workload is three times what it is today?" Ask that question before the first infrastructure decision. Write the answer down. Set a calendar reminder to revisit it in six months. The model is just a starting point, the discipline is knowing when to change it.
+
+---
+
+*Since you're here: [Ozigi](https://ozigi.app) also ships a handful of free, no-signup tools — a [free cold email generator](https://ozigi.app/email-outreach), a [free LinkedIn outreach generator](https://ozigi.app/linkedin-outreach), a [free long-form article generator](https://ozigi.app/long-form), and a [free newsletter generator](https://ozigi.app/newsletter). Worth a look if any of that's useful to you.*

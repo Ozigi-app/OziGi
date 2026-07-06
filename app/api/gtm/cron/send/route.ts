@@ -94,35 +94,64 @@ export async function POST(req: Request) {
       const emailSteps = steps.filter(s => s.channel === 'email')
 
       if (emailSteps.length > 0) {
-        const { data: emailAccount } = await supabaseAdmin
+        const { data: emailAccounts } = await supabaseAdmin
           .from('email_accounts')
           .select('id, email_address, display_name, daily_send_count, last_send_date, provider')
           .eq('user_id', campaign.user_id)
           .eq('is_active', true)
           .order('created_at', { ascending: true })
-          .limit(1)
-          .single()
 
-        if (!emailAccount) {
-          console.warn(`[gtm/cron/send] campaign ${campaign.id}: no active Gmail account`)
+        if (!emailAccounts?.length) {
+          console.warn(`[gtm/cron/send] campaign ${campaign.id}: no active email account`)
         } else {
           const today = new Date().toISOString().split('T')[0]
-          let sentToday = emailAccount.last_send_date === today ? emailAccount.daily_send_count : 0
+          // Round-robin across all connected inboxes (Pro multi-inbox) instead of
+          // always using a single account — spreads volume for deliverability.
+          const accountStates = emailAccounts.map(account => ({
+            account,
+            sentToday: account.last_send_date === today ? account.daily_send_count : 0,
+          }))
+          let totalSentToday = accountStates.reduce((sum, s) => sum + s.sentToday, 0)
           const dailyEmailLimit = campaign.daily_email_limit
+          // Soft per-inbox share of today's volume — keeps one account from absorbing
+          // a disproportionate burst within a single run (warmup/deliverability safety).
+          const perAccountCap = Math.max(1, Math.ceil(dailyEmailLimit / accountStates.length))
           let sentThisRun = 0
+          let rrIndex = 0
+
+          // Finds the next account (starting at rrIndex) under its per-account cap,
+          // optionally skipping one account id (used for the failover retry below).
+          function pickAccount(excludeId?: string) {
+            for (let i = 0; i < accountStates.length; i++) {
+              const idx = (rrIndex + i) % accountStates.length
+              const state = accountStates[idx]
+              if (state.sentToday >= perAccountCap) continue
+              if (excludeId && state.account.id === excludeId) continue
+              rrIndex = idx + 1
+              return state
+            }
+            return null
+          }
+
+          const allAccountsCapped = () => accountStates.every(s => s.sentToday >= perAccountCap)
 
           for (const step of emailSteps) {
-            if (sentToday >= dailyEmailLimit) break
+            if (totalSentToday >= dailyEmailLimit) break
             if (sentThisRun >= MAX_PER_RUN) break
+            if (allAccountsCapped()) break
 
             const leadsForStep = await getLeadsDueForStep(campaign.id, step, steps)
 
             for (const lead of leadsForStep) {
-              if (sentToday >= dailyEmailLimit) break
+              if (totalSentToday >= dailyEmailLimit) break
               if (sentThisRun >= MAX_PER_RUN) break
+              if (allAccountsCapped()) break
               if (atSendLimit) { campaignSkipped++; continue }
               // In test mode TEST_EMAIL overrides recipient, so no real email needed
               if (!lead.email && !process.env.TEST_EMAIL) { campaignSkipped++; continue }
+
+              const primaryState = pickAccount()
+              if (!primaryState) break // every inbox hit its per-account share for today
 
               try {
                 const email = await composeEmail(lead, campaign, step)
@@ -146,15 +175,37 @@ export async function POST(req: Request) {
 
                 // In test mode all mail is redirected to TEST_EMAIL
                 const recipient = process.env.TEST_EMAIL ?? lead.email!
-                const sender = emailAccount.provider === 'gmail' ? sendViaGmail : sendViaSmtp
-                const { messageId, threadId } = await sender(
-                  emailAccount.id,
-                  recipient,
-                  email.subject,
-                  email.body,
-                  emailAccount.display_name ?? '',
-                  emailAccount.email_address
-                )
+
+                let sendState = primaryState
+                let sendResult: { messageId: string; threadId: string }
+                try {
+                  const sender = sendState.account.provider === 'gmail' ? sendViaGmail : sendViaSmtp
+                  sendResult = await sender(
+                    sendState.account.id,
+                    recipient,
+                    email.subject,
+                    email.body,
+                    sendState.account.display_name ?? '',
+                    sendState.account.email_address
+                  )
+                } catch (primaryErr) {
+                  // Transient provider failure (e.g. Gmail token hiccup) — fail over to
+                  // another connected inbox once before giving up on this lead entirely.
+                  const fallbackState = accountStates.length > 1 ? pickAccount(sendState.account.id) : null
+                  if (!fallbackState) throw primaryErr
+                  console.warn(`[gtm/cron/send] ${sendState.account.email_address} failed, retrying via ${fallbackState.account.email_address}`)
+                  sendState = fallbackState
+                  const sender = sendState.account.provider === 'gmail' ? sendViaGmail : sendViaSmtp
+                  sendResult = await sender(
+                    sendState.account.id,
+                    recipient,
+                    email.subject,
+                    email.body,
+                    sendState.account.display_name ?? '',
+                    sendState.account.email_address
+                  )
+                }
+                const { messageId, threadId } = sendResult
 
                 await Promise.all([
                   supabaseAdmin
@@ -176,7 +227,8 @@ export async function POST(req: Request) {
                     : Promise.resolve(),
                 ])
 
-                sentToday++
+                sendState.sentToday++
+                totalSentToday++
                 sentThisRun++
                 campaignEmailSent++
                 // Track sequence send usage (fire-and-forget; bust cache so limit is respected)
@@ -197,10 +249,12 @@ export async function POST(req: Request) {
             }
           }
 
-          await supabaseAdmin
-            .from('email_accounts')
-            .update({ daily_send_count: sentToday, last_send_date: today })
-            .eq('id', emailAccount.id)
+          await Promise.all(accountStates.map(s =>
+            supabaseAdmin
+              .from('email_accounts')
+              .update({ daily_send_count: s.sentToday, last_send_date: today })
+              .eq('id', s.account.id)
+          ))
         }
       }
 
