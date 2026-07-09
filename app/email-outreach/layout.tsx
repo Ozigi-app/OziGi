@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free AI Cold Email Generator — Find Leads, Write Emails & Send on Autopilot | Ozigi",
+  title: "Free Cold Email Generator — Find Leads & Send Real Emails on Autopilot | Ozigi",
   description:
-    "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically. No templates, no placeholders. Try the email generator free, no sign-up required.",
+    "Generate a personalised cold email in seconds, no sign-up required. Then start a free account (no credit card) to find verified leads and send up to 30 real emails a month on autopilot, with replies tracked automatically.",
   keywords: [
+    "free cold email generator",
+    "send cold emails for free",
     "cold email generator",
     "AI cold email writer",
     "cold email template generator",
@@ -19,17 +21,17 @@ export const metadata: Metadata = {
     "B2B lead generation email tool",
   ],
   openGraph: {
-    title: "Free AI Cold Email Generator | Ozigi",
+    title: "Free Cold Email Generator | Ozigi",
     description:
-      "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically. Try free, no sign-up required.",
+      "Generate a personalised cold email free, no sign-up required. Then start a free account to find leads and send up to 30 real emails a month on autopilot.",
     type: "website",
     url: "https://ozigi.app/email-outreach",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free AI Cold Email Generator | Ozigi",
+    title: "Free Cold Email Generator | Ozigi",
     description:
-      "Generate personalised cold emails in seconds — then let Ozigi find the leads, send at scale, and track replies automatically.",
+      "Generate a personalised cold email free, no sign-up required. Then start a free account to find leads and send up to 30 real emails a month on autopilot.",
   },
   alternates: {
     canonical: "https://ozigi.app/email-outreach",

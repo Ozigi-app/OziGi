@@ -139,7 +139,7 @@ export default function EmailOutreachPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-[#E8320A]/10 text-[#E8320A] text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full mb-6">
             <Mail className="w-3.5 h-3.5" />
-            Automated Cold Outreach
+            Free Cold Email Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
             Find leads. Send emails.
@@ -147,7 +147,7 @@ export default function EmailOutreachPage() {
             <span className="text-[#E8320A]">Close deals. Automatically.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
-            Ozigi finds verified email addresses for your ideal customers, writes a personalised email to each one, and sends them on autopilot — while you focus on replies.
+            Ozigi finds verified email addresses for your ideal customers, writes a personalised email to each one, and sends them on autopilot — while you focus on replies. Free to try, no sign-up required — free accounts send up to 30 real emails a month, no credit card needed.
           </p>
 
           {/* Pipeline steps */}

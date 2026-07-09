@@ -173,12 +173,12 @@ export default function LongFormPage() {
             Long-Form Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            Articles that don't
+            The AI writing generator that
             <br />
-            <span className="text-[#E8320A]">sound like AI wrote them.</span>
+            <span className="text-[#E8320A]">doesn't sound like AI wrote it.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto">
-            Paste a brief, pick your format — get a 800–2500 word article in seconds. No fluff, no corporate speak.
+            A free AI writing assistant for long-form articles — paste a brief, pick your format, get an 800–2,500 word draft in seconds. No sign-up required to try it.
           </p>
         </div>
 
