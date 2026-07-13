@@ -12,6 +12,7 @@ import type { GmailSendResult } from '@/lib/gtm/gmail'
 
 // Well-known SMTP presets so users don't have to look up host/port
 export const SMTP_PRESETS: Record<string, { host: string; port: number; label: string }> = {
+  gmail:     { host: 'smtp.gmail.com',      port: 587,  label: 'Gmail (App Password)' },
   outlook:   { host: 'smtp.office365.com', port: 587,  label: 'Outlook / Microsoft 365' },
   yahoo:     { host: 'smtp.mail.yahoo.com', port: 587,  label: 'Yahoo Mail' },
   zohomail:  { host: 'smtp.zoho.com',       port: 587,  label: 'Zoho Mail' },

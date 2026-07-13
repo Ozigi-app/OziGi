@@ -61,6 +61,11 @@ function SettingsContent() {
   // ── Gmail state ─────────────────────────────────────────────────────────────
   const [accounts, setAccounts] = useState<EmailAccount[]>([])
   const [gmailLoading, setGmailLoading] = useState(true)
+  const [gmailAddress, setGmailAddress]   = useState('')
+  const [gmailAppPass, setGmailAppPass]   = useState('')
+  const [gmailFrom, setGmailFrom]         = useState('')
+  const [gmailSaving, setGmailSaving]     = useState(false)
+  const [gmailFormMsg, setGmailFormMsg]   = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // ── SMTP state ──────────────────────────────────────────────────────────────
   const [smtpPreset, setSmtpPreset]   = useState('outlook')
@@ -124,6 +129,32 @@ function SettingsContent() {
     setSmtpPreset(preset)
     const p = SMTP_PRESETS[preset]
     if (p) { setSmtpHost(p.host); setSmtpPort(p.port) }
+  }
+
+  async function connectGmailAppPassword(e: React.FormEvent) {
+    e.preventDefault()
+    setGmailSaving(true); setGmailFormMsg(null)
+    const res = await fetch('/api/gtm/smtp/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        host: 'smtp.gmail.com',
+        port: 587,
+        username: gmailAddress,
+        password: gmailAppPass,
+        from_email: gmailFrom,
+      }),
+    })
+    const d = await res.json()
+    if (res.ok) {
+      setGmailFormMsg({ type: 'success', text: 'Gmail connected.' })
+      setGmailAddress(''); setGmailAppPass(''); setGmailFrom('')
+      const updated = await fetch('/api/gtm/gmail/accounts').then(r => r.json())
+      setAccounts(updated.accounts ?? [])
+    } else {
+      setGmailFormMsg({ type: 'error', text: d.error ?? 'Failed to connect.' })
+    }
+    setGmailSaving(false)
   }
 
   async function saveSmtpAccount(e: React.FormEvent) {
@@ -308,25 +339,52 @@ function SettingsContent() {
       <section style={{ marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <h2 style={{ fontWeight: 700 }}>Gmail</h2>
-          {!planStatus?.hasMultiInbox && accounts.length >= 1 ? (
+          {!planStatus?.hasMultiInbox && accounts.length >= 1 && (
             <Link href="/pricing" style={{ padding: '0.4rem 0.9rem', background: '#f1f5f9', color: '#475569', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem', border: '1px solid #e2e8f0' }}>
               🔒 Pro required for 2nd inbox
             </Link>
-          ) : (
-            <a href="/api/gtm/gmail/connect" style={{ padding: '0.4rem 0.9rem', background: '#111', color: '#fff', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem' }}>
-              + Connect Gmail
-            </a>
           )}
         </div>
-        <div style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '0.85rem 1rem', marginBottom: '1rem', lineHeight: 1.6 }}>
-          <div style={{ fontWeight: 700, marginBottom: '0.3rem', color: '#1e40af' }}>📋 Heads up before you connect</div>
-          <div style={{ color: '#1e3a8a' }}>
-            Ozigi&apos;s Google integration is <strong>pending verification</strong> — we&apos;ve submitted our application and are waiting on Google&apos;s review. When you click <em>Connect Gmail</em>, Google will show an &quot;unverified app&quot; warning screen. <strong>This is expected and safe to proceed past.</strong>
-          </div>
-          <div style={{ marginTop: '0.5rem', color: '#1e3a8a' }}>
-            To continue: click <strong>&quot;Advanced&quot;</strong> on the warning screen, then <strong>&quot;Go to Ozigi (unsafe)&quot;</strong>. Your credentials are encrypted and we only request the permissions shown. We&apos;ll remove this notice once Google approves the app.
-          </div>
+
+        <div style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '0.85rem 1rem', marginBottom: '1rem', lineHeight: 1.6, color: '#1e3a8a' }}>
+          Gmail connects with an <strong>App Password</strong> instead of &quot;Sign in with Google&quot; — no scary warning screen, and it works today.
+          <ol style={{ margin: '0.5rem 0 0', paddingLeft: '1.2rem' }}>
+            <li>Turn on <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>2-Step Verification</a> on your Google Account (required by Google before it will issue an App Password).</li>
+            <li>Generate an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>App Password</a> — pick &quot;Mail&quot; as the app.</li>
+            <li>Paste your Gmail address and the 16-character App Password below.</li>
+          </ol>
         </div>
+
+        {gmailFormMsg && (
+          <div style={{ background: gmailFormMsg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${gmailFormMsg.type === 'success' ? '#86efac' : '#fca5a5'}`, borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: gmailFormMsg.type === 'success' ? '#166534' : '#991b1b' }}>
+            {gmailFormMsg.text}
+          </div>
+        )}
+
+        {(planStatus?.hasMultiInbox || accounts.length === 0) && (
+          <form onSubmit={connectGmailAppPassword} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Gmail address</span>
+              <input type="email" value={gmailAddress} onChange={e => setGmailAddress(e.target.value)} placeholder="you@gmail.com"
+                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>App Password</span>
+              <input type="password" value={gmailAppPass} onChange={e => setGmailAppPass(e.target.value)} placeholder="16-character app password"
+                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Display name (from)</span>
+              <input value={gmailFrom} onChange={e => setGmailFrom(e.target.value)} placeholder="Dumebi from Ozigi"
+                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            </label>
+            <button type="submit" disabled={gmailSaving || !gmailAddress || !gmailAppPass}
+              style={{ padding: '0.55rem 1.25rem', background: gmailSaving ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}>
+              {gmailSaving ? 'Testing & saving…' : 'Connect Gmail'}
+            </button>
+          </form>
+        )}
+
         {gmailLoading && <p style={{ color: '#888' }}>Loading…</p>}
         {!gmailLoading && accounts.length === 0 && (
           <div style={{ border: '1px dashed #ccc', borderRadius: 8, padding: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
@@ -339,7 +397,7 @@ function SettingsContent() {
               <div style={{ fontWeight: 600 }}>{a.email_address}</div>
               <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.2rem' }}>
                 {a.provider === 'smtp'
-                  ? <>SMTP{a.smtp_host ? ` · ${a.smtp_host}` : ''} · Sent today: {a.daily_send_count}</>
+                  ? <>{a.smtp_host === 'smtp.gmail.com' ? 'Gmail (App Password)' : `SMTP${a.smtp_host ? ` · ${a.smtp_host}` : ''}`} · Sent today: {a.daily_send_count}</>
                   : <>{a.is_active ? '● Active' : '○ Inactive'} · Sent today: {a.daily_send_count}</>
                 }
               </div>
