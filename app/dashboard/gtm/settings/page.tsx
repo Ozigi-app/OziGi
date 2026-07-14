@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
@@ -97,7 +97,10 @@ function SettingsContent() {
   const [twoFaSubmitting, setTwoFaSubmitting] = useState(false)
   const [liMsg, setLiMsg] = useState('')
 
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Timestamp of when we started polling for login progress, or null when idle.
+  // Drives the polling interval below — state (not a ref) so the interval
+  // lifecycle is owned by a single effect and survives unrelated re-renders.
+  const [liPollingSince, setLiPollingSince] = useState<number | null>(null)
 
   const connected = searchParams.get('connected')
   const error = searchParams.get('error')
@@ -227,35 +230,59 @@ function SettingsContent() {
       .then(d => setLiSessions(d.sessions ?? []))
   }
 
-  function startPolling() {
-    if (!pollRef.current) {
-      pollRef.current = setInterval(loadLinkedIn, 3000)
-    }
-  }
-
-  function stopPolling() {
-    if (pollRef.current) {
-      clearInterval(pollRef.current)
-      pollRef.current = null
-    }
-  }
-
   useEffect(() => {
     loadLinkedIn()
   }, [])
 
-  // Stop polling once we reach a terminal state (active or needs_login / expired)
+  // Poll while a login is in flight. The interval is owned by this one effect:
+  // it starts when liPollingSince is set and is only torn down when it goes
+  // back to null (or on unmount) — session updates don't touch it.
   useEffect(() => {
-    const inProgress = liSessions.some(
-      s => s.status === 'logging_in' || s.status === 'pending_2fa'
-    )
-    // If no session is in-progress and polling is running, stop it
-    if (!inProgress && pollRef.current) {
-      stopPolling()
-    }
-    return () => stopPolling()
+    if (liPollingSince === null) return
+    const iv = setInterval(loadLinkedIn, 3000)
+    return () => clearInterval(iv)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liSessions])
+  }, [liPollingSince])
+
+  // Decide when to stop polling, on every status response:
+  //  - a session went active → success, tell the user
+  //  - a login failed (error present, nothing in flight) → stop and show it,
+  //    but only after a grace period: the worker takes a few seconds to flip
+  //    the row to 'logging_in', and until then the row still holds the stale
+  //    pre-login status, which must not be read as a result
+  //  - hard timeout → stop with a "check back" message instead of hanging
+  useEffect(() => {
+    if (liPollingSince === null) {
+      // Page opened (or refreshed) while a login is already in flight —
+      // resume polling so the user still sees the outcome.
+      if (liSessions.some(s => s.status === 'logging_in' || s.status === 'pending_2fa')) {
+        setLiPollingSince(Date.now())
+      }
+      return
+    }
+
+    const GRACE_MS   = 20_000       // worker pickup time before statuses are trusted
+    const TIMEOUT_MS = 6 * 60_000   // covers login + the 5-minute 2FA window
+
+    const elapsed    = Date.now() - liPollingSince
+    const active     = liSessions.find(s => s.status === 'active')
+    const inProgress = liSessions.some(s => s.status === 'logging_in' || s.status === 'pending_2fa')
+    const failed     = liSessions.find(
+      s => (s.status === 'needs_login' || s.status === 'expired') && s.login_error
+    )
+
+    if (active) {
+      setLiPollingSince(null)
+      setLiMsg(`✓ LinkedIn connected as ${active.linkedin_email}. Outreach will resume automatically.`)
+    } else if (!inProgress && failed && elapsed > GRACE_MS) {
+      setLiPollingSince(null)
+      setLiMsg('')  // the session card renders the login error itself
+    } else if (elapsed > TIMEOUT_MS) {
+      setLiPollingSince(null)
+      setLiMsg('Login is taking longer than expected — refresh this page in a minute to check the status.')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liSessions, liPollingSince])
 
   async function connectLinkedIn(e: React.FormEvent) {
     e.preventDefault()
@@ -272,7 +299,7 @@ function SettingsContent() {
       setLiPassword('') // clear password from state
       loadLinkedIn()
       // Start polling immediately — don't wait to see 'logging_in' in DB first
-      startPolling()
+      setLiPollingSince(Date.now())
     } else {
       setLiMsg('Could not start LinkedIn login — please check your credentials and try again.')
     }
@@ -286,7 +313,7 @@ function SettingsContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId }),
     })
-    stopPolling()
+    setLiPollingSince(null)
     loadLinkedIn()
   }
 
