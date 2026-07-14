@@ -53,16 +53,19 @@ export async function getProxyConfig(
   // immediately (BLANK_PAGE on every profile visit). Weekly keeps the same IP long
   // enough for LinkedIn to treat it as a trusted device, while still rotating before
   // the IP accumulates enough bot-signal to trigger ERR_CONNECTION_CLOSED.
-  // Smartproxy sticky format: {base_username}_country-us_session-{id}
-  // country-us pins all residential IPs to the United States so LinkedIn
-  // always shows an English UI and associates the session with one locale.
+  // Provider sticky format (proxy.smartproxy.net): {base_username}_area-US_session-{id}
+  // area-US pins all residential IPs to the United States so LinkedIn always
+  // shows an English UI and associates the session with one locale.
+  // NOTE: this provider ignores the Decodo-style `_country-us` modifier (it
+  // silently returns a random-geo IP) — `_area-US` is the syntax it honours,
+  // verified 2026-07-14 after the subscription renewal.
   const shortUserId    = userId.replace(/[^a-z0-9]/gi, '').slice(0, 6).toLowerCase()
   const weekStamp      = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000))  // changes weekly
   // Increment the epoch suffix to force a fresh residential IP when the current
   // week's IP gets blocked by LinkedIn. Keeps the weekly cadence intact.
   const PROXY_EPOCH    = 'b'
   const sessionId      = `${shortUserId}${weekStamp.toString(36)}${PROXY_EPOCH}`
-  const stickyUsername = `${username}_country-us_session-${sessionId}`
+  const stickyUsername = `${username}_area-US_session-${sessionId}`
 
   // Start (or reuse) the local HTTP→HTTP proxy tunnel that sends auth upfront
   const localPort = await startLocalProxy(host, socksPort, stickyUsername, password)

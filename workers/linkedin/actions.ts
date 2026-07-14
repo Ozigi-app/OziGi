@@ -695,6 +695,34 @@ export async function sendLinkedInMessage(
   const page = await context.newPage()
   page.setDefaultTimeout(30_000)
 
+  // Spy on LinkedIn's own Voyager API calls to capture the exact headers and
+  // the sender's own profile URN (from /voyager/api/me response).
+  const capturedApiHeaders: Record<string, string> = {}
+  const apiCallLog: string[] = []
+  page.on('request', req => {
+    const url = req.url()
+    if (url.includes('/voyager/api/')) {
+      const h = req.headers()
+      for (const key of ['csrf-token', 'x-li-lang', 'x-restli-protocol-version', 'x-li-track']) {
+        if (h[key]) capturedApiHeaders[key] = h[key]
+      }
+      apiCallLog.push(`${req.method()} ${url.replace('https://www.linkedin.com', '').slice(0, 90)}`)
+    }
+  })
+  page.on('response', async resp => {
+    try {
+      const url = resp.url()
+      // /voyager/api/me returns the logged-in user's profile including their URN
+      if (url.includes('/voyager/api/me') && !url.includes('decoration') && resp.status() === 200) {
+        const json = await resp.json().catch(() => null)
+        const urn = json?.miniProfile?.entityUrn ?? json?.entityUrn ?? json?.plainId
+        if (urn && !capturedApiHeaders['_senderUrn']) {
+          capturedApiHeaders['_senderUrn'] = String(urn)
+        }
+      }
+    } catch { /* ignore */ }
+  })
+
   try {
     // ── 1. Feed visit — prime localStorage auth state ────────────────────────
     // LinkedIn's SPA checks localStorage for voyager-web:* keys before rendering
@@ -756,23 +784,47 @@ export async function sendLinkedInMessage(
     // ── 3. Dismiss any open messaging overlays ───────────────────────────────
     await dismissMessagingOverlay(page, linkedinProfileId)
 
+    // Force-remove any bubbles LinkedIn's SPA re-rendered after profile load.
+    // dismissMessagingOverlay clicks close buttons but they can fail; this DOM
+    // removal ensures stale conversations don't appear as "Message X" buttons
+    // in the profile button scan below, which would trigger a RECIPIENT_MISMATCH.
+    await page.evaluate(() => {
+      document.querySelectorAll('.msg-overlay-conversation-bubble, .msg-overlay-list-bubble')
+        .forEach(el => (el as HTMLElement).remove())
+    }).catch(() => {})
+
     // ── 4. Find and click the Message button ─────────────────────────────────
     //
     // LinkedIn renders the Message action as EITHER a <button> OR an <a class="artdeco-button">
     // depending on the profile layout / A-B test variant. We must query both element types
     // everywhere — pure button selectors miss the anchor variant and produce false
     // "Message button not found" errors even for accepted 1st-degree connections.
-    const visibleBtns = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]'))
+
+    // Scroll the profile action section into view — lazy-rendered sections can cause
+    // action buttons to be absent from the DOM until they enter the viewport.
+    await page.evaluate(() => {
+      const actions = document.querySelector('.pvs-profile-actions')
+      if (actions) actions.scrollIntoView({ block: 'center', behavior: 'instant' })
+    }).catch(() => {})
+    // Close any open artdeco dropdown (e.g. the "More" dropdown that hides Message in its menu)
+    await page.keyboard.press('Escape').catch(() => {})
+    await delay(400, 700)
+
+    // Scope button scan to the profile's own action bar — avoids counting
+    // "Message Jazmin Butler" buttons from the sidebar / People-you-may-know section
+    // as the profile owner's Message button and sending to the wrong recipient.
+    const visibleBtns = await page.evaluate(() => {
+      const container = document.querySelector('.pvs-profile-actions, .pv-top-card-v2-ctas') ?? document.body
+      return Array.from(container.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]'))
         .filter(b => (b as HTMLElement).offsetParent !== null)
         .map(b => (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 50))
         .filter(Boolean)
-        .slice(0, 20)
-    ).catch(() => [] as string[])
+        .slice(0, 25)
+    }).catch(() => [] as string[])
     console.log(`[actions] profile buttons for ${linkedinProfileId}: ${visibleBtns.join(' | ')}`)
 
-    // If only Connect is visible but no Message, the connection wasn't accepted yet
-    const hasConnect = visibleBtns.some((b: string) => /\bconnect\b/i.test(b))
+    // If only Connect/Pending is visible but no Message, the connection wasn't accepted yet
+    const hasConnect = visibleBtns.some((b: string) => /\bconnect\b|\bpending\b/i.test(b))
     const hasMessage = visibleBtns.some((b: string) => /\bmessage\b|\bmensagem\b|\bmensaje\b/i.test(b))
     if (hasConnect && !hasMessage) {
       throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows Connect button — connection not yet accepted`)
@@ -789,13 +841,16 @@ export async function sendLinkedInMessage(
     //      fires a native click event so React / LinkedIn's SPA click handlers are notified.
     const msgKeywordRe = /^(Message|Mensagem|Mensaje|Envoyer un message)\b/i
 
-    const msgBtn = page.getByRole('button', { name: msgKeywordRe })
-      .or(page.locator('button[aria-label^="Message"]:not([aria-label*="More"])'))
-      .or(page.locator('button[aria-label^="Mensagem"]'))
-      .or(page.locator('button[aria-label^="Mensaje"]'))
-      // Anchor variants — LinkedIn sometimes renders Message as <a class="artdeco-button">
-      .or(page.locator('a[aria-label^="Message"]:not([aria-label*="More"]), a[aria-label^="Mensagem"], a[aria-label^="Mensaje"]'))
-      .or(page.locator('a.artdeco-button').filter({ hasText: msgKeywordRe }))
+    // Scope to the profile's own action bar — sidebar / People-you-may-know sections
+    // also contain "Message <other-person>" buttons that have different profileUrns.
+    // Matching those would silently send the message to the wrong recipient.
+    const profileActionsEl = page.locator('.pvs-profile-actions, .pv-top-card-v2-ctas')
+    const msgBtn = profileActionsEl.getByRole('button', { name: msgKeywordRe })
+      .or(profileActionsEl.locator('button[aria-label^="Message"]:not([aria-label*="More"])'))
+      .or(profileActionsEl.locator('button[aria-label^="Mensagem"]'))
+      .or(profileActionsEl.locator('button[aria-label^="Mensaje"]'))
+      .or(profileActionsEl.locator('a[aria-label^="Message"]:not([aria-label*="More"]), a[aria-label^="Mensagem"], a[aria-label^="Mensaje"]'))
+      .or(profileActionsEl.locator('a.artdeco-button').filter({ hasText: msgKeywordRe }))
       .first()
 
     const msgBtnVisible = await msgBtn.isVisible({ timeout: 5_000 }).catch(() => false)
@@ -806,18 +861,83 @@ export async function sendLinkedInMessage(
       // restoring the high-z-index interception div before Playwright reaches the button.
       await suppressInterceptors(page)
 
-      // LinkedIn sometimes renders Message as <a href="/messaging/compose/..."> rather
-      // than a <button>. Playwright's locator.click() on an <a> element can time out:
-      // bot-detection intercepts the mouse event, performing click action hangs until
-      // the 10s timeout fires. Fix: extract href and navigate directly — same compose
-      // panel opens, click entirely bypassed.
       const msgBtnHref = await msgBtn.getAttribute('href').catch(() => null)
       if (msgBtnHref?.includes('/messaging/compose/')) {
-        const composeUrl = `https://www.linkedin.com${msgBtnHref}`
-        console.log(`[actions] Message button is <a> link — navigating to compose URL for ${linkedinProfileId}`)
-        await page.goto(composeUrl, { waitUntil: 'commit', timeout: 20_000 })
-        await page.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {})
-        await delay(1_500, 2_500)
+        // <a> compose buttons — navigating to the LinkedIn messaging SPA via page.goto()
+        // fails (LinkedIn blocks JS execution on /messaging/* paths: bodyLen stays at 18
+        // even after 90s; Playwright click() times out because button is covered by overlay).
+        // Use LinkedIn's Voyager REST API directly from the browser context: the session
+        // cookies are already set so a same-origin fetch includes auth automatically.
+        const profileUrn = new URL(`https://www.linkedin.com${msgBtnHref}`)
+          .searchParams.get('profileUrn')
+
+        if (!profileUrn) {
+          throw new Error(`No profileUrn in compose link for ${linkedinProfileId}`)
+        }
+
+        // Use the csrf-token LinkedIn sent in its own Voyager API calls (captured by
+        // the page.on('request') spy above). This is more reliable than extracting
+        // from JSESSIONID cookie, which may be truncated or point to the wrong cookie.
+        const csrfToken = capturedApiHeaders['csrf-token'] ?? await page.evaluate(() => {
+          const entry = document.cookie.split('; ').find(c => c.startsWith('JSESSIONID='))
+          if (!entry) return null
+          const raw = entry.substring('JSESSIONID='.length)
+          return decodeURIComponent(raw).replace(/^"|"$/g, '').trim()
+        }).catch(() => null)
+
+        if (!csrfToken) {
+          throw new Error(`No CSRF token captured for ${linkedinProfileId}`)
+        }
+
+        console.log(`[actions] Voyager API send for ${linkedinProfileId} csrf=${csrfToken.slice(0, 25)} (${profileUrn.slice(0, 50)})`)
+
+        const apiResult = await page.evaluate(async (p: {
+          csrf: string; urn: string; msg: string; extraHeaders: Record<string, string>
+        }) => {
+          const reqBody = JSON.stringify({
+            keyVersion: 'LEGACY_INBOX',
+            conversationCreate: {
+              eventCreate: {
+                value: {
+                  'com.linkedin.voyager.messaging.create.MessageCreate': {
+                    attributedBody: { text: p.msg, attributes: [] },
+                    attachments: [],
+                  },
+                },
+              },
+              recipients: [p.urn],
+              subtype: 'MEMBER_TO_MEMBER',
+            },
+          })
+          try {
+            const resp = await fetch('/voyager/api/messaging/conversations', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': p.csrf,
+                'x-li-lang': p.extraHeaders['x-li-lang'] ?? 'en_US',
+                'x-restli-protocol-version': p.extraHeaders['x-restli-protocol-version'] ?? '2.0.0',
+                ...(p.extraHeaders['x-li-track'] ? { 'x-li-track': p.extraHeaders['x-li-track'] } : {}),
+              },
+              body: reqBody,
+            })
+            const body = await resp.text()
+            return { status: resp.status, ok: resp.ok, body: body.slice(0, 1000), sentBody: reqBody.slice(0, 300) }
+          } catch (e: unknown) {
+            return { status: 0, ok: false, body: String(e instanceof Error ? e.message : e), sentBody: '' }
+          }
+        }, { csrf: csrfToken, urn: profileUrn, msg: message, extraHeaders: capturedApiHeaders })
+
+        console.log(`[actions] Voyager API result for ${linkedinProfileId}: status=${apiResult?.status} body=${apiResult?.body?.slice(0, 300)}`)
+        console.log(`[actions] Voyager API sentBody for ${linkedinProfileId}: ${apiResult?.sentBody}`)
+
+        if (!apiResult?.ok) {
+          throw new Error(`Voyager API failed for ${linkedinProfileId}: HTTP ${apiResult?.status} — ${apiResult?.body?.slice(0, 200)}`)
+        }
+
+        // Message sent via API — return early so index.ts can mark as sent
+        console.log(`[actions] message sent via Voyager API for ${linkedinProfileId} ✓`)
+        return
       } else {
         await msgBtn.click({ timeout: 10_000 })
         console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)
@@ -827,20 +947,22 @@ export async function sendLinkedInMessage(
       // so that <a> anchor Message buttons (LinkedIn's alternate layout) are also found.
       console.warn(`[actions] Playwright locators missed Message button for ${linkedinProfileId} — trying JS click`)
 
-      // Log all artdeco anchor elements for diagnostics (helps debug new LinkedIn layouts)
-      const anchorBtns = await page.evaluate(() =>
-        Array.from(document.querySelectorAll('a.artdeco-button, a[aria-label]'))
+      // Log all artdeco anchor elements in the profile actions for diagnostics
+      const anchorBtns = await page.evaluate(() => {
+        const container = document.querySelector('.pvs-profile-actions, .pv-top-card-v2-ctas') ?? document.body
+        return Array.from(container.querySelectorAll('a.artdeco-button, a[aria-label]'))
           .map(a => `${a.tagName} aria="${a.getAttribute('aria-label')?.slice(0, 40)}" text="${(a.textContent ?? '').trim().slice(0, 30)}"`)
-      ).catch(() => [] as string[])
+      }).catch(() => [] as string[])
       console.log(`[actions] anchor buttons for ${linkedinProfileId}: ${anchorBtns.join(' | ')}`)
 
       const jsClicked = await page.evaluate((kw: string) => {
         const re = new RegExp(kw, 'i')
         const moreRe = /more|options|mais/i
-        // Include <a> anchor buttons — LinkedIn renders Message as <a class="artdeco-button">
-        // in many profile layouts. Without this, the button is invisible to the selector.
+        // Scope to profile actions area — avoids clicking "Message <other-person>"
+        // buttons from sidebar sections which would send to the wrong recipient.
+        const actionsEl = document.querySelector('.pvs-profile-actions, .pv-top-card-v2-ctas') ?? document.body
         const candidates = Array.from(
-          document.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]')
+          actionsEl.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]')
         ).filter(b => (b as HTMLElement).offsetParent !== null)
         const btn = candidates.find(b => {
           const label = (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 80)
@@ -851,15 +973,27 @@ export async function sendLinkedInMessage(
       }, '^(Message|Mensagem|Mensaje|Envoyer un message)\\b').catch(() => false)
 
       if (!jsClicked) {
+        // "Manage notifications about X" as a top-level button (without Message) means
+        // we're following this person but not connected — connection not yet accepted.
+        // Check this AFTER all locator attempts fail so we don't skip profiles where the
+        // Message button exists but appears beyond the first-25-button scan.
+        const hasManageNotif = visibleBtns.some((b: string) => /^Manage notifications about\b/i.test(b))
+        if (hasManageNotif) {
+          throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows ManageNotif without Message — connection not yet accepted`)
+        }
         throw new Error(`Message button not found for ${linkedinProfileId} — may not be connected yet`)
       }
       console.log(`[actions] Message button JS-clicked for ${linkedinProfileId}`)
     }
 
     // ── 5. Wait for compose panel ────────────────────────────────────────────
-    const inputSel = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable'
+    // 40s gives the LinkedIn messaging SPA enough time to render the compose area
+    // after navigating to the full messaging page (the SPA can be slow to hydrate).
+    // .msg-form__contenteditable works for both the overlay bubble and the full messaging page.
+    // div[contenteditable][role="textbox"] is a broader fallback for any LinkedIn compose variant.
+    const inputSel = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable, div[contenteditable="true"][role="textbox"]'
     const composeVisible = await page.locator(inputSel).first()
-      .waitFor({ state: 'visible', timeout: 25_000 })
+      .waitFor({ state: 'visible', timeout: 90_000 })
       .then(() => true)
       .catch(() => false)
 
@@ -876,10 +1010,29 @@ export async function sendLinkedInMessage(
     // confirmed in production (a message meant for one lead landed in another's
     // thread). Before typing anything, confirm the conversation container that
     // encloses our target input actually mentions the intended recipient's name.
+    //
+    // LinkedIn sets the page title to the recipient's name when navigating to the
+    // full messaging page (for <a> Message buttons). We check the page title first
+    // before falling back to the overlay bubble text check.
     // Fail closed: if we can't verify, abort rather than risk a misdirected send.
     const firstName = recipientName?.trim().split(/\s+/)[0]
     if (firstName && firstName.length >= 2) {
       const recipientCheck = await page.evaluate(({ inputSel, name }: { inputSel: string; name: string }) => {
+        const n = name.toLowerCase()
+        // Full messaging page: page title is set to the contact's name
+        if (document.title.toLowerCase().includes(n)) return 'match'
+        // Full messaging page: conversation header shows contact name
+        const headerSelectors = [
+          '.msg-entity-lockup__entity-title',
+          '.msg-s-message-list-header__title',
+          '.msg-thread-header__title',
+          '.msg-conversation-listitem__participants-names',
+          'h2[class*="msg"]',
+        ]
+        for (const sel of headerSelectors) {
+          if (document.querySelector(sel)?.textContent?.toLowerCase().includes(n)) return 'match'
+        }
+        // Overlay bubble: check the conversation container wrapping the input
         const input = document.querySelector(inputSel)
         if (!input) return 'no-input'
         const bubble =
@@ -887,7 +1040,7 @@ export async function sendLinkedInMessage(
           input.closest('[class*="overlay"]') ??
           input.closest('.msg-form')
         const text = (bubble?.textContent ?? '').toLowerCase()
-        return text.includes(name.toLowerCase()) ? 'match' : `mismatch:${text.slice(0, 150)}`
+        return text.includes(n) ? 'match' : `mismatch:title=${document.title.slice(0, 60)} bubble=${text.slice(0, 80)}`
       }, { inputSel, name: firstName }).catch(() => 'eval-failed')
 
       if (recipientCheck !== 'match') {
