@@ -42,13 +42,22 @@ export async function POST(req: Request) {
       content: post.content,
       media_url: post.imageUrl,
       scheduled_for: scheduledFor,
-      status: 'pending'
+      status: 'pending',
+      delivery_mode: post.deliveryMode === 'reminder' ? 'reminder' : 'auto',
     }));
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("scheduled_posts")
       .insert(scheduledPosts)
       .select();
+
+    // Graceful fallback if the delivery_mode migration hasn't been applied yet
+    if (error && /delivery_mode/.test(error.message)) {
+      ({ data, error } = await supabase
+        .from("scheduled_posts")
+        .insert(scheduledPosts.map(({ delivery_mode, ...rest }: any) => rest))
+        .select());
+    }
 
     if (error) throw error;
 

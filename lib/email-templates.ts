@@ -317,6 +317,37 @@ export function buildXReminderEmail(postContent: string, intentUrl: string, dash
   `;
 }
 
+export function buildLinkedInReminderEmail(postContent: string, intentUrl: string, dashboardUrl: string) {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <style>
+        img { max-width: 100%; height: auto; }
+      </style>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="https://ozigi.app/logo.png" alt="Ozigi" style="height: 40px;">
+      </div>
+      <h2 style="color: #0f172a; margin-top: 0; font-size: 1.5rem;">Your scheduled LinkedIn post is ready 🚀</h2>
+      <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; margin: 16px 0; border-left: 4px solid #0A66C2;">
+        <p style="margin: 0; white-space: pre-wrap; color: #334155;">${escapeHtml(postContent)}</p>
+      </div>
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${intentUrl}" target="_blank" style="background-color: #0A66C2; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">Open LinkedIn composer</a>
+      </div>
+      <p style="color: #475569; font-size: 0.875rem; text-align: center;">
+        The composer opens with your text pre-filled — just hit Post.<br>
+        Posting as a company page? Switch the author dropdown at the top of the composer first.
+      </p>
+      <p style="color: #475569; font-size: 0.875rem; text-align: center;">
+        Or <a href="${dashboardUrl}" style="color: #0A66C2;">log in to your Ozigi dashboard</a> to manage all scheduled posts.
+      </p>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px;">
+      <p style="color: #94a3b8; font-size: 0.75rem; text-align: center;">
+        You're receiving this because you scheduled a post on Ozigi.
+      </p>
+    </div>
+  `;
+}
+
 export function buildNewsletterEmail(
   body: string,
   unsubscribeLink: string,

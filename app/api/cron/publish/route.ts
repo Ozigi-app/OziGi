@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
-import { buildXReminderEmail, buildNewsletterEmail } from "@/lib/email-templates";
+import { buildXReminderEmail, buildLinkedInReminderEmail, buildNewsletterEmail } from "@/lib/email-templates";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const APP_URL = process.env.APP_URL || 'http://localhost:3000';
@@ -227,6 +227,37 @@ else if (post.platform === 'x') {
 
         // ---------- LINKEDIN PLATFORM ----------
 else if (post.platform === 'linkedin') {
+          // Sends an email with a composer intent link (used for reminder-mode
+          // posts — e.g. company pages — and as a fallback when the API fails)
+          const sendLinkedInReminder = async () => {
+            const intentUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(post.content)}`;
+            const htmlBody = buildLinkedInReminderEmail(post.content, intentUrl, `${APP_URL}/dashboard`);
+            await mailClient.sendMail({
+              from: { address: EMAIL_FROM_ADDRESS, name: EMAIL_FROM_NAME },
+              to: [{ email_address: { address: post.user_email, name: '' } }],
+              subject: 'Your scheduled LinkedIn post is ready',
+              htmlbody: htmlBody,
+            });
+            await supabase
+              .from("scheduled_posts")
+              .update({ reminder_sent: true })
+              .eq("id", post.id);
+          };
+
+          if (post.delivery_mode === 'reminder') {
+            if (post.user_email && !post.reminder_sent) {
+              try {
+                await sendLinkedInReminder();
+                publishSuccess = true;
+                console.log(`[CRON] Sent LinkedIn reminder to ${post.user_email}`);
+              } catch (emailError: any) {
+                publishSuccess = false;
+                publishError = emailError.message;
+              }
+            } else {
+              publishSuccess = true;
+            }
+          } else {
           const userTokens = tokensByUser.get(post.user_id) || [];
           const linkedInToken = userTokens.find(t => t.provider === 'linkedin_oidc')?.access_token;
 
@@ -249,6 +280,18 @@ console.log('[CRON] LinkedIn response:', data);
 publishSuccess = res.ok;
 publishError = data.error || null;
 if (data.postId) console.log('[CRON] LinkedIn post ID:', data.postId);
+          }
+
+          // Auto-post failed → email a reminder so the post isn't silently lost
+          if (!publishSuccess && post.user_email && !post.reminder_sent) {
+            try {
+              await sendLinkedInReminder();
+              publishError = `${publishError ?? 'Publish failed'} — reminder email sent so you can post manually`;
+              console.log(`[CRON] LinkedIn auto-post failed; sent fallback reminder to ${post.user_email}`);
+            } catch (emailError: any) {
+              console.error(`[CRON] Failed to send LinkedIn fallback reminder:`, emailError);
+            }
+          }
           }
         }
 

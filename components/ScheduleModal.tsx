@@ -6,7 +6,7 @@ import { PLATFORMS } from "@/lib/platforms";
 interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSchedule: (scheduledFor: string, email?: string | null) => Promise<void>; // 👈 added email
+  onSchedule: (scheduledFor: string, email?: string | null, deliveryMode?: "auto" | "reminder") => Promise<void>;
   postText: string;
   platform: string;
   day: number;          // 👈 prop for the campaign day
@@ -30,6 +30,10 @@ export default function ScheduleModal({
 }: ScheduleModalProps) {
   const [scheduledFor, setScheduledFor] = useState("");
   const [loading, setLoading] = useState(false);
+  // LinkedIn only: 'auto' posts via the API; 'reminder' emails an intent link
+  // at the scheduled time (needed for company pages — the API can't post to them)
+  const [deliveryMode, setDeliveryMode] = useState<"auto" | "reminder">("auto");
+  const isLinkedIn = platform.toLowerCase() === PLATFORMS.LINKEDIN;
 
   if (!isOpen) return null;
 
@@ -43,7 +47,7 @@ export default function ScheduleModal({
     try {
       const localDate = new Date(scheduledFor + ":00");
       const utcString = localDate.toISOString();
-      await onSchedule(utcString, emailToUse); // pass email to parent
+      await onSchedule(utcString, emailToUse, isLinkedIn ? deliveryMode : undefined);
       toast.success("Post successfully scheduled! 🚀"); // 👈 Trigger toast on success
       onClose();
     } catch (error) {
@@ -124,6 +128,57 @@ export default function ScheduleModal({
     </div>
   )}
 
+  {isLinkedIn && (
+    <div className="space-y-3">
+      <div>
+        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+          Delivery
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {([
+            { mode: "auto", label: "Auto-post", desc: "Published to your profile via LinkedIn" },
+            { mode: "reminder", label: "Email me", desc: "Get a link that opens the composer — works for company pages" },
+          ] as const).map(({ mode, label, desc }) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setDeliveryMode(mode)}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                deliveryMode === mode
+                  ? "border-[#0A66C2] bg-[#0A66C2]/5"
+                  : "border-slate-200 bg-slate-50 hover:border-slate-300"
+              }`}
+            >
+              <span className={`block text-[10px] font-black uppercase tracking-widest ${deliveryMode === mode ? "text-[#0A66C2]" : "text-slate-500"}`}>
+                {label}
+              </span>
+              <span className="block text-[10px] text-slate-500 mt-1 leading-snug">{desc}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {deliveryMode === "reminder" && (
+        !emailToUse ? (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-xs text-amber-800 font-medium mb-2">
+              ⚠️ Email reminders require an email address.
+            </p>
+            <a
+              href="/dashboard?openSettings=true"
+              className="text-xs font-black uppercase tracking-widest text-amber-700 hover:text-amber-900 underline"
+            >
+              Add your email in Settings
+            </a>
+          </div>
+        ) : (
+          <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+            📧 The reminder will be sent to {emailToUse}
+          </p>
+        )
+      )}
+    </div>
+  )}
+
   {platform.toLowerCase() === PLATFORMS.EMAIL && (
   <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
     <p className="text-xs text-indigo-800 font-medium">
@@ -135,7 +190,7 @@ export default function ScheduleModal({
 
           <button
             type="submit"
-            disabled={loading || !scheduledFor}
+            disabled={loading || !scheduledFor || (isLinkedIn && deliveryMode === "reminder" && !emailToUse)}
             className="w-full bg-indigo-600 text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:bg-indigo-300 text-xs shadow-lg"
           >
             {loading ? "Scheduling..." : "Schedule Post"}

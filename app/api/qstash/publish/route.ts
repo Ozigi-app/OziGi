@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { verifyQStashRequest } from "@/lib/qstash";
 import { SendMailClient } from "zeptomail";
-import { buildXReminderEmail, buildNewsletterEmail } from "@/lib/email-templates";
+import { buildXReminderEmail, buildLinkedInReminderEmail, buildNewsletterEmail } from "@/lib/email-templates";
 
 const APP_URL = process.env.APP_URL || "http://localhost:3000";
 
@@ -188,19 +188,62 @@ export async function POST(req: Request) {
 
     // ---------- LINKEDIN PLATFORM ----------
     else if (post.platform === "linkedin") {
-      const res = await fetch(`${APP_URL}/api/publish/linkedin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: post.content,
-          userId: post.user_id,
-          imageUrl: post.media_url,
-        }),
-      });
-      const data = await res.json();
-      publishSuccess = res.ok;
-      publishError = data.error || null;
-      console.log(`[QStash] LinkedIn publish result:`, data);
+      // Sends an email with a composer intent link (used for reminder-mode
+      // posts — e.g. company pages — and as a fallback when the API fails)
+      const sendLinkedInReminder = async () => {
+        const intentUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(post.content)}`;
+        const htmlBody = buildLinkedInReminderEmail(post.content, intentUrl, `${APP_URL}/dashboard`);
+        await mailClient.sendMail({
+          from: { address: EMAIL_FROM_ADDRESS, name: EMAIL_FROM_NAME },
+          to: [{ email_address: { address: post.user_email, name: "" } }],
+          subject: "Your scheduled LinkedIn post is ready",
+          htmlbody: htmlBody,
+        });
+        await supabase
+          .from("scheduled_posts")
+          .update({ reminder_sent: true })
+          .eq("id", post.id);
+      };
+
+      if (post.delivery_mode === "reminder") {
+        if (post.user_email && !post.reminder_sent) {
+          try {
+            await sendLinkedInReminder();
+            publishSuccess = true;
+            console.log(`[QStash] Sent LinkedIn reminder to ${post.user_email}`);
+          } catch (emailError: any) {
+            publishSuccess = false;
+            publishError = emailError.message;
+          }
+        } else {
+          publishSuccess = true;
+        }
+      } else {
+        const res = await fetch(`${APP_URL}/api/publish/linkedin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: post.content,
+            userId: post.user_id,
+            imageUrl: post.media_url,
+          }),
+        });
+        const data = await res.json();
+        publishSuccess = res.ok;
+        publishError = data.error || null;
+        console.log(`[QStash] LinkedIn publish result:`, data);
+
+        // Auto-post failed → email a reminder so the post isn't silently lost
+        if (!publishSuccess && post.user_email && !post.reminder_sent) {
+          try {
+            await sendLinkedInReminder();
+            publishError = `${publishError ?? "Publish failed"} — reminder email sent so you can post manually`;
+            console.log(`[QStash] LinkedIn auto-post failed; sent fallback reminder to ${post.user_email}`);
+          } catch (emailError: any) {
+            console.error(`[QStash] Failed to send LinkedIn fallback reminder:`, emailError);
+          }
+        }
+      }
     }
 
     // ---------- DISCORD PLATFORM ----------
