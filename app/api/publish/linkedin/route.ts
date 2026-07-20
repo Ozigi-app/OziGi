@@ -63,7 +63,6 @@ export async function POST(req: Request) {
       documentBase64,
       documentTitle,
       accessToken: providedToken,
-      organizationUrn, // optional: post as a company page (urn:li:organization:...)
     } = await req.json();
 
     // Normalise: accept either `imageUrl` (legacy, single string) or `imageUrls` (array).
@@ -144,22 +143,14 @@ export async function POST(req: Request) {
     // The legacy /v2/ugcPosts and /v2/assets endpoints are rejected for newer
     // LinkedIn app registrations, so everything goes through /rest/* now.
     async function postToLinkedIn(token: string) {
-      // Resolve author: company page if provided, otherwise the member's profile
-      let authorUrn: string;
-      if (organizationUrn) {
-        authorUrn = organizationUrn.startsWith("urn:li:organization:")
-          ? organizationUrn
-          : `urn:li:organization:${organizationUrn}`;
-      } else {
-        const profileRes = await fetch("https://api.linkedin.com/v2/userinfo", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!profileRes.ok) {
-          throw new Error(`Failed to authenticate token with LinkedIn: ${profileRes.status}`);
-        }
-        const profileData = await profileRes.json();
-        authorUrn = `urn:li:person:${profileData.sub}`;
+      const profileRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!profileRes.ok) {
+        throw new Error(`Failed to authenticate token with LinkedIn: ${profileRes.status}`);
       }
+      const profileData = await profileRes.json();
+      const authorUrn = `urn:li:person:${profileData.sub}`;
 
       let documentUrn: string | null = null;
       const imageUrns: string[] = [];
@@ -329,7 +320,6 @@ export async function POST(req: Request) {
       hasImage: imageList.length > 0,
       imageCount: imageList.length,
       hasDocument: !!documentBase64,
-      asOrganization: !!organizationUrn,
       postType: documentBase64 ? 'carousel' : imageList.length > 0 ? 'image' : 'text',
       charCount: text?.length,
     }).catch(() => {})

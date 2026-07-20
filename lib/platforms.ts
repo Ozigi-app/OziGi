@@ -63,8 +63,7 @@ export const OAUTH_PROVIDERS = {
 // Provider scopes for OAuth
 export const OAUTH_SCOPES = {
   X: "tweet.read tweet.write users.read offline.access",
-  // w_organization_social lets users post to company pages they administer
-  LINKEDIN: "w_member_social w_organization_social openid profile email",
+  LINKEDIN: "w_member_social openid profile email",
 } as const;
 
 // Platform categories
