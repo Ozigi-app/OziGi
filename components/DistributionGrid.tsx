@@ -7,6 +7,7 @@ import ScheduleModal from "./ScheduleModal";
 import RichTextEditor from "./RichTextEditor";
 import ScheduleEmailModal from "./ScheduleEmailModal";
 import { usePlanStatus } from "@/components/hooks/usePlanStatus";
+import { supabase } from "@/lib/supabase/client";
 import { PLATFORMS, getApiEndpoint } from "@/lib/platforms";
 import { uploadLargeAsset } from "@/lib/utils";
 import { ImagePlus, X } from "lucide-react";
@@ -1000,11 +1001,13 @@ function SocialCard({
   onOpenTips,
   showCarouselOption,
   demoMode = false,
+  profileEmail,
 }: {
   day: number;
   platformName: string;
   initialText: string;
   session: any;
+  profileEmail?: string | null;
   onPost?: (text: string, day: number, imageUrls?: string[], carouselData?: { documentBase64: string; documentTitle: string }) => void;
   postStatus?: "idle" | "loading" | "success" | "error";
   actionButtonConfig?: {
@@ -1076,32 +1079,32 @@ function SocialCard({
     }
   };
 
-  const handleDownloadImage = async (e: React.MouseEvent) => {
+  const handleDownloadImage = (e: React.MouseEvent, url: string, idx: number) => {
     e.stopPropagation();
-    if (!imageUrl) return;
+    if (!url) return;
 
-    try {
-      // Fetch the image as a blob to handle cross-origin
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
+    const filename = `ozigi-campaign-day-${day}${imageUrls.length > 1 ? `-${idx + 1}` : ""}.jpg`;
 
+    if (url.startsWith("data:")) {
       const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = `ozigi-campaign-day-${day}.jpg`;
+      link.href = url;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      // Clean up blob URL
-      URL.revokeObjectURL(blobUrl);
       toast.success("Image downloaded!");
-    } catch (err) {
-      console.error("Download failed:", err);
-      // Fallback: open in new tab
-      window.open(imageUrl, "_blank");
-      toast.info("Opening image in new tab");
+      return;
     }
+
+    // R2 images block cross-origin fetch, so route the download through our
+    // same-origin proxy which sets Content-Disposition: attachment
+    const link = document.createElement("a");
+    link.href = `/api/download-image?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Image download started");
   };
 
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1291,7 +1294,7 @@ function SocialCard({
               <img src={url} alt={`Image ${idx + 1}`} className="w-full aspect-video object-cover" />
               <div className="absolute top-1.5 right-1.5 flex gap-1">
                 <button
-                  onClick={handleDownloadImage}
+                  onClick={(e) => handleDownloadImage(e, url, idx)}
                   className="bg-white/90 rounded-full p-1.5 shadow-md hover:bg-blue-100 transition-colors"
                   title="Download image"
                 >
@@ -1347,6 +1350,38 @@ function SocialCard({
           {postStatus === "success" && actionButtonConfig.success}
           {postStatus !== "loading" && postStatus !== "success" && actionButtonConfig.idle}
         </button>
+      )}
+
+      {/* API-free fallback: opens LinkedIn's composer with the text pre-filled */}
+      {platformName === "LinkedIn" && !demoMode && (
+        <>
+          {postStatus === "error" && (
+            <p className="text-[10px] text-red-500 font-medium mt-2 text-center">
+              Direct post failed — you can still post via the LinkedIn composer below.
+            </p>
+          )}
+          <button
+            onClick={() => {
+              const intentUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
+              window.open(intentUrl, "_blank", "noopener,noreferrer");
+            }}
+            className={`w-full py-2 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-1.5 mt-2 border ${
+              postStatus === "error"
+                ? "border-[#0A66C2] text-[#0A66C2] bg-[#0A66C2]/5 hover:bg-[#0A66C2]/10"
+                : "border-slate-200 text-slate-400 hover:text-[#0A66C2] hover:border-[#0A66C2]/40"
+            }`}
+          >
+            Open in LinkedIn
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 17L17 7M17 7H8M17 7v9" />
+            </svg>
+          </button>
+          {imageUrls.length > 0 && (
+            <p className="text-[9px] text-slate-400 mt-1 text-center">
+              Images can't be pre-attached — download them above and add them in the composer.
+            </p>
+          )}
+        </>
       )}
 
       {(onOpenTips || showCarouselOption) && (
@@ -1415,6 +1450,7 @@ function SocialCard({
           day={day}
           imageUrl={imageUrls[0] || undefined}
           userEmail={session?.user?.email}
+          profileEmail={profileEmail}
         />
       )}
     </motion.div>
@@ -1446,6 +1482,21 @@ export default function DistributionGrid({
   const [emailImageUrl, setEmailImageUrl] = useState<string | null>(null);
   const [imagesGeneratedCount, setImagesGeneratedCount] = useState(0);
   const incrementImageCount = () => setImagesGeneratedCount((prev) => prev + 1);
+  // Company-page posting: available when the user saved a page ID in Settings
+  const linkedinOrgId: string = session?.user?.user_metadata?.linkedin_org_id || "";
+  const [liPostAs, setLiPostAs] = useState<"personal" | "company">("personal");
+  // Reminder email configured in Settings (profiles.email) — preferred over the
+  // account's login email for X reminder notifications
+  const [profileEmail, setProfileEmail] = useState<string | null>(null);
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", session.user.id)
+      .single()
+      .then(({ data }) => setProfileEmail(data?.email || null));
+  }, [session?.user?.id]);
 
   useEffect(() => {
     setLocalEmailContent(emailContent || null);
@@ -1503,7 +1554,7 @@ export default function DistributionGrid({
     setTimeout(() => setXStatuses((prev) => ({ ...prev, [day]: "idle" })), 3000);
   };
 
-  const handlePostToDiscord = async (text: string, day: number, imageUrl?: string) => {
+  const handlePostToDiscord = async (text: string, day: number, imageUrls?: string[]) => {
     const discordWebhook = session?.user?.user_metadata?.discord_webhook;
     if (!discordWebhook) {
       toast.error("Add your Discord webhook in Settings first.");
@@ -1517,7 +1568,7 @@ export default function DistributionGrid({
         body: JSON.stringify({
           content: text,
           webhookUrl: discordWebhook,
-          imageUrl,
+          imageUrl: imageUrls?.[0],
         }),
       });
       if (!res.ok) throw new Error("Discord rejected the webhook payload.");
@@ -1544,6 +1595,9 @@ export default function DistributionGrid({
     setLiStatuses((prev) => ({ ...prev, [day]: "loading" }));
     try {
       const payload: any = { text, userId: session.user.id, imageUrls };
+      if (liPostAs === "company" && linkedinOrgId) {
+        payload.organizationUrn = `urn:li:organization:${linkedinOrgId}`;
+      }
       if (carouselData) {
         payload.documentBase64 = carouselData.documentBase64;
         payload.documentTitle = carouselData.documentTitle;
@@ -1569,7 +1623,7 @@ export default function DistributionGrid({
     }
   };
 
-  const handlePostToSlack = async (text: string, day: number, imageUrl?: string) => {
+  const handlePostToSlack = async (text: string, day: number, imageUrls?: string[]) => {
     const slackWebhook = session?.user?.user_metadata?.slack_webhook;
     if (!slackWebhook) {
       toast.error("Add your Slack webhook in Settings first.");
@@ -1583,7 +1637,7 @@ export default function DistributionGrid({
         body: JSON.stringify({
           content: text,
           webhookUrl: slackWebhook,
-          imageUrl,
+          imageUrl: imageUrls?.[0],
         }),
       });
       if (!res.ok) throw new Error("Slack rejected the webhook payload.");
@@ -1648,6 +1702,7 @@ export default function DistributionGrid({
                     classes: "bg-black text-white hover:bg-slate-800 active:scale-95",
                   }}
                   onStatsChange={onStatsChange}
+                  profileEmail={profileEmail}
                   demoMode={demoMode}
                 />
               )
@@ -1669,6 +1724,21 @@ export default function DistributionGrid({
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
             </svg>
             <h3 className="text-xl font-black italic uppercase tracking-tighter text-brand-navy">LinkedIn Strategy</h3>
+            {linkedinOrgId && (
+              <div className="ml-auto flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                {(["personal", "company"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setLiPostAs(mode)}
+                    className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest transition-colors ${
+                      liPostAs === mode ? "bg-[#0A66C2] text-white" : "text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    {mode === "personal" ? "Personal" : "Company Page"}
+                  </button>
+                ))}
+              </div>
+            )}
           </motion.div>
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start"
@@ -1696,6 +1766,7 @@ export default function DistributionGrid({
                     classes: "bg-[#0A66C2] text-white hover:bg-[#004182] active:scale-95",
                   }}
                   onStatsChange={onStatsChange}
+                  profileEmail={profileEmail}
                   showNudge={liNudgeVisible[dayData.day] ?? false}
                   onDismissNudge={() => setLiNudgeVisible((prev) => ({ ...prev, [dayData.day]: false }))}
                   onOpenTips={() => setShowLinkedInTips(true)}
@@ -1748,6 +1819,7 @@ export default function DistributionGrid({
                     classes: "bg-[#5865F2] text-white hover:bg-[#4752C4] active:scale-95",
                   }}
                   onStatsChange={onStatsChange}
+                  profileEmail={profileEmail}
                   demoMode={demoMode}
                 />
               )
@@ -1796,6 +1868,7 @@ export default function DistributionGrid({
                     classes: "bg-[#4A154B] text-white hover:bg-[#36123b] active:scale-95",
                   }}
                   onStatsChange={onStatsChange}
+                  profileEmail={profileEmail}
                   demoMode={demoMode}
                 />
               )

@@ -436,7 +436,7 @@ export default function CampaignDetailPage() {
           <p style={{ color: '#888' }}>No leads yet — run a scrape to discover leads.</p>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                   <th style={{ padding: '0.4rem 0.6rem' }}>Name</th>
@@ -486,7 +486,8 @@ export default function CampaignDetailPage() {
         emailSends.length === 0 ? (
           <p style={{ color: '#888' }}>No emails sent yet — run Send to start the sequence.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: 480, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                 <th style={{ padding: '0.4rem 0.6rem' }}>Lead</th>
@@ -513,6 +514,7 @@ export default function CampaignDetailPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )
       )}
 
@@ -541,7 +543,8 @@ export default function CampaignDetailPage() {
           )}
 
           {liQueue.length > 0 && (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                   <th style={{ padding: '0.4rem 0.6rem' }}>Lead</th>
@@ -573,6 +576,7 @@ export default function CampaignDetailPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
 
           {/* Sequence steps summary */}
@@ -581,7 +585,8 @@ export default function CampaignDetailPage() {
               <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.88rem' }}>
                 Sequence sends — LinkedIn ({liSends.length})
               </summary>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginTop: '0.75rem' }}>
+              <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', minWidth: 480, borderCollapse: 'collapse', fontSize: '0.82rem', marginTop: '0.75rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid #eee', textAlign: 'left' }}>
                     <th style={{ padding: '0.3rem 0.5rem' }}>Lead</th>
@@ -607,6 +612,7 @@ export default function CampaignDetailPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </details>
           )}
         </div>

@@ -98,7 +98,7 @@ const MessageItem = memo(function MessageItem({
             {!isLoadingPlaceholder && !isActiveStream && msg.content && (
               <button
                 onClick={() => onCopy(msg.content, idx)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg"
+                className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg"
               >
                 {copiedIdx === idx ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
               </button>
@@ -264,7 +264,7 @@ export default function CopilotPanel({ isOpen, onClose, onSendToEngine }: Copilo
   const lastIdx = messages.length - 1;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-[560px] bg-white shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 border-l border-slate-200">
+    <div className="fixed inset-y-0 right-0 w-full max-w-[560px] bg-white shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 border-l border-slate-200">
 
       {/* --- HEADER --- */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-900 text-white shadow-sm">
@@ -289,7 +289,7 @@ export default function CopilotPanel({ isOpen, onClose, onSendToEngine }: Copilo
       </div>
 
       {/* --- MESSAGES AREA --- */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-slate-50 to-white">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gradient-to-b from-slate-50 to-white">
         {messages.map((msg, idx) => {
           const isLoadingPlaceholder =
             msg.role === "assistant" &&

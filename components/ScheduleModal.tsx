@@ -33,7 +33,8 @@ export default function ScheduleModal({
 
   if (!isOpen) return null;
 
-  const emailToUse = userEmail || profileEmail;
+  // Prefer the reminder email configured in Settings over the account login email
+  const emailToUse = profileEmail || userEmail;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -82,7 +82,7 @@ export default function LinkedInOutreachPage() {
         <FreeAgentBanner />
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="text-2xl font-bold text-green-600">{sentToday}</div>
             <div className="text-foreground-subtle text-xs mt-0.5">Sent today</div>
@@ -116,7 +116,8 @@ export default function LinkedInOutreachPage() {
               No LinkedIn actions yet. Run a campaign with LinkedIn steps to populate this queue.
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
                   {['Action', 'Status', 'Scheduled / Processed'].map(h => (
@@ -145,6 +146,7 @@ export default function LinkedInOutreachPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

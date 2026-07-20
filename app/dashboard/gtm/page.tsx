@@ -89,7 +89,8 @@ export default function CampaignsPage() {
               </p>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
                   {['Campaign', 'Status', 'Leads', 'Emails Sent', 'Daily Limit', 'Created', ''].map(h => (
@@ -159,6 +160,7 @@ export default function CampaignsPage() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

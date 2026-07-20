@@ -25,10 +25,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Reminder email configured in Settings takes priority over the login email
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", user.id)
+      .single();
+    const reminderEmail = profile?.email || userEmail;
+
     // Insert scheduled posts
     const scheduledPosts = posts.map((post: any) => ({
       user_id: user.id,
-  user_email: post.email || userEmail, // 👈 use provided email or session email
+      user_email: post.email || reminderEmail, // explicit email > Settings email > login email
       campaign_id: campaignId,
       platform: post.platform,
       content: post.content,

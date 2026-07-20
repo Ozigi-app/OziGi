@@ -22,6 +22,7 @@ export default function SettingsModal({
   const [persona, setPersona] = useState("");
   const [discordWebhook, setDiscordWebhook] = useState("");
   const [slackWebhook, setSlackWebhook] = useState("");
+  const [linkedinOrg, setLinkedinOrg] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [email, setEmail] = useState("");
   const [emailSenderName, setEmailSenderName] = useState("");
@@ -53,6 +54,7 @@ export default function SettingsModal({
       setPersona(session.user.user_metadata.persona || "");
       setDiscordWebhook(session.user.user_metadata.discord_webhook || "");
       setSlackWebhook(session.user.user_metadata.slack_webhook || "");
+      setLinkedinOrg(session.user.user_metadata.linkedin_org_id || "");
     }
     fetchConnections();
   }, [session]);
@@ -87,11 +89,31 @@ export default function SettingsModal({
     }
   };
 
+  // Accept a bare numeric ID, a full company URL (…/company/12345/…), or an URN
+  const parseLinkedinOrgId = (raw: string): string => {
+    const trimmed = raw.trim();
+    if (!trimmed) return "";
+    const match = trimmed.match(/(?:organization:|company\/)?(\d{2,})/);
+    return match ? match[1] : "";
+  };
+
   const handleSaveWorkspace = async () => {
     setIsSaving(true);
 
+    const orgId = parseLinkedinOrgId(linkedinOrg);
+    if (linkedinOrg.trim() && !orgId) {
+      toast.error("LinkedIn Company Page must be a numeric ID or a URL containing one (find it in your admin page URL).");
+      setIsSaving(false);
+      return;
+    }
+
     const { error: metadataError } = await supabase.auth.updateUser({
-      data: { persona: persona.trim(), discord_webhook: discordWebhook.trim(), slack_webhook: slackWebhook.trim() },
+      data: {
+        persona: persona.trim(),
+        discord_webhook: discordWebhook.trim(),
+        slack_webhook: slackWebhook.trim(),
+        linkedin_org_id: orgId,
+      },
     });
 
     const { error: profileError } = await supabase
@@ -291,6 +313,23 @@ const handleConnectGitHub = async () => {
                 >
                   How to create a Slack webhook?
                 </a>
+            </div>
+
+            <div>
+              <label htmlFor="linkedinOrg" className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                LinkedIn Company Page ID (optional)
+              </label>
+              <input
+                id="linkedinOrg"
+                type="text"
+                className="w-full bg-slate-50 rounded-xl px-4 py-3 border border-slate-200 outline-none focus:border-red-500/50 text-sm font-medium text-slate-900"
+                placeholder="e.g. 105678421 or https://www.linkedin.com/company/105678421/"
+                value={linkedinOrg}
+                onChange={(e) => setLinkedinOrg(e.target.value)}
+              />
+              <p className="text-[8px] text-slate-400 mt-1">
+                Lets you post to a company page you admin. Open your page as an admin and copy the number from the URL. Reconnect LinkedIn after saving so the new permission is granted.
+              </p>
             </div>
 
             <div>

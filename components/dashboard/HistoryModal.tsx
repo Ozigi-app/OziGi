@@ -27,8 +27,8 @@ export default function HistoryModal({ isOpen, onClose, pastCampaigns, onRestore
   );
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
-      <div className="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl border-4 border-slate-900 relative max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[200] flex items-center justify-center p-3 sm:p-6">
+      <div className="bg-white w-full max-w-2xl rounded-3xl p-5 sm:p-8 shadow-2xl border-4 border-slate-900 relative max-h-[85vh] flex flex-col">
         <button
           onClick={onClose}
           className="absolute top-6 right-6 text-slate-400 hover:text-red-600 font-black text-xl"
@@ -82,7 +82,7 @@ export default function HistoryModal({ isOpen, onClose, pastCampaigns, onRestore
                 </div>
                 <button
                   onClick={() => { onRestore(record); onClose(); }}
-                  className="bg-slate-900 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                  className="bg-slate-900 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0"
                 >
                   Restore
                 </button>

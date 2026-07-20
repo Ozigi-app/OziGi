@@ -333,7 +333,8 @@ const handleGenerate = async () => {
           source_url: url,
           source_notes: rawText || inputs.fileUrls.join(", "),
           name: inputs.campaignName?.trim() || null,
-          generated_content: finalCampaign,
+          // Object shape so newsletters can be restored from history; legacy rows are bare arrays
+          generated_content: { campaign: finalCampaign, email: finalEmail },
           type: currentView === 'newsletter' ? 'newsletter' : 'social',
         });
         if (insertError) {
@@ -693,7 +694,14 @@ useEffect(() => {
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
         pastCampaigns={pastCampaigns}
-        onRestore={(rec) => restoreCampaign(rec, setInputs, setCampaign)}
+        onRestore={(rec) => {
+          const isNewsletter = rec.type === "newsletter";
+          setCurrentView(isNewsletter ? "newsletter" : "social");
+          restoreCampaign(rec, setInputs, setCampaign, setEmailContent);
+          if (isNewsletter && !(rec.generated_content?.email)) {
+            toast.info("This newsletter predates content history — only its inputs were restored.");
+          }
+        }}
         onOpen={() => session?.user?.id && fetchHistory(session.user.id)}
       />
       <SubscribersModal

@@ -246,7 +246,7 @@ export default function EmailOutreachPage() {
         )}
 
         {/* Stats strip */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
             { label: 'Emails Sent', value: stats.sent,      color: 'text-foreground'  },
             { label: 'Open Rate',   value: stats.openRate,  color: 'text-accent'       },
@@ -297,7 +297,8 @@ export default function EmailOutreachPage() {
               </p>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
                   {['Recipient', 'Subject', 'Campaign', 'Status', 'Sent'].map(h => (
@@ -327,6 +328,7 @@ export default function EmailOutreachPage() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

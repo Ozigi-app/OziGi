@@ -374,11 +374,11 @@ function SettingsContent() {
         </div>
 
         <div style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '0.85rem 1rem', marginBottom: '1rem', lineHeight: 1.6, color: '#1e3a8a' }}>
-          Gmail connects with an <strong>App Password</strong> instead of &quot;Sign in with Google&quot; — no scary warning screen, and it works today.
+          <strong>Get your App Password:</strong>
           <ol style={{ margin: '0.5rem 0 0', paddingLeft: '1.2rem' }}>
-            <li>Turn on <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>2-Step Verification</a> on your Google Account (required by Google before it will issue an App Password).</li>
-            <li>Generate an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>App Password</a> — pick &quot;Mail&quot; as the app.</li>
-            <li>Paste your Gmail address and the 16-character App Password below.</li>
+            <li>Turn on <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>2-Step Verification</a> (Google requires it first).</li>
+            <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>App Passwords</a>, type a name like &quot;Ozigi&quot;, and click Create.</li>
+            <li>Copy the 16-character password and paste it below with your Gmail address.</li>
           </ol>
         </div>
 
