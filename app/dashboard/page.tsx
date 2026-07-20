@@ -30,6 +30,7 @@ import { usePlanStatus } from "@/components/hooks/usePlanStatus";
 import PricingCards from "@/components/PricingCards";
 import UpgradeModal from "@/components/UpgradeModal";
 import DashboardTour from "@/components/dashboard/DashboardTour";
+import OverviewCharts from "@/components/dashboard/OverviewCharts";
 import { incrementCampaignGeneration } from "@/lib/plan";
 import { toast } from "sonner";
 import { PLATFORMS } from "@/lib/platforms";
@@ -100,7 +101,7 @@ function DashboardContent() {
       postsScheduled: number; personasSaved: number; newsletterSubscribers: number;
     };
     outbound: {
-      emailsSent: number; replyRate: string; liConnections: number;
+      emailsSent: number; emailReplies?: number; replyRate: string; liConnections: number;
       liMessages: number; totalLeads: number; emailsScraped: number;
     };
   };
@@ -514,6 +515,26 @@ useEffect(() => {
                 <p className="text-foreground-subtle text-sm mt-0.5">Everything you've done on Ozigi, at a glance</p>
               </div>
 
+              {/* ── Quick actions ─────────────────────────────────────────── */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {[
+                  { label: "New Social Campaign", icon: <Megaphone className="w-5 h-5" />, onClick: () => { setCurrentView('social'); setCampaign([]); } },
+                  { label: "Write Newsletter", icon: <AtSign className="w-5 h-5" />, onClick: () => { setCurrentView('newsletter'); setCampaign([]); } },
+                  { label: "Blog Post", icon: <FileText className="w-5 h-5" />, onClick: () => planStatus?.hasLongForm ? router.push('/dashboard/long-form') : setIsUpgradeModalOpen(true) },
+                  { label: "Schedule Posts", icon: <ListOrdered className="w-5 h-5" />, onClick: () => setIsScheduledOpen(true) },
+                  { label: "Find Leads", icon: <Send className="w-5 h-5" />, onClick: () => planStatus?.hasGtm ? router.push('/dashboard/gtm') : router.push('/pricing') },
+                ].map((a) => (
+                  <button
+                    key={a.label}
+                    onClick={a.onClick}
+                    className="group flex flex-col items-start gap-2.5 bg-surface border border-border rounded-xl p-4 text-left transition-all hover:border-accent/40 hover:shadow-sm active:scale-[0.98]"
+                  >
+                    <span className="text-accent">{a.icon}</span>
+                    <span className="text-xs font-bold text-foreground leading-snug">{a.label}</span>
+                  </button>
+                ))}
+              </div>
+
               {overviewLoading ? (
                 /* Skeleton */
                 <div className="space-y-6">
@@ -574,6 +595,11 @@ useEffect(() => {
                       ))}
                     </div>
                   </section>
+
+                  {/* ── Visual breakdown ──────────────────────────────────── */}
+                  <div className="mt-8">
+                    <OverviewCharts stats={overviewStats} />
+                  </div>
                 </div>
               ) : (
                 <p className="text-foreground-subtle text-sm">Could not load stats. Refresh to try again.</p>

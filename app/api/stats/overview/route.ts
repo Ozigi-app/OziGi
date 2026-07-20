@@ -136,6 +136,7 @@ export async function GET() {
     },
     outbound: {
       emailsSent,
+      emailReplies,
       replyRate,
       liConnections,
       liMessages,
