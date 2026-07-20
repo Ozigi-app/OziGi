@@ -25,6 +25,8 @@ export default function PromoQueueAdminPage() {
   const [audience, setAudience] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState<"seed" | "send" | null>(null);
+  const [notice, setNotice] = useState("");
 
   const load = useCallback(() => {
     setLoading(true);
@@ -45,6 +47,58 @@ export default function PromoQueueAdminPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  async function seed() {
+    setBusy("seed");
+    setNotice("");
+    try {
+      const res = await fetch("/api/admin/promo-queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "seed" }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Seed failed");
+      setNotice(
+        d.mode === "seed"
+          ? `Staged ${d.inserted?.length ?? 0} campaigns — first one is scheduled for today.`
+          : `Queue topped up (${d.added ?? 0} added).`
+      );
+      load();
+    } catch (e: any) {
+      setNotice(e.message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function sendNow() {
+    if (!confirm(
+      `Send the next due campaign to all ${audience?.toLocaleString() ?? ""} subscribed users right now? This cannot be undone.`
+    )) return;
+    setBusy("send");
+    setNotice("");
+    try {
+      const res = await fetch("/api/admin/promo-queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send-now" }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Send failed");
+      const r = d.result ?? {};
+      setNotice(
+        r.results
+          ? `Sent: ${r.results.sent}, failed: ${r.results.failed}, skipped: ${r.results.skipped}.`
+          : r.message ?? "No campaign was due to send."
+      );
+      load();
+    } catch (e: any) {
+      setNotice(e.message);
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function cancel(id: string) {
     if (!confirm("Cancel this campaign? It will never send.")) return;
@@ -80,10 +134,22 @@ export default function PromoQueueAdminPage() {
               {audience != null && <> Current audience: <strong className="text-foreground">{audience.toLocaleString()}</strong> subscribed users.</>}
             </p>
           </div>
-          <button onClick={load} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors shrink-0">
-            Refresh
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={seed} disabled={busy !== null} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors disabled:opacity-50">
+              {busy === "seed" ? "Seeding…" : "Seed / top up"}
+            </button>
+            <button onClick={sendNow} disabled={busy !== null} className="px-3 py-1.5 rounded-lg bg-accent hover:bg-accent/90 text-white text-sm font-bold transition-colors disabled:opacity-50">
+              {busy === "send" ? "Sending…" : "Send next now"}
+            </button>
+            <button onClick={load} disabled={busy !== null} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors disabled:opacity-50">
+              Refresh
+            </button>
+          </div>
         </div>
+
+        {notice && (
+          <div className="bg-surface-2 border border-border rounded-lg px-4 py-3 mb-4 text-sm text-foreground">{notice}</div>
+        )}
 
         {nextUp && (
           <div className="bg-surface-2 border border-border rounded-xl px-4 py-3 mb-6 text-sm">
