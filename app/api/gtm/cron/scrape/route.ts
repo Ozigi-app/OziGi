@@ -12,6 +12,32 @@ const planCache = new Map<string, PlanStatus>()
 
 export const maxDuration = 300  // 5 min — scraping takes time
 
+// Per-source scrape caps per run. npm is fast and email-rich, so it gets the
+// highest cap; github/devto do slow per-profile commit-email enrichment, so keep
+// them moderate to stay within maxDuration. Runs are meant to accumulate daily
+// (upsert ignores duplicates), so these bound a single run, not the total.
+const SOURCE_LIMITS = {
+  github: 30,     // slow per-profile commit-email enrichment — keep modest for maxDuration
+  devto: 30,      // also does commit-email enrichment — keep modest
+  hackernews: 50,
+  npm: 100,       // fast + email-rich, safe to push high
+  linkedin: 40,
+} as const
+
+// Supabase/PostgREST errors are plain objects, not Error instances, so String(err)
+// collapses them to "[object Object]". Pull out the fields that actually explain
+// the failure (e.g. a check-constraint violation) for logging.
+function describeError(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (err && typeof err === 'object') {
+    const e = err as { message?: string; code?: string; details?: string; hint?: string }
+    const parts = [e.message, e.code && `code=${e.code}`, e.details, e.hint].filter(Boolean)
+    if (parts.length) return parts.join(' | ')
+    try { return JSON.stringify(err) } catch { /* fall through */ }
+  }
+  return String(err)
+}
+
 export async function POST(req: Request) {
   // Verify caller is QStash or internal (CRON_SECRET)
   const sig = req.headers.get('upstash-signature')
@@ -63,22 +89,22 @@ export async function POST(req: Request) {
       const allLeads: Awaited<ReturnType<typeof scrapeGitHub>> = []
 
       if (campaign.sources.includes('github')) {
-        const leads = await scrapeGitHub(campaign.icp_config, 30)
+        const leads = await scrapeGitHub(campaign.icp_config, SOURCE_LIMITS.github)
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('devto')) {
-        const leads = await scrapeDevTo(campaign.icp_config, 30)
+        const leads = await scrapeDevTo(campaign.icp_config, SOURCE_LIMITS.devto)
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('hackernews')) {
-        const leads = await scrapeHackerNews(campaign.icp_config, 30)
+        const leads = await scrapeHackerNews(campaign.icp_config, SOURCE_LIMITS.hackernews)
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('npm')) {
-        const leads = await scrapeNpm(campaign.icp_config, 30)
+        const leads = await scrapeNpm(campaign.icp_config, SOURCE_LIMITS.npm)
         allLeads.push(...leads)
       }
 
@@ -96,7 +122,7 @@ export async function POST(req: Request) {
               userId:     campaign.user_id,
               campaignId: campaign.id,
               icpConfig:  campaign.icp_config,
-              limit:      25,
+              limit:      SOURCE_LIMITS.linkedin,
             }),
           })
           console.log(`[gtm/cron/scrape] LinkedIn search triggered for campaign ${campaign.id}`)
@@ -141,6 +167,7 @@ export async function POST(req: Request) {
         : Math.min(rows.length, Math.floor(ps2.creditsBalance))
       const cappedRows = rows.slice(0, maxInsert)
 
+      let inserted = 0
       const { error: upsertError, count } = await supabaseAdmin
         .from('leads')
         .upsert(cappedRows, {
@@ -149,9 +176,36 @@ export async function POST(req: Request) {
           count: 'exact',
         })
 
-      if (upsertError) throw upsertError
-
-      const inserted = count ?? 0
+      if (upsertError) {
+        // The batch is atomic, so a single invalid row (e.g. a source not yet
+        // allowed by the leads_source_check constraint) rejects every lead. Fall
+        // back to per-row upserts so one bad row can't zero out the whole scrape,
+        // and log the aggregated reasons so the failure is diagnosable.
+        console.error(
+          `[gtm/cron/scrape] batch upsert failed for campaign ${campaign.id}: ${describeError(upsertError)} — retrying per-row`
+        )
+        const rowFailures: Record<string, number> = {}
+        for (const row of cappedRows) {
+          const { error: rowErr, count: rowCount } = await supabaseAdmin
+            .from('leads')
+            .upsert([row], {
+              onConflict: 'campaign_id,source,source_id',
+              ignoreDuplicates: true,
+              count: 'exact',
+            })
+          if (rowErr) {
+            const key = describeError(rowErr)
+            rowFailures[key] = (rowFailures[key] ?? 0) + 1
+          } else {
+            inserted += rowCount ?? 0
+          }
+        }
+        if (Object.keys(rowFailures).length) {
+          console.error(`[gtm/cron/scrape] campaign ${campaign.id} per-row failures:`, JSON.stringify(rowFailures))
+        }
+      } else {
+        inserted = count ?? 0
+      }
 
       // Deduct credits (fire-and-forget)
       if (inserted > 0 && ps2.creditsLimit !== -1) {
@@ -178,7 +232,7 @@ export async function POST(req: Request) {
         creditsRemaining: ps.creditsBalance - inserted,
       }).catch(() => {})
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
+      const msg = describeError(err)
       console.error(`[gtm/cron/scrape] campaign ${campaign.id}:`, msg)
       results[campaign.id] = { scraped: 0, inserted: 0, error: msg }
     }
