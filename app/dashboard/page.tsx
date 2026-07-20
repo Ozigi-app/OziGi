@@ -37,15 +37,10 @@ import { fireConversion } from "@/lib/gtag";
 
 function StatCard({ label, value, desc }: { label: string; value: string | number; desc: string }) {
   return (
-    <div className="bg-surface border border-border rounded-xl p-5 group relative overflow-hidden">
-      <div className="text-3xl font-black text-foreground mb-1 tabular-nums">{value}</div>
-      <div className="text-foreground-subtle text-xs font-medium leading-snug">{label}</div>
-      {/* No hover on touch devices — show the description inline there */}
-      <p className="md:hidden text-foreground-subtle/80 text-[10px] leading-snug mt-1">{desc}</p>
-      {/* Hover tooltip (desktop) */}
-      <div className="hidden md:flex absolute inset-0 bg-surface-2/95 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center px-4 pointer-events-none">
-        <p className="text-foreground-subtle text-xs text-center leading-relaxed">{desc}</p>
-      </div>
+    <div className="bg-surface border border-border rounded-xl p-4 flex flex-col gap-0.5 transition-colors hover:border-border-strong">
+      <div className="text-2xl font-black text-foreground tabular-nums leading-none">{value}</div>
+      <div className="text-foreground text-xs font-semibold leading-snug mt-1.5">{label}</div>
+      <p className="text-foreground-subtle text-[11px] leading-snug">{desc}</p>
     </div>
   )
 }
@@ -522,12 +517,13 @@ useEffect(() => {
               {overviewLoading ? (
                 /* Skeleton */
                 <div className="space-y-6">
-                  {[6, 6].map((cols, si) => (
-                    <div key={si} className={`grid grid-cols-2 md:grid-cols-${cols} gap-3`}>
-                      {Array(cols).fill(0).map((_, i) => (
-                        <div key={i} className="bg-surface border border-border rounded-xl p-5">
-                          <div className="h-8 w-12 bg-surface-2 animate-pulse rounded mb-2" />
-                          <div className="h-3 w-24 bg-surface-2 animate-pulse rounded" />
+                  {[0, 1].map((si) => (
+                    <div key={si} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                      {Array(6).fill(0).map((_, i) => (
+                        <div key={i} className="bg-surface border border-border rounded-xl p-4">
+                          <div className="h-7 w-12 bg-surface-2 animate-pulse rounded mb-2" />
+                          <div className="h-3 w-20 bg-surface-2 animate-pulse rounded mb-1.5" />
+                          <div className="h-2.5 w-24 bg-surface-2 animate-pulse rounded" />
                         </div>
                       ))}
                     </div>
