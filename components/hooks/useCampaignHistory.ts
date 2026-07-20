@@ -9,10 +9,13 @@ export function useCampaignHistory(userId?: string) {
 
   const fetchHistory = async (uid: string) => {
     setLoading(true);
+    // The campaigns table is shared with GTM outreach campaigns (which have no
+    // generated_content). Only content campaigns belong in generation history.
     const { data, error } = await supabase
       .from("campaigns")
       .select("*")
       .eq("user_id", uid)
+      .not("generated_content", "is", null)
       .order("created_at", { ascending: false });
     if (error) {
       console.error("Campaign fetch error:", error);

@@ -11,10 +11,14 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // The `campaigns` table is shared with social/newsletter content campaigns
+  // (those carry generated_content). GTM outreach campaigns never do, so filter
+  // them out here — otherwise content campaigns leak into the GTM list.
   const { data, error } = await supabaseAdmin
     .from('campaigns')
     .select('*, leads(count), sequence_sends(count)')
     .eq('user_id', user.id)
+    .is('generated_content', null)
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
