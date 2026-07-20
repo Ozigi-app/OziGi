@@ -131,16 +131,26 @@ export async function POST(req: Request) {
         }
       }
 
-      if (allLeads.length === 0) {
-        results[campaign.id] = { scraped: 0, inserted: 0 }
+      // LinkedIn outreach runs through a separate worker/pipeline, so this route
+      // only cares about email as a contact channel. Drop leads with no email
+      // before scoring (saves a Gemini call) and before insert (saves a credit
+      // on a lead that could never be emailed).
+      const contactableLeads = allLeads.filter(l => l.email)
+      const uncontactable = allLeads.length - contactableLeads.length
+      if (uncontactable > 0) {
+        console.log(`[gtm/cron/scrape] campaign ${campaign.id}: dropped ${uncontactable} lead(s) with no email`)
+      }
+
+      if (contactableLeads.length === 0) {
+        results[campaign.id] = { scraped: allLeads.length, inserted: 0 }
         continue
       }
 
       // Score against ICP — batch to avoid huge Gemini prompts
       const BATCH = 20
       const scored = []
-      for (let i = 0; i < allLeads.length; i += BATCH) {
-        const batch = allLeads.slice(i, i + BATCH)
+      for (let i = 0; i < contactableLeads.length; i += BATCH) {
+        const batch = contactableLeads.slice(i, i + BATCH)
         const scoredBatch = await scoreLeads(batch, campaign.icp_config)
         scored.push(...scoredBatch)
       }
