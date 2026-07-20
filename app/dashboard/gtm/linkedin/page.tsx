@@ -75,7 +75,7 @@ export default function LinkedInOutreachPage() {
             href="/dashboard/gtm/new"
             className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors no-underline"
           >
-            + New Campaign
+            + New Outreach Campaign
           </Link>
         </div>
 

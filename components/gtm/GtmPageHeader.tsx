@@ -5,7 +5,7 @@ import { LayoutDashboard, Send, UserPlus, Settings, ListChecks, Megaphone, Chevr
 
 const NAV = [
   { label: 'Overview',         href: '/dashboard',                 icon: LayoutDashboard },
-  { label: 'Campaigns',        href: '/dashboard/gtm',             icon: Megaphone       },
+  { label: 'Outreach Campaigns', href: '/dashboard/gtm',           icon: Megaphone       },
   { label: 'Email Outreach',   href: '/dashboard/gtm/outreach',    icon: Send            },
   { label: 'LinkedIn',         href: '/dashboard/gtm/linkedin',    icon: UserPlus        },
   { label: 'Review Queue',     href: '/dashboard/gtm/review',      icon: ListChecks      },

@@ -143,7 +143,7 @@ export default function EmailOutreachPage() {
               href="/dashboard/gtm/new"
               className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors"
             >
-              + New Campaign
+              + New Outreach Campaign
             </a>
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function EmailOutreachPage() {
             ))}
             <div className="ml-auto">
               <Link href="/dashboard/gtm" className="flex items-center gap-1 text-foreground-subtle hover:text-accent text-xs transition-colors no-underline">
-                View campaigns <ChevronRight size={12} />
+                View outreach campaigns <ChevronRight size={12} />
               </Link>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function EmailOutreachPage() {
               <p className="text-foreground-subtle text-xs mt-1">
                 Emails sent through campaigns appear here automatically.{' '}
                 <Link href="/dashboard/gtm/new" className="text-accent no-underline hover:underline">
-                  Start a campaign →
+                  Start an outreach campaign →
                 </Link>
               </p>
             </div>

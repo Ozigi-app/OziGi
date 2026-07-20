@@ -54,20 +54,20 @@ function TagInput({ values, onChange }: { values: string[]; onChange: (v: string
   }
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center', padding: '0.35rem 0.5rem', border: '1px solid #ddd', borderRadius: 6, background: '#fafafa', cursor: 'text' }}
+    <div className="flex flex-wrap gap-1.5 items-center px-2 py-1.5 border border-border rounded-lg bg-bg cursor-text"
       onClick={() => inputRef.current?.focus()}>
       {values.map(v => (
-        <span key={v} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#e0e7ff', color: '#3730a3', padding: '0.15rem 0.5rem', borderRadius: 12, fontSize: '0.8rem', fontWeight: 500 }}>
+        <span key={v} className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-xs font-medium">
           {v}
           <button onClick={e => { e.stopPropagation(); onChange(values.filter(x => x !== v)) }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6366f1', fontSize: '0.85rem', lineHeight: 1, padding: 0 }}>×</button>
+            className="bg-transparent border-none cursor-pointer text-indigo-500 text-sm leading-none p-0">×</button>
         </span>
       ))}
       <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add() } if (e.key === 'Backspace' && !input && values.length) onChange(values.slice(0, -1)) }}
         onBlur={add}
         placeholder={values.length === 0 ? 'Type and press Enter…' : ''}
-        style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', minWidth: 120, flex: 1 }} />
+        className="border-none outline-none bg-transparent text-sm text-foreground placeholder-foreground-subtle min-w-[120px] flex-1" />
     </div>
   )
 }
@@ -97,34 +97,34 @@ function IcpEditor({ campaignId, icp, onSaved }: { campaignId: string; icp: IcpC
   }
 
   return (
-    <div style={{ marginTop: '2rem', border: '1px solid #eee', borderRadius: 8, overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', cursor: 'pointer', background: open ? '#fafafa' : 'white' }}
+    <div className="mt-8 bg-surface border border-border rounded-xl overflow-hidden">
+      <div className={`flex justify-between items-center px-4 py-3 cursor-pointer ${open ? 'bg-surface-2' : ''}`}
         onClick={() => setOpen(o => !o)}>
-        <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>
-          ICP Config <span style={{ fontWeight: 400, color: '#888', fontSize: '0.8rem' }}>— controls LinkedIn &amp; GitHub search</span>
+        <span className="font-semibold text-sm text-foreground">
+          ICP Config <span className="font-normal text-foreground-subtle text-xs">— controls LinkedIn &amp; GitHub search</span>
         </span>
-        <span style={{ color: '#888', fontSize: '0.85rem' }}>{open ? '▲ collapse' : '▼ edit'}</span>
+        <span className="text-foreground-subtle text-sm">{open ? '▲ collapse' : '▼ edit'}</span>
       </div>
 
       {open && (
-        <div style={{ padding: '1rem', borderTop: '1px solid #eee' }}>
-          <p style={{ margin: '0 0 1rem', fontSize: '0.82rem', color: '#666', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 6, padding: '0.5rem 0.75rem' }}>
+        <div className="p-4 border-t border-border">
+          <p className="mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
             ⚠️ <strong>Keywords and Job Titles</strong> are used directly as LinkedIn search terms. Use words people actually write in their LinkedIn headline — avoid tool names like "GitHub" or "Dev.to".
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {ICP_FIELDS.map(({ key, label, hint }) => (
-              <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#444' }}>{label}</label>
+              <div key={key} className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-foreground">{label}</label>
                 <TagInput values={(config as unknown as Record<string, string[]>)[key] ?? []} onChange={val => setField(key, val)} />
-                <span style={{ fontSize: '0.72rem', color: '#aaa' }}>{hint}</span>
+                <span className="text-[11px] text-foreground-subtle">{hint}</span>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button onClick={save} disabled={saving} style={{ padding: '0.45rem 1.1rem', background: '#111', color: 'white', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: '0.88rem', cursor: saving ? 'not-allowed' : 'pointer' }}>
+          <div className="mt-4 flex items-center gap-3">
+            <button onClick={save} disabled={saving} className="px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {saving ? 'Saving…' : 'Save ICP'}
             </button>
-            {saved && <span style={{ color: '#16a34a', fontSize: '0.85rem' }}>✓ Saved — changes apply on next Scrape</span>}
+            {saved && <span className="text-green-600 text-sm">✓ Saved — changes apply on next Scrape</span>}
           </div>
         </div>
       )}
@@ -334,8 +334,8 @@ export default function CampaignDetailPage() {
     setTimeout(() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }, 2000)
   }
 
-  if (loading) return <div style={{ padding: '2rem' }}>Loading…</div>
-  if (!data)   return <div style={{ padding: '2rem', color: 'red' }}>Campaign not found.</div>
+  if (loading) return <div className="p-8 text-foreground-subtle text-sm">Loading…</div>
+  if (!data)   return <div className="p-8 text-red-600 text-sm">Campaign not found.</div>
 
   const { campaign, leads, sends, liQueue } = data
 
@@ -354,77 +354,75 @@ export default function CampaignDetailPage() {
   return (
     <div>
       <GtmPageHeader title={campaign.name} />
-    <div style={{ padding: '2rem', maxWidth: 960 }}>
+    <div className="px-4 sm:px-8 py-7 max-w-[960px]">
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <Link href="/dashboard/gtm" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Campaigns</Link>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 700 }}>{campaign.name}</h1>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button onClick={() => triggerAction('scrape')} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: 'white', fontSize: '0.85rem' }}>
+      <div className="mb-6">
+        <Link href="/dashboard/gtm" className="text-foreground-subtle hover:text-accent text-sm no-underline transition-colors">← Outreach Campaigns</Link>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-2">
+          <h1 className="text-2xl font-black text-foreground tracking-tight">{campaign.name}</h1>
+          <div className="flex gap-2 flex-wrap">
+            <button onClick={() => triggerAction('scrape')} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Run Scrape
             </button>
-            <button onClick={() => { setShowImport(true); setImportMsg('') }} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: 'white', fontSize: '0.85rem' }}>
+            <button onClick={() => { setShowImport(true); setImportMsg('') }} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Import CSV
             </button>
-            <button onClick={previewEmails} disabled={previewing} style={{ padding: '0.4rem 0.8rem', border: '1px solid #6366f1', borderRadius: 5, cursor: 'pointer', background: previewing ? '#f5f3ff' : 'white', color: '#6366f1', fontSize: '0.85rem' }}>
+            <button onClick={previewEmails} disabled={previewing} className="px-3 py-1.5 border border-indigo-400 rounded-lg bg-surface text-sm text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-60">
               {previewing ? 'Generating…' : '👁 Preview emails'}
             </button>
-            <button onClick={() => triggerAction('send')} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: 'white', fontSize: '0.85rem' }}>
+            <button onClick={() => triggerAction('send')} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Run Send
             </button>
-            <button onClick={toggleStatus} style={{ padding: '0.4rem 0.8rem', border: '1px solid #ccc', borderRadius: 5, cursor: 'pointer', background: campaign.status === 'active' ? '#fef9c3' : '#dcfce7', fontSize: '0.85rem' }}>
+            <button onClick={toggleStatus} className={`px-3 py-1.5 border rounded-lg text-sm font-semibold transition-colors ${campaign.status === 'active' ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100' : 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100'}`}>
               {campaign.status === 'active' ? 'Pause' : 'Resume'}
             </button>
           </div>
         </div>
-        {actionMsg && <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#555' }}>{actionMsg}</p>}
+        {actionMsg && <p className="mt-2 text-sm text-foreground-muted">{actionMsg}</p>}
       </div>
 
       {/* ── Stats grid ──────────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
           { label: 'Total leads',          value: leads.length,   sub: `${leadsWithLi} have LinkedIn` },
           { label: 'Emails sent',           value: emailSent,      sub: `${emailSends.filter(s=>s.status==='queued').length} queued` },
           { label: 'LinkedIn actions done', value: liDone,         sub: liPending > 0 ? `${liPending} pending` : liFailed > 0 ? `${liFailed} failed` : 'worker idle' },
           { label: 'Replied',               value: sends.filter(s=>s.status==='replied').length, sub: `${campaign.daily_email_limit} email/day limit` },
         ].map(s => (
-          <div key={s.label} style={{ border: '1px solid #eee', borderRadius: 8, padding: '0.9rem 1rem' }}>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700 }}>{s.value}</div>
-            <div style={{ fontSize: '0.78rem', color: '#666', marginTop: '0.15rem' }}>{s.label}</div>
-            <div style={{ fontSize: '0.72rem', color: '#aaa', marginTop: '0.1rem' }}>{s.sub}</div>
+          <div key={s.label} className="bg-surface border border-border rounded-xl px-4 py-3.5">
+            <div className="text-2xl font-bold text-foreground tabular-nums">{s.value}</div>
+            <div className="text-xs text-foreground-muted mt-0.5">{s.label}</div>
+            <div className="text-[11px] text-foreground-subtle mt-0.5">{s.sub}</div>
           </div>
         ))}
       </div>
 
       {/* ── LinkedIn worker status banner ────────────────────────────────────── */}
       {liQueue.length > 0 && liPending > 0 && (
-        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '0.85rem', color: '#92400e' }}>
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 mb-5 text-sm">
           ⏳ <strong>{liPending} LinkedIn action{liPending > 1 ? 's' : ''} queued</strong> — processing automatically, actions are spaced out to appear human.
         </div>
       )}
       {liFailed > 0 && (
-        <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '0.85rem', color: '#9f1239' }}>
+        <div className="bg-rose-50 border border-rose-200 text-rose-800 rounded-lg px-4 py-3 mb-5 text-sm">
           ✗ <strong>{liFailed} LinkedIn action{liFailed > 1 ? 's' : ''} failed</strong> — see the LinkedIn tab for details.
         </div>
       )}
 
       {/* ── Tabs ────────────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: '0', marginBottom: '1.25rem', borderBottom: '2px solid #eee' }}>
+      <div className="flex mb-5 border-b-2 border-border overflow-x-auto">
         {([
           { key: 'leads',    label: `Leads (${leads.length})` },
           { key: 'email',    label: `Email (${emailSent} sent)` },
           { key: 'linkedin', label: `LinkedIn (${liDone} done${liPending > 0 ? `, ${liPending} pending` : ''})` },
         ] as { key: Tab; label: string }[]).map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)} style={{
-            padding: '0.5rem 1.1rem', border: 'none', background: 'none', cursor: 'pointer',
-            fontSize: '0.88rem',
-            borderBottom: tab === t.key ? '2px solid #111' : '2px solid transparent',
-            marginBottom: -2,
-            fontWeight: tab === t.key ? 700 : 400,
-            color: tab === t.key ? '#111' : '#666',
-          }}>
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2 text-sm whitespace-nowrap -mb-0.5 border-b-2 transition-colors ${
+              tab === t.key
+                ? 'border-accent text-foreground font-bold'
+                : 'border-transparent text-foreground-muted hover:text-foreground'
+            }`}>
             {t.label}
           </button>
         ))}
@@ -433,46 +431,42 @@ export default function CampaignDetailPage() {
       {/* ── Leads tab ───────────────────────────────────────────────────────── */}
       {tab === 'leads' && (
         leads.length === 0 ? (
-          <p style={{ color: '#888' }}>No leads yet — run a scrape to discover leads.</p>
+          <p className="text-foreground-subtle text-sm">No leads yet — run a scrape to discover leads.</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <div className="overflow-x-auto bg-surface border border-border rounded-xl">
+            <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Name</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Email</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>LinkedIn</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Score</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Status</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Company</th>
+                <tr className="border-b border-border text-left">
+                  {['Name', 'Email', 'LinkedIn', 'Score', 'Status', 'Company'].map(h => (
+                    <th key={h} className="px-3 py-2.5 text-foreground-subtle text-xs font-medium">{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border">
                 {leads.map(l => (
-                  <tr key={l.id} style={{ borderBottom: '1px solid #f4f4f4' }}>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>
+                  <tr key={l.id} className="hover:bg-surface-2 transition-colors">
+                    <td className="px-3 py-2.5 text-foreground">
                       {l.github_username
-                        ? <a href={`https://github.com/${l.github_username}`} target="_blank" rel="noreferrer" style={{ color: '#111' }}>{l.name}</a>
+                        ? <a href={`https://github.com/${l.github_username}`} target="_blank" rel="noreferrer" className="text-foreground hover:text-accent">{l.name}</a>
                         : l.name}
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem', color: l.email ? '#111' : '#ccc' }}>
+                    <td className={`px-3 py-2.5 ${l.email ? 'text-foreground' : 'text-foreground-subtle'}`}>
                       {l.email ?? '—'}
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>
+                    <td className="px-3 py-2.5">
                       {l.linkedin_url
-                        ? <a href={l.linkedin_url} target="_blank" rel="noreferrer" style={{ color: '#0a66c2', fontSize: '0.8rem' }}>in profile</a>
-                        : <span style={{ color: '#ccc' }}>—</span>}
+                        ? <a href={l.linkedin_url} target="_blank" rel="noreferrer" className="text-[#0a66c2] text-xs hover:underline">in profile</a>
+                        : <span className="text-foreground-subtle">—</span>}
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>
+                    <td className="px-3 py-2.5 text-foreground-muted tabular-nums">
                       {l.icp_match_score != null ? (l.icp_match_score * 100).toFixed(0) + '%' : '—'}
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>
-                      <span style={{
-                        padding: '0.15rem 0.5rem', borderRadius: 10, fontSize: '0.75rem',
-                        background: l.status === 'contacted' ? '#dbeafe' : l.status === 'replied' ? '#dcfce7' : '#f3f4f6',
-                      }}>{l.status}</span>
+                    <td className="px-3 py-2.5">
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${
+                        l.status === 'contacted' ? 'bg-blue-100 text-blue-800' : l.status === 'replied' ? 'bg-green-100 text-green-800' : 'bg-surface-2 text-foreground-muted'
+                      }`}>{l.status}</span>
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem', color: '#555' }}>{l.company ?? '—'}</td>
+                    <td className="px-3 py-2.5 text-foreground-muted">{l.company ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -484,30 +478,28 @@ export default function CampaignDetailPage() {
       {/* ── Email tab ───────────────────────────────────────────────────────── */}
       {tab === 'email' && (
         emailSends.length === 0 ? (
-          <p style={{ color: '#888' }}>No emails sent yet — run Send to start the sequence.</p>
+          <p className="text-foreground-subtle text-sm">No emails sent yet — run Send to start the sequence.</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', minWidth: 480, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <div className="overflow-x-auto bg-surface border border-border rounded-xl">
+          <table className="w-full min-w-[480px] text-sm">
             <thead>
-              <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-                <th style={{ padding: '0.4rem 0.6rem' }}>Lead</th>
-                <th style={{ padding: '0.4rem 0.6rem' }}>Step</th>
-                <th style={{ padding: '0.4rem 0.6rem' }}>Status</th>
-                <th style={{ padding: '0.4rem 0.6rem' }}>Sent at</th>
+              <tr className="border-b border-border text-left">
+                {['Lead', 'Step', 'Status', 'Sent at'].map(h => (
+                  <th key={h} className="px-3 py-2.5 text-foreground-subtle text-xs font-medium">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border">
               {emailSends.slice(0, 100).map(s => (
-                <tr key={s.id} style={{ borderBottom: '1px solid #f4f4f4' }}>
-                  <td style={{ padding: '0.4rem 0.6rem', color: '#555' }}>{leadMap[s.lead_id] ?? '—'}</td>
-                  <td style={{ padding: '0.4rem 0.6rem' }}>Step {s.step}</td>
-                  <td style={{ padding: '0.4rem 0.6rem' }}>
-                    <span style={{
-                      padding: '0.15rem 0.5rem', borderRadius: 10, fontSize: '0.75rem',
-                      background: s.status === 'sent' ? '#dcfce7' : s.status === 'failed' ? '#fee2e2' : '#f3f4f6',
-                    }}>{s.status}</span>
+                <tr key={s.id} className="hover:bg-surface-2 transition-colors">
+                  <td className="px-3 py-2.5 text-foreground-muted">{leadMap[s.lead_id] ?? '—'}</td>
+                  <td className="px-3 py-2.5 text-foreground">Step {s.step}</td>
+                  <td className="px-3 py-2.5">
+                    <span className={`px-2 py-0.5 rounded-full text-xs ${
+                      s.status === 'sent' ? 'bg-green-100 text-green-800' : s.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-surface-2 text-foreground-muted'
+                    }`}>{s.status}</span>
                   </td>
-                  <td style={{ padding: '0.4rem 0.6rem', color: '#555' }}>
+                  <td className="px-3 py-2.5 text-foreground-muted text-xs">
                     {s.sent_at ? new Date(s.sent_at).toLocaleString() : '—'}
                   </td>
                 </tr>
@@ -523,17 +515,17 @@ export default function CampaignDetailPage() {
         <div>
           {/* How it works explainer — shown when queue is empty */}
           {liQueue.length === 0 && (
-            <div style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.5rem', color: '#666', fontSize: '0.88rem', lineHeight: 1.7 }}>
-              <div style={{ fontWeight: 700, color: '#111', marginBottom: '0.5rem' }}>How LinkedIn outreach works</div>
-              <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
+            <div className="bg-surface border border-border rounded-xl p-6 text-foreground-muted text-sm leading-relaxed">
+              <div className="font-bold text-foreground mb-2">How LinkedIn outreach works</div>
+              <ol className="pl-5 m-0 list-decimal space-y-1">
                 <li>Run Scrape → the LinkedIn worker finds profiles on LinkedIn matching your ICP and adds them as leads</li>
                 <li>Run Send → the cron queues LinkedIn actions for those leads</li>
                 <li>The LinkedIn worker (running locally or on Fly.io) picks them up every 30s</li>
                 <li>It opens a browser session using your connected LinkedIn account and performs each action</li>
                 <li>Results appear here — done, failed, and error details</li>
               </ol>
-              <div style={{ marginTop: '0.9rem', padding: '0.6rem 0.8rem', background: '#f9f9f9', borderRadius: 6, fontSize: '0.82rem' }}>
-                <strong>{leadsWithLi} of {leads.length} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
+              <div className="mt-3.5 px-3 py-2.5 bg-surface-2 rounded-lg text-xs">
+                <strong className="text-foreground">{leadsWithLi} of {leads.length} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
                 {leadsWithLi === 0 && campaign.sources?.includes('linkedin')
                   ? ' Run a scrape — the LinkedIn worker will find and add leads with LinkedIn profiles directly.'
                   : leadsWithLi === 0 ? ' GitHub profiles sometimes include LinkedIn URLs, but for direct LinkedIn sourcing add "linkedin" to your campaign sources.' : ''
@@ -543,33 +535,30 @@ export default function CampaignDetailPage() {
           )}
 
           {liQueue.length > 0 && (
-            <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="overflow-x-auto bg-surface border border-border rounded-xl">
+            <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Lead</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Action</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Status</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Attempts</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Processed</th>
-                  <th style={{ padding: '0.4rem 0.6rem' }}>Error</th>
+                <tr className="border-b border-border text-left">
+                  {['Lead', 'Action', 'Status', 'Attempts', 'Processed', 'Error'].map(h => (
+                    <th key={h} className="px-3 py-2.5 text-foreground-subtle text-xs font-medium">{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border">
                 {liQueue.map(q => (
-                  <tr key={q.id} style={{ borderBottom: '1px solid #f4f4f4' }}>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>{leadMap[q.lead_id] ?? '—'}</td>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>{ACTION_LABEL[q.action] ?? q.action}</td>
-                    <td style={{ padding: '0.4rem 0.6rem' }}>
-                      <span style={{ padding: '0.15rem 0.5rem', borderRadius: 10, fontSize: '0.75rem', background: LI_STATUS_COLOR[q.status] ?? '#f3f4f6' }}>
+                  <tr key={q.id} className="hover:bg-surface-2 transition-colors">
+                    <td className="px-3 py-2.5 text-foreground">{leadMap[q.lead_id] ?? '—'}</td>
+                    <td className="px-3 py-2.5 text-foreground-muted">{ACTION_LABEL[q.action] ?? q.action}</td>
+                    <td className="px-3 py-2.5">
+                      <span className="px-2 py-0.5 rounded-full text-xs text-slate-700" style={{ background: LI_STATUS_COLOR[q.status] ?? '#f3f4f6' }}>
                         {q.status}
                       </span>
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem', color: '#888' }}>{q.attempts}</td>
-                    <td style={{ padding: '0.4rem 0.6rem', color: '#555' }}>
+                    <td className="px-3 py-2.5 text-foreground-subtle tabular-nums">{q.attempts}</td>
+                    <td className="px-3 py-2.5 text-foreground-muted text-xs">
                       {q.processed_at ? new Date(q.processed_at).toLocaleString() : '—'}
                     </td>
-                    <td style={{ padding: '0.4rem 0.6rem', color: '#dc2626', fontSize: '0.78rem', maxWidth: 200 }}>
+                    <td className="px-3 py-2.5 text-red-600 text-xs max-w-[200px]">
                       {q.error ? friendlyLiError(q.error) : '—'}
                     </td>
                   </tr>
@@ -581,31 +570,32 @@ export default function CampaignDetailPage() {
 
           {/* Sequence steps summary */}
           {liSends.length > 0 && (
-            <details style={{ marginTop: '1.5rem', border: '1px solid #eee', borderRadius: 8, padding: '0.75rem 1rem' }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.88rem' }}>
+            <details className="mt-6 bg-surface border border-border rounded-xl px-4 py-3">
+              <summary className="cursor-pointer font-semibold text-sm text-foreground">
                 Sequence sends — LinkedIn ({liSends.length})
               </summary>
-              <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', minWidth: 480, borderCollapse: 'collapse', fontSize: '0.82rem', marginTop: '0.75rem' }}>
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] text-xs mt-3">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #eee', textAlign: 'left' }}>
-                    <th style={{ padding: '0.3rem 0.5rem' }}>Lead</th>
-                    <th style={{ padding: '0.3rem 0.5rem' }}>Step</th>
-                    <th style={{ padding: '0.3rem 0.5rem' }}>Status</th>
-                    <th style={{ padding: '0.3rem 0.5rem' }}>Sent at</th>
+                  <tr className="border-b border-border text-left">
+                    {['Lead', 'Step', 'Status', 'Sent at'].map(h => (
+                      <th key={h} className="px-2 py-1.5 text-foreground-subtle font-medium">{h}</th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border">
                   {liSends.map(s => (
-                    <tr key={s.id} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                      <td style={{ padding: '0.3rem 0.5rem' }}>{leadMap[s.lead_id] ?? '—'}</td>
-                      <td style={{ padding: '0.3rem 0.5rem' }}>Step {s.step}</td>
-                      <td style={{ padding: '0.3rem 0.5rem' }}>
-                        <span style={{ padding: '0.1rem 0.4rem', borderRadius: 8, fontSize: '0.72rem', background: s.status === 'sent' ? '#dcfce7' : s.status === 'failed' ? '#fee2e2' : '#f3f4f6' }}>
+                    <tr key={s.id}>
+                      <td className="px-2 py-1.5 text-foreground">{leadMap[s.lead_id] ?? '—'}</td>
+                      <td className="px-2 py-1.5 text-foreground-muted">Step {s.step}</td>
+                      <td className="px-2 py-1.5">
+                        <span className={`px-1.5 py-0.5 rounded text-[11px] ${
+                          s.status === 'sent' ? 'bg-green-100 text-green-800' : s.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-surface-2 text-foreground-muted'
+                        }`}>
                           {s.status}
                         </span>
                       </td>
-                      <td style={{ padding: '0.3rem 0.5rem', color: '#888' }}>
+                      <td className="px-2 py-1.5 text-foreground-subtle">
                         {s.sent_at ? new Date(s.sent_at).toLocaleString() : '—'}
                       </td>
                     </tr>
@@ -623,24 +613,24 @@ export default function CampaignDetailPage() {
 
       {/* ── CSV import modal ─────────────────────────────────────────────────── */}
       {showImport && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: 'white', borderRadius: 12, maxWidth: 680, width: '100%', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl border border-border">
+            <div className="px-6 py-5 border-b border-border flex justify-between items-center">
               <div>
-                <div style={{ fontWeight: 700, fontSize: '1rem' }}>Import leads from CSV</div>
-                <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>
+                <div className="font-bold text-base text-foreground">Import leads from CSV</div>
+                <div className="text-xs text-foreground-muted mt-0.5">
                   Paste a CSV from Peerlist, Product Hunt, or any listing site. Leads are scored against your ICP automatically.
                 </div>
               </div>
               <button onClick={() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }}
-                style={{ border: 'none', background: 'none', fontSize: '1.3rem', cursor: 'pointer', color: '#888', lineHeight: 1 }}>✕</button>
+                className="text-foreground-subtle hover:text-foreground text-xl leading-none transition-colors">✕</button>
             </div>
 
-            <div style={{ padding: '1.25rem 1.5rem' }}>
+            <div className="px-6 py-5">
               {/* Column hint */}
-              <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 6, padding: '0.6rem 0.8rem', fontSize: '0.78rem', color: '#555', marginBottom: '0.9rem', fontFamily: 'monospace' }}>
+              <div className="bg-surface-2 border border-border rounded-lg px-3 py-2.5 text-xs text-foreground-muted mb-3.5 font-mono">
                 Expected columns (any order, extra columns ignored):<br />
-                <strong>name</strong>, email, company, linkedin_url, twitter_handle, bio, location
+                <strong className="text-foreground">name</strong>, email, company, linkedin_url, twitter_handle, bio, location
               </div>
 
               <textarea
@@ -648,38 +638,38 @@ export default function CampaignDetailPage() {
                 onChange={e => onCsvChange(e.target.value)}
                 placeholder={'name,email,company\nJane Doe,jane@example.com,Acme\nJohn Smith,john@example.com,Startup Inc'}
                 rows={10}
-                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.8rem', padding: '0.6rem 0.8rem', border: '1px solid #ddd', borderRadius: 6, resize: 'vertical', boxSizing: 'border-box' }}
+                className="w-full font-mono text-xs px-3 py-2.5 bg-bg border border-border rounded-lg text-foreground placeholder-foreground-subtle resize-y outline-none focus:border-accent/50 box-border"
               />
 
               {parsedRows.length > 0 && (
-                <div style={{ marginTop: '0.75rem' }}>
-                  <div style={{ fontSize: '0.82rem', color: '#16a34a', marginBottom: '0.5rem', fontWeight: 600 }}>
+                <div className="mt-3">
+                  <div className="text-xs text-green-600 mb-2 font-semibold">
                     ✓ {parsedRows.length} valid row{parsedRows.length !== 1 ? 's' : ''} detected
                     {parsedRows.length > 500 ? ' — capped at 500' : ''}
                   </div>
-                  <div style={{ overflowX: 'auto', maxHeight: 180, overflowY: 'auto', border: '1px solid #eee', borderRadius: 6 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                  <div className="overflow-x-auto max-h-[180px] overflow-y-auto border border-border rounded-lg">
+                    <table className="w-full text-xs">
                       <thead>
-                        <tr style={{ borderBottom: '1px solid #eee', background: '#fafafa', textAlign: 'left' }}>
+                        <tr className="border-b border-border bg-surface-2 text-left">
                           {['Name', 'Email', 'Company', 'LinkedIn'].map(h => (
-                            <th key={h} style={{ padding: '0.3rem 0.6rem', fontWeight: 600 }}>{h}</th>
+                            <th key={h} className="px-2.5 py-1.5 font-semibold text-foreground-muted">{h}</th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-border">
                         {parsedRows.slice(0, 10).map((r, i) => (
-                          <tr key={i} style={{ borderBottom: '1px solid #f4f4f4' }}>
-                            <td style={{ padding: '0.3rem 0.6rem' }}>{r.name || <span style={{ color: '#ccc' }}>—</span>}</td>
-                            <td style={{ padding: '0.3rem 0.6rem', color: r.email ? '#111' : '#ccc' }}>{r.email || '—'}</td>
-                            <td style={{ padding: '0.3rem 0.6rem', color: '#555' }}>{r.company || '—'}</td>
-                            <td style={{ padding: '0.3rem 0.6rem' }}>
-                              {r.linkedin_url ? <span style={{ color: '#0a66c2' }}>✓</span> : <span style={{ color: '#ccc' }}>—</span>}
+                          <tr key={i}>
+                            <td className="px-2.5 py-1.5 text-foreground">{r.name || <span className="text-foreground-subtle">—</span>}</td>
+                            <td className={`px-2.5 py-1.5 ${r.email ? 'text-foreground' : 'text-foreground-subtle'}`}>{r.email || '—'}</td>
+                            <td className="px-2.5 py-1.5 text-foreground-muted">{r.company || '—'}</td>
+                            <td className="px-2.5 py-1.5">
+                              {r.linkedin_url ? <span className="text-[#0a66c2]">✓</span> : <span className="text-foreground-subtle">—</span>}
                             </td>
                           </tr>
                         ))}
                         {parsedRows.length > 10 && (
                           <tr>
-                            <td colSpan={4} style={{ padding: '0.3rem 0.6rem', color: '#888', fontStyle: 'italic' }}>
+                            <td colSpan={4} className="px-2.5 py-1.5 text-foreground-subtle italic">
                               …and {parsedRows.length - 10} more
                             </td>
                           </tr>
@@ -691,19 +681,19 @@ export default function CampaignDetailPage() {
               )}
 
               {importMsg && (
-                <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: importMsg.includes('✓') ? '#16a34a' : '#dc2626' }}>
+                <p className={`mt-3 text-sm ${importMsg.includes('✓') ? 'text-green-600' : 'text-red-600'}`}>
                   {importMsg}
                 </p>
               )}
             </div>
 
-            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #eee', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div className="px-6 py-4 border-t border-border flex gap-3 justify-end">
               <button onClick={() => { setShowImport(false); setCsvText(''); setParsedRows([]); setImportMsg('') }}
-                style={{ padding: '0.5rem 1rem', border: '1px solid #ccc', borderRadius: 6, background: 'white', cursor: 'pointer', fontSize: '0.9rem' }}>
+                className="px-4 py-2 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground transition-colors">
                 Cancel
               </button>
               <button onClick={handleImport} disabled={importing || parsedRows.length === 0}
-                style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: 6, background: parsedRows.length === 0 ? '#d1d5db' : '#111', color: 'white', cursor: parsedRows.length === 0 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+                className="px-5 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 {importing ? 'Importing…' : `Import ${Math.min(parsedRows.length, 500)} leads`}
               </button>
             </div>
@@ -713,43 +703,43 @@ export default function CampaignDetailPage() {
 
       {/* ── Email preview modal ──────────────────────────────────────────────── */}
       {preview && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: 'white', borderRadius: 12, maxWidth: 720, width: '100%', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto shadow-2xl border border-border">
             {/* Modal header */}
-            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="px-6 py-5 border-b border-border flex justify-between items-center">
               <div>
-                <div style={{ fontWeight: 700, fontSize: '1rem' }}>Email preview — Step {preview.step}</div>
-                <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>
+                <div className="font-bold text-base text-foreground">Email preview — Step {preview.step}</div>
+                <div className="text-xs text-foreground-muted mt-0.5">
                   Showing 3 samples from {preview.total} leads due. If these look good, hit Run Send.
                 </div>
               </div>
-              <button onClick={() => setPreview(null)} style={{ border: 'none', background: 'none', fontSize: '1.3rem', cursor: 'pointer', color: '#888', lineHeight: 1 }}>✕</button>
+              <button onClick={() => setPreview(null)} className="text-foreground-subtle hover:text-foreground text-xl leading-none transition-colors">✕</button>
             </div>
 
             {/* Samples */}
-            <div style={{ padding: '1.25rem 1.5rem' }}>
+            <div className="px-6 py-5">
               {preview.previews.map((p, i) => (
-                <div key={p.lead.id} style={{ marginBottom: i < preview.previews.length - 1 ? '1.5rem' : 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>
-                      {p.lead.name ?? 'Unknown'} · <span style={{ color: '#888', fontWeight: 400 }}>{p.lead.email}</span>
+                <div key={p.lead.id} className={i < preview.previews.length - 1 ? 'mb-6' : ''}>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-semibold text-sm text-foreground">
+                      {p.lead.name ?? 'Unknown'} · <span className="text-foreground-subtle font-normal">{p.lead.email}</span>
                     </div>
-                    <span style={{ fontSize: '0.75rem', color: '#888', background: '#f3f4f6', padding: '0.15rem 0.5rem', borderRadius: 8 }}>
+                    <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-lg">
                       ICP {p.lead.icp_match_score != null ? (p.lead.icp_match_score * 100).toFixed(0) + '%' : '—'}
                     </span>
                   </div>
                   {p.error ? (
-                    <div style={{ color: '#dc2626', fontSize: '0.85rem', padding: '0.75rem', background: '#fee2e2', borderRadius: 6 }}>
+                    <div className="text-red-700 text-sm p-3 bg-red-50 border border-red-200 rounded-lg">
                       {friendlyPreviewError(p.error)}
                     </div>
                   ) : (
-                    <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
-                      <div style={{ padding: '0.6rem 0.9rem', background: '#f9fafb', borderBottom: '1px solid #e5e7eb', fontSize: '0.85rem' }}>
-                        <span style={{ color: '#888' }}>Subject: </span>
-                        <span style={{ fontWeight: 600 }}>{p.subject}</span>
+                    <div className="border border-border rounded-xl overflow-hidden">
+                      <div className="px-3.5 py-2.5 bg-surface-2 border-b border-border text-sm">
+                        <span className="text-foreground-subtle">Subject: </span>
+                        <span className="font-semibold text-foreground">{p.subject}</span>
                       </div>
                       <div
-                        style={{ padding: '0.9rem', fontSize: '0.88rem', lineHeight: 1.7, maxHeight: 280, overflow: 'auto' }}
+                        className="p-3.5 text-sm leading-relaxed max-h-[280px] overflow-auto text-foreground"
                         dangerouslySetInnerHTML={{ __html: p.body ?? '' }}
                       />
                     </div>
@@ -759,16 +749,16 @@ export default function CampaignDetailPage() {
             </div>
 
             {/* Modal footer */}
-            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #eee', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setPreview(null)} style={{ padding: '0.5rem 1rem', border: '1px solid #ccc', borderRadius: 6, background: 'white', cursor: 'pointer', fontSize: '0.9rem' }}>
+            <div className="px-6 py-4 border-t border-border flex flex-wrap gap-3 justify-end">
+              <button onClick={() => setPreview(null)} className="px-4 py-2 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground transition-colors">
                 Close
               </button>
-              <button onClick={previewEmails} style={{ padding: '0.5rem 1rem', border: '1px solid #6366f1', borderRadius: 6, background: 'white', color: '#6366f1', cursor: 'pointer', fontSize: '0.9rem' }}>
+              <button onClick={previewEmails} className="px-4 py-2 border border-indigo-400 rounded-lg bg-surface text-sm text-indigo-600 hover:bg-indigo-50 transition-colors">
                 ↺ Regenerate samples
               </button>
               <button
                 onClick={() => { setPreview(null); triggerAction('send') }}
-                style={{ padding: '0.5rem 1.25rem', border: 'none', borderRadius: 6, background: '#111', color: 'white', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+                className="px-5 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors">
                 ✓ Looks good — Send {preview.total} emails
               </button>
             </div>

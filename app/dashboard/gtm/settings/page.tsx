@@ -344,92 +344,98 @@ function SettingsContent() {
   const pendingTwoFa = liSessions.find(s => s.status === 'pending_2fa')
   const activeSession = liSessions.find(s => s.status === 'active')
 
+  const inputCls = "px-3 py-2 bg-bg border border-border rounded-lg text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent/50 transition-colors"
+  const labelCls = "flex flex-col gap-1.5"
+  const labelTextCls = "text-xs font-semibold text-foreground"
+  const primaryBtnCls = "px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start"
+  const dangerBtnCls = "px-2.5 py-1 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg text-xs font-semibold bg-surface transition-colors shrink-0"
+  const cardCls = "bg-surface border border-border rounded-xl px-5 py-4 mb-3"
+
   return (
-    <div style={{ padding: '2rem', maxWidth: 680 }}>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <Link href="/dashboard/gtm/new" style={{ color: '#666', textDecoration: 'none', fontSize: '0.9rem' }}>← Back to Outreach</Link>
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.5rem' }}>Outreach Settings</h1>
+    <div>
+      <GtmPageHeader title="Outreach Settings" />
+      <div className="px-4 sm:px-8 py-7 max-w-2xl">
+      <div className="mb-6">
+        <Link href="/dashboard/gtm" className="text-foreground-subtle hover:text-accent text-sm no-underline transition-colors">← Back to Outreach Campaigns</Link>
+        <h1 className="text-2xl font-black text-foreground tracking-tight mt-2">Outreach Settings</h1>
+        <p className="text-foreground-subtle text-sm mt-0.5">Email accounts, CRM, and LinkedIn used for cold outreach</p>
       </div>
 
       {connected === 'gmail' && (
-        <div style={{ background: '#dcfce7', border: '1px solid #86efac', borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: '#166534' }}>
+        <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 mb-4 text-sm">
           Gmail connected successfully.
         </div>
       )}
       {error && (
-        <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: '#991b1b' }}>
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
           {errorMessages[error] ?? `Error: ${error}`}
         </div>
       )}
 
       {/* ── Gmail ─────────────────────────────────────────────────────────── */}
-      <section style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <h2 style={{ fontWeight: 700 }}>Gmail</h2>
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-base font-bold text-foreground">Gmail</h2>
           {!planStatus?.hasMultiInbox && accounts.length >= 1 && (
-            <Link href="/pricing" style={{ padding: '0.4rem 0.9rem', background: '#f1f5f9', color: '#475569', borderRadius: 6, textDecoration: 'none', fontSize: '0.9rem', border: '1px solid #e2e8f0' }}>
+            <Link href="/pricing" className="px-3 py-1.5 bg-surface-2 text-foreground-muted border border-border rounded-lg text-sm no-underline hover:text-foreground transition-colors">
               🔒 Pro required for 2nd inbox
             </Link>
           )}
         </div>
 
-        <div style={{ fontSize: '0.82rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '0.85rem 1rem', marginBottom: '1rem', lineHeight: 1.6, color: '#1e3a8a' }}>
-          <strong>Get your App Password:</strong>
-          <ol style={{ margin: '0.5rem 0 0', paddingLeft: '1.2rem' }}>
-            <li>Turn on <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>2-Step Verification</a> (Google requires it first).</li>
-            <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af' }}>App Passwords</a>, type a name like &quot;Ozigi&quot;, and click Create.</li>
+        <div className="text-xs bg-surface-2 border border-border rounded-xl px-4 py-3.5 mb-4 leading-relaxed text-foreground-muted">
+          <strong className="text-foreground">Get your App Password:</strong>
+          <ol className="mt-2 pl-5 list-decimal space-y-1">
+            <li>Turn on <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">2-Step Verification</a> (Google requires it first).</li>
+            <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">App Passwords</a>, type a name like &quot;Ozigi&quot;, and click Create.</li>
             <li>Copy the 16-character password and paste it below with your Gmail address.</li>
           </ol>
         </div>
 
         {gmailFormMsg && (
-          <div style={{ background: gmailFormMsg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${gmailFormMsg.type === 'success' ? '#86efac' : '#fca5a5'}`, borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: gmailFormMsg.type === 'success' ? '#166534' : '#991b1b' }}>
+          <div className={`rounded-lg px-4 py-3 mb-4 text-sm border ${gmailFormMsg.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
             {gmailFormMsg.text}
           </div>
         )}
 
         {(planStatus?.hasMultiInbox || accounts.length === 0) && (
-          <form onSubmit={connectGmailAppPassword} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Gmail address</span>
-              <input type="email" value={gmailAddress} onChange={e => setGmailAddress(e.target.value)} placeholder="you@gmail.com"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+          <form onSubmit={connectGmailAppPassword} className="bg-surface border border-border rounded-xl p-5 flex flex-col gap-3 mb-4">
+            <label className={labelCls}>
+              <span className={labelTextCls}>Gmail address</span>
+              <input type="email" value={gmailAddress} onChange={e => setGmailAddress(e.target.value)} placeholder="you@gmail.com" className={inputCls} />
             </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>App Password</span>
-              <input type="password" value={gmailAppPass} onChange={e => setGmailAppPass(e.target.value)} placeholder="16-character app password"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <label className={labelCls}>
+              <span className={labelTextCls}>App Password</span>
+              <input type="password" value={gmailAppPass} onChange={e => setGmailAppPass(e.target.value)} placeholder="16-character app password" className={inputCls} />
             </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Display name (from)</span>
-              <input value={gmailFrom} onChange={e => setGmailFrom(e.target.value)} placeholder="Dumebi from Ozigi"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <label className={labelCls}>
+              <span className={labelTextCls}>Display name (from)</span>
+              <input value={gmailFrom} onChange={e => setGmailFrom(e.target.value)} placeholder="Dumebi from Ozigi" className={inputCls} />
             </label>
-            <button type="submit" disabled={gmailSaving || !gmailAddress || !gmailAppPass}
-              style={{ padding: '0.55rem 1.25rem', background: gmailSaving ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}>
+            <button type="submit" disabled={gmailSaving || !gmailAddress || !gmailAppPass} className={primaryBtnCls}>
               {gmailSaving ? 'Testing & saving…' : 'Connect Gmail'}
             </button>
           </form>
         )}
 
-        {gmailLoading && <p style={{ color: '#888' }}>Loading…</p>}
+        {gmailLoading && <p className="text-foreground-subtle text-sm">Loading…</p>}
         {!gmailLoading && accounts.length === 0 && (
-          <div style={{ border: '1px dashed #ccc', borderRadius: 8, padding: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
+          <div className="border border-dashed border-border rounded-xl p-8 text-center text-foreground-subtle text-sm">
             No email accounts connected yet.
           </div>
         )}
         {accounts.map(a => (
-          <div key={a.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div key={a.id} className={`${cardCls} flex justify-between items-center`}>
             <div>
-              <div style={{ fontWeight: 600 }}>{a.email_address}</div>
-              <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.2rem' }}>
+              <div className="font-semibold text-foreground text-sm">{a.email_address}</div>
+              <div className="text-xs text-foreground-subtle mt-0.5">
                 {a.provider === 'smtp'
                   ? <>{a.smtp_host === 'smtp.gmail.com' ? 'Gmail (App Password)' : `SMTP${a.smtp_host ? ` · ${a.smtp_host}` : ''}`} · Sent today: {a.daily_send_count}</>
                   : <>{a.is_active ? '● Active' : '○ Inactive'} · Sent today: {a.daily_send_count}</>
                 }
               </div>
             </div>
-            <button onClick={() => disconnectGmail(a.id, a.email_address)} style={{ padding: '0.3rem 0.7rem', border: '1px solid #fca5a5', borderRadius: 5, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem' }}>
+            <button onClick={() => disconnectGmail(a.id, a.email_address)} className={dangerBtnCls}>
               Disconnect
             </button>
           </div>
@@ -437,69 +443,63 @@ function SettingsContent() {
       </section>
 
       {/* ── SMTP (non-Google) ────────────────────────────────────────────── */}
-      <section style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontWeight: 700 }}>Other email (SMTP)</h2>
-          <button onClick={() => setShowSmtp(v => !v)} style={{ padding: '0.4rem 0.9rem', background: 'white', border: '1px solid #ccc', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem' }}>
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-base font-bold text-foreground">Other email (SMTP)</h2>
+          <button onClick={() => setShowSmtp(v => !v)} className="px-3 py-1.5 bg-surface border border-border rounded-lg text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
             {showSmtp ? 'Cancel' : '+ Connect SMTP'}
           </button>
         </div>
 
         {smtpMsg && (
-          <div style={{ background: smtpMsg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${smtpMsg.type === 'success' ? '#86efac' : '#fca5a5'}`, borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: smtpMsg.type === 'success' ? '#166534' : '#991b1b' }}>
+          <div className={`rounded-lg px-4 py-3 mb-4 text-sm border ${smtpMsg.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
             {smtpMsg.text}
           </div>
         )}
 
-        <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '0.75rem', lineHeight: 1.6 }}>
+        <div className="text-xs text-foreground-muted mb-3 leading-relaxed">
           Use this for Yahoo, Outlook, Microsoft 365, custom domains, or transactional providers (SendGrid, Mailgun). Your password is encrypted at rest.
         </div>
 
         {showSmtp && (
-          <form onSubmit={saveSmtpAccount} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <form onSubmit={saveSmtpAccount} className="bg-surface border border-border rounded-xl p-5 flex flex-col gap-3">
             {/* Preset picker */}
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' as const }}>
+            <div className="flex gap-1.5 flex-wrap">
               {Object.entries({ outlook: 'Outlook', yahoo: 'Yahoo', zohomail: 'Zoho Mail', fastmail: 'Fastmail', sendgrid: 'SendGrid', custom: 'Custom' }).map(([k, label]) => (
                 <button key={k} type="button" onClick={() => applyPreset(k)}
-                  style={{ padding: '0.3rem 0.7rem', borderRadius: 5, border: '1px solid #ccc', background: smtpPreset === k ? '#111' : 'white', color: smtpPreset === k ? '#fff' : '#333', cursor: 'pointer', fontSize: '0.82rem' }}>
+                  className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${smtpPreset === k ? 'bg-accent border-accent text-white' : 'bg-bg border-border text-foreground-muted hover:text-foreground'}`}>
                   {label}
                 </button>
               ))}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 2 }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>SMTP host</span>
-                <input value={smtpHost} onChange={e => setSmtpHost(e.target.value)} placeholder="smtp.office365.com"
-                  style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <div className="flex gap-3">
+              <label className={`${labelCls} flex-[2]`}>
+                <span className={labelTextCls}>SMTP host</span>
+                <input value={smtpHost} onChange={e => setSmtpHost(e.target.value)} placeholder="smtp.office365.com" className={inputCls} />
               </label>
-              <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 0.6 }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Port</span>
-                <input type="number" value={smtpPort} onChange={e => setSmtpPort(Number(e.target.value))}
-                  style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+              <label className={`${labelCls} flex-[0.6]`}>
+                <span className={labelTextCls}>Port</span>
+                <input type="number" value={smtpPort} onChange={e => setSmtpPort(Number(e.target.value))} className={inputCls} />
               </label>
             </div>
 
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Email / username</span>
-              <input type="email" value={smtpUser} onChange={e => setSmtpUser(e.target.value)} placeholder="you@yourcompany.com"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <label className={labelCls}>
+              <span className={labelTextCls}>Email / username</span>
+              <input type="email" value={smtpUser} onChange={e => setSmtpUser(e.target.value)} placeholder="you@yourcompany.com" className={inputCls} />
             </label>
 
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Password / app password</span>
-              <input type="password" value={smtpPass} onChange={e => setSmtpPass(e.target.value)} placeholder="••••••••"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <label className={labelCls}>
+              <span className={labelTextCls}>Password / app password</span>
+              <input type="password" value={smtpPass} onChange={e => setSmtpPass(e.target.value)} placeholder="••••••••" className={inputCls} />
             </label>
 
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Display name (from)</span>
-              <input value={smtpFrom} onChange={e => setSmtpFrom(e.target.value)} placeholder="Dumebi from Ozigi"
-                style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }} />
+            <label className={labelCls}>
+              <span className={labelTextCls}>Display name (from)</span>
+              <input value={smtpFrom} onChange={e => setSmtpFrom(e.target.value)} placeholder="Dumebi from Ozigi" className={inputCls} />
             </label>
 
-            <button type="submit" disabled={smtpSaving || !smtpHost || !smtpUser || !smtpPass}
-              style={{ padding: '0.55rem 1.25rem', background: smtpSaving ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}>
+            <button type="submit" disabled={smtpSaving || !smtpHost || !smtpUser || !smtpPass} className={primaryBtnCls}>
               {smtpSaving ? 'Testing & saving…' : 'Connect'}
             </button>
           </form>
@@ -507,30 +507,30 @@ function SettingsContent() {
       </section>
 
       {/* ── CRM ──────────────────────────────────────────────────────────── */}
-      <section style={{ marginBottom: '2.5rem' }}>
-        <h2 style={{ fontWeight: 700, marginBottom: '0.35rem' }}>CRM</h2>
-        <p style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>
+      <section className="mb-10">
+        <h2 className="text-base font-bold text-foreground mb-1">CRM</h2>
+        <p className="text-xs text-foreground-muted mb-4 leading-relaxed">
           Connect your CRM via OAuth, or paste an API key for CRMs that don&apos;t support it. Leads are synced automatically when first contacted.
         </p>
 
         {crmMsg && (
-          <div style={{ background: crmMsg.type === 'success' ? '#dcfce7' : '#fee2e2', border: `1px solid ${crmMsg.type === 'success' ? '#86efac' : '#fca5a5'}`, borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: crmMsg.type === 'success' ? '#166534' : '#991b1b' }}>
+          <div className={`rounded-lg px-4 py-3 mb-4 text-sm border ${crmMsg.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
             {crmMsg.text}
           </div>
         )}
 
         {/* Connected CRMs */}
         {crmConnections.map(c => (
-          <div key={c.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div key={c.id} className={`${cardCls} flex justify-between items-center`}>
             <div>
-              <div style={{ fontWeight: 600 }}>
+              <div className="font-semibold text-foreground text-sm">
                 {CRM_LABELS[c.provider] ?? c.provider}
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.2rem' }}>
+              <div className="text-xs text-foreground-subtle mt-0.5">
                 {c.is_active ? '● Connected via OAuth' : '○ Inactive'}
               </div>
             </div>
-            <button onClick={() => disconnectCrm(c.id, c.provider)} style={{ padding: '0.3rem 0.7rem', border: '1px solid #fca5a5', borderRadius: 5, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem' }}>
+            <button onClick={() => disconnectCrm(c.id, c.provider)} className={dangerBtnCls}>
               Disconnect
             </button>
           </div>
@@ -538,11 +538,11 @@ function SettingsContent() {
 
         {/* OAuth connect buttons — only CRMs with Composio Managed credentials */}
         {!planStatus?.hasCrmSync && (
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '1rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#475569' }}>
-            🔒 CRM sync is available on <Link href="/pricing" style={{ color: '#e8320a', fontWeight: 600 }}>Growth and Pro plans</Link>.
+          <div className="bg-surface-2 border border-border rounded-xl p-4 mb-4 text-sm text-foreground-muted">
+            🔒 CRM sync is available on <Link href="/pricing" className="text-accent font-semibold no-underline hover:underline">Growth and Pro plans</Link>.
           </div>
         )}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { provider: 'hubspot',    label: 'HubSpot',    color: '#ff7a59' },
             { provider: 'zoho',       label: 'Zoho CRM',   color: '#e42527' },
@@ -556,20 +556,17 @@ function SettingsContent() {
                 key={provider}
                 onClick={() => locked ? void 0 : !already && connectCrmOAuth(provider)}
                 disabled={already || busy || locked}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  padding: '0.65rem 1rem',
-                  border: `1px solid ${already ? '#86efac' : locked ? '#e2e8f0' : '#e5e7eb'}`,
-                  borderRadius: 8,
-                  background: already ? '#f0fdf4' : locked ? '#f8fafc' : 'white',
-                  color: already ? '#166534' : locked ? '#94a3b8' : '#111',
-                  cursor: already || locked ? 'default' : busy ? 'wait' : 'pointer',
-                  fontSize: '0.9rem', fontWeight: 600,
-                  opacity: busy ? 0.7 : 1,
-                  transition: 'all 0.15s',
-                }}
+                className={[
+                  'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all',
+                  already
+                    ? 'border-green-300 bg-green-50 text-green-700 cursor-default'
+                    : locked
+                    ? 'border-border bg-surface-2 text-foreground-subtle cursor-default'
+                    : 'border-border bg-surface text-foreground hover:border-border-strong',
+                  busy ? 'opacity-70 cursor-wait' : '',
+                ].join(' ')}
               >
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: already ? '#22c55e' : locked ? '#cbd5e1' : color, flexShrink: 0 }} />
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: already ? '#22c55e' : locked ? '#cbd5e1' : color }} />
                 {busy ? 'Redirecting…' : already ? `${label} ✓` : locked ? `🔒 ${label}` : `Connect ${label}`}
               </button>
             )
@@ -578,36 +575,32 @@ function SettingsContent() {
 
         {/* Swipe One — no OAuth support, manual API key */}
         {!crmConnections.some(c => c.provider === 'swipeone' && c.is_active) && (
-          <div style={{ marginTop: '0.75rem' }}>
+          <div className="mt-3">
             <button
               type="button"
               onClick={() => planStatus?.hasCrmSync && setShowSwipeone(v => !v)}
               disabled={!planStatus?.hasCrmSync}
-              style={{ padding: '0.4rem 0.9rem', background: 'white', border: '1px solid #ccc', borderRadius: 6, cursor: planStatus?.hasCrmSync ? 'pointer' : 'default', fontSize: '0.9rem', opacity: planStatus?.hasCrmSync ? 1 : 0.5 }}
+              className="px-3 py-1.5 bg-surface border border-border rounded-lg text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors disabled:opacity-50 disabled:cursor-default"
             >
               {showSwipeone ? 'Cancel' : '+ Connect Swipe One'}
             </button>
 
             {showSwipeone && (
-              <form onSubmit={connectSwipeOne} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem', marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ fontSize: '0.82rem', color: '#666', lineHeight: 1.6 }}>
+              <form onSubmit={connectSwipeOne} className="bg-surface border border-border rounded-xl p-5 mt-3 flex flex-col gap-3">
+                <div className="text-xs text-foreground-muted leading-relaxed">
                   Swipe One doesn&apos;t support OAuth — paste your API key from Swipe One → Settings → API.
                 </div>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>API key</span>
+                <label className={labelCls}>
+                  <span className={labelTextCls}>API key</span>
                   <input
                     type="password"
                     value={swipeoneApiKey}
                     onChange={e => setSwipeoneApiKey(e.target.value)}
                     placeholder="Paste your Swipe One API key"
-                    style={{ padding: '0.45rem 0.7rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.9rem' }}
+                    className={inputCls}
                   />
                 </label>
-                <button
-                  type="submit"
-                  disabled={swipeoneSaving || !swipeoneApiKey}
-                  style={{ padding: '0.55rem 1.25rem', background: swipeoneSaving ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
-                >
+                <button type="submit" disabled={swipeoneSaving || !swipeoneApiKey} className={primaryBtnCls}>
                   {swipeoneSaving ? 'Testing & saving…' : 'Connect'}
                 </button>
               </form>
@@ -617,34 +610,31 @@ function SettingsContent() {
       </section>
 
       {/* ── LinkedIn ──────────────────────────────────────────────────────── */}
-      <section style={{ marginBottom: '2.5rem' }}>
-        <h2 style={{ fontWeight: 700, marginBottom: '1rem' }}>LinkedIn</h2>
+      <section className="mb-10">
+        <h2 className="text-base font-bold text-foreground mb-4">LinkedIn</h2>
 
         {liMsg && (
-          <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 6, padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', color: '#0369a1' }}>
+          <div className="bg-sky-50 border border-sky-200 text-sky-800 rounded-lg px-4 py-3 mb-4 text-sm">
             {liMsg}
           </div>
         )}
 
         {/* Existing sessions */}
         {liSessions.map(s => (
-          <div key={s.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem', marginBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div key={s.id} className={cardCls}>
+            <div className="flex justify-between items-center">
               <div>
-                <div style={{ fontWeight: 600 }}>{s.linkedin_email}</div>
-                <div style={{ fontSize: '0.82rem', color: '#666', marginTop: '0.2rem' }}>
+                <div className="font-semibold text-foreground text-sm">{s.linkedin_email}</div>
+                <div className="text-xs text-foreground-muted mt-0.5">
                   {STATUS_LABEL[s.status] ?? s.status}
                 </div>
                 {s.login_error && s.login_error !== '__push_notification__' && (
-                  <div style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.25rem' }}>
+                  <div className="text-xs text-red-600 mt-1">
                     ✗ {friendlyLoginError(s.login_error)}
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => disconnectLinkedIn(s.id)}
-                style={{ padding: '0.3rem 0.7rem', border: '1px solid #fca5a5', borderRadius: 5, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem', flexShrink: 0 }}
-              >
+              <button onClick={() => disconnectLinkedIn(s.id)} className={dangerBtnCls}>
                 {s.status === 'active' ? 'Disconnect' : 'Remove'}
               </button>
             </div>
@@ -655,36 +645,36 @@ function SettingsContent() {
         {pendingTwoFa && (() => {
           const isPush = pendingTwoFa.login_error === '__push_notification__'
           return (
-            <div style={{ border: '2px solid #fbbf24', borderRadius: 8, padding: '1.25rem', marginBottom: '1rem', background: '#fffbeb' }}>
+            <div className="border-2 border-amber-300 bg-amber-50 rounded-xl p-5 mb-4">
               {isPush ? (
                 <>
-                  <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>📱 Approve the sign-in on your LinkedIn app</div>
-                  <div style={{ fontSize: '0.88rem', color: '#555', lineHeight: 1.6 }}>
+                  <div className="font-bold text-amber-900 mb-2">📱 Approve the sign-in on your LinkedIn app</div>
+                  <div className="text-sm text-amber-900/80 leading-relaxed">
                     LinkedIn sent a push notification to your phone. Open your <strong>LinkedIn app</strong> and tap <strong>Yes</strong> to approve the sign-in.
                     This page will update automatically once approved.
                   </div>
-                  <div style={{ marginTop: '0.75rem', fontSize: '0.82rem', color: '#888' }}>
+                  <div className="mt-3 text-xs text-amber-800/70">
                     No notification? Try the code method instead — disconnect and reconnect, then use a verification code sent to your email.
                   </div>
                 </>
               ) : (
                 <>
-                  <div style={{ fontWeight: 700, marginBottom: '0.5rem' }}>🔐 LinkedIn sent you a verification code</div>
-                  <div style={{ fontSize: '0.88rem', color: '#555', marginBottom: '1rem', lineHeight: 1.6 }}>
+                  <div className="font-bold text-amber-900 mb-2">🔐 LinkedIn sent you a verification code</div>
+                  <div className="text-sm text-amber-900/80 mb-4 leading-relaxed">
                     Check your email or phone for a code from LinkedIn. Enter it below — you have 5 minutes.
                   </div>
-                  <form onSubmit={submitTwoFa} style={{ display: 'flex', gap: '0.5rem' }}>
+                  <form onSubmit={submitTwoFa} className="flex gap-2">
                     <input
                       value={twoFaCode}
                       onChange={e => setTwoFaCode(e.target.value)}
                       placeholder="Enter verification code"
-                      style={{ flex: 1, padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '1rem', letterSpacing: '0.1em' }}
+                      className="flex-1 px-3 py-2 bg-white border border-amber-300 rounded-lg text-base tracking-widest text-slate-900 outline-none focus:border-amber-500"
                       autoFocus
                     />
                     <button
                       type="submit"
                       disabled={twoFaSubmitting || !twoFaCode}
-                      style={{ padding: '0.5rem 1rem', background: '#111', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer' }}
+                      className="px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
                     >
                       {twoFaSubmitting ? 'Submitting…' : 'Submit'}
                     </button>
@@ -697,30 +687,30 @@ function SettingsContent() {
 
         {/* Connect form — shown if no active session */}
         {!activeSession && !pendingTwoFa && liSessions.every(s => s.status !== 'logging_in') && (
-          <div style={{ border: '1px solid #eee', borderRadius: 8, padding: '1.25rem' }}>
-            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Connect a LinkedIn account</div>
-            <div style={{ fontSize: '0.82rem', color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="font-semibold text-foreground text-sm mb-2">Connect a LinkedIn account</div>
+            <div className="text-xs text-foreground-muted mb-4 leading-relaxed">
               We log into LinkedIn on your behalf using your credentials. Your password is encrypted at rest and never shared.
             </div>
-            <form onSubmit={connectLinkedIn} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <form onSubmit={connectLinkedIn} className="flex flex-col gap-3">
               <input
                 type="email"
                 value={liEmail}
                 onChange={e => setLiEmail(e.target.value)}
                 placeholder="LinkedIn email"
-                style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
+                className={inputCls}
               />
               <input
                 type="password"
                 value={liPassword}
                 onChange={e => setLiPassword(e.target.value)}
                 placeholder="LinkedIn password"
-                style={{ padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 5, fontSize: '0.95rem' }}
+                className={inputCls}
               />
               <button
                 type="submit"
                 disabled={liConnecting || !liEmail || !liPassword}
-                style={{ padding: '0.55rem 1.25rem', background: liConnecting ? '#999' : '#0a66c2', color: '#fff', border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: '0.95rem', alignSelf: 'flex-start' }}
+                className="px-4 py-2 bg-[#0a66c2] hover:bg-[#004182] text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 self-start"
               >
                 {liConnecting ? 'Connecting…' : 'Connect LinkedIn'}
               </button>
@@ -728,6 +718,7 @@ function SettingsContent() {
           </div>
         )}
       </section>
+      </div>
     </div>
   )
 }
@@ -743,7 +734,7 @@ const errorMessages: Record<string, string> = {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div style={{ padding: '2rem' }}>Loading…</div>}>
+    <Suspense fallback={<div className="p-8 text-foreground-subtle text-sm">Loading…</div>}>
       <SettingsContent />
     </Suspense>
   )

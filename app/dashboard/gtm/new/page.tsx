@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 
 type Channel = 'email' | 'linkedin'
@@ -24,13 +23,9 @@ function getStepLabel(step: SequenceStep, allSteps: SequenceStep[]): string {
   return ''
 }
 
-const CHANNEL_COLORS: Record<Channel, string> = {
-  email:    '#f0fdf4',
-  linkedin: '#eff6ff',
-}
-const CHANNEL_BORDER: Record<Channel, string> = {
-  email:    '#86efac',
-  linkedin: '#93c5fd',
+const CHANNEL_CARD_CLS: Record<Channel, string> = {
+  email:    'border-green-300 bg-green-50',
+  linkedin: 'border-blue-300 bg-blue-50',
 }
 
 const DEFAULT_STEPS: SequenceStep[] = [
@@ -40,8 +35,13 @@ const DEFAULT_STEPS: SequenceStep[] = [
   { step: 4, channel: 'linkedin', delay_days: 0 },
 ]
 
-const inp = { padding: '0.5rem 0.75rem', border: '1px solid #ccc', borderRadius: 6, fontSize: '0.95rem', width: '100%', boxSizing: 'border-box' as const }
-const lbl = { display: 'flex' as const, flexDirection: 'column' as const, gap: '0.35rem' }
+const inputCls = 'w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent/50 transition-colors'
+const labelCls = 'flex flex-col gap-1.5'
+const labelTextCls = 'text-sm font-semibold text-foreground'
+const hintCls = 'text-xs text-foreground-subtle leading-relaxed'
+// min-w-0 overrides the fieldset default of min-inline-size: min-content so it can shrink on mobile
+const fieldsetCls = 'bg-surface border border-border rounded-xl px-5 py-4 min-w-0'
+const legendCls = 'font-bold text-sm text-foreground px-1.5'
 
 export default function NewCampaignPage() {
   const router = useRouter()
@@ -118,13 +118,6 @@ export default function NewCampaignPage() {
     ))
   }
 
-  function addStep() {
-    setSteps(prev => {
-      const last = prev[prev.length - 1]
-      return [...prev, { step: last.step + 1, channel: 'email', delay_days: 7 }]
-    })
-  }
-
   function removeStep(index: number) {
     setSteps(prev => prev
       .filter((_, i) => i !== index)
@@ -181,75 +174,75 @@ export default function NewCampaignPage() {
 
   return (
     <div>
-      <GtmPageHeader title="New Campaign" />
-      <div style={{ padding: '2rem', maxWidth: 680 }}>
-      <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>New Campaign</h1>
+      <GtmPageHeader title="New Outreach Campaign" />
+      <div className="px-4 sm:px-8 py-7 max-w-2xl">
+      <h1 className="text-2xl font-black text-foreground tracking-tight mb-6">New Outreach Campaign</h1>
 
       {/* ── URL Analyser ─────────────────────────────────────────────────── */}
-      <div style={{ border: analysed ? '1px solid #86efac' : '1px solid #e0e7ff', background: analysed ? '#f0fdf4' : '#f8f9ff', borderRadius: 8, padding: '1.25rem', marginBottom: '1.5rem' }}>
-        <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.4rem' }}>
+      <div className={`rounded-xl p-5 mb-6 border ${analysed ? 'border-green-300 bg-green-50' : 'border-border bg-surface-2'}`}>
+        <div className={`font-bold text-sm mb-1 ${analysed ? 'text-green-900' : 'text-foreground'}`}>
           ✦ Auto-fill from your website
         </div>
-        <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '0.9rem', lineHeight: 1.5 }}>
+        <div className={`text-xs mb-3.5 leading-relaxed ${analysed ? 'text-green-800/80' : 'text-foreground-muted'}`}>
           Paste your product URL and Gemini reads the page to fill in all the fields below automatically.
         </div>
-        <form onSubmit={analyseUrl} style={{ display: 'flex', gap: '0.5rem' }}>
+        <form onSubmit={analyseUrl} className="flex gap-2">
           <input
             type="url"
             value={websiteUrl}
             onChange={e => { setWebsiteUrl(e.target.value); setAnalysed(false) }}
             placeholder="https://yourproduct.com"
-            style={{ ...inp, flex: 1 }}
+            className={`${inputCls} flex-1 ${analysed ? 'bg-white text-slate-900' : ''}`}
           />
           <button
             type="submit"
             disabled={analysing || !websiteUrl.trim()}
-            style={{ padding: '0.5rem 1.1rem', background: analysing ? '#999' : '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' as const }}>
+            className="px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap">
             {analysing ? 'Analysing…' : analysed ? '↺ Re-analyse' : 'Analyse'}
           </button>
         </form>
-        {analyseError && <p style={{ color: '#dc2626', fontSize: '0.82rem', marginTop: '0.5rem' }}>{analyseError}</p>}
-        {analysed && <p style={{ color: '#16a34a', fontSize: '0.82rem', marginTop: '0.5rem' }}>✓ Fields filled — review and edit below before creating.</p>}
+        {analyseError && <p className="text-red-600 text-xs mt-2">{analyseError}</p>}
+        {analysed && <p className="text-green-700 text-xs mt-2">✓ Fields filled — review and edit below before creating.</p>}
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
         {/* ── Sender & product ───────────────────────────────────────────── */}
-        <fieldset style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem' }}>
-          <legend style={{ fontWeight: 700, fontSize: '0.95rem', padding: '0 0.4rem' }}>Sender &amp; product</legend>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginTop: '0.5rem' }}>
+        <fieldset className={fieldsetCls}>
+          <legend className={legendCls}>Sender &amp; product</legend>
+          <div className="flex flex-col gap-4 mt-2">
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <label style={{ ...lbl, flex: 1 }}>
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Your name <span style={{ color: 'red' }}>*</span></span>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <label className={`${labelCls} flex-1`}>
+                <span className={labelTextCls}>Your name <span className="text-red-500">*</span></span>
                 <input value={senderName} onChange={e => setSenderName(e.target.value)}
-                  placeholder="Dumebi" style={inp} />
+                  placeholder="Dumebi" className={inputCls} />
               </label>
-              <label style={{ ...lbl, flex: 1 }}>
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Your title</span>
+              <label className={`${labelCls} flex-1`}>
+                <span className={labelTextCls}>Your title</span>
                 <input value={senderTitle} onChange={e => setSenderTitle(e.target.value)}
-                  placeholder="Founder @ Ozigi" style={inp} />
+                  placeholder="Founder @ Ozigi" className={inputCls} />
               </label>
             </div>
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Product name <span style={{ color: 'red' }}>*</span></span>
+            <label className={labelCls}>
+              <span className={labelTextCls}>Product name <span className="text-red-500">*</span></span>
               <input value={productName} onChange={e => setProductName(e.target.value)}
-                placeholder="Ozigi" style={inp} />
+                placeholder="Ozigi" className={inputCls} />
             </label>
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>What does it do? <span style={{ color: 'red' }}>*</span></span>
-              <span style={{ fontSize: '0.8rem', color: '#666' }}>1-2 sentences. Gemini uses this to write every email and message.</span>
+            <label className={labelCls}>
+              <span className={labelTextCls}>What does it do? <span className="text-red-500">*</span></span>
+              <span className={hintCls}>1-2 sentences. Gemini uses this to write every email and message.</span>
               <textarea value={productDescription} onChange={e => setProductDescription(e.target.value)}
                 rows={3}
                 placeholder="AI-powered outbound platform that scrapes leads from GitHub and Dev.to and sends personalised email + LinkedIn sequences automatically."
-                style={{ ...inp, resize: 'vertical' as const }} />
+                className={`${inputCls} resize-y`} />
             </label>
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>AI knowledge base</span>
-              <span style={{ fontSize: '0.8rem', color: '#666' }}>
+            <label className={labelCls}>
+              <span className={labelTextCls}>AI knowledge base</span>
+              <span className={hintCls}>
                 Auto-filled from your website. This is what Gemini reads to write specific, compelling messages —
                 the more detail here, the better the copy. Edit freely.
               </span>
@@ -258,48 +251,48 @@ export default function NewCampaignPage() {
                 onChange={e => setProductContext(e.target.value)}
                 rows={6}
                 placeholder="Paste your website URL above and click Analyse — Gemini will generate a rich product brief here automatically. Or write it yourself: describe the core problem you solve, key features, concrete outcomes users get, what makes you different, and any social proof or numbers."
-                style={{ ...inp, resize: 'vertical' as const, fontFamily: 'inherit', fontSize: '0.85rem', lineHeight: 1.6 }}
+                className={`${inputCls} resize-y text-xs leading-relaxed`}
               />
             </label>
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>CTA link</span>
+            <label className={labelCls}>
+              <span className={labelTextCls}>CTA link</span>
               <input value={ctaUrl} onChange={e => setCtaUrl(e.target.value)}
-                placeholder="https://yourproduct.com" style={inp} />
+                placeholder="https://yourproduct.com" className={inputCls} />
             </label>
           </div>
         </fieldset>
 
         {/* ── Target audience ────────────────────────────────────────────── */}
-        <fieldset style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem' }}>
-          <legend style={{ fontWeight: 700, fontSize: '0.95rem', padding: '0 0.4rem' }}>Target audience</legend>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginTop: '0.5rem' }}>
+        <fieldset className={fieldsetCls}>
+          <legend className={legendCls}>Target audience</legend>
+          <div className="flex flex-col gap-4 mt-2">
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Campaign name</span>
+            <label className={labelCls}>
+              <span className={labelTextCls}>Campaign name</span>
               <input value={name} onChange={e => setName(e.target.value)}
-                placeholder="Ozigi – Dev Tool Founders – Jun 2026" style={inp} />
+                placeholder="Ozigi – Dev Tool Founders – Jun 2026" className={inputCls} />
             </label>
 
-            <label style={lbl}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Who are you targeting? <span style={{ color: 'red' }}>*</span></span>
-              <span style={{ fontSize: '0.8rem', color: '#666' }}>Plain English. Gemini extracts the structured ICP from this.</span>
+            <label className={labelCls}>
+              <span className={labelTextCls}>Who are you targeting? <span className="text-red-500">*</span></span>
+              <span className={hintCls}>Plain English. Gemini extracts the structured ICP from this.</span>
               <textarea value={icpDescription} onChange={e => setIcpDescription(e.target.value)}
                 rows={4}
                 placeholder="e.g. Software engineers and technical founders building SaaS products or dev tools. Active on GitHub, early-stage startups (1–50 people), care about shipping fast. Seniority: senior engineer to CTO."
-                style={{ ...inp, resize: 'vertical' as const }} />
+                className={`${inputCls} resize-y`} />
             </label>
 
           </div>
         </fieldset>
 
         {/* ── Sequence ───────────────────────────────────────────────────── */}
-        <fieldset style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem' }}>
-          <legend style={{ fontWeight: 700, fontSize: '0.95rem', padding: '0 0.4rem' }}>Sequence</legend>
-          <div style={{ marginTop: '0.5rem' }}>
+        <fieldset className={fieldsetCls}>
+          <legend className={legendCls}>Sequence</legend>
+          <div className="mt-2">
 
-            <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '1rem', lineHeight: 1.6, background: '#fafafa', borderRadius: 6, padding: '0.6rem 0.8rem' }}>
-              Email and LinkedIn steps run <strong>in parallel</strong> on the same leads.
+            <div className="text-xs text-foreground-muted mb-4 leading-relaxed bg-surface-2 rounded-lg px-3 py-2.5">
+              Email and LinkedIn steps run <strong className="text-foreground">in parallel</strong> on the same leads.
               The <em>delay</em> on each step is how many days after the <em>previous step of the same channel</em> it fires.
               Step 1 and the first LinkedIn step both fire on day 0.
             </div>
@@ -311,19 +304,13 @@ export default function NewCampaignPage() {
                 <div key={i}>
                   {/* Connector line */}
                   {!isFirst && (
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12, marginBottom: 0 }}>
-                      <div style={{ width: 2, height: 16, background: '#e5e7eb', marginLeft: 19 }} />
+                    <div className="flex items-center ml-3">
+                      <div className="w-0.5 h-4 bg-border ml-[19px]" />
                     </div>
                   )}
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: 0,
-                    padding: '0.6rem 0.75rem',
-                    border: `1px solid ${CHANNEL_BORDER[s.channel]}`,
-                    borderRadius: 8,
-                    background: CHANNEL_COLORS[s.channel],
-                  }}>
+                  <div className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg ${CHANNEL_CARD_CLS[s.channel]}`}>
                     {/* Step number */}
-                    <span style={{ fontWeight: 700, color: '#888', fontSize: '0.8rem', width: 18, flexShrink: 0 }}>
+                    <span className="font-bold text-slate-400 text-xs w-4 shrink-0">
                       {i + 1}
                     </span>
 
@@ -331,18 +318,18 @@ export default function NewCampaignPage() {
                     <select
                       value={s.channel}
                       onChange={e => updateStep(i, 'channel', e.target.value as Channel)}
-                      style={{ padding: '0.3rem 0.5rem', border: '1px solid #d1d5db', borderRadius: 5, fontSize: '0.82rem', background: 'white', fontWeight: 600, cursor: 'pointer' }}>
+                      className="px-2 py-1 border border-slate-300 rounded-md text-xs bg-white text-slate-900 font-semibold cursor-pointer outline-none">
                       <option value="email">✉ Email</option>
                       <option value="linkedin">in LinkedIn</option>
                     </select>
 
                     {/* Action label — computed, read-only */}
-                    <span style={{ flex: 1, fontSize: '0.88rem', fontWeight: 600, color: '#374151' }}>
+                    <span className="flex-1 min-w-0 text-sm font-semibold text-slate-700 truncate">
                       {actionLabel}
                     </span>
 
                     {/* Delay */}
-                    <span style={{ fontSize: '0.8rem', color: '#6b7280', flexShrink: 0 }}>
+                    <span className="text-xs text-slate-500 shrink-0">
                       {i === 0 ? 'Day 0' : (
                         <>
                           +
@@ -352,7 +339,7 @@ export default function NewCampaignPage() {
                             max={60}
                             value={s.delay_days}
                             onChange={e => updateStep(i, 'delay_days', Number(e.target.value))}
-                            style={{ width: 44, padding: '0.2rem 0.3rem', border: '1px solid #d1d5db', borderRadius: 4, fontSize: '0.82rem', textAlign: 'center', margin: '0 0.25rem' }}
+                            className="w-11 px-1 py-0.5 mx-1 border border-slate-300 rounded text-xs text-center bg-white text-slate-900 outline-none"
                           />
                           days
                         </>
@@ -362,7 +349,7 @@ export default function NewCampaignPage() {
                     {/* Remove */}
                     {steps.length > 1 && (
                       <button type="button" onClick={() => removeStep(i)}
-                        style={{ padding: '0.15rem 0.45rem', border: '1px solid #fca5a5', borderRadius: 4, background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: '0.78rem', flexShrink: 0 }}>
+                        className="px-1.5 py-0.5 border border-red-300 rounded bg-white text-red-600 text-xs shrink-0 hover:bg-red-50 transition-colors">
                         ✕
                       </button>
                     )}
@@ -372,13 +359,13 @@ export default function NewCampaignPage() {
             })}
 
             {/* Add step buttons */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem' }}>
+            <div className="flex gap-2 mt-3">
               <button type="button"
                 onClick={() => setSteps(prev => {
                   const n = prev.length + 1
                   return [...prev, { step: n, channel: 'email', delay_days: 7 }]
                 })}
-                style={{ padding: '0.35rem 0.8rem', border: '1px dashed #86efac', borderRadius: 5, background: '#f0fdf4', color: '#166534', cursor: 'pointer', fontSize: '0.82rem' }}>
+                className="px-3 py-1.5 border border-dashed border-green-400 rounded-lg bg-green-50 text-green-700 text-xs font-semibold hover:bg-green-100 transition-colors">
                 + Email step
               </button>
               <button type="button"
@@ -386,7 +373,7 @@ export default function NewCampaignPage() {
                   const n = prev.length + 1
                   return [...prev, { step: n, channel: 'linkedin', delay_days: 3 }]
                 })}
-                style={{ padding: '0.35rem 0.8rem', border: '1px dashed #93c5fd', borderRadius: 5, background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer', fontSize: '0.82rem' }}>
+                className="px-3 py-1.5 border border-dashed border-blue-400 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
                 + LinkedIn step
               </button>
             </div>
@@ -395,15 +382,15 @@ export default function NewCampaignPage() {
 
         {/* ── Email persona / writing voice ──────────────────────────────── */}
         {personas.length > 0 && (
-          <fieldset style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem' }}>
-            <legend style={{ fontWeight: 700, fontSize: '0.95rem', padding: '0 0.4rem' }}>Email writing voice</legend>
-            <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '0.9rem', lineHeight: 1.5 }}>
+          <fieldset className={fieldsetCls}>
+            <legend className={legendCls}>Email writing voice</legend>
+            <div className="text-xs text-foreground-muted mb-3.5 mt-2 leading-relaxed">
               Pick a persona to shape the tone of all outbound emails in this campaign. Leave as Default for a neutral professional voice.
             </div>
             <select
               value={personaId}
               onChange={e => setPersonaId(e.target.value)}
-              style={{ ...inp, maxWidth: 320 }}
+              className={`${inputCls} max-w-xs`}
             >
               <option value="default">Default — neutral professional</option>
               {personas.map(p => (
@@ -414,28 +401,28 @@ export default function NewCampaignPage() {
         )}
 
         {/* ── Limits ─────────────────────────────────────────────────────── */}
-        <fieldset style={{ border: '1px solid #eee', borderRadius: 8, padding: '1rem 1.25rem' }}>
-          <legend style={{ fontWeight: 700, fontSize: '0.95rem', padding: '0 0.4rem' }}>Daily limits</legend>
-          <div style={{ display: 'flex', gap: '2rem', marginTop: '0.5rem', flexWrap: 'wrap' as const }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Emails / day</span>
+        <fieldset className={fieldsetCls}>
+          <legend className={legendCls}>Daily limits</legend>
+          <div className="flex gap-8 mt-2 flex-wrap">
+            <label className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-foreground">Emails / day</span>
               <input type="number" min={1} max={200} value={dailyEmailLimit}
                 onChange={e => setDailyEmailLimit(Number(e.target.value))}
-                style={{ width: 70, padding: '0.4rem 0.6rem', border: '1px solid #ccc', borderRadius: 6 }} />
+                className="w-[70px] px-2.5 py-1.5 bg-bg border border-border rounded-lg text-sm text-foreground outline-none focus:border-accent/50" />
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>LinkedIn actions / day</span>
+            <label className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-foreground">LinkedIn actions / day</span>
               <input type="number" min={1} max={50} value={dailyLinkedInLimit}
                 onChange={e => setDailyLinkedInLimit(Number(e.target.value))}
-                style={{ width: 70, padding: '0.4rem 0.6rem', border: '1px solid #ccc', borderRadius: 6 }} />
+                className="w-[70px] px-2.5 py-1.5 bg-bg border border-border rounded-lg text-sm text-foreground outline-none focus:border-accent/50" />
             </label>
           </div>
         </fieldset>
 
-        {error && <p style={{ color: 'red', fontSize: '0.9rem', margin: 0 }}>{error}</p>}
+        {error && <p className="text-red-600 text-sm m-0">{error}</p>}
 
         <button type="submit" disabled={loading}
-          style={{ padding: '0.65rem 1.5rem', background: loading ? '#999' : '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer', alignSelf: 'flex-start' }}>
+          className="px-6 py-2.5 bg-accent hover:bg-accent/90 text-white text-base font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start">
           {loading ? 'Creating campaign…' : 'Create Campaign'}
         </button>
       </form>

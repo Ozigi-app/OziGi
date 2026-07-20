@@ -52,7 +52,7 @@ export default function CampaignsPage() {
 
   return (
     <div>
-      <GtmPageHeader title="Campaigns" />
+      <GtmPageHeader title="Outreach Campaigns" />
       <div className="px-8 py-7 max-w-[1100px]">
 
         {/* Header */}
@@ -60,15 +60,15 @@ export default function CampaignsPage() {
           <div className="flex items-center gap-3">
             <Megaphone size={20} className="text-accent" />
             <div>
-              <h1 className="text-2xl font-black text-foreground tracking-tight">Campaigns</h1>
-              <p className="text-foreground-subtle text-sm mt-0.5">All your outreach campaigns — email and LinkedIn</p>
+              <h1 className="text-2xl font-black text-foreground tracking-tight">Outreach Campaigns</h1>
+              <p className="text-foreground-subtle text-sm mt-0.5">Cold email and LinkedIn outreach — separate from your social content campaigns</p>
             </div>
           </div>
           <Link
             href="/dashboard/gtm/new"
             className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors no-underline"
           >
-            <Plus size={15} /> New Campaign
+            <Plus size={15} /> New Outreach Campaign
           </Link>
         </div>
 
@@ -81,7 +81,7 @@ export default function CampaignsPage() {
           ) : campaigns.length === 0 ? (
             <div className="px-5 py-16 text-center">
               <Megaphone size={32} className="text-border mx-auto mb-3" />
-              <p className="text-foreground-subtle text-sm">No campaigns yet.</p>
+              <p className="text-foreground-subtle text-sm">No outreach campaigns yet.</p>
               <p className="text-foreground-subtle text-xs mt-1">
                 <Link href="/dashboard/gtm/new" className="text-accent no-underline hover:underline">
                   Create your first campaign →

@@ -293,9 +293,16 @@ const handleConnectGitHub = async () => {
                 </a>
             </div>
 
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-100 pb-2 pt-4">
+              Email & Notifications
+            </h3>
+            <p className="text-[10px] text-slate-400 -mt-2">
+              Cold-outreach email accounts (Gmail) live in Outreach Settings; these fields cover your reminders and newsletter.
+            </p>
+
             <div>
               <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                Email Address (for X reminders)
+                Reminder Email
               </label>
               <input
                 id="email"
@@ -305,6 +312,9 @@ const handleConnectGitHub = async () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <p className="text-[8px] text-slate-400 mt-1">
+                Where scheduled X and LinkedIn reminder emails are sent. If empty, your login email is used.
+              </p>
             </div>
 
             <div>
@@ -326,7 +336,7 @@ const handleConnectGitHub = async () => {
 
             <div>
               <label htmlFor="replyToEmail" className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                Reply-to Email
+                Newsletter Reply-To Email
               </label>
               <input
                 id="replyToEmail"
@@ -337,7 +347,7 @@ const handleConnectGitHub = async () => {
                 onChange={(e) => setReplyToEmail(e.target.value)}
               />
               <p className="text-[8px] text-slate-400 mt-1">
-                Where replies to your newsletter will go. If empty, your account email will be used.
+                Where replies to your newsletter subscribers' emails go. If empty, your account email is used.
               </p>
             </div>
 

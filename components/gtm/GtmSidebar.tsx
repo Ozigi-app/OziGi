@@ -11,7 +11,7 @@ const NAV = [
   {
     group: 'Workspace',
     items: [
-      { label: 'Command Center',    icon: LayoutDashboard, href: '/dashboard/gtm' },
+      { label: 'Outreach Campaigns', icon: LayoutDashboard, href: '/dashboard/gtm' },
       { label: 'Review Queue',      icon: ListChecks,      href: '/dashboard/gtm/review' },
     ],
   },
@@ -25,7 +25,7 @@ const NAV = [
   {
     group: 'Social Distribution',
     items: [
-      { label: 'Campaigns',         icon: Megaphone,   href: '/dashboard' },
+      { label: 'Social Posts',      icon: Megaphone,   href: '/dashboard' },
       { label: 'Queue',             icon: ListOrdered, href: '/dashboard' },
     ],
   },

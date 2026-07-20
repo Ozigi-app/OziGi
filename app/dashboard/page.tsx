@@ -40,8 +40,10 @@ function StatCard({ label, value, desc }: { label: string; value: string | numbe
     <div className="bg-surface border border-border rounded-xl p-5 group relative overflow-hidden">
       <div className="text-3xl font-black text-foreground mb-1 tabular-nums">{value}</div>
       <div className="text-foreground-subtle text-xs font-medium leading-snug">{label}</div>
-      {/* Hover tooltip */}
-      <div className="absolute inset-0 bg-surface-2/95 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center px-4 pointer-events-none">
+      {/* No hover on touch devices — show the description inline there */}
+      <p className="md:hidden text-foreground-subtle/80 text-[10px] leading-snug mt-1">{desc}</p>
+      {/* Hover tooltip (desktop) */}
+      <div className="hidden md:flex absolute inset-0 bg-surface-2/95 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center px-4 pointer-events-none">
         <p className="text-foreground-subtle text-xs text-center leading-relaxed">{desc}</p>
       </div>
     </div>
@@ -137,23 +139,22 @@ function DashboardContent() {
       sectionLabel: "Content Engine",
       icon: <Megaphone className="w-5 h-5 opacity-70" />,
       onClick: () => { setCurrentView('social'); setCampaign([]); },
-      subItems: [
-        {
-          label: "Generation History",
-          icon: <Clock className="w-4 h-4" />,
-          onClick: () => setIsHistoryOpen(true),
-        },
-        {
-          label: "Scheduled Posts",
-          icon: <ListOrdered className="w-4 h-4" />,
-          onClick: () => setIsScheduledOpen(true),
-        },
-      ],
     },
     {
       label: "Newsletter",
       icon: <AtSign className="w-5 h-5 opacity-70" />,
       onClick: () => { setCurrentView('newsletter'); setCampaign([]); },
+    },
+    // Top-level: history holds newsletters too, so it doesn't belong under Social Posts
+    {
+      label: "Generation History",
+      icon: <Clock className="w-5 h-5 opacity-70" />,
+      onClick: () => setIsHistoryOpen(true),
+    },
+    {
+      label: "Scheduled Posts",
+      icon: <ListOrdered className="w-5 h-5 opacity-70" />,
+      onClick: () => setIsScheduledOpen(true),
     },
     {
       label: "Blog Post",
@@ -571,7 +572,7 @@ useEffect(() => {
                         { label: 'LinkedIn Connections',   value: overviewStats.outbound.liConnections, desc: 'Connection requests sent via LinkedIn'         },
                         { label: 'LinkedIn Messages Sent', value: overviewStats.outbound.liMessages,    desc: 'DMs and follow-up messages sent via LinkedIn'  },
                         { label: 'Total Leads Sourced',    value: overviewStats.outbound.totalLeads,    desc: 'Prospect profiles collected across all campaigns' },
-                        { label: 'Reply Rate',             value: overviewStats.outbound.replyRate,     desc: 'Outbound emails that received a reply'         },
+                        { label: 'Email Reply Rate',       value: overviewStats.outbound.replyRate,     desc: 'Outbound cold emails that received a reply'    },
                       ].map(s => (
                         <StatCard key={s.label} label={s.label} value={s.value} desc={s.desc} />
                       ))}
