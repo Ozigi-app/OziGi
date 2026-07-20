@@ -782,7 +782,7 @@ async function poll(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[worker] LinkedIn worker started — build 2026-07-14-v79')
+  console.log('[worker] LinkedIn worker started — build 2026-07-16-v87-bare-message')
   console.log(`[worker] polling every ${POLL_INTERVAL_MS / 1000}s`)
 
   let isPolling    = false

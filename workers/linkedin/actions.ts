@@ -823,35 +823,117 @@ export async function sendLinkedInMessage(
     }).catch(() => [] as string[])
     console.log(`[actions] profile buttons for ${linkedinProfileId}: ${visibleBtns.join(' | ')}`)
 
-    // If only Connect/Pending is visible but no Message, the connection wasn't accepted yet
-    const hasConnect = visibleBtns.some((b: string) => /\bconnect\b|\bpending\b/i.test(b))
-    const hasMessage = visibleBtns.some((b: string) => /\bmessage\b|\bmensagem\b|\bmensaje\b/i.test(b))
-    if (hasConnect && !hasMessage) {
-      throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows Connect button — connection not yet accepted`)
+    // ── Connection gate — anchored to the RECIPIENT'S OWN NAME ────────────────
+    // LinkedIn's profile action-bar class names (`.pvs-profile-actions`,
+    // `.pv-top-card-v2-ctas`) have proven unstable — when they don't match, a
+    // scoped scan silently falls back to document.body and picks up the global
+    // nav + "People also viewed" sidebar, so "is there a Message button" and
+    // "are we connected" become meaningless.
+    //
+    // The reliable signal is the aria-label: the profile owner's own button reads
+    // "Message <FullName>", while sidebar buttons read "Message <someone-else>".
+    // So we match the button whose accessible name contains THIS recipient's name.
+    // This simultaneously (a) survives action-bar class changes, (b) can't grab a
+    // sidebar person's button → no wrong-recipient sends, and (c) doubles as the
+    // connection test: a real "Message <name>" button means we can message them
+    // (1st-degree, or Open Profile). Fail closed — if we can't positively identify
+    // the recipient's own Message button, we treat it as "not connected yet" and
+    // reschedule rather than risk clicking the wrong thing.
+    // Clean the recipient name before deriving match tokens. Scraped lead.name values
+    // are often polluted with the whole profile card, e.g.
+    //   "Shay Priel Shay Priel • 1stCo-Founder & CEO..."
+    // The real display name is the part before the "•" degree marker, and the scrape
+    // duplicates it. LinkedIn's own "Message <name>" button uses just the 2-3 word
+    // display name, so we take the first two alphabetic tokens — enough to identify
+    // the recipient, robust to the duplication/title noise. Requiring ALL tokens of the
+    // full blob would never match the button and would wrongly skip real connections.
+    const cleanName = (recipientName ?? '')
+      .split(/[•|·\n,]/)[0]                    // drop the "• 1stCo-Founder…" tail
+      .trim().toLowerCase()
+    const nameTokens = cleanName
+      .split(/\s+/)
+      .filter(t => t.length >= 2 && /[a-z]/i.test(t))
+      .slice(0, 2)                             // first + last name is enough to disambiguate
+
+    // Wait for the profile's PRIMARY action CTA to hydrate before scanning. The
+    // top-card action bar (Message / Connect / Pending) can render a beat after the
+    // rest of the page — scanning too early misses a real Message button and a
+    // connection reads as "follow only". We wait until a primary-state button
+    // appears in main content (excluding the right-rail <aside> of other people).
+    await page.waitForFunction(() => {
+      const inAside = (el: Element) => !!el.closest('aside')
+      return Array.from(document.querySelectorAll('main button, main [role="button"], main a[aria-label]'))
+        .some(b => (b as HTMLElement).offsetParent !== null && !inAside(b) &&
+          /^(message|mensagem|mensaje|connect|conectar|pending|invite)\b/i
+            .test((b.getAttribute('aria-label') || b.textContent || '').trim()))
+    }, { timeout: 15_000 }).catch(() => {})
+
+    const ownAction = await page.evaluate((tokens: string[]) => {
+      const norm = (s: string | null) => (s ?? '').toLowerCase().replace(/\s+/g, ' ').trim()
+      // The right-rail "More profiles for you" / "People also viewed" lives in an
+      // <aside>. Its "Message <Name>" buttons are for OTHER people — never the
+      // profile owner — so anything inside the aside is ignored for own-actions.
+      const inAside = (el: Element) => !!el.closest('aside')
+      const all = Array.from(document.querySelectorAll('button, [role="button"], a[aria-label], a.artdeco-button'))
+        .filter(b => (b as HTMLElement).offsetParent !== null)
+      let message = false, connect = false, pending = false, follow = false
+      const msgLabelsAll: string[] = []   // DIAG: A:=aside(other people) M:=main(owner)
+      for (const b of all) {
+        const label = norm(b.getAttribute('aria-label') || b.textContent)
+        if (!label) continue
+        const isMsg = /^(message|mensagem|mensaje|envoyer un message)\b/.test(label)
+        if (isMsg) msgLabelsAll.push((inAside(b) ? 'A:' : 'M:') + label.slice(0, 26))
+        if (inAside(b)) continue
+        // In MAIN content these are the profile owner's OWN action buttons. The
+        // owner's Message button is often BARE ("Message", no name) — accept it
+        // here; the sidebar's named buttons were already excluded above.
+        if (isMsg) message = true
+        else if (/^(connect|conectar|se connecter)\b/.test(label) || /invite .* to connect/.test(label)) connect = true
+        else if (/^pending\b|^pendente\b|^pendiente\b/.test(label)) pending = true
+        else if (/^(follow|following|seguir|manage notifications about)\b/.test(label)) follow = true
+      }
+      // Degree badge: LinkedIn prints "· 1st" right after the name in the top card.
+      // Scope to the name's own container so a sidebar person's "· 1st" can't leak in.
+      const h1 = document.querySelector('main h1') ?? document.querySelector('h1')
+      const nameArea = norm((h1?.closest('section') ?? h1?.parentElement)?.textContent ?? '')
+      const is1st = /(^|\W)1st(\W|$)/.test(nameArea.slice(0, 160))
+      return { message, connect, pending, follow, is1st, hadName: tokens.length > 0, msgLabelsAll }
+    }, nameTokens).catch(() => ({ message: false, connect: false, pending: false, follow: false, is1st: false, hadName: nameTokens.length > 0, msgLabelsAll: [] as string[] }))
+
+    console.log(`[actions] ${linkedinProfileId} own-action: ${JSON.stringify(ownAction)}`)
+
+    // Messageable if the profile's own action bar shows a Message button OR the name
+    // carries a 1st-degree badge (connection confirmed even if the button is bare or
+    // slow to render). Only when NEITHER holds is the connection genuinely not
+    // accepted yet — reschedule via NOT_YET_CONNECTED instead of hard-failing.
+    const messageable = ownAction.message || ownAction.is1st
+    if (!messageable) {
+      if (ownAction.hadName) {
+        throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} — no own Message button and not 1st-degree (connect=${ownAction.connect} pending=${ownAction.pending} follow=${ownAction.follow})`)
+      }
+      // No recipient name to disambiguate — fall through to the legacy locator below.
     }
 
-    // LinkedIn uses "Message [FirstName]" (not just "Message") so match any element
-    // whose aria-label or text content STARTS WITH a message keyword.
-    //
-    // Strategy:
-    //   1. Playwright getByRole — uses computed accessible name (aria-label preferred)
-    //   2. CSS aria-label^= selectors — starts-with match on <button> and <a> variants
-    //   3. Anchor fallback — a.artdeco-button:has-text("Message") covers <a> with no aria-label
-    //   4. JS evaluate fallback — queries button + [role="button"] + a.artdeco-button + a[aria-label],
-    //      fires a native click event so React / LinkedIn's SPA click handlers are notified.
-    const msgKeywordRe = /^(Message|Mensagem|Mensaje|Envoyer un message)\b/i
-
-    // Scope to the profile's own action bar — sidebar / People-you-may-know sections
-    // also contain "Message <other-person>" buttons that have different profileUrns.
-    // Matching those would silently send the message to the wrong recipient.
-    const profileActionsEl = page.locator('.pvs-profile-actions, .pv-top-card-v2-ctas')
-    const msgBtn = profileActionsEl.getByRole('button', { name: msgKeywordRe })
-      .or(profileActionsEl.locator('button[aria-label^="Message"]:not([aria-label*="More"])'))
-      .or(profileActionsEl.locator('button[aria-label^="Mensagem"]'))
-      .or(profileActionsEl.locator('button[aria-label^="Mensaje"]'))
-      .or(profileActionsEl.locator('a[aria-label^="Message"]:not([aria-label*="More"]), a[aria-label^="Mensagem"], a[aria-label^="Mensaje"]'))
-      .or(profileActionsEl.locator('a.artdeco-button').filter({ hasText: msgKeywordRe }))
-      .first()
+    // Locate the profile owner's OWN Message button, scoped to <main> so the
+    // right-rail "More profiles for you" buttons are out of play. Two accepted
+    // shapes: (1) a name-matched "Message <recipient>" button, or (2) a BARE
+    // "Message" button — which is the profile's primary CTA (sidebar buttons always
+    // carry a name, so an exactly-"Message" label can only be the owner's). Recipient
+    // identity is re-verified against the open compose panel in step 5b before send.
+    const bareMsgRe = /^(Message|Mensagem|Mensaje|Envoyer un message)$/i
+    const nameRe = nameTokens.length
+      ? new RegExp('^(Message|Mensagem|Mensaje|Envoyer un message)\\b.*' +
+          nameTokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*'), 'i')
+      : bareMsgRe
+    const main = page.locator('main')
+    const msgBtn = (nameTokens.length
+      ? main.getByRole('button', { name: nameRe })
+          .or(main.getByRole('link', { name: nameRe }))
+          .or(main.getByRole('button', { name: bareMsgRe }))
+          .or(main.getByRole('link', { name: bareMsgRe }))
+      : main.getByRole('button', { name: bareMsgRe })
+          .or(main.getByRole('link', { name: bareMsgRe }))
+    ).first()
 
     const msgBtnVisible = await msgBtn.isVisible({ timeout: 5_000 }).catch(() => false)
 
@@ -943,62 +1025,75 @@ export async function sendLinkedInMessage(
         console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)
       }
     } else {
-      // Fallback: JS click — queries button, [role="button"], a.artdeco-button, and a[aria-label]
-      // so that <a> anchor Message buttons (LinkedIn's alternate layout) are also found.
-      console.warn(`[actions] Playwright locators missed Message button for ${linkedinProfileId} — trying JS click`)
+      // Fallback: JS click on the recipient's OWN Message button, matched by name
+      // (aria-label / text containing every token of the recipient's name). Firing a
+      // native click notifies LinkedIn's SPA handlers, and name-matching guarantees we
+      // never click a sidebar person's "Message" button.
+      console.warn(`[actions] Playwright locator missed Message button for ${linkedinProfileId} — trying scoped JS click`)
 
-      // Log all artdeco anchor elements in the profile actions for diagnostics
-      const anchorBtns = await page.evaluate(() => {
-        const container = document.querySelector('.pvs-profile-actions, .pv-top-card-v2-ctas') ?? document.body
-        return Array.from(container.querySelectorAll('a.artdeco-button, a[aria-label]'))
-          .map(a => `${a.tagName} aria="${a.getAttribute('aria-label')?.slice(0, 40)}" text="${(a.textContent ?? '').trim().slice(0, 30)}"`)
-      }).catch(() => [] as string[])
-      console.log(`[actions] anchor buttons for ${linkedinProfileId}: ${anchorBtns.join(' | ')}`)
-
-      const jsClicked = await page.evaluate((kw: string) => {
-        const re = new RegExp(kw, 'i')
-        const moreRe = /more|options|mais/i
-        // Scope to profile actions area — avoids clicking "Message <other-person>"
-        // buttons from sidebar sections which would send to the wrong recipient.
-        const actionsEl = document.querySelector('.pvs-profile-actions, .pv-top-card-v2-ctas') ?? document.body
+      const jsClicked = await page.evaluate((tokens: string[]) => {
+        const norm = (s: string | null) => (s ?? '').toLowerCase().replace(/\s+/g, ' ').trim()
+        const inAside = (el: Element) => !!el.closest('aside')
+        const isMsg = (l: string) => /^(message|mensagem|mensaje|envoyer un message)\b/.test(l)
+        // Own Message button lives in main content (never the sidebar aside): match a
+        // name-carrying "Message <recipient>" OR the bare "Message" primary CTA.
         const candidates = Array.from(
-          actionsEl.querySelectorAll('button, [role="button"], a.artdeco-button, a[aria-label]')
-        ).filter(b => (b as HTMLElement).offsetParent !== null)
+          document.querySelectorAll('main button, main [role="button"], main a.artdeco-button, main a[aria-label]')
+        ).filter(b => (b as HTMLElement).offsetParent !== null && !inAside(b))
         const btn = candidates.find(b => {
-          const label = (b.getAttribute('aria-label') || b.textContent?.trim() || '').slice(0, 80)
-          return re.test(label) && !moreRe.test(label)
+          const label = norm(b.getAttribute('aria-label') || b.textContent)
+          if (!isMsg(label)) return false
+          if (tokens.length > 0 && tokens.every(t => label.includes(t))) return true   // named
+          return /^(message|mensagem|mensaje|envoyer un message)$/.test(label)          // bare CTA
         }) as HTMLElement | undefined
         if (btn) { btn.click(); return true }
         return false
-      }, '^(Message|Mensagem|Mensaje|Envoyer un message)\\b').catch(() => false)
+      }, nameTokens).catch(() => false)
 
       if (!jsClicked) {
-        // "Manage notifications about X" as a top-level button (without Message) means
-        // we're following this person but not connected — connection not yet accepted.
-        // Check this AFTER all locator attempts fail so we don't skip profiles where the
-        // Message button exists but appears beyond the first-25-button scan.
-        const hasManageNotif = visibleBtns.some((b: string) => /^Manage notifications about\b/i.test(b))
-        if (hasManageNotif) {
-          throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} shows ManageNotif without Message — connection not yet accepted`)
-        }
-        throw new Error(`Message button not found for ${linkedinProfileId} — may not be connected yet`)
+        // We already confirmed the profile is messageable (Message button or 1st-degree),
+        // so failing to click it is a genuine layout/interaction problem worth surfacing.
+        throw new Error(`Message button not found for ${linkedinProfileId} despite messageable profile`)
       }
       console.log(`[actions] Message button JS-clicked for ${linkedinProfileId}`)
     }
 
-    // ── 5. Wait for compose panel ────────────────────────────────────────────
-    // 40s gives the LinkedIn messaging SPA enough time to render the compose area
-    // after navigating to the full messaging page (the SPA can be slow to hydrate).
+    // ── 5. Wait for compose panel (or the InMail/Premium upsell) ─────────────
     // .msg-form__contenteditable works for both the overlay bubble and the full messaging page.
     // div[contenteditable][role="textbox"] is a broader fallback for any LinkedIn compose variant.
+    //
+    // On non-connections, clicking Message opens LinkedIn's InMail/Premium upsell
+    // modal instead of a compose panel — no selector will ever match, so we watch
+    // for the modal too and classify that outcome instead of timing out blind.
     const inputSel = '.msg-form__contenteditable[contenteditable="true"], .msg-form__contenteditable, div[contenteditable="true"][role="textbox"]'
-    const composeVisible = await page.locator(inputSel).first()
-      .waitFor({ state: 'visible', timeout: 90_000 })
-      .then(() => true)
-      .catch(() => false)
+    const composeState: string | null = await page.waitForFunction((sel: string) => {
+      const visible = (el: Element | null) => !!el && (el as HTMLElement).offsetParent !== null
+      if (Array.from(document.querySelectorAll(sel)).some(visible)) return 'compose'
+      const modal = document.querySelector('.artdeco-modal, [role="dialog"]')
+      if (visible(modal) && /premium|inmail/i.test(modal!.textContent ?? '')) return 'upsell'
+      return false
+    }, inputSel, { timeout: 90_000, polling: 1_000 })
+      .then(h => h.jsonValue() as Promise<string>)
+      .catch(() => null)
 
-    if (!composeVisible) {
-      throw new Error(`Compose panel did not open for ${linkedinProfileId}`)
+    if (composeState !== 'compose') {
+      // Compose never opened. If clicking Message surfaced the InMail/Premium upsell,
+      // the connection isn't accepted — reschedule daily via NOT_YET_CONNECTED rather
+      // than burning an attempt. Otherwise we DID identify the recipient's own Message
+      // button but the panel still didn't render — a real interaction problem worth
+      // surfacing (and it captures a diagnostic snapshot of what rendered instead).
+      if (composeState === 'upsell') {
+        throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} — Message opened the InMail/Premium upsell, connection not accepted`)
+      }
+      const snapshot = await page.evaluate(() => {
+        const editables = Array.from(document.querySelectorAll('[contenteditable="true"], [role="textbox"]'))
+          .map(e => `${e.tagName}.${(e.className || '').toString().slice(0, 60)} vis=${(e as HTMLElement).offsetParent !== null}`)
+        const dialogs = Array.from(document.querySelectorAll('.artdeco-modal, [role="dialog"], .msg-overlay-conversation-bubble, .msg-overlay-list-bubble'))
+          .map(d => (d.className || '').toString().slice(0, 70))
+        return { url: location.href, title: document.title.slice(0, 60), editables, dialogs }
+      }).catch(() => null)
+      console.log(`[actions] compose-fail ${linkedinProfileId} state=${JSON.stringify(snapshot)}`)
+      throw new Error(`Compose panel did not open for ${linkedinProfileId} despite name-matched Message button`)
     }
     await delay(500, 1_000)
 

@@ -140,6 +140,21 @@ export async function loadSession(session: SessionInfo): Promise<{ context: Brow
     extraHTTPHeaders: { 'Accept-Language': 'en-US,en;q=0.9' },
   })
 
+  // Bandwidth diet: abort image/media/font requests. On the residential proxy
+  // every request pays ~3s TTFB, and a LinkedIn profile pulls dozens of avatars,
+  // banners and feed images — enough to blow past the 30s page.goto timeout and
+  // trip the poll watchdog. None of these resources affect button detection, text
+  // scraping, or the Voyager messaging API, so dropping them is a large speedup
+  // (and saves proxy bandwidth/cost). Stylesheets and scripts are kept — layout
+  // and the SPA/PerimeterX challenge still need them.
+  await context.route('**/*', route => {
+    const type = route.request().resourceType()
+    if (type === 'image' || type === 'media' || type === 'font') {
+      return route.abort().catch(() => {})
+    }
+    return route.continue().catch(() => {})
+  }).catch(err => console.warn('[browser] resource-block route setup failed:', err))
+
   // Only seed from DB when the profile is fresh (no li_at on disk).
   // If li_at is already present the profile was established from a real login or
   // a prior run — don't overwrite it with the DB snapshot which would diverge
