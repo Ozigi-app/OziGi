@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
 import { buildPromotionalEmail, buildGTMLaunchAnnouncementEmail, buildUserSurveyEmail } from "@/lib/email-templates";
 import { verifyQStashRequest } from "@/lib/qstash";
+import { refillBroadcastIfLow } from "@/lib/promo-broadcast";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const APP_URL = process.env.APP_URL || "https://ozigi.app";
@@ -52,6 +53,9 @@ export async function GET(req: Request) {
   );
 
   try {
+    // ── 0. Keep the evergreen broadcast queue topped up (no-op when healthy) ─
+    await refillBroadcastIfLow(supabase);
+
     // ── 1. Get the next unsent campaign from the queue ──────────────────────
     const { data: campaign, error: campaignError } = await supabase
       .from("promo_queue")
