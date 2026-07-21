@@ -73,10 +73,29 @@ export interface SessionInfo {
 // For multi-tenant SaaS: we also capture the user's actual browser User-Agent at
 // cookie submission time and replay it here. This ensures bcookie (LinkedIn's
 // browser identifier) remains consistent with the UA LinkedIn recorded for it.
+// Chromium writes SingletonLock/SingletonSocket/SingletonCookie into the profile
+// dir to stop two instances sharing it, and expects to clean them up on a normal
+// exit. When the process is killed uncleanly (e.g. the OOM killer, which took out
+// both chrome and — once — the whole worker for 5 days in production), these
+// files are left behind. Chromium's own stale-lock detection doesn't reliably
+// kick in inside a container (no real hostname/pid to compare against), so a
+// relaunch can hang indefinitely waiting on a lock nothing will ever release.
+// Removing them before every launch is safe: this process (and profile dir) are
+// single-tenant per userId, so there's never a legitimate second instance to
+// collide with.
+function clearStaleSingletonLocks(userDataDir: string): void {
+  for (const name of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
+    try {
+      fs.rmSync(path.join(userDataDir, name), { force: true })
+    } catch { /* best-effort */ }
+  }
+}
+
 export async function loadSession(session: SessionInfo): Promise<{ context: BrowserContext }> {
   const proxy = await getProxyConfig(session.userId)
   const userDataDir = path.join(PROFILES_DIR, session.userId)
   fs.mkdirSync(userDataDir, { recursive: true })
+  clearStaleSingletonLocks(userDataDir)
 
   // Read DB first so we can launch the context with the user's original UA.
   // bcookie is bound to a specific browser User-Agent — using the wrong UA is a

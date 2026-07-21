@@ -28,9 +28,21 @@ primary_region = "lax"
 
 # Keep exactly one instance running at all times — this is a persistent worker
 [[vm]]
-  memory = "1gb"     # Chromium + Xvfb + stealth plugin (scale to 2gb when under load)
+  memory = "2gb"     # Chromium + Xvfb + stealth plugin — bumped from 1gb 2026-07-21 after
+                     # the kernel OOM-killed chrome (repeatedly) and the worker sat dead
+                     # for 5 days with no auto-recovery. See [[restart]] below for the other
+                     # half of that fix.
   cpu_kind = "shared"
   cpus = 1
+
+# Auto-restart the machine if the worker process ever exits/crashes (e.g. Chrome
+# getting OOM-killed and taking the whole Node process down with it, or the
+# in-process poll watchdog calling process.exit(1)). Before this was added the
+# machine had no restart policy at all — a crash just sat dead until someone
+# noticed the queue had stopped moving.
+[[restart]]
+  policy = "on-failure"
+  max_retries = 5
 
 [http_service]
   internal_port = 8080
