@@ -62,7 +62,7 @@ export default function LinkedInOutreachPage() {
   return (
     <div>
       <GtmPageHeader title="LinkedIn Outreach" />
-      <div className="px-8 py-7 max-w-4xl">
+      <div className="px-8 py-7 max-w-4xl mx-auto">
         <div className="flex items-start justify-between mb-7">
           <div className="flex items-center gap-3">
             <UserPlus size={20} className="text-[#0a66c2]" />

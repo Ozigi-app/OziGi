@@ -53,7 +53,7 @@ export default function CampaignsPage() {
   return (
     <div>
       <GtmPageHeader title="Outreach Campaigns" />
-      <div className="px-8 py-7 max-w-[1100px]">
+      <div className="px-8 py-7 max-w-[1100px] mx-auto">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-7">

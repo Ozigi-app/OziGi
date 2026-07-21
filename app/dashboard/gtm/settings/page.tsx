@@ -354,7 +354,7 @@ function SettingsContent() {
   return (
     <div>
       <GtmPageHeader title="Outreach Settings" />
-      <div className="px-4 sm:px-8 py-7 max-w-2xl">
+      <div className="px-4 sm:px-8 py-7 max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/dashboard/gtm" className="text-foreground-subtle hover:text-accent text-sm no-underline transition-colors">← Back to Outreach Campaigns</Link>
         <h1 className="text-2xl font-black text-foreground tracking-tight mt-2">Outreach Settings</h1>

@@ -175,7 +175,7 @@ export default function NewCampaignPage() {
   return (
     <div>
       <GtmPageHeader title="New Outreach Campaign" />
-      <div className="px-4 sm:px-8 py-7 max-w-2xl">
+      <div className="px-4 sm:px-8 py-7 max-w-2xl mx-auto">
       <h1 className="text-2xl font-black text-foreground tracking-tight mb-6">New Outreach Campaign</h1>
 
       {/* ── URL Analyser ─────────────────────────────────────────────────── */}

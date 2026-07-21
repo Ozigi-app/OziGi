@@ -121,7 +121,7 @@ export default function EmailOutreachPage() {
   return (
     <div>
       <GtmPageHeader title="Email Outreach" />
-      <div className="px-8 py-7 max-w-[1100px]">
+      <div className="px-8 py-7 max-w-[1100px] mx-auto">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-7">

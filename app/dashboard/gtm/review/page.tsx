@@ -7,7 +7,7 @@ export default function ReviewQueuePage() {
   return (
     <div>
       <GtmPageHeader title="Review Queue" />
-      <div className="px-8 py-7 max-w-3xl">
+      <div className="px-8 py-7 max-w-3xl mx-auto">
         <div className="flex items-center gap-3 mb-7">
           <ListChecks size={20} className="text-accent" />
           <div>

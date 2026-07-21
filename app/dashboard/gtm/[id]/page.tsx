@@ -354,7 +354,7 @@ export default function CampaignDetailPage() {
   return (
     <div>
       <GtmPageHeader title={campaign.name} />
-    <div className="px-4 sm:px-8 py-7 max-w-[960px]">
+    <div className="px-4 sm:px-8 py-7 max-w-[960px] mx-auto">
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="mb-6">
