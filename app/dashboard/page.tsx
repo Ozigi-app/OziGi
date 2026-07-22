@@ -30,7 +30,6 @@ import { usePlanStatus } from "@/components/hooks/usePlanStatus";
 import PricingCards from "@/components/PricingCards";
 import UpgradeModal from "@/components/UpgradeModal";
 import DashboardTour from "@/components/dashboard/DashboardTour";
-import OverviewCharts from "@/components/dashboard/OverviewCharts";
 import { incrementCampaignGeneration } from "@/lib/plan";
 import { toast } from "sonner";
 import { PLATFORMS } from "@/lib/platforms";
@@ -595,11 +594,6 @@ useEffect(() => {
                       ))}
                     </div>
                   </section>
-
-                  {/* ── Visual breakdown ──────────────────────────────────── */}
-                  <div className="mt-8">
-                    <OverviewCharts stats={overviewStats} />
-                  </div>
                 </div>
               ) : (
                 <p className="text-foreground-subtle text-sm">Could not load stats. Refresh to try again.</p>
