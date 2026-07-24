@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const SAMPLES = [
   {
     label: "GitHub release notes",
-    value: `We just shipped Ozigi v1.2. Key changes:\n- Added Firecrawl URL scraping for faster context extraction\n- Expanded Banned Lexicon to 8 categories including Gemini-specific patterns\n- Mem0AI persistent memory now saves persona context across sessions\n- Fixed scheduling edge case where X reminders weren't firing at the correct timezone\n- Email newsletter generation now runs independently of campaign posts`,
+    value: `We just shipped Ozigi v1.2. Key changes:\n- Added Firecrawl URL scraping for faster context extraction\n- Expanded Banned Lexicon to 8 categories including Gemini-specific patterns\n- Fixed scheduling edge case where X reminders weren't firing at the correct timezone\n- Email newsletter generation now runs independently of campaign posts`,
   },
   {
     label: "Product update",

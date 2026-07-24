@@ -3,7 +3,6 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { getVertexAIClient } from '@/lib/genai-client';
 import { searchWebWithExa } from '@/lib/exa';
-import { getMemories, storeMemory } from '@/lib/mem0';
 import { getGitHubEnrichedContext } from '@/lib/composio';
 
 export async function POST(req: Request) {
@@ -37,11 +36,7 @@ export async function POST(req: Request) {
       .single();
     const userContext = profile?.copilot_context?.trim() || '';
 
-    // 2a. Retrieve user memories
-    const userMemories = await getMemories(user.id);
-    const memoryContext = userMemories.map(m => `${m.key}: ${m.value}`).join('\n');
-
-    // 2b. Fetch GitHub context (repos + commits + README + releases) if connected
+    // 2a. Fetch GitHub context (repos + commits + README + releases) if connected
     let githubContext = '';
     const { data: githubConn, error: githubError } = await supabase
       .from('user_composio_connections')
@@ -82,7 +77,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Build the contents array with system context, memory context, and GitHub context
+    // 5. Build the contents array with system context and GitHub context
     const fullContext = userContext + githubContext + searchResults;
     const systemMessage = fullContext.trim()
       ? { role: 'user', parts: [{ text: fullContext }] }
@@ -90,7 +85,6 @@ export async function POST(req: Request) {
 
     const contents = [
       ...(systemMessage ? [systemMessage] : []),
-      ...(memoryContext ? [{ role: 'user', parts: [{ text: `Relevant memories: ${memoryContext}` }] }] : []),
       ...messages.map((msg: any) => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.content }],
@@ -103,15 +97,6 @@ export async function POST(req: Request) {
       model: 'gemini-3-flash-preview',
       contents,
     });
-
-    // 7. Store a memory about the conversation (fire-and-forget to avoid blocking the stream)
-    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop()?.content;
-    if (lastUserMessage) {
-      const key = `last_question_${Date.now()}`;
-      storeMemory(user.id, key, lastUserMessage).catch(err => 
-        console.error('Mem0 store error:', err)
-      );
-    }
 
     const stream = new ReadableStream({
       async start(controller) {
