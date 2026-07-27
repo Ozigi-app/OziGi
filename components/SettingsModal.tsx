@@ -144,8 +144,16 @@ export default function SettingsModal({
   };
 
   const handleLinkAccount = async (provider: "x" | "linkedin_oidc") => {
+    // LinkedIn uses a custom OAuth flow (not Supabase OIDC) so we get a refresh
+    // token and the connection auto-renews instead of dying every ~60 days.
+    if (provider === "linkedin_oidc") {
+      setLinkLoading(provider);
+      window.location.href = "/api/linkedin/oauth/start";
+      return;
+    }
+
     setLinkLoading(provider);
-    const scopes = provider === OAUTH_PROVIDERS.X ? OAUTH_SCOPES.X : OAUTH_SCOPES.LINKEDIN;
+    const scopes = OAUTH_SCOPES.X;
 
     const { error } = await supabase.auth.linkIdentity({
       provider,

@@ -373,8 +373,25 @@ const handleGenerate = async () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    // LinkedIn custom-OAuth outcome
+    const li = params.get("li");
+    if (li) {
+      const msg: Record<string, { type: "success" | "error" | "info"; text: string }> = {
+        connected: { type: "success", text: "LinkedIn connected — posting will keep working automatically." },
+        connected_norefresh: { type: "info", text: "LinkedIn connected. Note: your app didn't return a refresh token, so you may need to reconnect periodically." },
+        denied: { type: "error", text: "LinkedIn connection was cancelled or denied." },
+        failed: { type: "error", text: "Couldn't connect LinkedIn. Please try again." },
+        state: { type: "error", text: "LinkedIn connection expired mid-flow. Please try again." },
+        misconfigured: { type: "error", text: "LinkedIn is not configured. Contact support." },
+        signin: { type: "error", text: "Please sign in first, then connect LinkedIn." },
+      };
+      const m = msg[li];
+      if (m) toast[m.type](m.text);
+    }
     if (params.get("openSettings") === "true") {
       window.dispatchEvent(new Event("openSettingsModal"));
+    }
+    if (li || params.get("openSettings")) {
       window.history.replaceState({}, "", "/dashboard");
     }
   }, []);

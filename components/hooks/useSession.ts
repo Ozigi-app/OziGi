@@ -25,6 +25,13 @@ export function useSession() {
         );
         const provider = latestIdentity ? latestIdentity.provider : session.user.app_metadata.provider;
 
+        // LinkedIn is handled by the custom OAuth flow (/api/linkedin/oauth/*),
+        // which stores a refresh token. Never let a Supabase login overwrite that
+        // row with a refresh-less token — it would break auto-renewal.
+        if (provider === "linkedin_oidc" || provider === "linkedin") {
+          return;
+        }
+
         await supabase.from("user_tokens").upsert(
           {
             user_id: session.user.id,
