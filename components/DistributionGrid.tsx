@@ -1606,7 +1606,21 @@ export default function DistributionGrid({
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to post to LinkedIn");
+      if (!res.ok) {
+        // Expired/absent token — guide the user to reconnect instead of a raw error.
+        if (data.error === "LINKEDIN_EXPIRED" || res.status === 401) {
+          setLiStatuses((prev) => ({ ...prev, [day]: "error" }));
+          toast.error("Your LinkedIn connection expired. Reconnect to keep posting.", {
+            action: {
+              label: "Reconnect",
+              onClick: () => window.dispatchEvent(new Event("openSettingsModal")),
+            },
+            duration: 8000,
+          });
+          return;
+        }
+        throw new Error(data.error || "Failed to post to LinkedIn");
+      }
       setLiStatuses((prev) => ({ ...prev, [day]: "success" }));
       setLiNudgeVisible((prev) => ({ ...prev, [day]: true }));
       setTimeout(() => setLiStatuses((prev) => ({ ...prev, [day]: "idle" })), 3000);

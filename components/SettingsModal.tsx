@@ -368,11 +368,23 @@ const handleConnectGitHub = async () => {
             
             {/* LinkedIn Block */}
             <div className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl bg-slate-50">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-1">
                 <span className="font-black text-brand-navy uppercase tracking-widest text-xs">LinkedIn</span>
+                {connections.includes("linkedin_oidc") && (
+                  <span className="text-[10px] text-slate-500 font-medium leading-relaxed">Reconnect every ~60 days — LinkedIn expires the connection.</span>
+                )}
               </div>
               {connections.includes("linkedin_oidc") ? (
-                <span className="text-[10px] font-black uppercase tracking-widest text-green-700 bg-green-100 px-3 py-1.5 rounded-lg border border-green-200">Connected</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-green-700 bg-green-100 px-3 py-1.5 rounded-lg border border-green-200">Connected</span>
+                  <button
+                    onClick={() => handleLinkAccount("linkedin_oidc")}
+                    disabled={linkLoading !== null}
+                    className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-brand-red border border-slate-200 px-3 py-1.5 rounded-lg transition-all"
+                  >
+                    {linkLoading === "linkedin_oidc" ? "..." : "Reconnect"}
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => handleLinkAccount("linkedin_oidc")}

@@ -147,6 +147,12 @@ export async function POST(req: Request) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!profileRes.ok) {
+        // 401 here almost always means the stored token expired (LinkedIn member
+        // tokens last ~60 days and Supabase's OIDC flow returns no refresh token).
+        // Tag it so the caller can prompt a reconnect instead of showing a raw 401.
+        if (profileRes.status === 401) {
+          throw new Error("LINKEDIN_TOKEN_EXPIRED");
+        }
         throw new Error(`Failed to authenticate token with LinkedIn: ${profileRes.status}`);
       }
       const profileData = await profileRes.json();
@@ -296,19 +302,28 @@ export async function POST(req: Request) {
       postResult = await postToLinkedIn(linkedInToken);
     } catch (error: any) {
       console.error("Post attempt failed:", error.message);
-      if (error.message.includes("401") && refreshToken) {
-        console.log("LinkedIn token expired, refreshing...");
-        const newTokenData = await refreshLinkedInToken(refreshToken);
-        await supabaseAdmin
-          .from("user_tokens")
-          .update({
-            access_token: newTokenData.access_token,
-            refresh_token: newTokenData.refresh_token || refreshToken,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("user_id", userId)
-          .eq("provider", "linkedin_oidc");
-        postResult = await postToLinkedIn(newTokenData.access_token);
+      const isExpired = error.message.includes("LINKEDIN_TOKEN_EXPIRED") || error.message.includes("401");
+      if (isExpired && refreshToken) {
+        // We have a refresh token — try to silently renew and retry once.
+        try {
+          console.log("LinkedIn token expired, refreshing...");
+          const newTokenData = await refreshLinkedInToken(refreshToken);
+          await supabaseAdmin
+            .from("user_tokens")
+            .update({
+              access_token: newTokenData.access_token,
+              refresh_token: newTokenData.refresh_token || refreshToken,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", userId)
+            .eq("provider", "linkedin_oidc");
+          postResult = await postToLinkedIn(newTokenData.access_token);
+        } catch {
+          return NextResponse.json({ error: "LINKEDIN_EXPIRED" }, { status: 401 });
+        }
+      } else if (isExpired) {
+        // No refresh token (the common case) — the user must reconnect.
+        return NextResponse.json({ error: "LINKEDIN_EXPIRED" }, { status: 401 });
       } else {
         throw error;
       }
