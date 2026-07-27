@@ -20,7 +20,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { getPlanStatus, incrementCampaignGeneration } from '@/lib/plan';
 import { getVertexAIClient } from '@/lib/genai-client';
 import { getGitHubEnrichedContext } from '@/lib/composio';
-import { extractYouTubeId, getYouTubeTranscript } from '@/lib/youtube';
+import { resolveUrlContext } from '@/lib/sourceContext';
 
 
 const redis = new Redis({
@@ -174,14 +174,7 @@ export async function POST(req: Request) {
       const assetUrls: string[] = sourceMaterial?.assetUrls || [];
       posthogAssetCount = assetUrls.length;
 
-      let effectiveUrlContext = urlContext;
-      if (urlContext) {
-        const videoId = extractYouTubeId(urlContext);
-        if (videoId) {
-          const transcript = await getYouTubeTranscript(videoId);
-          if (transcript) effectiveUrlContext = `YouTube transcript: ${transcript}`;
-        }
-      }
+      const effectiveUrlContext = urlContext ? await resolveUrlContext(urlContext) : urlContext;
 
       const tweetFormat = campaignDirectives?.tweetFormat || 'single';
       const personaVoice = campaignDirectives?.personaVoice || 'Expert Content Strategist';
@@ -189,7 +182,7 @@ export async function POST(req: Request) {
         ? `${textContext}\n\nAdditional Directives: ${campaignDirectives.additionalContext}`
         : textContext;
 
-      if (containsPromptInjection(finalContext)) {
+      if (containsPromptInjection(finalContext) || containsPromptInjection(effectiveUrlContext)) {
         return NextResponse.json(
           { error: 'Security Policy Violation: Invalid context structure detected.' },
           { status: 400 },
@@ -286,14 +279,7 @@ export async function POST(req: Request) {
     const assetUrls: string[] = sourceMaterial?.assetUrls || [];
     posthogAssetCount = assetUrls.length;
 
-    let effectiveUrlContext = urlContext;
-    if (urlContext) {
-      const videoId = extractYouTubeId(urlContext);
-      if (videoId) {
-        const transcript = await getYouTubeTranscript(videoId);
-        if (transcript) effectiveUrlContext = `YouTube transcript: ${transcript}`;
-      }
-    }
+    const effectiveUrlContext = urlContext ? await resolveUrlContext(urlContext) : urlContext;
 
     const enhancedText = textContext + githubContext;
     const tweetFormat = campaignDirectives?.tweetFormat || 'single';
@@ -302,7 +288,7 @@ export async function POST(req: Request) {
       ? `${enhancedText}\n\nAdditional Directives: ${campaignDirectives.additionalContext}`
       : enhancedText;
 
-    if (containsPromptInjection(finalContext)) {
+    if (containsPromptInjection(finalContext) || containsPromptInjection(effectiveUrlContext)) {
       return NextResponse.json(
         { error: 'Security Policy Violation: Invalid context structure detected.' },
         { status: 400 },

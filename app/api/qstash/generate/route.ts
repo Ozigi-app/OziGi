@@ -19,7 +19,7 @@ import { PostHog } from 'posthog-node';
 import { getPlanStatus, incrementCampaignGeneration } from '@/lib/plan';
 import { getVertexAIClient } from '@/lib/genai-client';
 import { getGitHubEnrichedContext } from '@/lib/composio';
-import { extractYouTubeId, getYouTubeTranscript } from '@/lib/youtube';
+import { resolveUrlContext } from '@/lib/sourceContext';
 import { verifyQStashRequest } from '@/lib/qstash';
 
 const distributionSchema = {
@@ -200,15 +200,8 @@ export async function POST(req: Request) {
     const textContext = sourceMaterial?.rawText || '';
     const assetUrls: string[] = sourceMaterial?.assetUrls || [];
 
-    // --- YouTube transcript ---
-    let effectiveUrlContext = urlContext;
-    if (urlContext) {
-      const videoId = extractYouTubeId(urlContext);
-      if (videoId) {
-        const transcript = await getYouTubeTranscript(videoId);
-        if (transcript) effectiveUrlContext = `YouTube transcript: ${transcript}`;
-      }
-    }
+    // --- Source URL grounding (YouTube transcript or scraped article) ---
+    const effectiveUrlContext = urlContext ? await resolveUrlContext(urlContext) : urlContext;
 
     // --- GitHub context (authenticated users only) ---
     let githubContext = '';
