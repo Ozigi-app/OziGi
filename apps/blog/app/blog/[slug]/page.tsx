@@ -4,7 +4,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getRelatedPosts, type FAQ } from "@/lib/blog";
 import ServerTableOfContents from "@/components/blog/ServerTableOfContents";
 import AuthorBio from "@/components/AuthorBio";
 import CodeBlock from "@/components/blog/CodeBlock";
@@ -101,10 +101,11 @@ const hasHeadings = post.headings && post.headings.length > 0;
   };
 
   // FAQPage JSON-LD Schema (only when the post has a parsed FAQ section)
-  const faqJsonLd = post.faqs && post.faqs.length > 0 ? {
+  const faqs: FAQ[] = post.faqs ?? [];
+  const faqJsonLd = faqs.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: post.faqs.map((faq) => ({
+    mainEntity: faqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
