@@ -8,20 +8,22 @@ import { NextRequest, NextResponse } from "next/server";
 // there instead of splitting across two domains.
 //
 // Requests arriving via the ozigi.app rewrite must NOT be redirected again
-// (that would loop), so we skip the redirect when `x-forwarded-host` shows
-// the request came in through ozigi.app. Vercel/Next.js set this header to
-// the original inbound host when proxying a rewrite to an external
-// destination — verify this against a staging deploy before relying on it
-// in production, since it wasn't tested against live infra here.
+// (that would loop). We originally tried detecting this via the
+// `x-forwarded-host` header, but that isn't reliably set by Vercel for
+// rewrites to an external domain and caused an actual redirect loop in
+// production. Instead, the rewrite's destination URL appends
+// `__ozigi_proxy=1` (see next.config.ts) — a marker fully under our
+// control — and we check for that instead.
 const CANONICAL_HOST = "ozigi.app";
+const PROXY_MARKER = "__ozigi_proxy";
 
 export function middleware(request: NextRequest) {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  if (forwardedHost === CANONICAL_HOST) {
+  const { pathname, search, searchParams } = request.nextUrl;
+
+  if (searchParams.get(PROXY_MARKER) === "1") {
     return NextResponse.next();
   }
 
-  const { pathname, search } = request.nextUrl;
   const destination =
     pathname === "/"
       ? `https://${CANONICAL_HOST}/blog`

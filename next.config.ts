@@ -20,11 +20,18 @@ const nextConfig = {
   // Blog migration (ozigi.app/blog/*): proxy to the separate blog.ozigi.app
   // deployment so all blog authority consolidates on the main domain.
   // apps/blog's own canonicals/sitemap/RSS already point at ozigi.app/blog.
+  //
+  // The `__ozigi_proxy=1` query param marks requests that arrived via this
+  // rewrite so apps/blog/middleware.ts can tell them apart from someone
+  // hitting blog.ozigi.app directly (who should get redirected instead).
+  // We tried detecting this via the `x-forwarded-host` header first, but
+  // that isn't reliably set for rewrites to an external domain and caused a
+  // redirect loop in production — this query param is fully in our control.
   async rewrites() {
     return [
-      { source: '/blog', destination: 'https://blog.ozigi.app' },
-      { source: '/blog/feed.xml', destination: 'https://blog.ozigi.app/feed.xml' },
-      { source: '/blog/:path*', destination: 'https://blog.ozigi.app/blog/:path*' },
+      { source: '/blog', destination: 'https://blog.ozigi.app?__ozigi_proxy=1' },
+      { source: '/blog/feed.xml', destination: 'https://blog.ozigi.app/feed.xml?__ozigi_proxy=1' },
+      { source: '/blog/:path*', destination: 'https://blog.ozigi.app/blog/:path*?__ozigi_proxy=1' },
     ];
   },
 };
