@@ -4,7 +4,32 @@ import { TUTORIALS } from "@/lib/tutorials";
 
 const BASE = "https://ozigi.app";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// The blog (apps/blog) is a separate deployment proxied at /blog/* — see
+// next.config.ts rewrites. Its own sitemap.ts already emits ozigi.app/blog
+// URLs post-migration, so we fetch and merge it rather than duplicating
+// its post list here. Falls back to just the /blog index entry if the
+// blog deployment is unreachable at build time.
+async function getBlogRoutes(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const res = await fetch("https://blog.ozigi.app/sitemap.xml", {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) throw new Error(`blog sitemap fetch failed: ${res.status}`);
+    const xml = await res.text();
+    const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+    return urls.map((url) => ({
+      url,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch {
+    return [
+      { url: `${BASE}/blog`, changeFrequency: "weekly" as const, priority: 0.8 },
+    ];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   /* ── Static core pages ─────────────────────────────────────────── */
   const staticRoutes: MetadataRoute.Sitemap = [
     // Highest-value conversion pages
@@ -22,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/from-youtube`,          lastModified: new Date("2026-05-20"), changeFrequency: "monthly", priority: 0.8 },
 
     // Content & tools
-    { url: `${BASE}/blog`,                  lastModified: new Date("2026-06-09"), changeFrequency: "weekly",  priority: 0.8 },
+    // /blog itself + all posts/sections are merged in below via getBlogRoutes()
     { url: `${BASE}/write`,                 lastModified: new Date("2026-05-20"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/tutorials`,             lastModified: new Date("2026-05-01"), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/email`,                 lastModified: new Date("2026-06-01"), changeFrequency: "weekly",  priority: 0.7 },
@@ -68,8 +93,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   //   priority: 0.65,
   // }));
 
+  const blogRoutes = await getBlogRoutes();
+
   return [
     ...staticRoutes,
+    ...blogRoutes,
     // ...changelogRoutes,
     // ...tutorialRoutes,
   ];

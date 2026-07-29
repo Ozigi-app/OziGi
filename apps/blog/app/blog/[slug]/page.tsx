@@ -24,12 +24,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = await getPostBySlug(slug);
   if (!post) return { title: "Not Found" };
 
-  const postUrl = `https://blog.ozigi.app/blog/${slug}`;
+  const postUrl = `https://ozigi.app/blog/${slug}`;
 
   return {
     title: `${post.title} | Ozigi Blog`,
     description: post.description || post.excerpt || "",
-    keywords: post.keywords || [],
     authors: post.author ? [{ name: post.author }] : [],
     alternates: {
       canonical: postUrl,
@@ -69,7 +68,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   };
 
 const hasHeadings = post.headings && post.headings.length > 0;
-  const baseUrl = "https://blog.ozigi.app";
+  const baseUrl = "https://ozigi.app";
 
   // Article JSON-LD Schema
   const articleJsonLd = {
@@ -101,6 +100,20 @@ const hasHeadings = post.headings && post.headings.length > 0;
     keywords: post.keywords || post.categories || [],
   };
 
+  // FAQPage JSON-LD Schema (only when the post has a parsed FAQ section)
+  const faqJsonLd = post.faqs && post.faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: post.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  } : null;
+
   // Breadcrumb JSON-LD Schema
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -110,13 +123,13 @@ const hasHeadings = post.headings && post.headings.length > 0;
         "@type": "ListItem",
         position: 1,
         name: "Blog",
-        item: `${baseUrl}`,
+        item: `${baseUrl}/blog`,
       },
       ...(post.section ? [{
         "@type": "ListItem",
         position: 2,
         name: post.section,
-        item: `${baseUrl}/section/${post.section.toLowerCase().replace(/\s+/g, "-")}`,
+        item: `${baseUrl}/blog/section/${post.section.toLowerCase().replace(/\s+/g, "-")}`,
       }] : []),
       {
         "@type": "ListItem",
@@ -137,6 +150,12 @@ const hasHeadings = post.headings && post.headings.length > 0;
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <div className="px-6 py-12">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">

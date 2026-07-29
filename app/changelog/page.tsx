@@ -3,7 +3,7 @@ import Link from "next/link";
 import { changelog, type ChangelogLabel } from "@/lib/changelog";
 
 export const metadata: Metadata = {
-  title: "Changelog | Ozigi",
+  title: { absolute: "Changelog | Ozigi" },
   description: "Every update to Ozigi — new features, improvements, and fixes.",
   alternates: { canonical: "https://ozigi.app/changelog" },
 };

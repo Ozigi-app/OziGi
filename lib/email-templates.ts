@@ -388,7 +388,7 @@ function escapeHtml(text: string): string {
 
 export function buildFoundersThoughtsWelcomeEmail() {
   const appUrl = process.env.APP_URL || 'https://ozigi.app';
-  const blogUrl = 'https://blog.ozigi.app';
+  const blogUrl = `${appUrl}/blog`;
   const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe`;
 
   return `

@@ -122,9 +122,9 @@ This is the test that matters. Take a real input (a product changelog, a podcast
 - Sentences that start with "In an era where"
 - Conclusions that include "ultimately" or "the key takeaway"
 
-OwlyWriter, Buffer AI, and SocialBee will produce captions that flag on the [LinkedIn 360Brew](https://blog.ozigi.app/blog/how-to-make-your-linkedin-content-standout-in-2026) AI-vocabulary signals. Ozigi will not, because those tokens are blocked at the generation layer.
+OwlyWriter, Buffer AI, and SocialBee will produce captions that flag on the [LinkedIn 360Brew](https://ozigi.app/blog/how-to-make-your-linkedin-content-standout-in-2026) AI-vocabulary signals. Ozigi will not, because those tokens are blocked at the generation layer.
 
-This is not theoretical. The Ozigi engineering team [open-sourced the validator architecture](https://blog.ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) and logs three telemetry properties per generation: lexicon violations, slop score, and retry count. When a new term starts trending in the violation feed (the team caught "crucial" in 31 generations during Gemini 3's release week), it gets promoted to the banned list within hours. None of the schedulers operate this way.
+This is not theoretical. The Ozigi engineering team [open-sourced the validator architecture](https://ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) and logs three telemetry properties per generation: lexicon violations, slop score, and retry count. When a new term starts trending in the violation feed (the team caught "crucial" in 31 generations during Gemini 3's release week), it gets promoted to the banned list within hours. None of the schedulers operate this way.
 
 ## When Should You Use Hootsuite or Buffer Instead of Ozigi?
 
@@ -171,7 +171,7 @@ Yes, and many users do. Generate the content in Ozigi, then export or paste into
 Ozigi has a free tier with no credit card. Hootsuite Standard is $99 per user per month billed annually with a 30-day trial. For a single user, Ozigi saves $1,188 per year.
 
 **Is the Ozigi codebase open source?**
-Yes, on GitHub at Ozigi-app/OziGi. The validator architecture that enforces the banned lexicon is documented on the [Ozigi blog](https://blog.ozigi.app).
+Yes, on GitHub at Ozigi-app/OziGi. The validator architecture that enforces the banned lexicon is documented on the [Ozigi blog](https://ozigi.app/blog).
 
 ---
 

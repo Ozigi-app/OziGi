@@ -1,8 +1,10 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const sitemap = 'https://blog.ozigi.app/sitemap.xml';
-  const host = 'https://blog.ozigi.app';
+  // Blog content is now canonical at ozigi.app/blog — point crawlers at the
+  // main sitemap so old blog.ozigi.app URLs don't get indexed as a duplicate.
+  const sitemap = 'https://ozigi.app/sitemap.xml';
+  const host = 'https://ozigi.app';
 
   const disallow = ['/admin/', '/api/', '/.'];
 

@@ -31,7 +31,7 @@ export default async function BlogPage() {
             return (
               <Link
                 key={section}
-                href={`/${section.toLowerCase().replace(/\s+/g, "-")}`}
+                href={`/blog/section/${section.toLowerCase().replace(/\s+/g, "-")}`}
                 className="px-4 py-2 rounded-full bg-white border border-slate-200 hover:border-brand-red hover:text-brand-red transition-colors text-sm font-semibold text-slate-700"
               >
                 {section} <span className="text-xs ml-1 opacity-60">({count})</span>

@@ -131,7 +131,7 @@ export default function OgImage() {
             letterSpacing: "0.05em",
           }}
         >
-          blog.ozigi.app
+          ozigi.app/blog
         </div>
       </div>
     ),

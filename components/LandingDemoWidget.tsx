@@ -13,7 +13,7 @@ const SAMPLES = [
   },
   {
     label: "Blog post URL",
-    value: `https://blog.ozigi.app/blog/your-launch-post-got-4-likes`,
+    value: `https://ozigi.app/blog/your-launch-post-got-4-likes`,
   },
 ];
 

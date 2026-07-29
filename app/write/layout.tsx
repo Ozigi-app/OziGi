@@ -4,13 +4,6 @@ export const metadata: Metadata = {
   title: "Write for Ozigi — Contributor Program",
   description:
     "We publish practical, no-fluff pieces from practitioners. If you build in public, work in DevRel, or think seriously about content and AI — we want to hear from you.",
-  keywords: [
-    "write for Ozigi",
-    "Ozigi contributor",
-    "guest post AI content",
-    "write about content creation",
-    "developer content contributor",
-  ],
   openGraph: {
     title: "Write for Ozigi — Contributor Program",
     description:

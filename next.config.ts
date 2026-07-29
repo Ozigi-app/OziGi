@@ -17,6 +17,16 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/api/gtm/notify/**': ['./emails/**'],
   },
+  // Blog migration (ozigi.app/blog/*): proxy to the separate blog.ozigi.app
+  // deployment so all blog authority consolidates on the main domain.
+  // apps/blog's own canonicals/sitemap/RSS already point at ozigi.app/blog.
+  async rewrites() {
+    return [
+      { source: '/blog', destination: 'https://blog.ozigi.app' },
+      { source: '/blog/feed.xml', destination: 'https://blog.ozigi.app/feed.xml' },
+      { source: '/blog/:path*', destination: 'https://blog.ozigi.app/blog/:path*' },
+    ];
+  },
 };
 
 // Only apply Sentry config if auth token is available

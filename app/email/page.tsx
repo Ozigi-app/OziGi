@@ -8,7 +8,7 @@ export const revalidate = 3600;
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Founder's Thoughts — Newsletter Archive | Ozigi",
+  title: { absolute: "Founder's Thoughts — Newsletter Archive | Ozigi" },
   description:
     "Browse every issue of Founder's Thoughts — the Ozigi newsletter on what we're building, content strategy, and personal observations from the founder.",
   alternates: { canonical: "https://ozigi.app/email" },

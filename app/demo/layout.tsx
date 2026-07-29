@@ -4,14 +4,6 @@ export const metadata: Metadata = {
   title: "Try Ozigi Free — See What Human Sounds Like",
   description:
     "Paste a URL, your notes, or a rough idea. Get posts for X, LinkedIn, and Discord that sound like you wrote them — in 20 seconds. No account needed.",
-  keywords: [
-    "try AI content generator free",
-    "AI writing demo",
-    "free social media post generator",
-    "AI content that sounds human demo",
-    "generate LinkedIn post from notes",
-    "generate X thread from URL",
-  ],
   openGraph: {
     title: "Try Ozigi Free — See What Human Sounds Like",
     description:

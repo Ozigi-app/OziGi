@@ -8,7 +8,38 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
+import { ToolLandingContent } from "@/components/tools/ToolLandingContent";
 import { supabase } from "@/lib/supabase/client";
+
+const FAQS = [
+  {
+    q: "Is the blog post generator free?",
+    a: "Yes, generating a draft is free with no sign-up required.",
+  },
+  {
+    q: "How long are the articles?",
+    a: "800–2,500 words, depending on the format and depth you choose.",
+  },
+  {
+    q: "Will it sound like AI wrote it?",
+    a: "Every draft passes through Ozigi's banned lexicon and your saved persona — the two things that most reliably strip the generic AI tone.",
+  },
+  {
+    q: "Can I generate from a URL or video?",
+    a: "Yes — paste a source link, including a YouTube video, and Ozigi will use it as grounding material for the draft.",
+  },
+  {
+    q: "Can I publish directly, or do I need to copy-paste?",
+    a: "Free accounts can copy the draft out; connected accounts can publish straight to a blog or CMS.",
+  },
+];
+
+const RELATED_LINKS = [
+  { href: "/blog/8-free-ai-writing-tools-technical-founders-2026", label: "Free AI writing tools for technical founders" },
+  { href: "/blog/geo-aeo-guide-ozigi", label: "GEO/AEO guide for AI search visibility" },
+  { href: "/pricing", label: "See long-form pricing" },
+  { href: "/newsletter", label: "AI newsletter generator" },
+];
 
 const STORAGE_KEY = "ozigi_demo_longform";
 
@@ -173,9 +204,9 @@ export default function LongFormPage() {
             Long-Form Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            The AI writing generator that
+            Free AI Blog Post Generator.
             <br />
-            <span className="text-[#E8320A]">doesn't sound like AI wrote it.</span>
+            <span className="text-[#E8320A]">Articles that don't sound like AI.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto">
             A free AI writing assistant for long-form articles — paste a brief, pick your format, get an 800–2,500 word draft in seconds. No sign-up required to try it.
@@ -303,6 +334,22 @@ export default function LongFormPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+      <ToolLandingContent
+        toolName="Ozigi AI Blog Post Generator"
+        pageUrl="https://ozigi.app/long-form"
+        offerDescription="Free AI blog post generator that writes publish-ready 800-2,500 word articles in your tone, structure, and depth."
+        copyTitle="An AI blog post generator that writes articles, not AI-flavored filler"
+        copyParagraphs={[
+          "Paste a brief, a rough outline, or even a source link, pick your tone and structure, and get an 800–2,500 word draft back — blog post, article, or thought-leadership piece — in seconds.",
+          "It's built for technical founders and small teams who need to publish regularly for SEO and credibility but don't have a writer on staff, and don't want their blog reading like everyone else's AI-generated blog.",
+          "What makes it different: the banned lexicon strips \"delve into,\" \"robust,\" \"seamlessly,\" and the rest of the tells; your persona keeps structure, tone, and opinions consistent across every article, so your blog reads like one person's voice, not a rotating cast of AI outputs.",
+          "To use it: give Ozigi a topic, brief, or source link, choose your tone, format, and target length, then get a publish-ready draft back — edit it directly, or connect your account to publish straight to your blog.",
+        ]}
+        faqs={FAQS}
+        relatedLinks={RELATED_LINKS}
+      />
+
       </main>
 
       {isAuthModalOpen && (

@@ -60,7 +60,7 @@ export default function Footer() {
               >
                 Star us on GitHub
               </a>
-              <a href="https://blog.ozigi.app" className="text-sm font-semibold text-foreground-subtle hover:text-accent transition">
+              <a href="/blog" className="text-sm font-semibold text-foreground-subtle hover:text-accent transition">
                 Blog
               </a>
               <Link href="/write" className="text-sm text-foreground-subtle hover:text-accent transition-colors font-semibold">

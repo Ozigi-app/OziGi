@@ -235,7 +235,7 @@ The pre-generation tip on the long-form page now reads:
 
 The mid-generation loader cycles through honest steps: *Running the slop filter… Scanning for AI tells… Re-running if any slop slipped through…*
 
-This is the same principle we explored in [our LinkedIn post 2026 piece](https://blog.ozigi.app/how-to-make-your-linkedin-content-standout-in-2026),  when you charge a price (in money or time), name what the user is buying. Otherwise the price feels like a tax.
+This is the same principle we explored in [our LinkedIn post 2026 piece](https://ozigi.app/blog/how-to-make-your-linkedin-content-standout-in-2026),  when you charge a price (in money or time), name what the user is buying. Otherwise the price feels like a tax.
 
 ## Should you use a humanizer API For your content instead?
 
@@ -263,7 +263,7 @@ Two feedback loops keep the lexicon current:
 
 **Telemetry.** Every generation logs three properties to PostHog: `lexiconViolations`, `lexiconSlopScore`, `lexiconRetried`. We chart these weekly. When a new term starts trending in the violation feed (Gemini picked up *crucial* in week two — caught it in 31 generations before adding to the list), we promote it.
 
-The result is a lexicon that grows from real production data instead of guesswork. We have written before about why production telemetry beats theoretical evals in [our RAG architecture post](https://blog.ozigi.app/rag-architecture-for-enterprise-data). The same logic applies here.
+The result is a lexicon that grows from real production data instead of guesswork. We have written before about why production telemetry beats theoretical evals in [our RAG architecture post](https://ozigi.app/blog/rag-architecture-for-enterprise-data). The same logic applies here.
 
 ## What this approach does not catch
 
@@ -285,7 +285,7 @@ If you ship LLM output and want a similar layer, the minimum viable version is f
 - API-route hook: call validator → check threshold → optionally retry → return final draft + warnings.
 
 
-If you want the full TypeScript, the [Ozigi changelog](https://blog.ozigi.app/changelog) tracks the architecture as it grows. Our [deep dives hub](https://ozigi.app/docs/deep-dives) covers the surrounding pieces: multimodal ingestion, system personas, human-in-the-loop. And if you are thinking about content quality more broadly, this [GEO and AEO guide](https://blog.ozigi.app/geo-aeo-guide-ozigi) explains why this work matters for AI search ranking, not just reader trust.
+If you want the full TypeScript, the [Ozigi changelog](https://ozigi.app/changelog) tracks the architecture as it grows. Our [deep dives hub](https://ozigi.app/docs/deep-dives) covers the surrounding pieces: multimodal ingestion, system personas, human-in-the-loop. And if you are thinking about content quality more broadly, this [GEO and AEO guide](https://ozigi.app/blog/geo-aeo-guide-ozigi) explains why this work matters for AI search ranking, not just reader trust.
 
 ---
 
@@ -295,6 +295,6 @@ If you want the full TypeScript, the [Ozigi changelog](https://blog.ozigi.app/ch
 - [System Personas](https://ozigi.app/docs/system-personas) — why we use editorial briefs instead of soft prompts
 - [Multimodal Ingestion](https://ozigi.app/docs/multimodal-pipeline) — the input side of the same pipeline
 - [Human-in-the-Loop](https://ozigi.app/docs/human-in-the-loop) — the 90/10 rule for collaborative content
-- [Gemini 2.5 vs Claude 3.7 in production](https://blog.ozigi.app/gemini-2.5-vs-claude-3.7) — the model trade-offs that informed this work
-- [Your launch post got 4 likes](https://blog.ozigi.app/your-launch-post-got-4-likes) — why generic AI content fails on launch day
+- [Gemini 2.5 vs Claude 3.7 in production](https://ozigi.app/blog/gemini-2.5-vs-claude-3.7) — the model trade-offs that informed this work
+- [Your launch post got 4 likes](https://ozigi.app/blog/your-launch-post-got-4-likes) — why generic AI content fails on launch day
 - [Free long-form article generator](https://ozigi.app/long-form) — see the validator run on your own draft, no signup required

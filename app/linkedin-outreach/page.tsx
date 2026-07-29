@@ -7,7 +7,38 @@ import { Loader2, Copy, Check, Share2, Search, UserPlus, MessageSquare, Trending
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { LeadListTeaser } from "@/components/demo/LeadListTeaser";
+import { ToolLandingContent } from "@/components/tools/ToolLandingContent";
 import { supabase } from "@/lib/supabase/client";
+
+const FAQS = [
+  {
+    q: "Is the LinkedIn message generator free?",
+    a: "Yes — generating a sample message costs nothing and doesn't need an account.",
+  },
+  {
+    q: "Will this get my LinkedIn account restricted?",
+    a: "Ozigi writes specific, non-spammy messages and, for connected accounts, paces sends to stay within normal usage patterns.",
+  },
+  {
+    q: "Does it write connection requests or just DMs?",
+    a: "Both — connection request notes (under LinkedIn's 300-character limit) and longer follow-up DMs.",
+  },
+  {
+    q: "How is this different from LinkedIn Sales Navigator templates?",
+    a: "Sales Navigator gives you filters and templates; Ozigi writes the actual message from scratch for each person, and can find and follow up with matching profiles for you.",
+  },
+  {
+    q: "Can I review before it sends?",
+    a: "Yes — every message is editable, and nothing sends without your review unless you explicitly turn on autopilot.",
+  },
+];
+
+const RELATED_LINKS = [
+  { href: "/blog/how-to-make-your-linkedin-content-standout-in-2026", label: "Make your LinkedIn content stand out" },
+  { href: "/blog/email-vs-linkedin-outreach-dev-tools", label: "Email vs LinkedIn outreach for dev tools" },
+  { href: "/pricing", label: "See LinkedIn outreach pricing" },
+  { href: "/email-outreach", label: "Cold email generator" },
+];
 
 const STORAGE_KEY = "ozigi_demo_linkedin_outreach";
 
@@ -145,9 +176,9 @@ export default function LinkedInOutreachPage() {
             LinkedIn Outreach Automation
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            Find leads. Connect.
+            Free LinkedIn Message Generator.
             <br />
-            <span className="text-[#E8320A]">Close — while you sleep.</span>
+            <span className="text-[#E8320A]">Connect & close — while you sleep.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
             Ozigi finds LinkedIn profiles matching your ideal customer, sends personalised connection requests to each one, and follows up automatically once they accept.
@@ -318,6 +349,22 @@ export default function LinkedInOutreachPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+      <ToolLandingContent
+        toolName="Ozigi LinkedIn Message Generator"
+        pageUrl="https://ozigi.app/linkedin-outreach"
+        offerDescription="Free LinkedIn message generator that writes connection requests and DMs, finds matching profiles, and follows up automatically once they accept."
+        copyTitle="A LinkedIn message generator built for connection requests people actually accept"
+        copyParagraphs={[
+          "Describe your ideal customer and what you're offering, and Ozigi writes a connection request or DM under LinkedIn's character limit — specific to the recipient, not a copy-pasted pitch.",
+          "It's built for founders and small sales teams doing LinkedIn outreach themselves who need messages that read like a person wrote them to that specific person, not a mail-merge.",
+          "What makes it different: the same banned lexicon and persona system as the rest of Ozigi — no \"I came across your profile and was impressed by,\" no generic flattery openers. Once you're signed up, Ozigi can also find the matching LinkedIn profiles and follow up automatically after they accept.",
+          "To use it: describe your product and your ideal customer, get a connection request or DM back ready to send, then create a free account to have Ozigi find matching profiles at scale and follow up automatically once they accept.",
+        ]}
+        faqs={FAQS}
+        relatedLinks={RELATED_LINKS}
+      />
+
       </main>
 
       {isAuthModalOpen && (

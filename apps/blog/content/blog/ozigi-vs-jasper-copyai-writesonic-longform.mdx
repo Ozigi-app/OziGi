@@ -36,7 +36,7 @@ Three things matter.
 
 **Personas define a character, not a tone.** The [Ozigi persona system](https://ozigi.app/dashboard/personas) is database-backed and reused across every generation. You define technical depth, sentence rhythm, phrases you would never say, and signature expressions. The output is shaped by the persona before you touch the edit button. Jasper, Copy.ai, and Writesonic all have some version of brand voice training, but they operate on existing copy samples rather than explicit character definition.
 
-**Banned lexicon at the API level.** Ozigi maintains a list of tokens the engine is forbidden from producing. The [validator architecture](https://blog.ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) catches the roughly 20% of cases where prompt instructions alone fail. The team logs lexicon violations, slop scores, and retry counts as production telemetry, then promotes new terms to the banned list when they start trending in the violation feed.
+**Banned lexicon at the API level.** Ozigi maintains a list of tokens the engine is forbidden from producing. The [validator architecture](https://ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) catches the roughly 20% of cases where prompt instructions alone fail. The team logs lexicon violations, slop scores, and retry counts as production telemetry, then promotes new terms to the banned list when they start trending in the violation feed.
 
 The technical brief format in Ozigi is the clearest expression of this design. A technical brief is longer than a social post, denser than a marketing article, and has to be verifiable. Ozigi treats it as the highest-fidelity output type, with stricter banned-lexicon enforcement and persona-driven structure.
 
@@ -171,7 +171,7 @@ Not directly to WordPress or Ghost yet. Ozigi publishes to X, LinkedIn, Discord,
 For high-volume sales workflows (prospecting templates, account research, email sequences), yes. Copy.ai is purpose-built for GTM teams. For voice-driven content, Ozigi wins.
 
 **Is the Ozigi codebase open source?**
-Yes, on GitHub at Ozigi-app/OziGi. The validator architecture and persona system are documented on the [Ozigi blog](https://blog.ozigi.app).
+Yes, on GitHub at Ozigi-app/OziGi. The validator architecture and persona system are documented on the [Ozigi blog](https://ozigi.app/blog).
 
 ---
 

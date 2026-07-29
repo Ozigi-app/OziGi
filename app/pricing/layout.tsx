@@ -4,15 +4,6 @@ export const metadata: Metadata = {
   title: "Pricing — Free for Small Teams, Scale When Ready",
   description:
     "Ozigi is free to start. Find leads, run email and LinkedIn outreach, and publish content that sounds human — upgrade for more volume when you're ready.",
-  keywords: [
-    "Ozigi pricing",
-    "free lead generation tools",
-    "free outreach platform for small teams",
-    "affordable content marketing tools",
-    "free LinkedIn outreach tool",
-    "free email campaign software",
-    "small business outreach tools",
-  ],
   openGraph: {
     title: "Pricing — Free for Small Teams, Scale When Ready",
     description:

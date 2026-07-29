@@ -7,7 +7,38 @@ import { Loader2, Copy, Check, Mail, Search, Send, BarChart2 } from "lucide-reac
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { LeadListTeaser } from "@/components/demo/LeadListTeaser";
+import { ToolLandingContent } from "@/components/tools/ToolLandingContent";
 import { supabase } from "@/lib/supabase/client";
+
+const FAQS = [
+  {
+    q: "Is this cold email generator actually free?",
+    a: "Yes — generating a sample email above costs nothing and doesn't require an account. A free Ozigi account also includes 30 real, tracked email sends a month at no cost.",
+  },
+  {
+    q: "Do I need to know how to code or use an ESP?",
+    a: "No. Ozigi handles sending and reply tracking for you once you connect an inbox — Gmail or SMTP both work.",
+  },
+  {
+    q: "Will this email get flagged as AI-written or spam?",
+    a: "Ozigi avoids the stock AI phrasing that trips up spam filters and readers alike, and paces sends to protect your domain reputation.",
+  },
+  {
+    q: "Can I edit the email before sending?",
+    a: "Yes — every generated email is fully editable. Nothing sends without you being able to review it first.",
+  },
+  {
+    q: "How is this different from a template library?",
+    a: "Templates fill in blanks. Ozigi writes the email from scratch based on your actual product and your actual ideal customer, in your voice — a different email for every recipient.",
+  },
+];
+
+const RELATED_LINKS = [
+  { href: "/blog/cold-email-that-does-not-sound-like-ai", label: "Cold email that doesn't sound like AI" },
+  { href: "/blog/does-ai-written-cold-email-get-flagged", label: "Does AI-written cold email get flagged as spam" },
+  { href: "/pricing", label: "See full pricing" },
+  { href: "/linkedin-outreach", label: "LinkedIn message generator" },
+];
 
 const STORAGE_KEY = "ozigi_demo_email_outreach";
 
@@ -142,9 +173,9 @@ export default function EmailOutreachPage() {
             Free Cold Email Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            Find leads. Send emails.
+            Free Cold Email Generator.
             <br />
-            <span className="text-[#E8320A]">Close deals. Automatically.</span>
+            <span className="text-[#E8320A]">Find leads. Close deals. Automatically.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
             Ozigi finds verified email addresses for your ideal customers, writes a personalised email to each one, and sends them on autopilot — while you focus on replies. Free to try, no sign-up required — free accounts send up to 30 real emails a month, no credit card needed.
@@ -305,6 +336,22 @@ export default function EmailOutreachPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+      <ToolLandingContent
+        toolName="Ozigi Cold Email Generator"
+        pageUrl="https://ozigi.app/email-outreach"
+        offerDescription="Free AI cold email generator that writes personalised first-touch emails, finds verified leads, and sends up to 30 real emails a month on autopilot."
+        copyTitle="A cold email generator built for people who actually have to send the email"
+        copyParagraphs={[
+          "Paste in what you sell and who you sell it to, and Ozigi writes a personalised first-touch email in seconds — subject line included. No templates with [First Name] placeholders, no generic \"I hope this finds you well\" openers.",
+          "It's built for solo founders, indie hackers, and small go-to-market teams who don't have a dedicated SDR team or an email agency on retainer, but still need a steady flow of first-touch emails going out every week.",
+          "What makes it different: every email runs through Ozigi's banned lexicon before it ships — no \"delve into,\" no \"seamlessly,\" no \"in today's fast-paced world.\" Your persona (tone, formality, the phrases you actually use) is set once and reused across every email, so prospects get a consistent voice instead of something that reads like it was randomly generated.",
+          "To use it: tell Ozigi what your product does and who your ideal customer is, get a subject line and email body back in seconds, then create a free account to have Ozigi find verified leads matching that same ideal customer and send up to 30 real emails a month on autopilot, with replies tracked automatically.",
+        ]}
+        faqs={FAQS}
+        relatedLinks={RELATED_LINKS}
+      />
+
       </main>
 
       {isAuthModalOpen && (

@@ -18,50 +18,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Ozigi — Find Leads, Run Outreach, Publish Content",
+    default: "Ozigi — AI Cold Email & Content Tool for Small Teams",
     template: "%s | Ozigi",
   },
-  description: "Ozigi helps small teams find leads, run email and LinkedIn outreach, and publish content that sounds human — all without a sales team.",
-  keywords: [
-    "lead sourcing for small businesses",
-    "LinkedIn outreach for small teams",
-    "email outreach automation",
-    "content marketing for small teams",
-    "AI content generator",
-    "lead generation tool free",
-    "founder-led sales tools",
-    "cold email automation",
-    "LinkedIn lead generation",
-    "small business marketing tools",
-    "AI email campaigns",
-    "outreach automation free",
-    "content marketing for startups",
-    "AI LinkedIn posts",
-    "reach more people online",
-    "sales outreach for indie founders",
-    "AI writing tool for marketers",
-    "human-sounding AI content",
-  ],
+  description: "Ozigi helps small teams find leads, run cold email and LinkedIn outreach, and publish content that sounds human — no sales team needed. Free to start.",
   openGraph: {
-    title: "Ozigi — Find Leads, Run Outreach & Publish Content",
+    title: "Ozigi — AI Cold Email & Content Tool for Small Teams",
     description: "Find your next customers, reach out without sounding like a robot, and publish content that keeps you top of mind. Free for small teams.",
     url: "https://ozigi.app",
     siteName: "Ozigi",
     type: "website",
     images: [
       {
-        url: "https://ozigi.app/og-image.png",
+        url: "https://ozigi.app/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Ozigi — Find Leads, Run Outreach & Publish Content",
+        alt: "Ozigi — AI Cold Email & Content Tool for Small Teams",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ozigi — Find Leads, Run Outreach & Publish Content",
+    title: "Ozigi — AI Cold Email & Content Tool for Small Teams",
     description: "Find leads, run outreach, and publish content that sounds like you — free for small teams with no sales floor.",
-    images: ["https://ozigi.app/og-image.png"],
+    images: ["https://ozigi.app/opengraph-image.png"],
     creator: "@DumebiTheWriter",
   },
   robots: {
@@ -91,7 +71,6 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        <meta property="og:image" content="https://ozigi.app/og-image.png" />
         <link rel="me" href="https://mastodon.social/@Dumebi" />
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="MhdBfYlV5PLcSxQWguZYSQ" async></script>
 
@@ -104,13 +83,15 @@ export default function RootLayout({
               "@type": "Organization",
               name: "Ozigi",
               url: "https://ozigi.app",
-              logo: "https://ozigi.app/og-image.png",
+              logo: "https://ozigi.app/logo.png",
               description:
                 "Ozigi helps small teams find leads, run email and LinkedIn outreach, and publish content that sounds human — all in one place.",
               sameAs: [
                 "https://twitter.com/DumebiTheWriter",
                 "https://mastodon.social/@Dumebi",
                 "https://peerlist.io/dumebi",
+                "https://github.com/Ozigi-app/OziGi/",
+                "https://linkedin.com/in/dumebi-okolo",
               ],
               contactPoint: {
                 "@type": "ContactPoint",

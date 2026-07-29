@@ -95,7 +95,7 @@ export default function WritePage() {
     {
       number: "05",
       title: "Publish",
-      description: "Your article goes live on blog.ozigi.app with your bio and links. We promote across all channels.",
+      description: "Your article goes live on ozigi.app/blog with your bio and links. We promote across all channels.",
     },
   ];
 

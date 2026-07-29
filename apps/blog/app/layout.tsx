@@ -8,27 +8,14 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
   title: "Ozigi Blog — How to Make AI Content Sound Human",
   description: "Insights, tutorials, and deep dives from the Ozigi team on making AI content sound human, building technical voice, and shipping authentic content at scale.",
-  keywords: [
-    "AI content that sounds human",
-    "content that doesn't sound like AI",
-    "human-sounding AI content",
-    "AI writing without AI voice",
-    "technical content strategy",
-    "content automation",
-    "developer blog",
-    "DevRel content",
-    "Next.js",
-    "software engineering",
-  ],
-  metadataBase: new URL("https://blog.ozigi.app"),
   openGraph: {
     title: "Ozigi Blog — How to Make AI Content Sound Human",
     description: "Insights, tutorials, and deep dives on making AI content sound human, building technical voice, and shipping authentic content at scale.",
-    url: "https://blog.ozigi.app",
+    url: "https://ozigi.app/blog",
     siteName: "Ozigi Blog",
     images: [
       {
-        url: "/opengraph-image",
+        url: "https://blog.ozigi.app/opengraph-image",
         width: 1200,
         height: 630,
         alt: "Ozigi Blog",
@@ -41,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ozigi Blog — How to Make AI Content Sound Human",
     description: "Insights and deep dives on making AI content sound human, building technical voice, and shipping authentic content at scale.",
-    images: ["/opengraph-image"],
+    images: ["https://blog.ozigi.app/opengraph-image"],
     creator: "@ozigi_app",
     site: "@ozigi_app",
   },
@@ -57,11 +44,11 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://blog.ozigi.app",
+    canonical: "https://ozigi.app/blog",
     types: {
       "application/rss+xml": [
         {
-          url: "https://blog.ozigi.app/feed.xml",
+          url: "https://ozigi.app/blog/feed.xml",
           title: "Ozigi Blog RSS Feed",
         },
       ],
@@ -77,8 +64,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="alternate" type="application/rss+xml" href="https://blog.ozigi.app/feed.xml" title="Ozigi Blog RSS Feed" />
-        <link rel="alternate" type="application/atom+xml" href="https://blog.ozigi.app/feed.xml" title="Ozigi Blog Atom Feed" />
+        <link rel="alternate" type="application/rss+xml" href="https://ozigi.app/blog/feed.xml" title="Ozigi Blog RSS Feed" />
+        <link rel="alternate" type="application/atom+xml" href="https://ozigi.app/blog/feed.xml" title="Ozigi Blog Atom Feed" />
         <link rel="me" href="https://mastodon.social/@Dumebi" />
       </head>
       <body className="bg-[#fafafa] font-sans text-slate-900 min-h-screen flex flex-col">

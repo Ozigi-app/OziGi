@@ -86,7 +86,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { postId } = await params;
   const data = await getPost(postId);
-  if (!data) return { title: "Newsletter | Ozigi" };
+  if (!data) return { title: { absolute: "Newsletter | Ozigi" } };
 
   const { post, profile } = data;
   const { subject, body } = parseContent(post);

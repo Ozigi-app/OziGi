@@ -70,7 +70,7 @@ export default async function PostOgImage({
               letterSpacing: "0.05em",
             }}
           >
-            blog.ozigi.app
+            ozigi.app/blog
           </span>
           {section && (
             <span

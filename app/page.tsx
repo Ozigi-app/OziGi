@@ -156,7 +156,7 @@ export default function Home() {
   const [headlineIdx, setHeadlineIdx] = useState(0);
 
   const HEADLINES = [
-    { pre: "Send cold emails that ",   hl: "actually get replies." },
+    { pre: "Cold emails that actually get replies. ", hl: "Content that sounds like you." },
     { pre: "Automate your ",            hl: "content engine."       },
     { pre: "Grow your ",                hl: "social presence."      },
     { pre: "Fill your pipeline with ",  hl: "qualified leads."      },
@@ -421,15 +421,15 @@ export default function Home() {
               target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
               <img src="https://peerlist.io/api/v1/projects/embed/PRJHBARJ6AKQ7AG6MFPMRJPBREPQBN?showUpvote=false&theme=light"
-                alt="Featured on Peerlist" className="h-6 sm:h-7 w-auto" />
+                alt="Featured on Peerlist" width={120} height={28} loading="lazy" className="h-6 sm:h-7 w-auto" />
             </a>
             <a href="https://theresanaiforthat.com/ai/ozigi/?ref=featured&v=10684552" target="_blank" rel="nofollow"
               className="flex-shrink-0">
-              <img width="300" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600" alt="Featured on TAAFT" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
+              <img width={300} height={65} loading="lazy" src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600" alt="Featured on TAAFT" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
             </a>
             <a href="https://www.betterlaunch.co" target="_blank" rel="noopener noreferrer"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} className="h-6 sm:h-7 w-auto" />
+              <img src="https://www.betterlaunch.co/badge.svg" alt="Featured on Better Launch" width={140} height={32} loading="lazy" className="h-6 sm:h-7 w-auto" />
             </a>
             <a href="https://www.scrolllaunch.com/products/ozigi?utm_source=badge&utm_medium=embed&utm_campaign=ozigi&ref=scrolllaunch"
               target="_blank" rel="noopener noreferrer"
@@ -437,11 +437,11 @@ export default function Home() {
               <img src="https://www.scrolllaunch.com/api/badge/ozigi" alt="Featured on ScrollLaunch" width={220} height={48} loading="lazy" className="h-6 sm:h-7 w-auto" />
             </a>
             <a href="https://startupfa.me/s/ozigi?utm_source=ozigi.app" target="_blank" className="flex-shrink-0">
-              <img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Featured on Startup Fame" width="224" height="36" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
+              <img src="https://startupfa.me/badges/featured-badge-small.webp" alt="Featured on Startup Fame" width="224" height="36" loading="lazy" className="h-6 sm:h-7 w-auto opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0" />
             </a>
             <a href="https://goodaitools.com/ai/ozigi-app" target="_blank" rel="noopener"
               className="opacity-30 hover:opacity-70 transition-opacity duration-300 grayscale hover:grayscale-0 flex-shrink-0">
-              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Featured on GoodAITools" height={54} className="h-6 sm:h-7 w-auto" />
+              <img src="https://goodaitools.com/assets/images/badge-dark.png" alt="Featured on GoodAITools" width={150} height={54} loading="lazy" className="h-6 sm:h-7 w-auto" />
             </a>
           </div>
         </div>

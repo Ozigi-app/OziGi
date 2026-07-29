@@ -1,25 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free AI Writing Generator — Long-Form Articles in Seconds, No Sign-Up | Ozigi",
+  title: { absolute: "Free AI Blog Post Generator — Articles That Don't Sound Like AI | Ozigi" },
   description:
     "A free AI writing assistant for long-form content — generate publish-ready 800–2,500 word articles, blog posts, and thought-leadership pieces in seconds. Choose your tone, structure, and depth. No sign-up required to try it.",
-  keywords: [
-    "AI writing generator",
-    "AI writing assistant free online",
-    "free AI writing app",
-    "AI writer generator",
-    "AI article writer",
-    "long form content generator",
-    "AI blog post generator",
-    "free AI writer",
-    "AI thought leadership generator",
-    "blog post writer AI",
-    "long form AI writing tool",
-    "AI content generator free",
-    "automated article writer",
-    "SEO article generator AI",
-  ],
   openGraph: {
     title: "Free AI Writing Generator | Ozigi",
     description:

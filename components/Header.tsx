@@ -128,7 +128,7 @@ export default function Header({ session: propSession, onSignIn, onOpenMobileSid
                 <Link href="/tutorials" className="text-sm font-semibold text-foreground-muted hover:text-foreground transition">
                   Tutorials
                 </Link>
-                <Link href="https://blog.ozigi.app" className="text-sm font-semibold text-foreground-muted hover:text-foreground transition">
+                <Link href="/blog" className="text-sm font-semibold text-foreground-muted hover:text-foreground transition">
                   Blog
                 </Link>
                 <Link href="/changelog" className="text-sm font-semibold text-foreground-muted hover:text-foreground transition">

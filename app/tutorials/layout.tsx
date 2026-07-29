@@ -4,14 +4,6 @@ export const metadata: Metadata = {
   title: "Ozigi Tutorials — Guides & How-Tos",
   description:
     "Video tutorials on building campaigns, setting up personas, publishing to X, LinkedIn, Discord, Slack, and scheduling newsletters. Everything you need to get the most out of Ozigi.",
-  keywords: [
-    "Ozigi tutorials",
-    "how to use Ozigi",
-    "AI content generator guide",
-    "LinkedIn post tutorial",
-    "persona setup guide",
-    "social media automation tutorial",
-  ],
   openGraph: {
     title: "Ozigi Tutorials — Guides & How-Tos",
     description:

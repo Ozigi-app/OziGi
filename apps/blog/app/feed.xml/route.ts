@@ -2,14 +2,14 @@ import { getAllPosts } from "@/lib/blog";
 
 export async function GET() {
   const posts = await getAllPosts();
-  const baseUrl = "https://blog.ozigi.app";
+  const baseUrl = "https://ozigi.app";
   const latestPosts = posts.slice(0, 20);
 
   const rssContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>Ozigi Blog - Insights, tutorials, and architecture for technical creators</title>
-    <link>${baseUrl}</link>
+    <link>${baseUrl}/blog</link>
     <description>Insights, tutorials, and architecture for technical creators building products with Ozigi</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
@@ -37,7 +37,7 @@ export async function GET() {
       ${post.section ? `<category>${escapeXml(post.section)}</category>` : ""}
       ${post.keywords && post.keywords.length > 0 ? post.keywords.map((keyword: string) => `<category>${escapeXml(keyword)}</category>`).join("\n      ") : ""}
       ${post.coverImage ? `<media:content url="${escapeXml(post.coverImage)}" medium="image"><media:title>${escapeXml(post.title)}</media:title></media:content>` : ""}
-      <source url="${baseUrl}/feed.xml">Ozigi Blog</source>
+      <source url="${baseUrl}/blog/feed.xml">Ozigi Blog</source>
     </item>
     `;
     }).join("")}

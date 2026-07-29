@@ -6,7 +6,38 @@ import { toast } from "sonner";
 import { Loader2, Copy, Check, Inbox } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
+import { ToolLandingContent } from "@/components/tools/ToolLandingContent";
 import { supabase } from "@/lib/supabase/client";
+
+const FAQS = [
+  {
+    q: "Is the newsletter generator free?",
+    a: "Yes, generating a sample issue is free with no sign-up. Free accounts can also publish newsletter content directly.",
+  },
+  {
+    q: "Can I use my own list, or does Ozigi provide one?",
+    a: "Both — connect your existing subscriber list, or build one from the leads Ozigi finds for your outreach campaigns.",
+  },
+  {
+    q: "What's a typical issue length?",
+    a: "400–600 words — long enough for a real takeaway, short enough that people actually finish it.",
+  },
+  {
+    q: "Does it sound like ChatGPT wrote it?",
+    a: "No — every draft runs through Ozigi's banned-lexicon filter and your saved persona, which is exactly what stops it from reading like generic AI output.",
+  },
+  {
+    q: "Can I edit before it goes out?",
+    a: "Always. Nothing is scheduled or sent without your review.",
+  },
+];
+
+const RELATED_LINKS = [
+  { href: "/blog/how-to-start-a-newsletter-2026", label: "How to start a newsletter" },
+  { href: "/blog/first-10-newsletter-issues-2026", label: "Your first 10 newsletter issues" },
+  { href: "/pricing", label: "Compare newsletter plans" },
+  { href: "/long-form", label: "AI blog post generator" },
+];
 
 const STORAGE_KEY = "ozigi_demo_newsletter";
 
@@ -137,9 +168,9 @@ export default function NewsletterPage() {
             Newsletter Generator
           </div>
           <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-[#0A1628] leading-[0.9] mb-5">
-            Newsletters people
+            Free AI Newsletter Generator.
             <br />
-            <span className="text-[#E8320A]">actually open and read.</span>
+            <span className="text-[#E8320A]">Full issues people actually open.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto">
             Give us a topic and key points — get a full issue in your voice, with a subject line that earns opens.
@@ -274,6 +305,22 @@ export default function NewsletterPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+      <ToolLandingContent
+        toolName="Ozigi Newsletter Generator"
+        pageUrl="https://ozigi.app/newsletter"
+        offerDescription="Free AI newsletter generator that writes a full issue — hook, body, takeaway, and subject line — from a topic and key points."
+        copyTitle="An AI newsletter generator that writes full issues, not just headlines"
+        copyParagraphs={[
+          "Give Ozigi a topic and a few key points, and it drafts a complete newsletter issue — hook, body, a practical takeaway, and a subject line built to earn opens — in 400 to 600 words.",
+          "It's built for founders and small teams running their own newsletter who want to publish consistently without blocking off a whole afternoon on a blank draft every week.",
+          "What makes it different: the banned lexicon system strips corporate filler before anything ships, and your persona keeps every issue sounding like the same person wrote it — because one did, just with help.",
+          "To use it: enter a topic and the points you want covered, get a full draft back — hook, body, takeaway, subject line — then create a free account to schedule issues and send them straight to your list.",
+        ]}
+        faqs={FAQS}
+        relatedLinks={RELATED_LINKS}
+      />
+
       </main>
 
       {isAuthModalOpen && (

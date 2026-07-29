@@ -50,7 +50,7 @@ The repeat offenders:
 - Corporate filler: "in today's fast-paced world," "circle back," "synergy," "touch base"
 - Empty intensifiers: "truly," "incredibly," "game-changing"
 
-The reason these matter is mechanical. They are the tokens a model reaches for when it has nothing specific to say. Removing them forces the writing, human or machine, to find a real, precise sentence instead of a filler one. We built a [validator that enforces this in production](https://blog.ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) for exactly this reason.
+The reason these matter is mechanical. They are the tokens a model reaches for when it has nothing specific to say. Removing them forces the writing, human or machine, to find a real, precise sentence instead of a filler one. We built a [validator that enforces this in production](https://ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) for exactly this reason.
 
 ## How Do You Personalize Without Faking It?
 
@@ -58,7 +58,7 @@ You personalize by referencing real, observed details, not by dropping a first n
 
 The difference shows up in the numbers. Generic cold emails see roughly 9% response rates, while advanced personalization, tailored to the recipient's real context, runs closer to 18%, about double, according to [B2B cold email benchmarks for 2026](https://martal.ca/b2b-cold-email-statistics-lb/). The same data notes only about 5% of senders personalize every message, which is precisely why doing it sets you apart.
 
-For developer outreach, the raw material for real personalization is public: the repo someone maintains, the language they ship, the issue they filed, the tutorial they wrote. This is why sourcing and writing should share context. If your tool knows the lead maintains a TypeScript API client, the email can open on that, not on "I hope you are well." Finding those details is the job covered in [how to find B2B leads on GitHub and Dev.to](https://blog.ozigi.app/blog/how-to-find-b2b-leads-github-devto).
+For developer outreach, the raw material for real personalization is public: the repo someone maintains, the language they ship, the issue they filed, the tutorial they wrote. This is why sourcing and writing should share context. If your tool knows the lead maintains a TypeScript API client, the email can open on that, not on "I hope you are well." Finding those details is the job covered in [how to find B2B leads on GitHub and Dev.to](https://ozigi.app/blog/how-to-find-b2b-leads-github-devto).
 
 ## What Does a Human Rewrite Actually Look Like?
 
@@ -82,13 +82,13 @@ The second one is shorter, names a real detail, makes one ask, and carries no fi
 
 You keep one voice by defining it once and applying it to every message, instead of letting each email drift toward a default tone. The cold email, the follow-up, and your blog posts should all sound like the same person.
 
-This is what a [System Persona](https://ozigi.app/docs/system-personas) does: it saves who is writing, how they sound, and what they would never say, then applies that to every generation. Pair it with the Banned Lexicon and a [human edit step](https://ozigi.app/docs/human-in-the-loop), and the output stays in character and free of filler without you rewriting from scratch each time. One voice across outreach and content is also what makes the outreach land warmer, a point covered in the [go-to-market playbook for small teams](https://blog.ozigi.app/blog/go-to-market-playbook-solo-founder-technical-team).
+This is what a [System Persona](https://ozigi.app/docs/system-personas) does: it saves who is writing, how they sound, and what they would never say, then applies that to every generation. Pair it with the Banned Lexicon and a [human edit step](https://ozigi.app/docs/human-in-the-loop), and the output stays in character and free of filler without you rewriting from scratch each time. One voice across outreach and content is also what makes the outreach land warmer, a point covered in the [go-to-market playbook for small teams](https://ozigi.app/blog/go-to-market-playbook-solo-founder-technical-team).
 
 ## How Do You Do This at Scale Without Writing Each Email by Hand?
 
 You use a tool that grounds each message in the real lead data and enforces your voice, then you spend your time on the edit, not the blank page. Full hand-writing does not scale; full automation produces the generic email this whole article warns against. The middle path is the one that works.
 
-The [Ozigi GTM engine](https://ozigi.app/dashboard/gtm) composes each step of a sequence, the intro, the follow-up, and the breakup, from the lead's actual bio, company, and topics, shaped by your persona and stripped of banned words. The instruction to the model is blunt: short paragraphs, plain tone, no corporate fluff. What you get is a specific, human-sounding draft you can finish in a minute rather than a generic one you have to rewrite. For how that compares to a separate writing tool plus a separate sender, see the [best free GTM tool comparison](https://blog.ozigi.app/blog/best-free-gtm-tool-2026-ozigi-vs-apollo-clay).
+The [Ozigi GTM engine](https://ozigi.app/dashboard/gtm) composes each step of a sequence, the intro, the follow-up, and the breakup, from the lead's actual bio, company, and topics, shaped by your persona and stripped of banned words. The instruction to the model is blunt: short paragraphs, plain tone, no corporate fluff. What you get is a specific, human-sounding draft you can finish in a minute rather than a generic one you have to rewrite. For how that compares to a separate writing tool plus a separate sender, see the [best free GTM tool comparison](https://ozigi.app/blog/best-free-gtm-tool-2026-ozigi-vs-apollo-clay).
 
 Want to see the difference before committing to anything? [Ozigi's free cold email generator](https://ozigi.app/email-outreach) writes a sample email from your product and target description in seconds, no signup required, so you can judge for yourself whether it reads like a person.
 

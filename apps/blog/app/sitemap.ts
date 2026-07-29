@@ -2,20 +2,14 @@ import { MetadataRoute } from "next";
 import { getAllPosts, getAllSections } from "@/lib/blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://blog.ozigi.app";
-  
+  const baseUrl = "https://ozigi.app";
+
   // Get all blog posts and sections
   const posts = await getAllPosts();
   const sections = getAllSections();
-  
+
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
@@ -23,10 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
   ];
-  
-  // Section pages (top-level for better SEO)
+
+  // Section pages
   const sectionPages: MetadataRoute.Sitemap = sections.map((section) => ({
-    url: `${baseUrl}/${section.toLowerCase().replace(/\s+/g, "-")}`,
+    url: `${baseUrl}/blog/section/${section.toLowerCase().replace(/\s+/g, "-")}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
