@@ -10,6 +10,11 @@ export interface Heading {
   id: string;
 }
 
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -32,6 +37,7 @@ export interface BlogPost {
   keywords?: string[];
   content: string;
   headings: Heading[];
+  faqs: FAQ[];
   [key: string]: unknown;
 }
 
@@ -52,6 +58,56 @@ export function extractHeadings(content: string): Heading[] {
     headings.push({ text, level, id });
   }
   return headings;
+}
+
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .trim();
+}
+
+// Parses the "## Frequently Asked Questions" section into FAQPage-ready
+// Q&A pairs. Relies on the site-wide convention of a bold question on its
+// own line followed by a plain-text answer paragraph.
+export function extractFAQs(content: string): FAQ[] {
+  const headingMatch = content.match(/^##\s+Frequently Asked Questions.*$/im);
+  if (!headingMatch || headingMatch.index === undefined) return [];
+
+  const rest = content.slice(headingMatch.index + headingMatch[0].length);
+  const endMatch = rest.match(/^##\s+.+$|^---\s*$/m);
+  const section = endMatch && endMatch.index !== undefined ? rest.slice(0, endMatch.index) : rest;
+
+  const faqs: FAQ[] = [];
+  let currentQuestion: string | null = null;
+  let currentAnswer: string[] = [];
+
+  const flush = () => {
+    if (currentQuestion && currentAnswer.length > 0) {
+      faqs.push({
+        question: stripMarkdown(currentQuestion),
+        answer: stripMarkdown(currentAnswer.join(" ").replace(/\s+/g, " ")),
+      });
+    }
+  };
+
+  // Questions appear either as a bold line (**Q?**) or a level-3 heading (### Q?)
+  for (const rawLine of section.split("\n")) {
+    const line = rawLine.trim();
+    const questionMatch = line.match(/^\*\*(.+?)\*\*$/) || line.match(/^#{3}\s+(.+)$/);
+    if (questionMatch) {
+      flush();
+      currentQuestion = questionMatch[1];
+      currentAnswer = [];
+    } else if (line && currentQuestion) {
+      currentAnswer.push(line);
+    }
+  }
+  flush();
+
+  return faqs;
 }
 
 function parseCategories(data: Record<string, unknown>): string[] {
@@ -126,6 +182,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
           section: data.section,
           content,
           headings: extractHeadings(content),
+          faqs: extractFAQs(content),
           ...data,
         } as BlogPost;
       } catch (error) {
@@ -195,6 +252,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       section: data.section || null,
       content,
       headings: extractHeadings(content),
+      faqs: extractFAQs(content),
       ...data,
     };
   } catch {
