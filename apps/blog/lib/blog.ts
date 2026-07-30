@@ -4,6 +4,17 @@ import matter from "gray-matter";
 
 const postsDirectory = path.join(process.cwd(), "content", "blog");
 
+const BLOG_ORIGIN = "https://blog.ozigi.app";
+
+/** Post/author images are stored as root-relative paths (e.g. "/images/blog/x/cover.svg").
+ *  Posts render both natively at blog.ozigi.app and proxied at ozigi.app/blog — a root-relative
+ *  path resolves against whichever host the browser is actually on, which 404s when proxied.
+ *  Resolving to an absolute blog.ozigi.app URL makes it work from either context. */
+function toAbsoluteBlogAsset<T extends string | null | undefined>(src: T): T {
+  if (!src || /^https?:\/\//.test(src)) return src;
+  return (`${BLOG_ORIGIN}${src.startsWith("/") ? "" : "/"}${src}`) as T;
+}
+
 export interface Heading {
   text: string;
   level: number;
@@ -165,15 +176,16 @@ export async function getAllPosts(): Promise<BlogPost[]> {
         }
 
         return {
+          ...data,
           slug,
           title: data.title || 'Untitled',
           date: data.date || new Date().toISOString().split('T')[0],
           modifiedTime: data.modifiedTime || data.lastModified || undefined,
           excerpt: data.excerpt || data.description,
           description: data.description || data.excerpt,
-          coverImage: data.coverImage,
+          coverImage: toAbsoluteBlogAsset(data.coverImage),
           author: data.author,
-          authorImage: data.authorImage,
+          authorImage: toAbsoluteBlogAsset(data.authorImage),
           authorBio: data.authorBio,
           authorUrl: data.authorUrl,
           authorHandle: data.authorHandle,
@@ -183,7 +195,6 @@ export async function getAllPosts(): Promise<BlogPost[]> {
           content,
           headings: extractHeadings(content),
           faqs: extractFAQs(content),
-          ...data,
         } as BlogPost;
       } catch (error) {
         console.error(`Error processing blog post ${filename}:`, error);
@@ -235,15 +246,16 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     }
 
     return {
+      ...data,
       slug,
       title: data.title,
       date: data.date,
       modifiedTime: data.modifiedTime || data.lastModified || undefined,
       excerpt: data.excerpt || data.description,
       description: data.description || data.excerpt,
-      coverImage: data.coverImage || null,
+      coverImage: toAbsoluteBlogAsset(data.coverImage) || null,
       author: data.author,
-      authorImage: data.authorImage || null,
+      authorImage: toAbsoluteBlogAsset(data.authorImage) || null,
       authorBio: data.authorBio || null,
       authorUrl: data.authorUrl || null,
       authorHandle: data.authorHandle || null,
@@ -253,7 +265,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       content,
       headings: extractHeadings(content),
       faqs: extractFAQs(content),
-      ...data,
     };
   } catch {
     return null;

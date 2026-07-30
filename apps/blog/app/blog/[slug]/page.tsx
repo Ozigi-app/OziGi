@@ -76,7 +76,7 @@ const hasHeadings = post.headings && post.headings.length > 0;
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description || post.excerpt,
-    image: post.coverImage || "/images/og-default.png",
+    image: post.coverImage || "https://blog.ozigi.app/images/og-default.png",
     datePublished: post.date,
     dateModified: post.modifiedTime || post.date,
     author: post.author ? {
