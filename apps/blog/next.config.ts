@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
 images: {
   dangerouslyAllowSVG: true,
   contentDispositionType: 'attachment',
+  // coverImage/authorImage are absolute blog.ozigi.app URLs (see lib/blog.ts) so
+  // they resolve correctly when pages are viewed via the ozigi.app/blog proxy.
+  // The /_next/image optimization endpoint doesn't pick up assetPrefix the way
+  // /_next/static does, so it stays root-relative and 404s under the proxy.
+  // Skipping optimization sidesteps that endpoint entirely — <Image> just
+  // renders the (already-correct, already-absolute) src directly.
+  unoptimized: true,
 },
 };
 
