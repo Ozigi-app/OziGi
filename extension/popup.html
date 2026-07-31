@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    :root { color-scheme: light dark; }
+    body { width: 300px; margin: 0; font: 13px/1.45 -apple-system, Segoe UI, Roboto, sans-serif; padding: 14px; }
+    h1 { font-size: 14px; margin: 0 0 10px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+    .dot.on { background: #22c55e; }
+    label { display: block; font-weight: 600; margin: 10px 0 4px; font-size: 12px; }
+    input[type=text] { width: 100%; box-sizing: border-box; padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 12px; }
+    .row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
+    .switch { font-weight: 600; }
+    button { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+    .primary { background: #E8320A; color: #fff; width: 100%; }
+    .ghost { background: #f1f5f9; color: #334155; }
+    .stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-top: 8px; display: flex; justify-content: space-between; }
+    .muted { color: #64748b; font-size: 11px; }
+    a { color: #E8320A; }
+    @media (prefers-color-scheme: dark) {
+      input[type=text] { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+      .stat { background: #0f172a; border-color: #1e293b; }
+      .ghost { background: #1e293b; color: #e2e8f0; }
+    }
+  </style>
+</head>
+<body>
+  <h1><span class="dot" id="dot"></span> Ozigi LinkedIn Sender</h1>
+
+  <label for="apiBase">Ozigi URL</label>
+  <input type="text" id="apiBase" placeholder="https://ozigi.app" autocomplete="off" />
+  <div class="muted" style="margin-top:4px">Use <code>http://localhost:3000</code> for local testing.</div>
+
+  <label for="token">Connection token</label>
+  <input type="text" id="token" placeholder="Paste from Ozigi → Settings → LinkedIn" autocomplete="off" />
+  <div class="muted" style="margin-top:4px">Get it in <a href="https://ozigi.app/dashboard/gtm/settings" target="_blank">Ozigi Settings</a>.</div>
+
+  <div class="row"><span class="switch">Enabled</span><input type="checkbox" id="enabled" /></div>
+  <div class="row"><span class="switch">Review before sending</span><input type="checkbox" id="review" /></div>
+
+  <div class="stat"><span>Connects today</span><b id="cCount">–</b></div>
+  <div class="stat"><span>Messages today</span><b id="mCount">–</b></div>
+
+  <div style="margin-top:12px; display:flex; gap:8px">
+    <button class="primary" id="save">Save</button>
+    <button class="ghost" id="run">Run now</button>
+  </div>
+  <div class="muted" id="msg" style="margin-top:8px"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
