@@ -1079,6 +1079,35 @@ function SocialCard({
     }
   };
 
+  // Share to LinkedIn without the API. Mobile → native share sheet (the LinkedIn
+  // app is a share target); desktop → the web composer URL (which honours the
+  // prefilled text); clipboard as the universal last resort.
+  const handleShareToLinkedIn = async () => {
+    const isMobile = typeof navigator !== "undefined" &&
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+    if (isMobile && typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch (err: any) {
+        if (err?.name === "AbortError") return; // user dismissed the sheet
+        // otherwise fall through to the composer / clipboard
+      }
+    }
+
+    const intentUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
+    const win = window.open(intentUrl, "_blank", "noopener,noreferrer");
+    if (!win) {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.info("Post copied — open LinkedIn and paste it in.");
+      } catch {
+        toast.error("Couldn't open LinkedIn. Copy your text and paste it manually.");
+      }
+    }
+  };
+
   const handleDownloadImage = (e: React.MouseEvent, url: string, idx: number) => {
     e.stopPropagation();
     if (!url) return;
@@ -1362,17 +1391,14 @@ function SocialCard({
             </p>
           )}
           <button
-            onClick={() => {
-              const intentUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
-              window.open(intentUrl, "_blank", "noopener,noreferrer");
-            }}
+            onClick={handleShareToLinkedIn}
             className={`w-full py-2 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-1.5 mt-2 border ${
               postStatus === "error"
                 ? "border-[#0A66C2] text-[#0A66C2] bg-[#0A66C2]/5 hover:bg-[#0A66C2]/10"
                 : "border-slate-200 text-slate-400 hover:text-[#0A66C2] hover:border-[#0A66C2]/40"
             }`}
           >
-            Open in LinkedIn
+            Share to LinkedIn
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M7 17L17 7M17 7H8M17 7v9" />
             </svg>
