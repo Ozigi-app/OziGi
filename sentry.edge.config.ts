@@ -8,11 +8,15 @@ import * as Sentry from "@sentry/nextjs";
 Sentry.init({
   dsn: "https://0c22d3ac235eb3968f0b71ffab86dd67@o4511042432270336.ingest.de.sentry.io/4511042438758480",
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // This config loads inside middleware, which runs ahead of matched requests —
+  // so a 100% trace rate meant building and serialising a transaction on every
+  // one of them. Middleware traces are the highest-volume and least useful
+  // thing we send, so production samples them thinly.
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.02 : 1,
 
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
+  // Off in production for the same reason: log capture adds per-request
+  // serialisation work in the hottest path we have.
+  enableLogs: process.env.NODE_ENV !== "production",
 
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii

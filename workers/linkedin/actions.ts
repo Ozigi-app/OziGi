@@ -18,6 +18,24 @@ function withTimeout<T>(promise: PromiseLike<T>, ms: number, label: string): Pro
   ])
 }
 
+// Whether the profile currently open in `page` shows as 1st-degree connected.
+// Scoped to the profile owner's own name heading, NOT document.body — a
+// page-wide "1st" scan also matches the "· 1st" degree badges LinkedIn prints
+// next to OTHER people in the "People also viewed" / "More profiles" sidebar,
+// producing false positives that make every profile look already-connected.
+// This is the same class of bug documented in BUG_HISTORY.md for the message
+// flow's degree check; applying the same name-anchored fix here.
+async function isTargetProfile1stDegree(page: Page): Promise<boolean> {
+  return page.evaluate(() => {
+    const h1 = document.querySelector('main h1') ?? document.querySelector('h1')
+    const nameArea = ((h1?.closest('section') ?? h1?.parentElement)?.textContent ?? '')
+      .replace(/\s+/g, ' ').trim()
+    const hasScopedLabel = !!(h1?.closest('section') ?? h1?.parentElement)
+      ?.querySelector('[aria-label*="1st degree"], [aria-label*="1º grau"], [aria-label*="1er degré"]')
+    return /(^|\W)1st(\W|$)/.test(nameArea.slice(0, 160)) || hasScopedLabel
+  }).catch(() => false)
+}
+
 /**
  * Wander the LinkedIn feed like a real user before navigating to a profile.
  *
@@ -165,11 +183,16 @@ async function dismissMessagingOverlay(page: Page, profileId: string): Promise<v
  */
 async function clickConnectButton(page: import('playwright').Page): Promise<boolean> {
 
-  // 1. Direct top-level Connect/Invite button via Playwright role locator (most reliable)
-  //    Covers English + Portuguese ("Conectar", "Convidar") + Spanish ("Conectar") + French ("Se connecter")
-  const directConnect = page.getByRole('button', {
-    name: /^(Connect|Invite .* to connect|Conectar|Convidar .* para se conectar|Convidar para se conectar|Se connecter|Conectar con)$/i,
-  })
+  // LinkedIn now renders the primary Connect control as an <a> (role=link), not a
+  // <button>: e.g. <a href="/preload/custom-invite/?vanityName=..."
+  // aria-label="Invite <Name> to connect" componentkey="ConnectButton...">Connect</a>.
+  // Class names are hashed and rotate, so we match ONLY on stable attributes
+  // (accessible name, href, componentkey) and accept both button AND link roles.
+  const connectName = /^(Connect|Invite .* to connect|Conectar|Convidar .* para se conectar|Convidar para se conectar|Se connecter|Conectar con)$/i
+
+  // 1. Role locator — try both button and link (the Connect <a> is a link).
+  const directConnect = page.getByRole('button', { name: connectName })
+    .or(page.getByRole('link', { name: connectName }))
   if (await directConnect.first().isVisible({ timeout: 3_000 }).catch(() => false)) {
     // Re-apply overlay suppression immediately before the click — LinkedIn's Ember.js
     // can re-render the messaging overlay between dismissMessagingOverlay() and here,
@@ -179,10 +202,13 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
     return true
   }
 
-  // 2. Aria-label fallback — catches "Invite Jane to connect" / "Convidar Jane para se conectar" etc.
+  // 2. Attribute fallback — anchors and buttons, matched on aria-label / href /
+  //    componentkey (all stable). Excludes the "More" trigger.
   const ariaConnect = page.locator(
-    'button[aria-label*="Invite"][aria-label*="connect"], button[aria-label*="Connect"]:not([aria-label*="More"]),' +
-    'button[aria-label*="Convidar"][aria-label*="conectar"], button[aria-label*="Conectar"]:not([aria-label*="Mais"])'
+    'a[href*="custom-invite"],' +
+    'a[aria-label*="to connect" i]:not([aria-label*="More" i]), button[aria-label*="to connect" i]:not([aria-label*="More" i]),' +
+    'a[aria-label*="para se conectar" i], button[aria-label*="para se conectar" i],' +
+    '[componentkey*="ConnectButton" i]'
   ).first()
   if (await ariaConnect.isVisible({ timeout: 2_000 }).catch(() => false)) {
     await suppressInterceptors(page)
@@ -190,35 +216,36 @@ async function clickConnectButton(page: import('playwright').Page): Promise<bool
     return true
   }
 
-  // 3. JS scan — find the Connect button, then use a real Playwright click.
-  //    dispatchEvent was here previously but synthetic events skip LinkedIn's
-  //    full click handler and cause LinkedIn to send the request without
-  //    showing the "Add a note" modal. We find the button with JS and then
-  //    hand back to Playwright for the actual click.
-  const connectBtnText = await page.evaluate(() => {
-    for (const btn of Array.from(document.querySelectorAll('button'))) {
-      const label = (btn.getAttribute('aria-label') ?? '').toLowerCase()
-      const text  = (btn.textContent ?? '').trim().toLowerCase()
-      const isConnect = label.includes('invite') || label.includes('connect') ||
-                        text === 'connect'
+  // 3. JS scan across buttons AND anchors — find the Connect control, then hand back
+  //    to Playwright for a real click (synthetic events skip LinkedIn's handler).
+  const connectSel = await page.evaluate(() => {
+    const els = Array.from(document.querySelectorAll('button, a[aria-label], a[href*="custom-invite"], [componentkey*="ConnectButton"]'))
+    for (const el of els) {
+      if ((el as HTMLElement).offsetParent === null) continue
+      const label = (el.getAttribute('aria-label') ?? '').toLowerCase()
+      const href  = (el.getAttribute('href') ?? '').toLowerCase()
+      const ckey  = (el.getAttribute('componentkey') ?? '').toLowerCase()
+      const text  = (el.textContent ?? '').trim().toLowerCase()
+      const isConnect = href.includes('custom-invite') || ckey.includes('connectbutton') ||
+                        label.includes('to connect') || label.includes('para se conectar') ||
+                        (text === 'connect' && !label.includes('more'))
       const isNotMore = !label.includes('more') && text !== 'message' &&
                         text !== 'follow' && text !== 'following'
       if (isConnect && isNotMore) {
-        // Return the aria-label or text so Playwright can locate it properly
-        return btn.getAttribute('aria-label') || btn.textContent?.trim() || 'Connect'
+        // Return a stable selector so Playwright can re-locate and really click it.
+        if (ckey) return `[componentkey="${el.getAttribute('componentkey')}"]`
+        if (href.includes('custom-invite')) return `a[href="${el.getAttribute('href')}"]`
+        return `[aria-label="${el.getAttribute('aria-label')}"]`
       }
     }
     return null
   })
-  if (connectBtnText) {
-    // Use a real Playwright click so LinkedIn's full click handler fires (required for the modal)
-    const jsFoundBtn = page.locator(`button[aria-label="${connectBtnText}"]`)
-      .or(page.locator('button').filter({ hasText: new RegExp(`^${connectBtnText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`) }))
-      .first()
+  if (connectSel) {
+    const jsFoundBtn = page.locator(connectSel).first()
     if (await jsFoundBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await suppressInterceptors(page)
       await jsFoundBtn.click({ timeout: 8_000 })
-      console.log(`[actions] Connect clicked via JS-found button: "${connectBtnText.slice(0, 40)}"`)
+      console.log(`[actions] Connect clicked via JS-found control: ${connectSel.slice(0, 60)}`)
       return true
     }
   }
@@ -423,13 +450,10 @@ export async function sendConnectionRequest(
       const isMessage   = await main.locator('button:has-text("Message"), button:has-text("Mensagem"), button:has-text("Mensaje"), button:has-text("Envoyer un message")').isVisible({ timeout: 1_000 }).catch(() => false)
       const isFollowing = await main.locator('button:has-text("Following"), button:has-text("Seguindo"), button:has-text("Siguiendo"), button:has-text("Abonné")').isVisible({ timeout: 1_000 }).catch(() => false)
 
-      // Check connection degree: "1st" in page = already connected;
-      // no "1st" + Message button = Open Profile (Premium, allows anyone to message)
-      const is1stDegree = await page.evaluate(() => {
-        const bodyText = document.body.textContent ?? ''
-        return /\b1st\b/.test(bodyText) ||
-               document.querySelector('[aria-label*="1st degree"]') !== null
-      }).catch(() => false)
+      // Check connection degree: 1st-degree on the TARGET's own name = already
+      // connected; no 1st-degree + Message button = Open Profile (Premium,
+      // allows anyone to message). Name-scoped — see isTargetProfile1stDegree.
+      const is1stDegree = await isTargetProfile1stDegree(page)
 
       const finalUrl = page.url()
       const pageState = await page.evaluate(() => {
@@ -653,6 +677,10 @@ export async function checkConnectionAccepted(
     // Give React a moment to render the connection degree badge
     await page.waitForTimeout(3000)
 
+    // NOTE: whole-page scans here (body text / bare button selectors) previously
+    // caused false "connected" positives from OTHER people's "1st"/Message buttons
+    // in the "People also viewed" sidebar — see isTargetProfile1stDegree above.
+    // Everything connection-related below is scoped to <main>, excluding <aside>.
     const result = await page.evaluate(() => {
       const body = document.body.textContent ?? ''
       const bodyLen = body.trim().length
@@ -660,14 +688,21 @@ export async function checkConnectionAccepted(
       // Detect blank / rate-limited page — real profiles have hundreds of chars
       if (bodyLen < 300) return { blocked: true, connected: false }
 
-      // LinkedIn shows "1st" degree badge on connected profiles.
-      const bodyHas1st = /\b1st\b/.test(body)
-      const has1stLabel = !!document.querySelector(
+      const h1 = document.querySelector('main h1') ?? document.querySelector('h1')
+      const nameArea = h1?.closest('section') ?? h1?.parentElement ?? null
+      const nameAreaText = (nameArea?.textContent ?? '').replace(/\s+/g, ' ').trim()
+      const bodyHas1st = /(^|\W)1st(\W|$)/.test(nameAreaText.slice(0, 160))
+      const has1stLabel = !!nameArea?.querySelector(
         '[aria-label*="1st degree"], [aria-label*="1º grau"], [aria-label*="1er degré"]'
       )
-      // Message button present + no Connect button = 1st degree (connected)
-      const hasMessage = !!document.querySelector('button[aria-label*="Message"], button[aria-label*="Mensagem"]')
-      const hasConnect = !!document.querySelector('button[aria-label*="Connect"], button[aria-label*="Conectar"]')
+
+      // Message button present + no Connect button = 1st degree (connected).
+      // Scoped to <main>, excluding <aside> (sidebar suggestions for other people).
+      const inMain = (el: Element) => !!el.closest('main') && !el.closest('aside')
+      const hasMessage = Array.from(document.querySelectorAll('button[aria-label*="Message"], button[aria-label*="Mensagem"]'))
+        .some(inMain)
+      const hasConnect = Array.from(document.querySelectorAll('button[aria-label*="Connect"], button[aria-label*="Conectar"]'))
+        .some(inMain)
       return {
         blocked: false,
         connected: bodyHas1st || has1stLabel || (hasMessage && !hasConnect),
@@ -779,6 +814,84 @@ export async function sendLinkedInMessage(
     const bodyLen = await page.evaluate(() => (document.body.textContent ?? '').trim().length).catch(() => 0)
     if (bodyLen < 300) {
       throw new Error(`BLANK_PAGE: LinkedIn served a near-empty page for https://www.linkedin.com/in/${linkedinProfileId}/ — temporary block`)
+    }
+
+    // ── 2b. PRIMARY send path: Voyager messaging API via SDUI-embedded URN ─────
+    // LinkedIn's server-driven-UI profile withholds the top-card action bar (the
+    // Message/Connect buttons) from automated sessions — even for real 1st-degree
+    // connections (verified: a confirmed connection rendered with no Message button
+    // for the worker while showing it in a real browser). So button-clicking is
+    // unreliable. However the recipient's fsd_profile URN is still embedded in the
+    // SDUI component keys (e.g. "…profile.card.ref<URN>Topcard"); sidebar people never
+    // appear in that ref-pattern, so it uniquely identifies the profile OWNER. We
+    // extract it and message the recipient directly through Voyager — no button needed.
+    const ownerId = await page.evaluate(() => {
+      const html = document.documentElement.innerHTML
+      const counts: Record<string, number> = {}
+      const re = /profile\.card\.ref([A-Za-z0-9_-]{16,})(?:Topcard|About|Experience|Skills|Education|Activity|Certification|Recommendations|VolunteerExperience|Languages|Organizations)/g
+      let m: RegExpExecArray | null
+      while ((m = re.exec(html))) counts[m[1]] = (counts[m[1]] || 0) + 1
+      let best: string | null = null, bestN = 0
+      for (const k in counts) if (counts[k] > bestN) { best = k; bestN = counts[k] }
+      return best
+    }).catch(() => null)
+
+    if (ownerId) {
+      const recipientUrn = `urn:li:fsd_profile:${ownerId}`
+      const csrfToken = capturedApiHeaders['csrf-token'] ?? await page.evaluate(() => {
+        const entry = document.cookie.split('; ').find(c => c.startsWith('JSESSIONID='))
+        if (!entry) return null
+        return decodeURIComponent(entry.substring('JSESSIONID='.length)).replace(/^"|"$/g, '').trim()
+      }).catch(() => null)
+
+      if (csrfToken) {
+        console.log(`[actions] Voyager send (SDUI URN) for ${linkedinProfileId} urn=${recipientUrn.slice(0, 45)} csrf=${csrfToken.slice(0, 20)}`)
+        const apiResult = await page.evaluate(async (p: { csrf: string; urn: string; msg: string; extra: Record<string, string> }) => {
+          const reqBody = JSON.stringify({
+            keyVersion: 'LEGACY_INBOX',
+            conversationCreate: {
+              eventCreate: { value: { 'com.linkedin.voyager.messaging.create.MessageCreate': { attributedBody: { text: p.msg, attributes: [] }, attachments: [] } } },
+              recipients: [p.urn],
+              subtype: 'MEMBER_TO_MEMBER',
+            },
+          })
+          try {
+            const resp = await fetch('/voyager/api/messaging/conversations', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': p.csrf,
+                'x-li-lang': p.extra['x-li-lang'] ?? 'en_US',
+                'x-restli-protocol-version': p.extra['x-restli-protocol-version'] ?? '2.0.0',
+                ...(p.extra['x-li-track'] ? { 'x-li-track': p.extra['x-li-track'] } : {}),
+              },
+              body: reqBody,
+            })
+            const body = await resp.text()
+            return { status: resp.status, ok: resp.ok, body: body.slice(0, 500) }
+          } catch (e: unknown) {
+            return { status: 0, ok: false, body: String(e instanceof Error ? e.message : e) }
+          }
+        }, { csrf: csrfToken, urn: recipientUrn, msg: message, extra: capturedApiHeaders })
+
+        console.log(`[actions] Voyager result for ${linkedinProfileId}: status=${apiResult?.status} body=${apiResult?.body?.slice(0, 220)}`)
+
+        if (apiResult?.ok) {
+          console.log(`[actions] message sent via Voyager API (SDUI URN) for ${linkedinProfileId} ✓`)
+          return
+        }
+        // 4xx (esp. 403) on a MEMBER_TO_MEMBER send = recipient is not a 1st-degree
+        // connection (can't message them without InMail). Reschedule via NOT_YET_CONNECTED.
+        if (apiResult && apiResult.status >= 400 && apiResult.status < 500) {
+          throw new Error(`NOT_YET_CONNECTED: ${linkedinProfileId} — Voyager rejected MEMBER_TO_MEMBER (HTTP ${apiResult.status}); recipient likely not connected`)
+        }
+        // 5xx / network hiccup — fall through to the legacy button flow as a backup.
+        console.warn(`[actions] Voyager SDUI send inconclusive (status ${apiResult?.status}) — falling back to button flow`)
+      } else {
+        console.warn(`[actions] no CSRF token for ${linkedinProfileId} — falling back to button flow`)
+      }
+    } else {
+      console.warn(`[actions] could not extract owner URN from SDUI for ${linkedinProfileId} — falling back to button flow`)
     }
 
     // ── 3. Dismiss any open messaging overlays ───────────────────────────────
@@ -1013,13 +1126,22 @@ export async function sendLinkedInMessage(
         console.log(`[actions] Voyager API result for ${linkedinProfileId}: status=${apiResult?.status} body=${apiResult?.body?.slice(0, 300)}`)
         console.log(`[actions] Voyager API sentBody for ${linkedinProfileId}: ${apiResult?.sentBody}`)
 
-        if (!apiResult?.ok) {
-          throw new Error(`Voyager API failed for ${linkedinProfileId}: HTTP ${apiResult?.status} — ${apiResult?.body?.slice(0, 200)}`)
+        if (apiResult?.ok) {
+          // Message sent via API — return early so index.ts can mark as sent
+          console.log(`[actions] message sent via Voyager API for ${linkedinProfileId} ✓`)
+          return
         }
 
-        // Message sent via API — return early so index.ts can mark as sent
-        console.log(`[actions] message sent via Voyager API for ${linkedinProfileId} ✓`)
-        return
+        // API call failed (LinkedIn's internal message schema changes without notice —
+        // an HTTP 400 here means the hand-rolled request body no longer matches what
+        // their backend expects, not that the button/recipient is wrong). Rather than
+        // reverse-engineer their private schema blind, fall back to a real UI click on
+        // the same link — this drops through to the same keyboard-typing + send-button
+        // flow used below for non-API compose buttons, which is independently verified
+        // and doesn't depend on guessing LinkedIn's internal payload shape.
+        console.warn(`[actions] Voyager API failed for ${linkedinProfileId} (HTTP ${apiResult?.status}) — falling back to UI click`)
+        await msgBtn.click({ timeout: 10_000 })
+        console.log(`[actions] Message button clicked (UI fallback after Voyager API failure) for ${linkedinProfileId}`)
       } else {
         await msgBtn.click({ timeout: 10_000 })
         console.log(`[actions] Message button clicked (Playwright) for ${linkedinProfileId}`)

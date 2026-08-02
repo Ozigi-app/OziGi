@@ -97,6 +97,19 @@ function SettingsContent() {
   const [twoFaSubmitting, setTwoFaSubmitting] = useState(false)
   const [liMsg, setLiMsg] = useState('')
 
+  // Browser-extension sender token (replaces the headless worker login).
+  const [extToken, setExtToken] = useState<string | null>(null)
+  const [extCopied, setExtCopied] = useState(false)
+  async function loadExtToken() {
+    const d = await fetch('/api/gtm/linkedin/extension/token').then(r => r.json()).catch(() => null)
+    if (d?.token) setExtToken(d.token)
+  }
+  async function rotateExtToken() {
+    const d = await fetch('/api/gtm/linkedin/extension/token', { method: 'POST' }).then(r => r.json()).catch(() => null)
+    if (d?.token) { setExtToken(d.token); setExtCopied(false) }
+  }
+  useEffect(() => { loadExtToken() }, [])
+
   // Timestamp of when we started polling for login progress, or null when idle.
   // Drives the polling interval below — state (not a ref) so the interval
   // lifecycle is owned by a single effect and survives unrelated re-renders.
@@ -612,6 +625,45 @@ function SettingsContent() {
       {/* ── LinkedIn ──────────────────────────────────────────────────────── */}
       <section className="mb-10">
         <h2 className="text-base font-bold text-foreground mb-4">LinkedIn</h2>
+
+        {/* Browser sender — the safe way to run LinkedIn outreach. */}
+        <div className="border border-border rounded-xl p-5 mb-5 bg-surface">
+          <div className="font-semibold text-foreground text-sm mb-1">Ozigi Browser Sender</div>
+          <p className="text-xs text-foreground-muted leading-relaxed mb-3">
+            Ozigi finds leads and writes your connects &amp; messages automatically. The browser
+            extension sends them from <strong>your own LinkedIn tab</strong>, at a human pace —
+            so nothing runs on a server and your account stays safe.
+          </p>
+          <ol className="text-xs text-foreground-muted leading-relaxed list-decimal pl-4 mb-3 space-y-1">
+            <li>Install the Ozigi extension in Chrome (Extensions → Load unpacked → the <code>extension</code> folder).</li>
+            <li>Click the extension, paste the token below, and turn it on.</li>
+            <li>Keep a LinkedIn tab open while you work — Ozigi sends in the background.</li>
+          </ol>
+          <label className="block text-xs font-bold text-foreground-muted mb-1.5">Your connection token</label>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              value={extToken ?? 'Loading…'}
+              className="flex-1 border border-border rounded-lg px-3 py-2 text-xs font-mono bg-surface-2 text-foreground"
+            />
+            <button
+              onClick={() => { if (extToken) { navigator.clipboard.writeText(extToken); setExtCopied(true); setTimeout(() => setExtCopied(false), 2000) } }}
+              className="px-3 py-2 text-xs font-bold rounded-lg bg-accent text-white"
+            >
+              {extCopied ? 'Copied' : 'Copy'}
+            </button>
+            <button
+              onClick={rotateExtToken}
+              className="px-3 py-2 text-xs font-bold rounded-lg bg-surface-2 border border-border text-foreground-muted"
+              title="Revoke the old token and generate a new one"
+            >
+              Rotate
+            </button>
+          </div>
+          <p className="text-[11px] text-foreground-muted mt-2">
+            Keep this private — anyone with it can queue sends to your LinkedIn. Rotate if it leaks.
+          </p>
+        </div>
 
         {liMsg && (
           <div className="bg-sky-50 border border-sky-200 text-sky-800 rounded-lg px-4 py-3 mb-4 text-sm">
