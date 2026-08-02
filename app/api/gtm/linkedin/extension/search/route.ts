@@ -52,6 +52,40 @@ export async function GET(req: Request) {
   )
   if (!linkedinCampaigns.length) return NextResponse.json({ job: null }, { headers: extensionCors })
 
+  // A "Search now" from the dashboard overrides the daily rule — but only once,
+  // and only while it's fresh, so a forgotten click can't turn into an open
+  // licence to search on every poll.
+  const { data: tokenRow } = await supabaseAdmin
+    .from('linkedin_extension_tokens')
+    .select('token, search_requested_at')
+    .eq('user_id', userId)
+    .eq('revoked', false)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const requestedAt = tokenRow?.search_requested_at ? new Date(tokenRow.search_requested_at).getTime() : 0
+  const forced = requestedAt > 0 && Date.now() - requestedAt < 30 * 60 * 1000
+
+  if (forced && tokenRow?.token) {
+    // Clear it before handing the job over: if the search itself fails, the user
+    // clicks again. Leaving it set would re-fire on every subsequent poll.
+    await supabaseAdmin
+      .from('linkedin_extension_tokens')
+      .update({ search_requested_at: null })
+      .eq('token', tokenRow.token)
+
+    const campaign = linkedinCampaigns[0]
+    return NextResponse.json({
+      job: {
+        campaignId: campaign.id,
+        campaignName: campaign.name ?? null,
+        searchUrl: buildSearchUrl((campaign.icp_config ?? {}) as IcpConfig),
+        limit: 25,
+      },
+    }, { headers: extensionCors })
+  }
+
   // One search per campaign per day — searching is far more rate-limit sensitive
   // than sending, and repeat runs mostly re-find the same people.
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()

@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { UserPlus, CheckCircle, Clock, RefreshCw } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
+import ExtensionStatusPanel from '@/components/gtm/ExtensionStatusPanel'
 import Link from 'next/link'
 
 interface QueueItem {
@@ -80,6 +81,8 @@ export default function LinkedInOutreachPage() {
         </div>
 
         <FreeAgentBanner />
+
+        <ExtensionStatusPanel />
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
