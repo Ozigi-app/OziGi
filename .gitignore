@@ -115,3 +115,7 @@ apps/blog/public/images/**/*_preview.*
 
 # Worker configurations
 worker/
+
+# Local outreach samples - contain live unsubscribe tokens
+sample-cold-email.html
+sample-unsubscribe-url.txt
