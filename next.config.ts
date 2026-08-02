@@ -42,7 +42,11 @@ const sentryConfig = {
   project: "javascript-nextjs",
   silent: true,
   widenClientFileUpload: true,
-  tunnelRoute: "/monitoring",
+  // tunnelRoute was proxying every client-side Sentry payload (errors, traces,
+  // session replay chunks) through a Vercel Function on this project, so all of
+  // that browser telemetry was billed as our own compute. Its only benefit is
+  // dodging ad blockers; that isn't worth paying serverless CPU for, so the
+  // browser now posts straight to Sentry's ingest endpoint.
   automaticVercelMonitors: true,
   hideSourceMaps: false,
   disableLogger: true,
