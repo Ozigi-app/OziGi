@@ -455,11 +455,15 @@ async function rectConnectInMenu() {
 }
 
 // Called after background.js trusted-clicks the Connect button.
+// 25s, not 10s: on a slow SDUI profile the invite modal can mount well after ten
+// seconds, and once this returns the flow is over — the modal then appears with
+// nobody left to drive it, which looks exactly like the page freezing mid-invite
+// (confirmed on a real profile).
 async function afterConnectClick() {
   const modal = await waitFor(() => {
     const m = findConnectModal()
     return visible(m) ? m : null
-  }, { timeout: 10000 })
+  }, { timeout: 25000 })
   if (!modal) { await sleep(1200); return { outcome: 'no-modal' } } // some layouts send immediately
   return { outcome: 'modal-open' }
 }
@@ -600,7 +604,7 @@ function diagnoseModal() {
     }))
 
   return {
-    contentVersion: 'skip-preload-frame',
+    contentVersion: 'slow-modal-wait',
     url: location.pathname,
     roots: allRoots().length,
     openDialogs: q('dialog[open]').map(describe),
@@ -669,7 +673,7 @@ function diagnoseComposeBase() {
     searched: usableFrame(f), // false = deliberately skipped (hidden/preload shell)
   }))
   return {
-    contentVersion: 'skip-preload-frame',
+    contentVersion: 'slow-modal-wait',
     url: location.pathname,
     roots: allRoots().length,
     isTopFrame: window === window.top,

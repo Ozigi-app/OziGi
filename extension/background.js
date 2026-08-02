@@ -339,7 +339,15 @@ async function runConnectAction(tabId, note) {
     const clicked = await dispatchClick(tabId, target.x, target.y)
     if (!clicked) return { outcome: 'retry_later', error: 'trusted click failed' }
 
-    const after = await sendToContent(tabId, { cmd: 'afterConnectClick' })
+    let after = await sendToContent(tabId, { cmd: 'afterConnectClick' })
+    if (after.outcome === 'no-modal') {
+      // Give it one more window before concluding the click missed. Bailing here
+      // strands a modal that mounts late: it opens with nothing driving it, and
+      // the invite sits half-completed on screen.
+      const stillConnect = await sendToContent(tabId, { cmd: 'rectConnectButton' })
+      if (stillConnect.outcome === 'done') return { outcome: 'done' }
+      after = await sendToContent(tabId, { cmd: 'afterConnectClick' })
+    }
     if (after.outcome === 'no-modal') {
       // Some layouts genuinely send immediately with no modal — but a click that
       // silently did nothing looks identical from here, so verify before
