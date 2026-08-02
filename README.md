@@ -21,13 +21,15 @@ The two engines share one brain. The same persona voice that writes your LinkedI
 ### GTM Engine
 
 **Lead sourcing**
-Source leads directly from GitHub, Dev.to, and LinkedIn based on an ICP you define once. For GitHub, the engine runs a bio-keyword + language + location query against the GitHub user search API and extracts matching profiles. When a profile hides its email, the engine recovers a real address from the user's public commit history. For Dev.to, it pulls authors by tag. For LinkedIn, it searches against your own session.
+Source leads directly from GitHub, Dev.to, npm, Hacker News, and LinkedIn based on an ICP you define once. For GitHub, the engine runs a bio-keyword + language + location query against the GitHub user search API and extracts matching profiles. When a profile hides its email, the engine recovers a real address from the user's public commit history. For Dev.to, it pulls authors by tag. LinkedIn search runs in the browser extension, against your own logged-in session — it is the only source that yields a LinkedIn profile URL, and so the only one that feeds LinkedIn outreach.
 
 **ICP scoring**
 Every sourced lead is scored by Gemini against your ICP on a 0.0–1.0 scale. Only leads above your threshold enter the sequence. This keeps your sending lists clean and your reply rates high without manual filtering.
 
 **Email + LinkedIn sequences**
 Campaigns run multi-step sequences from your own accounts with delays you control. Per-channel daily limits protect your domain reputation and LinkedIn standing. Reply detection pauses a sequence the moment someone responds on either channel. CRM sync (HubSpot, Zoho, Salesforce via Composio OAuth; Swipe One via API key) pushes leads on first contact.
+
+Email sends server-side. LinkedIn runs through the [browser extension](extension/) in your own logged-in tab, because LinkedIn withholds its UI from flagged headless sessions. The extension **sends connection requests with personalised notes**; LinkedIn *messaging* is written but currently disabled — message steps stay queued and are never marked sent. See [extension/README.md](extension/README.md#messaging-why-its-off).
 
 ### Content Engine
 

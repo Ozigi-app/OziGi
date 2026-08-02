@@ -477,8 +477,8 @@ export default function Home() {
                 {
                   n: "02", bg: C.card,
                   title: "You get the first reply",
-                  desc: "Personalised email + LinkedIn sequences go out in your voice, written from each lead's actual profile. You get replies, not bounces.",
-                  tags: ["Email sequences", "LinkedIn DMs", "Follow-ups"],
+                  desc: "Personalised email sequences and LinkedIn connection requests go out in your voice, written from each lead's actual profile. You get replies, not bounces.",
+                  tags: ["Email sequences", "LinkedIn connects", "Follow-ups"],
                 },
                 {
                   n: "03", bg: C.cardS,
@@ -552,7 +552,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 relative z-10">
-                  {["Lead scraping", "Email sequences", "LinkedIn DMs", "CRM sync", "Reply detection"].map(t => (
+                  {["Lead scraping", "Email sequences", "LinkedIn connects", "CRM sync", "Reply detection"].map(t => (
                     <span key={t} className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded"
                       style={{ background: "rgba(15,23,42,0.05)", color: C.dim }}>{t}</span>
                   ))}

@@ -147,7 +147,7 @@ export function buildGTMLaunchAnnouncementEmail(unsubscribeUrl: string) {
         the repo they maintain, the thing they wrote about last week &mdash;
         in your voice, with the same Banned Lexicon we use for blog posts.
         The sequence goes out from your own inbox, on a schedule you set,
-        pausing the moment someone replies. LinkedIn steps included.
+        pausing the moment someone replies. LinkedIn connection requests included.
       </p>
     </div>
 
@@ -523,7 +523,7 @@ export function buildWelcomeEmail(userName?: string) {
       <p style="margin:0;font-size:15px;color:#e2e8f0;line-height:1.7;">
         Define your ICP, and Ozigi will find leads from GitHub, Dev.to, and LinkedIn.
         It scores each one against your criteria, writes personalised cold emails and
-        LinkedIn messages in your voice, and sends them on a schedule you control.
+        LinkedIn connection notes in your voice, and sends them on a schedule you control.
         The sequence pauses the moment someone replies.
       </p>
     </div>

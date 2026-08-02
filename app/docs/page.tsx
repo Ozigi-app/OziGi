@@ -326,7 +326,7 @@ export default function DocsPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-slate-600">CRM sync happens on first contact — when Ozigi sends the first email or LinkedIn message to a lead, the lead is pushed to your connected CRM as a new contact.</p>
+              <p className="text-sm text-slate-600">CRM sync happens on first contact — when Ozigi sends the first email or LinkedIn connection request to a lead, the lead is pushed to your connected CRM as a new contact.</p>
             </section>
 
             {/* ── 7. LinkedIn Setup ───────────────────────────────────── */}

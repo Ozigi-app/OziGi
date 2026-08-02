@@ -603,7 +603,7 @@ useEffect(() => {
                         { label: 'Outbound Emails Sent',   value: overviewStats.outbound.emailsSent,    desc: 'Cold + follow-up emails sent via Gmail / SMTP' },
                         { label: 'Emails Scraped',         value: overviewStats.outbound.emailsScraped, desc: 'Lead profiles where an email was found'        },
                         { label: 'LinkedIn Connections',   value: overviewStats.outbound.liConnections, desc: 'Connection requests sent via LinkedIn'         },
-                        { label: 'LinkedIn Messages Sent', value: overviewStats.outbound.liMessages,    desc: 'DMs and follow-up messages sent via LinkedIn'  },
+                        { label: 'LinkedIn Messages Sent', value: overviewStats.outbound.liMessages,    desc: 'DMs and follow-ups sent via LinkedIn — messaging is currently paused'  },
                         { label: 'Total Leads Sourced',    value: overviewStats.outbound.totalLeads,    desc: 'Prospect profiles collected across all campaigns' },
                         { label: 'Email Reply Rate',       value: overviewStats.outbound.replyRate,     desc: 'Outbound cold emails that received a reply'    },
                       ].map(s => (
