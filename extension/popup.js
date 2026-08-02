@@ -9,9 +9,16 @@ async function load() {
   $('review').checked = !!s.reviewMode
   chrome.runtime.sendMessage({ type: 'status' }, (st) => {
     if (!st) return
-    $('dot').classList.toggle('on', st.enabled && st.hasToken)
+    const live = st.enabled && st.hasToken
+    $('dot').classList.toggle('on', live)
+    // The pill must distinguish "off" from "on but unusable" — an enabled
+    // extension with no token silently does nothing, which otherwise looks
+    // identical to working.
+    $('statusText').textContent = !st.hasToken ? 'No token' : st.enabled ? 'Active' : 'Paused'
     $('cCount').textContent = String(st.counters?.connect ?? 0)
     $('mCount').textContent = String(st.counters?.message ?? 0)
+    // Open the settings drawer on first run, when there's nothing to act on yet.
+    if (!st.hasToken) $('settings').open = true
   })
 }
 

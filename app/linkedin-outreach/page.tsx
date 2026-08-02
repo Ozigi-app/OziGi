@@ -53,7 +53,7 @@ function track(event: string, properties?: Record<string, unknown>) {
 const STEPS = [
   { icon: Search,       label: "Find profiles",    desc: "Ozigi finds LinkedIn profiles matching your ideal customer." },
   { icon: UserPlus,     label: "Connect at scale",  desc: "Personalised connection requests — under the 300 char limit." },
-  { icon: MessageSquare,label: "Follow up",         desc: "Auto DMs once they accept. No manual copy-paste." },
+  { icon: MessageSquare,label: "Write the follow-up", desc: "Drafts your follow-up DM in your voice, ready to send." },
   { icon: TrendingUp,   label: "Track replies",     desc: "See who responded and move warm leads to your CRM." },
 ];
 
@@ -181,7 +181,7 @@ export default function LinkedInOutreachPage() {
             <span className="text-[#E8320A]">Connect & close — while you sleep.</span>
           </h1>
           <p className="text-slate-600 text-lg max-w-xl mx-auto mb-8">
-            Ozigi finds LinkedIn profiles matching your ideal customer, sends personalised connection requests to each one, and follows up automatically once they accept.
+            Ozigi finds LinkedIn profiles matching your ideal customer, sends personalised connection requests from your own browser, and drafts the follow-up for you once they accept.
           </p>
 
           {/* Pipeline steps */}
@@ -353,13 +353,13 @@ export default function LinkedInOutreachPage() {
       <ToolLandingContent
         toolName="Ozigi LinkedIn Message Generator"
         pageUrl="https://ozigi.app/linkedin-outreach"
-        offerDescription="Free LinkedIn message generator that writes connection requests and DMs, finds matching profiles, and follows up automatically once they accept."
+        offerDescription="Free LinkedIn message generator that writes connection requests and DMs, finds matching profiles, and sends personalised connection requests from your own browser."
         copyTitle="A LinkedIn message generator built for connection requests people actually accept"
         copyParagraphs={[
           "Describe your ideal customer and what you're offering, and Ozigi writes a connection request or DM under LinkedIn's character limit — specific to the recipient, not a copy-pasted pitch.",
           "It's built for founders and small sales teams doing LinkedIn outreach themselves who need messages that read like a person wrote them to that specific person, not a mail-merge.",
-          "What makes it different: the same banned lexicon and persona system as the rest of Ozigi — no \"I came across your profile and was impressed by,\" no generic flattery openers. Once you're signed up, Ozigi can also find the matching LinkedIn profiles and follow up automatically after they accept.",
-          "To use it: describe your product and your ideal customer, get a connection request or DM back ready to send, then create a free account to have Ozigi find matching profiles at scale and follow up automatically once they accept.",
+          "What makes it different: the same banned lexicon and persona system as the rest of Ozigi — no \"I came across your profile and was impressed by,\" no generic flattery openers. Once you're signed up, Ozigi can also find the matching LinkedIn profiles and send the connection requests for you, from your own browser.",
+          "To use it: describe your product and your ideal customer, get a connection request or DM back ready to send, then create a free account to have Ozigi find matching profiles at scale and send the connection requests from your own browser.",
         ]}
         faqs={FAQS}
         relatedLinks={RELATED_LINKS}

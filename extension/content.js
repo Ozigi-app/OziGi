@@ -558,6 +558,112 @@ function checkConnectSent() {
   return { outcome: isPending() ? 'done' : 'not_sent' }
 }
 
+// ── People search ────────────────────────────────────────────────────────
+
+// Walks every /in/ link on a search-results page rather than relying on card
+// classes, which are hashed per build and change constantly. Skips anonymised
+// "LinkedIn Member" entries (unreachable) and 1st-degree contacts (already
+// connected), so the connect flow isn't fed people it will only reconcile.
+const profileUrlOf = (a) => {
+  const href = a.getAttribute('href') || ''
+  const abs = href.startsWith('http') ? href : `https://www.linkedin.com${href}`
+  const url = abs.split('?')[0].split('#')[0]
+  return /linkedin\.com\/in\/[^/]+\/?$/.test(url) ? url : null
+}
+
+// The result link wraps the whole card, and LinkedIn prints the name twice (a
+// visually-hidden copy for screen readers plus the visible one), so the raw text
+// reads "John Duggan John Duggan • 2ndSenior Developer Advocate at Toast…".
+// Take everything before the degree separator, then collapse the doubling.
+function cleanResultName(raw) {
+  let s = (raw || '').replace(/\s+/g, ' ').trim().split('•')[0].trim()
+  // Decorative emoji/symbols people put in their display name ("✨ Tamir Peled")
+  // would otherwise end up addressed in the invite note.
+  s = s.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}.'’-]+$/u, '').trim()
+  const words = s.split(' ')
+  if (words.length >= 2 && words.length % 2 === 0) {
+    const half = words.length / 2
+    if (words.slice(0, half).join(' ') === words.slice(half).join(' ')) {
+      s = words.slice(0, half).join(' ')
+    }
+  }
+  return s
+}
+
+// Headline is whatever follows the degree badge, minus the action buttons that
+// are part of the same text run.
+function headlineFrom(cardText, name) {
+  let t = (cardText || '').replace(/\s+/g, ' ').trim()
+  const deg = t.match(/•\s*(1st|2nd|3rd\+?)\s*/i)
+  if (deg) t = t.slice(deg.index + deg[0].length)
+  // No \b here: adjacent text nodes are concatenated without spaces, so the
+  // action label arrives as "…United StatesConnectSenior Developer…" and a
+  // word-boundary match never fires. Everything after it is LinkedIn's own
+  // summary blurb, which just repeats the headline. "Pending" is the same slot
+  // for someone already invited.
+  t = t.split(/Connect|Message|Following|Follow|Pending|View profile|Visit my website/)[0]
+  // Social proof tails LinkedIn appends to the card. This text ends up in the
+  // lead's bio, which the AI reads when composing the invite note — so a stray
+  // "Greg Dean is a mutual connection · 3K followers" can surface in outreach.
+  t = t.replace(/·?\s*[\d.]+\s*K?\+?\s*followers?\b.*$/i, '')
+  t = t.replace(/\s*[^|]{0,60}?\b(?:is a mutual connection|are mutual connections|other mutual connections?)\b.*$/i, '')
+  if (name) t = t.split(name).join(' ')
+  return t.replace(/\s+/g, ' ').replace(/[\s·|,-]+$/, '').trim().slice(0, 150)
+}
+
+function scrapeSearchResults() {
+  const results = []
+  const seen = new Set()
+
+  // Work per result CARD, taking only its first profile link. Walking every
+  // /in/ link on the page also picks up the "X is a mutual connection" links
+  // that sit inside other people's cards — those aren't search results, and
+  // scraping them turned a page of ~10 results into 27 bogus leads.
+  const cards = queryAll('li, [role="listitem"]').filter((c) => visible(c) && !inAside(c))
+
+  for (const card of cards) {
+    const link = Array.from(card.querySelectorAll('a[href*="/in/"]')).find(profileUrlOf)
+    if (!link) continue
+    const url = profileUrlOf(link)
+    if (!url || seen.has(url)) continue // also collapses nested cards
+
+    const cardText = (card.textContent || '').replace(/\s+/g, ' ')
+    // Match the degree BADGE, not a bare "1st" anywhere in the text — the loose
+    // version threw false positives in the old worker.
+    if (/•\s*1st\b/i.test(cardText)) continue // already connected
+
+    const name = cleanResultName(link.textContent)
+    if (!name || /linkedin member/i.test(name)) continue
+
+    seen.add(url)
+    results.push({ url, name, title: headlineFrom(cardText, name), location: '' })
+  }
+
+  return { outcome: 'ok', profiles: results }
+}
+
+// "Next" on the results pager. Returns coordinates for a trusted click — the
+// pager is a normal in-flow button, so scrolling to it is correct here.
+function rectSearchNext() {
+  const btn = queryAll('button').find((b) =>
+    visible(b) && !b.disabled &&
+    /^next$/i.test((b.getAttribute('aria-label') || b.textContent || '').trim())
+  )
+  if (!btn) return { outcome: 'not_found' }
+  return { outcome: 'exists', ...rectOf(btn) }
+}
+
+// Search pages render progressively; wait for the first profile link so an
+// early scrape doesn't report an empty page as "no results".
+async function waitForSearchResults() {
+  const ok = await waitFor(() => queryAll('a[href*="/in/"]').some((a) => visible(a)), { timeout: 15000 })
+  if (!ok) {
+    const loggedOut = /\/login|\/checkpoint|\/authwall/.test(location.pathname)
+    return { outcome: loggedOut ? 'logged_out' : 'no_results', url: location.pathname }
+  }
+  return { outcome: 'ready' }
+}
+
 // ── Diagnostics ─────────────────────────────────────────────────────────
 
 function describe(el) {
@@ -604,7 +710,7 @@ function diagnoseModal() {
     }))
 
   return {
-    contentVersion: 'slow-modal-wait',
+    contentVersion: 'search-clean-bio',
     url: location.pathname,
     roots: allRoots().length,
     openDialogs: q('dialog[open]').map(describe),
@@ -673,7 +779,7 @@ function diagnoseComposeBase() {
     searched: usableFrame(f), // false = deliberately skipped (hidden/preload shell)
   }))
   return {
-    contentVersion: 'slow-modal-wait',
+    contentVersion: 'search-clean-bio',
     url: location.pathname,
     roots: allRoots().length,
     isTopFrame: window === window.top,
@@ -690,6 +796,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   const syncHandlers = {
     rectMessageButton,
     rectConnectButton, rectMoreButton, rectConnectAddNote, checkConnectSent,
+    scrapeSearchResults, rectSearchNext,
     diagnoseModal,
   }
   if (msg.cmd === 'diagnoseCompose') { sendResponse(diagnoseCompose(msg.recipientName)); return }
@@ -701,7 +808,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   const asyncHandlers = {
     fillComposeBox: () => fillComposeBox(msg.text, msg.startUrl, msg.recipientName),
     afterConnectClick,
-    rectConnectInMenu, rectConnectSend,
+    rectConnectInMenu, rectConnectSend, waitForSearchResults,
     waitComposeBox: () => waitComposeBox(msg.recipientName),
     fillConnectNote: () => fillConnectNote(msg.text),
   }

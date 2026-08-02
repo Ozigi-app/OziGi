@@ -405,6 +405,60 @@ async function runConnectAction(tabId, note) {
 // hit" is the log — silence on all of them made a no-op impossible to diagnose.
 const log = (...a) => console.log('[ozigi]', ...a)
 
+// Runs a LinkedIn people search in the user's own tab and posts the profiles
+// back. This is the only source of leads carrying a linkedin_url, so without it
+// the connect flow eventually runs dry no matter how well it works.
+async function runSearchAction(tabId, job, c) {
+  await navigateAndWait(tabId, job.searchUrl)
+
+  const ready = await sendToContent(tabId, { cmd: 'waitForSearchResults' })
+  if (ready.outcome === 'logged_out') {
+    return { ok: false, error: 'LinkedIn session expired — sign in again in this browser' }
+  }
+  if (ready.outcome !== 'ready') return { ok: false, error: `no search results (${ready.url ?? ''})` }
+
+  const attached = await attachDebugger(tabId)
+  if (!attached) return { ok: false, error: 'debugger attach failed' }
+
+  const profiles = []
+  const seen = new Set()
+  try {
+    for (let page = 1; page <= 3 && profiles.length < job.limit; page++) {
+      const res = await sendToContent(tabId, { cmd: 'scrapeSearchResults' })
+      for (const p of res.profiles ?? []) {
+        if (seen.has(p.url)) continue
+        seen.add(p.url)
+        profiles.push(p)
+      }
+      log(`search page ${page}: ${profiles.length} profiles so far`)
+      if (profiles.length >= job.limit) break
+
+      const next = await sendToContent(tabId, { cmd: 'rectSearchNext' })
+      if (next.outcome !== 'exists') break
+      if (!await dispatchClick(tabId, next.x, next.y)) break
+      // Human-ish pause between pages; search is more rate-limit sensitive
+      // than sending, so this is deliberately unhurried.
+      await sleep(2500 + Math.floor(Math.random() * 2000))
+      const more = await sendToContent(tabId, { cmd: 'waitForSearchResults' })
+      if (more.outcome !== 'ready') break
+    }
+  } finally {
+    await detachDebugger(tabId)
+  }
+
+  if (!profiles.length) return { ok: false, error: 'search returned no usable profiles' }
+
+  const res = await api('/api/gtm/linkedin/extension/leads', {
+    method: 'POST',
+    body: JSON.stringify({ campaignId: job.campaignId, profiles: profiles.slice(0, job.limit) }),
+  }, c)
+  if (!res.ok) {
+    return { ok: false, error: `leads POST failed: HTTP ${res.status}` }
+  }
+  const body = await res.json().catch(() => ({}))
+  return { ok: true, found: profiles.length, inserted: body.inserted ?? 0 }
+}
+
 async function tick() {
   if (state.running) return
   const c = await cfg()
@@ -424,7 +478,25 @@ async function tick() {
     }
     const { actions } = await res.json()
     const act = actions?.[0]
-    if (!act) return log('nothing queued')
+    if (!act) {
+      // Nothing to send — see whether a people-search is due. Sending always wins
+      // when both are available; searching only fills the funnel, and it is the
+      // one thing that keeps the connect flow supplied, since every server-side
+      // scraper stores linkedin_url as null.
+      const sres = await api('/api/gtm/linkedin/extension/search', { method: 'GET' }, c)
+      if (!sres.ok) return log(`nothing queued (search check: HTTP ${sres.status})`)
+      const { job } = await sres.json()
+      if (!job) return log('nothing queued, no search due')
+
+      log(`running search for "${job.campaignName ?? job.campaignId}" → ${job.searchUrl}`)
+      const searchTab = await getLinkedInTab()
+      const out = await runSearchAction(searchTab.id, job, c)
+      log('search result:', out)
+
+      const searchGap = c.minGapMs + Math.floor(Math.random() * (c.maxGapMs - c.minGapMs))
+      state.nextAllowedAt = Date.now() + searchGap
+      return
+    }
 
     const isConnect = act.action === 'connect'
     if (!isConnect && !c.messagingEnabled) {
@@ -494,6 +566,45 @@ globalThis.ozigiDiag = async () => {
   const d = await sendToContent(tab.id, { cmd: 'diagnoseModal' })
   console.log('[ozigi] diag:', JSON.stringify(d, null, 2))
   return d
+}
+
+// Run a people-search now, without waiting for the queue to drain or the alarm
+// to fire. With no argument it asks the server for the due job; pass a URL to
+// search something specific:
+//   ozigiSearch()
+//   ozigiSearch('https://www.linkedin.com/search/results/people/?keywords=devrel')
+globalThis.ozigiSearch = async (searchUrl) => {
+  const c = await cfg()
+  if (!c.token) { console.warn('[ozigi] no token set'); return }
+
+  let job
+  if (searchUrl) {
+    const res = await api('/api/gtm/linkedin/extension/search', { method: 'GET' }, c)
+    const body = res.ok ? await res.json().catch(() => ({})) : {}
+    if (!body.job) { console.warn('[ozigi] no campaign available to attribute leads to'); return }
+    job = { ...body.job, searchUrl }
+  } else {
+    const res = await api('/api/gtm/linkedin/extension/search', { method: 'GET' }, c)
+    if (!res.ok) { console.warn('[ozigi] search endpoint HTTP', res.status); return }
+    const body = await res.json().catch(() => ({}))
+    if (!body.job) { console.warn('[ozigi] no search due (no active linkedin campaign, or already searched today)'); return }
+    job = body.job
+  }
+
+  console.log('[ozigi] searching:', job.searchUrl)
+  const tab = await getLinkedInTab()
+  const out = await runSearchAction(tab.id, job, c)
+  console.log('[ozigi] search result:', out)
+  return out
+}
+
+// Scrape whatever search page is already open, without saving anything —
+// checks the extraction in isolation from navigation and the API.
+globalThis.ozigiScrapeHere = async () => {
+  const tab = await getLinkedInTab()
+  const r = await sendToContent(tab.id, { cmd: 'scrapeSearchResults' })
+  console.log('[ozigi] scraped', r.profiles?.length ?? 0, 'profiles:', JSON.stringify((r.profiles ?? []).slice(0, 5), null, 2))
+  return r.profiles
 }
 
 // Run with the message compose overlay open: ozigiDiagCompose()

@@ -3,50 +3,173 @@
 <head>
   <meta charset="utf-8" />
   <style>
-    :root { color-scheme: light dark; }
-    body { width: 300px; margin: 0; font: 13px/1.45 -apple-system, Segoe UI, Roboto, sans-serif; padding: 14px; }
-    h1 { font-size: 14px; margin: 0 0 10px; display: flex; align-items: center; gap: 6px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
-    .dot.on { background: #22c55e; }
-    label { display: block; font-weight: 600; margin: 10px 0 4px; font-size: 12px; }
-    input[type=text] { width: 100%; box-sizing: border-box; padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 12px; }
-    .row { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; }
-    .switch { font-weight: 600; }
-    button { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
-    .primary { background: #E8320A; color: #fff; width: 100%; }
-    .ghost { background: #f1f5f9; color: #334155; }
-    .stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-top: 8px; display: flex; justify-content: space-between; }
-    .muted { color: #64748b; font-size: 11px; }
-    a { color: #E8320A; }
-    @media (prefers-color-scheme: dark) {
-      input[type=text] { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-      .stat { background: #0f172a; border-color: #1e293b; }
-      .ghost { background: #1e293b; color: #e2e8f0; }
+    :root {
+      color-scheme: light dark;
+      --brand: #E8320A;
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --surface: #f8fafc;
+      --field: #ffffff;
+      --ok: #16a34a;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --warn-line: #fde68a;
     }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220; --fg: #e2e8f0; --muted: #94a3b8; --line: #1e293b;
+        --surface: #0f172a; --field: #1e293b;
+        --ok: #4ade80; --warn: #fbbf24; --warn-bg: #1c1917; --warn-line: #422006;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      width: 320px; margin: 0; padding: 0;
+      font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--fg);
+    }
+
+    header {
+      display: flex; align-items: center; gap: 9px;
+      padding: 14px 16px; border-bottom: 1px solid var(--line);
+    }
+    .mark {
+      width: 22px; height: 22px; border-radius: 6px; flex: none;
+      background: var(--brand); color: #fff;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 12px; letter-spacing: -.02em;
+    }
+    .title { font-size: 13px; font-weight: 700; letter-spacing: -.01em; }
+    /* Status pill doubles as the only always-visible answer to "is it working?" */
+    .status {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; flex: none; }
+    .dot.on { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 20%, transparent); }
+
+    main { padding: 14px 16px 16px; }
+
+    .switches { display: grid; gap: 2px; margin-bottom: 14px; }
+    .sw {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 9px; cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .sw:hover { background: var(--surface); }
+    .sw input { margin: 0; flex: none; accent-color: var(--brand); width: 15px; height: 15px; }
+    .sw-label { font-weight: 600; }
+    .sw-sub { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .stat {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 10px; padding: 9px 11px;
+    }
+    .stat b { display: block; font-size: 19px; line-height: 1.2; letter-spacing: -.02em; }
+    .stat span { font-size: 11px; color: var(--muted); }
+    .stat.off b { color: var(--muted); }
+
+    /* Messaging is gated off in DEFAULTS. Saying so here prevents the obvious
+       misreading of "Messages today: 0" as a bug. */
+    .notice {
+      display: flex; gap: 8px; align-items: flex-start;
+      background: var(--warn-bg); border: 1px solid var(--warn-line);
+      color: var(--warn); border-radius: 9px; padding: 9px 11px;
+      font-size: 11px; line-height: 1.4; margin-bottom: 14px;
+    }
+    .notice b { font-weight: 700; }
+
+    details { border-top: 1px solid var(--line); padding-top: 10px; }
+    summary {
+      cursor: pointer; font-size: 11px; font-weight: 600; color: var(--muted);
+      list-style: none; user-select: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: "▸ "; }
+    details[open] summary::before { content: "▾ "; }
+
+    label { display: block; font-weight: 600; margin: 12px 0 5px; font-size: 11px; }
+    input[type=text] {
+      width: 100%; padding: 8px 9px; border: 1px solid var(--line);
+      border-radius: 8px; font: inherit; font-size: 12px;
+      background: var(--field); color: var(--fg);
+    }
+    input[type=text]:focus { outline: 2px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; border-color: var(--brand); }
+    .hint { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    code { background: var(--surface); padding: 1px 4px; border-radius: 4px; font-size: 10px; }
+
+    .actions { display: flex; gap: 8px; margin-top: 14px; }
+    button {
+      font: inherit; font-weight: 700; font-size: 12px; border: 0;
+      border-radius: 9px; padding: 9px 12px; cursor: pointer;
+    }
+    .primary { background: var(--brand); color: #fff; flex: 1; }
+    .primary:hover { filter: brightness(1.07); }
+    .ghost { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+    .ghost:hover { border-color: var(--muted); }
+
+    #msg { font-size: 11px; color: var(--muted); margin-top: 9px; min-height: 14px; }
+    a { color: var(--brand); }
   </style>
 </head>
 <body>
-  <h1><span class="dot" id="dot"></span> Ozigi LinkedIn Sender</h1>
+  <header>
+    <div class="mark">O</div>
+    <div>
+      <div class="title">Ozigi LinkedIn Sender</div>
+    </div>
+    <span class="status"><span class="dot" id="dot"></span><span id="statusText">Off</span></span>
+  </header>
 
-  <label for="apiBase">Ozigi URL</label>
-  <input type="text" id="apiBase" placeholder="https://ozigi.app" autocomplete="off" />
-  <div class="muted" style="margin-top:4px">Use <code>http://localhost:3000</code> for local testing.</div>
+  <main>
+    <div class="switches">
+      <label class="sw">
+        <input type="checkbox" id="enabled" />
+        <span class="sw-label">Active
+          <span class="sw-sub">Sends from this browser, at a human pace</span>
+        </span>
+      </label>
+      <label class="sw">
+        <input type="checkbox" id="review" />
+        <span class="sw-label">Review before sending
+          <span class="sw-sub">Pauses auto-send (not built yet)</span>
+        </span>
+      </label>
+    </div>
 
-  <label for="token">Connection token</label>
-  <input type="text" id="token" placeholder="Paste from Ozigi → Settings → LinkedIn" autocomplete="off" />
-  <div class="muted" style="margin-top:4px">Get it in <a href="https://ozigi.app/dashboard/gtm/settings" target="_blank">Ozigi Settings</a>.</div>
+    <div class="stats">
+      <div class="stat"><b id="cCount">–</b><span>Connects today</span></div>
+      <div class="stat off"><b id="mCount">–</b><span>Messages today</span></div>
+    </div>
 
-  <div class="row"><span class="switch">Enabled</span><input type="checkbox" id="enabled" /></div>
-  <div class="row"><span class="switch">Review before sending</span><input type="checkbox" id="review" /></div>
+    <div class="notice">
+      <span>⚠</span>
+      <span><b>Messaging is off.</b> Ozigi sends connection requests with notes.
+      Message steps stay queued and are never marked sent.</span>
+    </div>
 
-  <div class="stat"><span>Connects today</span><b id="cCount">–</b></div>
-  <div class="stat"><span>Messages today</span><b id="mCount">–</b></div>
+    <details id="settings">
+      <summary>Connection settings</summary>
 
-  <div style="margin-top:12px; display:flex; gap:8px">
-    <button class="primary" id="save">Save</button>
-    <button class="ghost" id="run">Run now</button>
-  </div>
-  <div class="muted" id="msg" style="margin-top:8px"></div>
+      <label for="token">Connection token</label>
+      <input type="text" id="token" placeholder="Paste from Ozigi → Settings" autocomplete="off" spellcheck="false" />
+      <div class="hint">Get it in <a href="https://ozigi.app/dashboard/gtm/settings" target="_blank" rel="noreferrer">Ozigi Settings</a>.</div>
+
+      <label for="apiBase">Ozigi URL</label>
+      <input type="text" id="apiBase" placeholder="https://ozigi.app" autocomplete="off" spellcheck="false" />
+      <div class="hint">Use <code>http://localhost:3000</code> for local testing.</div>
+    </details>
+
+    <div class="actions">
+      <button class="primary" id="save">Save</button>
+      <button class="ghost" id="run">Run now</button>
+    </div>
+    <div id="msg"></div>
+  </main>
 
   <script src="popup.js"></script>
 </body>
