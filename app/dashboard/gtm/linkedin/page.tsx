@@ -14,6 +14,9 @@ interface QueueItem {
   scheduled_at: string
   processed_at: string | null
   campaign_id: string
+  leadName: string | null
+  leadUrl: string | null
+  leadHeadline: string | null
 }
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
@@ -64,49 +67,51 @@ export default function LinkedInOutreachPage() {
     <div>
       <GtmPageHeader title="LinkedIn Outreach" />
       <div className="px-8 py-7 max-w-4xl mx-auto">
-        <div className="flex items-start justify-between mb-7">
+        <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3">
             <UserPlus size={20} className="text-[#0a66c2]" />
             <div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">LinkedIn Outreach</h1>
-              <p className="text-foreground-subtle text-sm mt-0.5">Actions are spread across business hours automatically</p>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">LinkedIn</h1>
+              <p className="text-foreground-subtle text-sm mt-0.5">
+                Finds leads and sends connection requests from your own browser, at a human pace
+              </p>
             </div>
           </div>
           <Link
             href="/dashboard/gtm/new"
-            className="flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-sm rounded-xl transition-colors no-underline"
+            className="flex items-center gap-2 px-4 py-2.5 border border-border hover:border-foreground-subtle text-foreground font-bold text-sm rounded-xl transition-colors no-underline"
           >
-            + New Outreach Campaign
+            + New campaign
           </Link>
         </div>
 
-        <FreeAgentBanner />
-
+        {/* The extension is the pipeline, so it leads the page. Everything below
+            is the record of what it has done. */}
         <ExtensionStatusPanel />
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="text-2xl font-bold text-green-600">{sentToday}</div>
-            <div className="text-foreground-subtle text-xs mt-0.5">Sent today</div>
+            <div className="text-foreground-subtle text-xs mt-0.5">Requests sent today</div>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="text-2xl font-bold text-amber-600">{scheduled}</div>
             <div className="text-foreground-subtle text-xs mt-0.5">
-              Scheduled
+              Waiting to send
               {nextSend && <span className="ml-1 text-foreground-subtle">· next: {nextSend}</span>}
             </div>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="text-2xl font-bold text-foreground">{totalSent}</div>
-            <div className="text-foreground-subtle text-xs mt-0.5">Total sent</div>
+            <div className="text-foreground-subtle text-xs mt-0.5">Total requests sent</div>
           </div>
         </div>
 
         {/* Queue table */}
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <span className="text-foreground font-semibold text-sm">Action Queue</span>
+            <span className="text-foreground font-semibold text-sm">Connection requests</span>
             <button onClick={load} className="text-foreground-subtle hover:text-foreground">
               <RefreshCw size={14} />
             </button>
@@ -116,14 +121,15 @@ export default function LinkedInOutreachPage() {
             <div className="px-5 py-10 text-center text-foreground-subtle text-sm">Loading…</div>
           ) : items.length === 0 ? (
             <div className="px-5 py-10 text-center text-foreground-subtle text-sm">
-              No LinkedIn actions yet. Run a campaign with LinkedIn steps to populate this queue.
+              Nothing here yet. Once the extension is running it finds people matching your ICP and
+              sends them connection requests — they&rsquo;ll appear here as it goes.
             </div>
           ) : (
             <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  {['Action', 'Status', 'Scheduled / Processed'].map(h => (
+                  {['Lead', 'Status', 'Scheduled / Sent'].map(h => (
                     <th key={h} className="px-5 py-3 text-foreground-subtle text-xs font-medium">{h}</th>
                   ))}
                 </tr>
@@ -131,7 +137,19 @@ export default function LinkedInOutreachPage() {
               <tbody className="divide-y divide-border">
                 {items.map(item => (
                   <tr key={item.id} className="hover:bg-surface-2 transition-colors">
-                    <td className="px-5 py-3 text-foreground capitalize">{item.action.replace('_', ' ')}</td>
+                    <td className="px-5 py-3">
+                      {item.leadUrl ? (
+                        <a href={item.leadUrl} target="_blank" rel="noreferrer"
+                           className="text-foreground font-medium hover:text-accent no-underline">
+                          {item.leadName || 'View profile'}
+                        </a>
+                      ) : (
+                        <span className="text-foreground font-medium">{item.leadName || '—'}</span>
+                      )}
+                      {item.leadHeadline && (
+                        <div className="text-foreground-subtle text-xs truncate max-w-[280px]">{item.leadHeadline}</div>
+                      )}
+                    </td>
                     <td className="px-5 py-3">
                       <span className="flex items-center gap-1.5">
                         {STATUS_ICON[item.status] ?? null}
@@ -151,6 +169,12 @@ export default function LinkedInOutreachPage() {
             </table>
             </div>
           )}
+        </div>
+
+        {/* Unrelated to the pipeline — a separate open-source project. Kept at the
+            bottom so it doesn't read as an alternative to the extension. */}
+        <div className="mt-8 pt-2 opacity-80">
+          <FreeAgentBanner />
         </div>
       </div>
     </div>

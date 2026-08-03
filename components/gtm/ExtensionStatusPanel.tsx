@@ -74,10 +74,11 @@ export default function ExtensionStatusPanel() {
         <div className="flex items-start gap-3">
           <AlertTriangle size={18} className="text-amber-600 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-amber-900 dark:text-amber-200">The browser extension isn&rsquo;t set up</p>
+            <p className="font-bold text-amber-900 dark:text-amber-200">Your LinkedIn pipeline isn&rsquo;t set up yet</p>
             <p className="text-amber-800 dark:text-amber-300/90 mt-1">
-              LinkedIn actions run from your own logged-in tab, so nothing sends or gets found until
-              the extension is installed and connected.{' '}
+              LinkedIn runs entirely in your own browser — the Ozigi extension finds people matching
+              your ICP and sends them connection requests. Until it&rsquo;s installed, no LinkedIn
+              leads are found and nothing is sent.{' '}
               <Link href="/dashboard/gtm/settings" className="underline font-semibold">Set it up in Integrations</Link>.
             </p>
           </div>
@@ -87,26 +88,31 @@ export default function ExtensionStatusPanel() {
   }
 
   return (
-    <div className="mb-6 rounded-xl border border-border bg-surface p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <Puzzle size={18} className="text-[#0a66c2] shrink-0" />
+    // Idle is not a neutral state: the extension IS the LinkedIn pipeline, so
+    // while it's asleep nothing is being found and nothing is being sent. The
+    // panel says so rather than sitting quietly like an optional integration.
+    <div className={`mb-6 rounded-xl border p-5 ${
+      s.connected ? 'border-border bg-surface' : 'border-amber-300 bg-amber-50/60 dark:bg-amber-950/20'
+    }`}>
+      <div className="flex items-center gap-3 mb-4">
+        <Puzzle size={20} className="text-[#0a66c2] shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sm text-foreground">Browser extension</span>
+            <span className="font-bold text-base text-foreground">Your LinkedIn pipeline</span>
             {s.connected ? (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-green-600">
-                <CheckCircle2 size={12} /> Active
+                <CheckCircle2 size={12} /> Running
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-foreground-subtle">
-                <span className="w-2 h-2 rounded-full bg-slate-400" /> Idle
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                <span className="w-2 h-2 rounded-full bg-amber-500" /> Paused
               </span>
             )}
           </div>
           <p className="text-xs text-foreground-subtle mt-0.5">
             {s.connected
-              ? 'Sending and searching from your LinkedIn tab'
-              : `Last seen ${ago(s.lastUsedAt)} — open Chrome with a LinkedIn tab and the extension enabled`}
+              ? 'Finding leads and sending connection requests from your LinkedIn tab'
+              : `Nothing is being found or sent. Last active ${ago(s.lastUsedAt)} — open Chrome with a LinkedIn tab and the extension switched on.`}
           </p>
         </div>
         <button
