@@ -32,14 +32,7 @@ const DEFAULTS = {
   apiBase: 'https://ozigi.app',
   enabled: false,          // master on/off
   reviewMode: false,       // when true, ask the user before each send (handled in popup)
-  // Messaging is OFF until the compose flow is trustworthy. LinkedIn's SDUI
-  // profile only opens the message UI inside a hidden /preload iframe for this
-  // session — no visible compose box exists to type into — and earlier attempts
-  // produced a wrong-recipient send and a false 'done'. Connect is verified
-  // against LinkedIn's own Pending state and ships on its own.
-  messagingEnabled: false,
   dailyConnectCap: 20,
-  dailyMessageCap: 25,
   minGapMs: 45_000,        // min delay between actions (jittered up)
   maxGapMs: 120_000,
 }
@@ -63,15 +56,21 @@ function todayKey() {
 async function getCounters() {
   const { counters } = await chrome.storage.local.get('counters')
   if (counters && counters.day === todayKey()) return counters
-  const fresh = { day: todayKey(), connect: 0, message: 0 }
+  const fresh = { day: todayKey(), connect: 0, leads: 0 }
   await chrome.storage.local.set({ counters: fresh })
   return fresh
 }
 
-async function bumpCounter(action) {
+async function bumpCounter() {
   const c = await getCounters()
-  if (action === 'connect') c.connect += 1
-  else c.message += 1
+  c.connect += 1
+  await chrome.storage.local.set({ counters: c })
+  return c
+}
+
+async function bumpLeads(n) {
+  const c = await getCounters()
+  c.leads = (c.leads ?? 0) + n
   await chrome.storage.local.set({ counters: c })
   return c
 }
@@ -124,21 +123,9 @@ async function dispatchKey(tabId, { key, code, keyCode }) {
   } catch { return false }
 }
 
-// Types into whatever is focused, through the browser's own input pipeline —
-// the text equivalent of dispatchClick. Script-side insertion (execCommand,
-// textContent) can put text in the DOM without LinkedIn's editor model ever
-// registering it, which yields a box that looks filled but sends nothing.
-async function dispatchInsertText(tabId, text) {
-  try {
-    await chrome.debugger.sendCommand({ tabId }, 'Input.insertText', { text })
-    return true
-  } catch { return false }
-}
-
-const dispatchEnter = (tabId) => dispatchKey(tabId, { key: 'Enter', code: 'Enter', keyCode: 13 })
 const dispatchEscape = (tabId) => dispatchKey(tabId, { key: 'Escape', code: 'Escape', keyCode: 27 })
 
-// ── Tab / messaging helpers ─────────────────────────────────────────────
+// ── Tab / page helpers ──────────────────────────────────────────────────
 
 async function getLinkedInTab() {
   const tabs = await chrome.tabs.query({ url: 'https://www.linkedin.com/*' })
@@ -201,96 +188,6 @@ async function reportResult(id, outcome, error, c) {
 }
 
 // ── Action flows ─────────────────────────────────────────────────────────
-
-async function runMessageAction(tabId, text, recipientName) {
-  const startUrl = (await chrome.tabs.get(tabId).catch(() => null))?.url ?? ''
-
-  // Every message step is anchored to this name. LinkedIn keeps chat bubbles open
-  // across navigation, so without it the flow will happily type into whoever's
-  // thread is on screen — that is how one lead's message was sent to another.
-  if (!recipientName || !recipientName.trim()) {
-    return { outcome: 'failed', error: 'no recipient name on the queue item — refusing to send blind' }
-  }
-
-  const attached = await attachDebugger(tabId)
-  if (!attached) return { outcome: 'retry_later', error: 'debugger attach failed' }
-  try {
-    const check = await sendToContent(tabId, { cmd: 'rectMessageButton' })
-    if (check.outcome !== 'exists') return check
-
-    const clicked = await dispatchClick(tabId, check.x, check.y)
-    if (!clicked) return { outcome: 'retry_later', error: 'trusted click failed' }
-
-    await waitForTabSettle(tabId)
-
-    // Locate the RECIPIENT's box, focus it with a trusted click, then type through
-    // CDP. Focusing by real click also means a later Enter can only ever go to
-    // this box — it is the one thing that makes an Enter-to-send safe.
-    const boxRect = await sendToContent(tabId, { cmd: 'waitComposeBox', recipientName })
-    if (boxRect.outcome !== 'exists') {
-      const diag = await sendToContent(tabId, { cmd: 'diagnoseCompose', recipientName })
-      console.warn('[ozigi] compose box not found:', boxRect.error, '\n', JSON.stringify(diag, null, 2))
-      return { outcome: 'retry_later', error: boxRect.error || 'compose box not found' }
-    }
-
-    if (!await dispatchClick(tabId, boxRect.x, boxRect.y)) {
-      return { outcome: 'retry_later', error: 'trusted click failed on compose box' }
-    }
-    await sleep(400)
-    await dispatchInsertText(tabId, text)
-    await sleep(600)
-
-    let read = await sendToContent(tabId, { cmd: 'readComposeBox', recipientName })
-    if (!read.chars) {
-      // CDP typing didn't take (focus lost, or the box moved) — fall back to the
-      // script-side fill before giving up.
-      const filled = await sendToContent(tabId, { cmd: 'fillComposeBox', text, startUrl, recipientName })
-      if (filled.outcome !== 'filled') {
-        const diag = await sendToContent(tabId, { cmd: 'diagnoseCompose', recipientName })
-        console.warn('[ozigi] compose failed:', filled.error, '\n', JSON.stringify(diag, null, 2))
-        return filled
-      }
-      read = await sendToContent(tabId, { cmd: 'readComposeBox', recipientName })
-    }
-    console.log('[ozigi] compose box now holds', read.chars, 'chars')
-
-    const sendRect = await sendToContent(tabId, { cmd: 'rectComposeSend', recipientName })
-    if (sendRect.outcome === 'exists') {
-      const ok = await dispatchClick(tabId, sendRect.x, sendRect.y)
-      if (!ok) return { outcome: 'retry_later', error: 'trusted click failed on send button' }
-    } else {
-      return { outcome: 'retry_later', error: `send button not found in ${recipientName}'s thread — ${sendRect.error || ''}` }
-    }
-    await sleep(2000)
-
-    // If the button click didn't take, try Enter — safe here ONLY because focus was
-    // established by a trusted click inside this recipient's box above, so the
-    // keystroke cannot land in someone else's thread.
-    let confirmed = await sendToContent(tabId, { cmd: 'checkMessageSent', text, recipientName })
-    if (confirmed.outcome !== 'done') {
-      console.warn('[ozigi] send button click did not take, trying Enter. clicked:', sendRect)
-      await dispatchClick(tabId, boxRect.x, boxRect.y)
-      await sleep(300)
-      await dispatchEnter(tabId)
-      await sleep(2000)
-      confirmed = await sendToContent(tabId, { cmd: 'checkMessageSent', text, recipientName })
-    }
-
-    // Verify against the thread itself. Returning 'done' because the click call
-    // didn't throw marked a message as sent that never left the box — the queue
-    // row went to 'done' and the lead would never be retried.
-    const confirm = confirmed
-    if (confirm.outcome !== 'done') {
-      // Log where we actually clicked — a send that types fine but never leaves
-      // the box is almost always a coordinate miss, not a selector miss.
-      console.warn('[ozigi] send not confirmed. clicked:', sendRect, 'check:', confirm)
-      return { outcome: 'retry_later', error: `message not confirmed in thread — ${confirm.error || confirm.outcome}` }
-    }
-    return { outcome: 'done' }
-  } finally {
-    await detachDebugger(tabId)
-  }
-}
 
 // Opens the profile's "…" menu and returns the Connect item's coordinates.
 // Only reached when the top card has no Connect button. If the menu has no
@@ -456,7 +353,9 @@ async function runSearchAction(tabId, job, c) {
     return { ok: false, error: `leads POST failed: HTTP ${res.status}` }
   }
   const body = await res.json().catch(() => ({}))
-  return { ok: true, found: profiles.length, inserted: body.inserted ?? 0 }
+  const inserted = body.inserted ?? 0
+  if (inserted > 0) await bumpLeads(inserted)
+  return { ok: true, found: profiles.length, inserted }
 }
 
 async function tick() {
@@ -498,30 +397,26 @@ async function tick() {
       return
     }
 
-    const isConnect = act.action === 'connect'
-    if (!isConnect && !c.messagingEnabled) {
-      // Report 'not_connected' so the row reschedules a day out without burning an
-      // attempt — the same treatment as "they haven't accepted yet". The lead stays
-      // in the sequence and nothing is marked sent.
-      log(`skip: messaging disabled, deferring ${act.action} for ${act.recipientName || act.profileUrl}`)
-      await reportResult(act.id, 'not_connected', 'messaging disabled in extension', c)
+    // The connection request, with its note, is the whole LinkedIn channel.
+    // Anything else is a leftover row from before messaging was dropped: skip it
+    // permanently rather than deferring it forever.
+    if (act.action !== 'connect') {
+      log(`skip: ${act.action} steps are no longer sent — marking it done`)
+      await reportResult(act.id, 'failed', 'LinkedIn messaging is no longer offered', c)
       return
     }
-    if (isConnect && counters.connect >= c.dailyConnectCap) return log(`skip: daily connect cap reached (${counters.connect}/${c.dailyConnectCap})`)
-    if (!isConnect && counters.message >= c.dailyMessageCap) return log(`skip: daily message cap reached (${counters.message}/${c.dailyMessageCap})`)
+    if (counters.connect >= c.dailyConnectCap) return log(`skip: daily connect cap reached (${counters.connect}/${c.dailyConnectCap})`)
     if (c.reviewMode) return log('skip: review mode on (manual sending not built yet)')
 
-    log(`running ${act.action} → ${act.profileUrl}`)
+    log(`running connect → ${act.profileUrl}`)
     const tab = await getLinkedInTab()
     await navigateAndWait(tab.id, act.profileUrl)
 
-    const result = isConnect
-      ? await runConnectAction(tab.id, act.message)
-      : await runMessageAction(tab.id, act.message, act.recipientName)
+    const result = await runConnectAction(tab.id, act.message)
 
-    log(`${act.action} result:`, result)
+    log('connect result:', result)
     await reportResult(act.id, result.outcome, result.error, c)
-    if (result.outcome === 'done') await bumpCounter(act.action)
+    if (result.outcome === 'done') await bumpCounter()
 
     const gap = c.minGapMs + Math.floor(Math.random() * (c.maxGapMs - c.minGapMs))
     state.nextAllowedAt = Date.now() + gap
@@ -542,21 +437,14 @@ chrome.alarms.onAlarm.addListener((a) => { if (a.name === 'ozigi-tick') tick() }
 //   ozigiTest('https://www.linkedin.com/in/someone/')            // connect, no note
 //   ozigiTest('https://www.linkedin.com/in/someone/', 'Hi …')    // connect with a note
 // It sends a REAL invite from the signed-in account; it is not a dry run.
-// Note: ozigiTest bypasses the messagingEnabled gate on purpose — it is the
-// harness for getting the message flow working again.
-async function testAction(profileUrl, note, action = 'connect', recipientName) {
+async function testAction(profileUrl, note) {
   const tab = await getLinkedInTab()
   if (profileUrl) await navigateAndWait(tab.id, profileUrl)
-  return action === 'connect'
-    ? runConnectAction(tab.id, note)
-    : runMessageAction(tab.id, note, recipientName)
+  return runConnectAction(tab.id, note)
 }
 
-// For a message test the 4th arg is required — it is what scopes every step to
-// the intended recipient:
-//   ozigiTest(url, 'hello', 'message', 'Their Name')
-globalThis.ozigiTest = (profileUrl, note, action, recipientName) =>
-  testAction(profileUrl, note, action, recipientName).then((r) => { console.log('[ozigi] result:', r); return r })
+globalThis.ozigiTest = (profileUrl, note) =>
+  testAction(profileUrl, note).then((r) => { console.log('[ozigi] result:', r); return r })
 
 // Ask the page what it actually looks like right now — run it WHILE the invite
 // modal is open to see which selectors match and where the real Send control is.
@@ -607,23 +495,6 @@ globalThis.ozigiScrapeHere = async () => {
   return r.profiles
 }
 
-// Run with the message compose overlay open: ozigiDiagCompose()
-// Compact version — just the name-matched compose boxes. The full compose diag
-// is long enough that this section scrolls off the top of the console.
-globalThis.ozigiDiagBoxes = async (recipientName) => {
-  const tab = await getLinkedInTab()
-  const d = await sendToContent(tab.id, { cmd: 'diagnoseCompose', recipientName })
-  console.log('[ozigi] namedBoxes:', JSON.stringify(d.namedBoxes ?? d, null, 2))
-  return d.namedBoxes
-}
-
-globalThis.ozigiDiagCompose = async (recipientName) => {
-  const tab = await getLinkedInTab()
-  const d = await sendToContent(tab.id, { cmd: 'diagnoseCompose', recipientName })
-  console.log('[ozigi] compose diag:', JSON.stringify(d, null, 2))
-  return d
-}
-
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === 'status') {
     (async () => {
@@ -635,7 +506,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   }
   if (msg?.type === 'runNow') { tick(); sendResponse({ ok: true }); return true }
   if (msg?.type === 'testAction') {
-    testAction(msg.profileUrl, msg.note, msg.action).then(sendResponse).catch((e) => sendResponse({ outcome: 'failed', error: String(e?.message ?? e) }))
+    testAction(msg.profileUrl, msg.note).then(sendResponse).catch((e) => sendResponse({ outcome: 'failed', error: String(e?.message ?? e) }))
     return true
   }
 })

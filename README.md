@@ -29,7 +29,7 @@ Every sourced lead is scored by Gemini against your ICP on a 0.0–1.0 scale. On
 **Email + LinkedIn sequences**
 Campaigns run multi-step sequences from your own accounts with delays you control. Per-channel daily limits protect your domain reputation and LinkedIn standing. Reply detection pauses a sequence the moment someone responds on either channel. CRM sync (HubSpot, Zoho, Salesforce via Composio OAuth; Swipe One via API key) pushes leads on first contact.
 
-Email sends server-side. LinkedIn runs through the [browser extension](extension/) in your own logged-in tab, because LinkedIn withholds its UI from flagged headless sessions. The extension **sends connection requests with personalised notes**; LinkedIn *messaging* is written but currently disabled — message steps stay queued and are never marked sent. See [extension/README.md](extension/README.md#messaging-why-its-off).
+Email sends server-side. LinkedIn is the [browser extension](extension/) — it both finds the leads and sends the connection requests, inside your own logged-in tab, because LinkedIn withholds search results and the Connect button from flagged headless sessions. The LinkedIn channel is the **connection request with a personalised note**; Ozigi does not send LinkedIn DMs.
 
 ### Content Engine
 

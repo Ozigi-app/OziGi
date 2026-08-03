@@ -206,7 +206,7 @@ export default function DocsPage() {
                 3. Outbound Growth
               </h2>
               <p className="text-slate-600 font-medium leading-relaxed mb-6">
-                The outbound engine scrapes leads from GitHub, Dev.to, and LinkedIn, scores them against your ICP, writes personalised emails and LinkedIn messages for each, and sends them on a schedule.
+                The outbound engine scrapes leads from GitHub, Dev.to, npm and Hacker News, and finds LinkedIn profiles through the browser extension. It scores them against your ICP, writes personalised emails and LinkedIn connection notes for each, and sends them on a schedule.
               </p>
 
               <div className="space-y-5">

@@ -120,7 +120,6 @@ export async function GET() {
 
   const liDone        = liQueueRes.data ?? []
   const liConnections = liDone.filter(q => q.action === 'connect').length
-  const liMessages    = liDone.filter(q => q.action === 'message' || q.action === 'follow_up').length
 
   const totalLeads    = leadsRes.count          ?? 0
   const emailsScraped = leadsWithEmailRes.count ?? 0
@@ -139,7 +138,6 @@ export async function GET() {
       emailReplies,
       replyRate,
       liConnections,
-      liMessages,
       totalLeads,
       emailsScraped,
     },

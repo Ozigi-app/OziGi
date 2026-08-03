@@ -12,14 +12,17 @@ interface SequenceStep {
 }
 
 const EMAIL_ACTIONS   = ['Cold intro', 'Follow-up', 'Breakup email', 'Follow-up 2', 'Follow-up 3']
-const LINKEDIN_ACTIONS = ['Connect request', 'Direct message', 'Follow-up', 'Close the loop']
+// LinkedIn is a single-action channel: the connection request carries the note,
+// and Ozigi does not send DMs. Extra LinkedIn steps are not queued.
+const LINKEDIN_ACTIONS = ['Connect request']
 
 /** Returns the human-readable action label for a step */
 function getStepLabel(step: SequenceStep, allSteps: SequenceStep[]): string {
   const channelSteps = allSteps.filter(s => s.channel === step.channel)
   const pos = channelSteps.findIndex(s => s.step === step.step)
   if (step.channel === 'email')    return EMAIL_ACTIONS[pos]    ?? `Email ${pos + 1}`
-  if (step.channel === 'linkedin') return LINKEDIN_ACTIONS[pos] ?? `Follow-up ${pos}`
+  // Only the first LinkedIn step does anything; later ones aren't sent.
+  if (step.channel === 'linkedin') return LINKEDIN_ACTIONS[pos] ?? 'Not sent — LinkedIn is connect-only'
   return ''
 }
 

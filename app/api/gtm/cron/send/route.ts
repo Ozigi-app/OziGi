@@ -281,6 +281,13 @@ export async function POST(req: Request) {
           if (liEnqueuedToday >= dailyLinkedInLimit) break
 
           const action = getLinkedInAction(step, steps)
+          // Ozigi does not send LinkedIn messages — the connection request (with
+          // its note) is the whole LinkedIn channel. Queuing message/follow_up
+          // steps only built a backlog nothing would ever process.
+          if (action !== 'connect') {
+            console.log(`[gtm/cron/send] campaign ${campaign.id}: skipping step ${step.step} (${action}) — LinkedIn messaging is not offered`)
+            continue
+          }
           const leadsForStep = await getLinkedInLeadsDueForStep(campaign.id, step, steps, action)
           console.log(`[gtm/cron/send] campaign ${campaign.id}: step ${step.step} action=${action}, leadsForStep=${leadsForStep.length}`)
 

@@ -16,7 +16,7 @@ async function load() {
     // identical to working.
     $('statusText').textContent = !st.hasToken ? 'No token' : st.enabled ? 'Active' : 'Paused'
     $('cCount').textContent = String(st.counters?.connect ?? 0)
-    $('mCount').textContent = String(st.counters?.message ?? 0)
+    $('lCount').textContent = String(st.counters?.leads ?? 0)
     // Open the settings drawer on first run, when there's nothing to act on yet.
     if (!st.hasToken) $('settings').open = true
   })

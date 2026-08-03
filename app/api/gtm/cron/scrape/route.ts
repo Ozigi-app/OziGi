@@ -21,7 +21,8 @@ const SOURCE_LIMITS = {
   devto: 30,      // also does commit-email enrichment — keep modest
   hackernews: 50,
   npm: 100,       // fast + email-rich, safe to push high
-  linkedin: 40,
+  // No linkedin entry: that source is served by the extension, which sets its
+  // own per-search limit in /api/gtm/linkedin/extension/search.
 } as const
 
 // Supabase/PostgREST errors are plain objects, not Error instances, so String(err)
@@ -108,31 +109,14 @@ export async function POST(req: Request) {
         allLeads.push(...leads)
       }
 
-      // LinkedIn source — delegate to the worker which has the browser session
-      if (campaign.sources.includes('linkedin')) {
-        const workerUrl = process.env.LINKEDIN_WORKER_URL ?? 'http://localhost:8080'
-        try {
-          await fetch(`${workerUrl}/search`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${process.env.WORKER_SECRET}`,
-            },
-            body: JSON.stringify({
-              userId:     campaign.user_id,
-              campaignId: campaign.id,
-              icpConfig:  campaign.icp_config,
-              limit:      SOURCE_LIMITS.linkedin,
-            }),
-          })
-          console.log(`[gtm/cron/scrape] LinkedIn search triggered for campaign ${campaign.id}`)
-        } catch (e) {
-          console.warn(`[gtm/cron/scrape] LinkedIn worker not reachable:`, e)
-        }
-      }
+      // No LinkedIn branch here: LinkedIn sourcing runs in the browser extension,
+      // against the user's own logged-in session, via
+      // /api/gtm/linkedin/extension/search. LinkedIn serves search results to a
+      // real session and withholds them from a flagged headless one, which is why
+      // it cannot be done from a cron.
 
-      // LinkedIn outreach runs through a separate worker/pipeline, so this route
-      // only cares about email as a contact channel. Drop leads with no email
+      // LinkedIn sourcing happens in the extension, so this route only cares
+      // about email as a contact channel. Drop leads with no email
       // before scoring (saves a Gemini call) and before insert (saves a credit
       // on a lead that could never be emailed).
       const contactableLeads = allLeads.filter(l => l.email)

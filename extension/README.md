@@ -1,45 +1,59 @@
-# Ozigi LinkedIn Sender (browser extension)
+# Ozigi LinkedIn engine (browser extension)
 
-Sends your Ozigi-queued LinkedIn **connection requests** from your own browser,
-inside your real logged-in LinkedIn tab — at a human pace.
+**This is Ozigi's LinkedIn pipeline.** It finds leads and sends connection
+requests, both inside your own logged-in LinkedIn tab, at a human pace. Nothing
+about LinkedIn happens server-side.
 
-> **Messaging is currently disabled** (`messagingEnabled: false` in `DEFAULTS`).
-> Connect works and is verified against LinkedIn's own "Pending" state. Message
-> rows are deferred a day at a time, untouched, until the compose flow is fixed —
-> see [Messaging: why it's off](#messaging-why-its-off).
+Ozigi sends **connection requests with a personalised note**. It does not send
+LinkedIn messages or DMs — the request note is the whole channel.
 
-## Why this exists
+## Why it lives in the browser
 
-LinkedIn fingerprints and flags headless/server automation (it withholds the
-Message/Connect buttons from flagged sessions and can log you out). Running the
-send from *your* browser session sidesteps all of that: LinkedIn just sees you.
-Ozigi still does the heavy lifting on the server — finding leads and writing the
-personalized copy — and this extension only performs the final action locally.
+LinkedIn fingerprints and flags headless/server automation: it withholds the
+Connect button and search results from flagged sessions, and will log you out.
+Running inside *your* session sidesteps that — LinkedIn just sees you. The
+server still does the parts that don't need a browser: scoring leads against
+your ICP and writing the copy.
+
+That split is why LinkedIn is the one source that can't come from a cron. Every
+server-side scraper (GitHub, Dev.to, npm, Hacker News) stores `linkedin_url` as
+null, so this extension is the only producer of leads the connect flow can act
+on. With it switched off, LinkedIn outreach doesn't degrade — it stops.
 
 ## Install (Chrome / Edge)
 
 1. Go to `chrome://extensions`, enable **Developer mode** (top right).
 2. Click **Load unpacked** and select this `extension/` folder.
 3. Pin the Ozigi icon.
-4. In Ozigi → **Settings → LinkedIn**, copy your **connection token**.
-5. Click the extension, paste the token, tick **Enabled**, and **Save**.
+4. In Ozigi → **GTM → Integrations**, copy your **connection token**.
+5. Click the extension, paste the token, tick **Active**, and **Save**.
 6. Keep a LinkedIn tab open while you work. That's it.
 
 ## How it works
 
-- The background worker polls Ozigi for the next due action (`/api/gtm/linkedin/extension/pending`).
-- It navigates your LinkedIn tab to the lead's profile and asks the content
-  script to perform the action (click Connect / open Message, type the text, send).
-- It reports the outcome back (`/api/gtm/linkedin/extension/result`) and paces the
-  next one with a jittered delay, respecting daily caps.
-- Nothing runs when your browser is closed, or when **Enabled** is off.
+Every 30 seconds the service worker asks Ozigi what to do next:
+
+- **Send** — `/api/gtm/linkedin/extension/pending` returns the next due
+  connection request. It navigates to the profile, sends the request with its
+  note, and reports the outcome to `/result`, pacing the next one 45–120s later
+  and respecting the daily cap.
+- **Find** — when nothing is due to send, `/search` may return a people-search
+  job built from a campaign's ICP (one per campaign per day, or on demand from
+  the dashboard). It scrapes up to 3 result pages and posts the profiles to
+  `/leads`, where they become leads with a `linkedin_url`.
+
+Sending always takes priority; searching only fills the funnel. Nothing runs
+when the browser is closed or **Active** is off.
 
 ## Controls (popup)
 
-- **Enabled** — master on/off.
+- **Active** — master on/off.
 - **Review before sending** — pauses auto-send (manual review flow, coming next).
-- **Connects / Messages today** — live counters against the daily caps.
+- **Connects / Leads found today** — live counters; connects run against the daily cap.
 - **Run now** — process the next action immediately.
+
+Status pill: **Active** (running), **Paused** (off), **No token** (set up but
+unusable — it will silently do nothing until a token is saved).
 
 ## Debugging
 
@@ -48,14 +62,15 @@ Open `chrome://extensions` → **service worker** under the Ozigi card, then:
 ```js
 ozigiTest('https://www.linkedin.com/in/someone/')            // connect, no note
 ozigiTest('https://www.linkedin.com/in/someone/', 'Hi …')    // connect with a note
-ozigiTest(url, 'text', 'message', 'Their Name')              // message (bypasses the gate)
+ozigiSearch()               // run the due search job now
+ozigiSearch('https://www.linkedin.com/search/results/people/?keywords=devrel')
+ozigiScrapeHere()           // scrape the open search page, saving nothing
 ozigiDiag()                 // modal candidates — run with the invite modal open
-ozigiDiagCompose('Name')    // full compose-side state
-ozigiDiagBoxes('Name')      // just the name-matched compose boxes
 tick()                      // run one real queue poll, logging why it skips
 ```
 
-These bypass the queue, the API and the daily caps, and send for real.
+These bypass the queue, the API and the daily caps, and send for real —
+`ozigiScrapeHere()` is the only read-only one.
 
 Two gotchas that cost real debugging time:
 
@@ -72,9 +87,9 @@ Two gotchas that cost real debugging time:
 - Overlays live in **shadow roots**. `document.querySelectorAll` cannot see the
   invite modal at all. Use `queryAll()`, never `document` directly.
 - There is a **hidden `/preload/?_bprMode=vanilla` iframe** carrying a second,
-  never-displayed copy of the messaging app. Typing into it "works" — the box
-  reports the characters — but nothing is on screen and nothing ever sends.
-  `usableFrame()` deliberately skips it.
+  never-displayed copy of LinkedIn's UI. Anything found inside it is real but
+  invisible, so coordinates derived from it click nothing. `usableFrame()`
+  deliberately skips it, along with any other hidden or off-screen frame.
 - Never use `offsetParent !== null` as a visibility test: it is `null` for any
   `position: fixed` element, including a `showModal()`'d `<dialog>`.
 - Never `scrollIntoView` before measuring a button in a fixed overlay. There is a
@@ -85,34 +100,26 @@ Two gotchas that cost real debugging time:
 - A Message button with no Connect does **not** mean "already connected". Open
   Profile and 2nd-degree members show one too.
 
-## Messaging: why it's off
+### Search results
 
-The message flow produced two serious failures before being gated:
-
-1. **A wrong-recipient send.** LinkedIn keeps chat bubbles open across
-   navigation, so "the first compose box on the page" was the *previous* lead's.
-   A message written for one person was typed into another's thread and sent.
-   Fixed by anchoring every step to `recipientName` (`findComposeBoxFor`), which
-   fails closed — but the fix is unproven end to end.
-2. **A false `done`.** The flow returned success because the click call didn't
-   throw, marking a queue row `done` for a message that never left the box. The
-   lead would never be retried. `checkMessageSent` now requires the box to be
-   empty *and* the text to appear in that recipient's own thread.
-
-The blocker now: on the current SDUI profile layout, clicking **Message** never
-produces a visible compose box in the top document — the UI only appears in the
-hidden preload iframe. Until that is understood, `messagingEnabled` stays
-`false`. Message rows are reported as `not_connected`, which reschedules them a
-day out **without** burning an attempt or marking anything sent.
+- The result `<a>` wraps the **whole card**, and the name is printed twice (a
+  visually-hidden copy for screen readers plus the visible one), so raw text
+  reads `"John Duggan John Duggan • 2ndSenior Developer Advocate…"`.
+- Adjacent text nodes concatenate with **no spaces**, so button labels arrive
+  glued on (`…United StatesConnectSenior…`). Word-boundary matching never fires.
+- Walk **result cards**, not links: the "X is a mutual connection" links live
+  inside other people's cards, and link-walking turned 10 results into 27 leads.
+- Filter already-connected on the degree **badge** (`• 1st`), never a bare
+  `1st` — the loose version threw false positives.
 
 ## Notes
 
 - Default API base is `https://ozigi.app`. For local testing, set `apiBase` to
   `http://localhost:3000` in the popup (already allowed by `host_permissions`;
   match patterns ignore the port).
-- Daily caps, pacing, and `messagingEnabled` live in `DEFAULTS` at the top of
-  `background.js`. Values already saved in `chrome.storage` win over `DEFAULTS`,
-  so to change one for an installed extension use e.g.
+- Daily caps and pacing live in `DEFAULTS` at the top of `background.js`. Values
+  already saved in `chrome.storage` win over `DEFAULTS`, so to change one for an
+  installed extension use e.g.
   `chrome.storage.local.set({ dailyConnectCap: 1 })` in the service worker console.
 - Outcome semantics: `done` marks the row complete, `not_connected` retries in a
   day, `retry_later` retries in an hour, and only `failed` burns an attempt

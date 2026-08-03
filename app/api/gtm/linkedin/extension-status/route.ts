@@ -21,7 +21,7 @@ export async function GET() {
 
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
-  const [tokenRes, lastLeadRes, leadsTodayRes, deferredRes] = await Promise.all([
+  const [tokenRes, lastLeadRes, leadsTodayRes, queuedRes] = await Promise.all([
     supabaseAdmin
       .from('linkedin_extension_tokens')
       .select('last_used_at, created_at, search_requested_at')
@@ -44,14 +44,12 @@ export async function GET() {
       .eq('user_id', user.id)
       .eq('source', 'linkedin')
       .gte('created_at', dayAgo),
-    // Message/follow-up steps parked by the messaging gate. They defer a day at
-    // a time forever, so without surfacing them the backlog grows silently.
     supabaseAdmin
       .from('linkedin_queue')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .eq('status', 'queued')
-      .in('action', ['message', 'follow_up']),
+      .eq('action', 'connect'),
   ])
 
   const token = tokenRes.data
@@ -63,7 +61,7 @@ export async function GET() {
     lastUsedAt,
     lastSearchAt: lastLeadRes.data?.created_at ?? null,
     leadsFoundToday: leadsTodayRes.count ?? 0,
-    deferredMessages: deferredRes.count ?? 0,
+    queuedConnects: queuedRes.count ?? 0,
     searchRequestedAt: token?.search_requested_at ?? null,
   })
 }

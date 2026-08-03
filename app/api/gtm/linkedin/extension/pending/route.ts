@@ -22,6 +22,9 @@ export async function GET(req: Request) {
     .select('id, lead_id, action, message, sequence_step, scheduled_at')
     .eq('user_id', userId)
     .eq('status', 'queued')
+    // Connect only. The connection request and its note are the whole LinkedIn
+    // channel — message/follow_up rows are historical and are never handed out.
+    .eq('action', 'connect')
     .lte('scheduled_at', new Date().toISOString())
     .lt('attempts', 3)
     .order('scheduled_at', { ascending: true })
@@ -47,7 +50,7 @@ export async function GET(req: Request) {
         (lead?.linkedin_url?.match(/linkedin\.com\/in\/([^/?#]+)/)?.[1] ?? null)
       return {
         id: i.id,
-        action: i.action,               // 'connect' | 'message' | 'follow_up'
+        action: i.action,               // always 'connect'
         message: i.message ?? '',
         recipientName: lead?.name ?? null,
         profileId,

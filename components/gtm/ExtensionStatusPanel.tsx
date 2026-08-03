@@ -14,7 +14,7 @@ interface Status {
   lastUsedAt: string | null
   lastSearchAt: string | null
   leadsFoundToday: number
-  deferredMessages: number
+  queuedConnects: number
   searchRequestedAt: string | null
 }
 
@@ -129,19 +129,10 @@ export default function ExtensionStatusPanel() {
           <div className="text-[11px] text-foreground-subtle">Last search</div>
         </div>
         <div className="rounded-lg bg-background border border-border py-2">
-          <div className="text-lg font-bold text-foreground leading-tight">{s.deferredMessages}</div>
-          <div className="text-[11px] text-foreground-subtle">Message steps held</div>
+          <div className="text-lg font-bold text-foreground leading-tight">{s.queuedConnects}</div>
+          <div className="text-[11px] text-foreground-subtle">Requests queued</div>
         </div>
       </div>
-
-      {s.deferredMessages > 0 && (
-        // These aren't failures and aren't lost — but they will never send while
-        // messaging is off, and a silently growing backlog is worse than a label.
-        <p className="text-[11px] text-foreground-subtle mt-3 leading-relaxed">
-          LinkedIn messaging is currently paused, so message and follow-up steps stay queued rather
-          than sending. Connection requests are unaffected.
-        </p>
-      )}
 
       {note && <p className="text-[11px] text-foreground-subtle mt-2">{note}</p>}
     </div>
