@@ -83,14 +83,25 @@
     }
     .notice b { font-weight: 700; }
 
-    details { border-top: 1px solid var(--line); padding-top: 10px; }
+    /* This drawer holds the connection token — the one thing without which the
+       extension does nothing at all. It must read as a control, not as fine
+       print, or it looks like the field is missing. */
+    details {
+      border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px 12px; background: var(--surface);
+    }
+    details[open] { padding-bottom: 14px; }
     summary {
-      cursor: pointer; font-size: 11px; font-weight: 600; color: var(--muted);
+      cursor: pointer; font-size: 12px; font-weight: 700; color: var(--fg);
       list-style: none; user-select: none;
+      display: flex; align-items: center; gap: 6px;
     }
     summary::-webkit-details-marker { display: none; }
-    summary::before { content: "▸ "; }
-    details[open] summary::before { content: "▾ "; }
+    summary::before { content: "▸"; color: var(--muted); }
+    details[open] summary::before { content: "▾"; }
+    /* Turns amber when no token is saved, so a fresh install can't miss it. */
+    .needs-token { margin-left: auto; font-size: 10px; font-weight: 700; color: var(--warn); }
+    .needs-token:empty { display: none; }
 
     label { display: block; font-weight: 600; margin: 12px 0 5px; font-size: 11px; }
     input[type=text] {
@@ -147,7 +158,7 @@
     </div>
 
     <details id="settings">
-      <summary>Connection settings</summary>
+      <summary>Connection settings<span class="needs-token" id="tokenWarn"></span></summary>
 
       <label for="token">Connection token</label>
       <input type="text" id="token" placeholder="Paste from Ozigi → Settings" autocomplete="off" spellcheck="false" />

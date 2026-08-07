@@ -17,7 +17,9 @@ async function load() {
     $('statusText').textContent = !st.hasToken ? 'No token' : st.enabled ? 'Active' : 'Paused'
     $('cCount').textContent = String(st.counters?.connect ?? 0)
     $('lCount').textContent = String(st.counters?.leads ?? 0)
-    // Open the settings drawer on first run, when there's nothing to act on yet.
+    // Without a token the extension polls nothing, so make that the loudest
+    // thing in the popup rather than something folded away in a drawer.
+    $('tokenWarn').textContent = st.hasToken ? '' : 'TOKEN REQUIRED'
     if (!st.hasToken) $('settings').open = true
   })
 }
