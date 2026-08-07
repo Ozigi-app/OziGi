@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 // Exchanges an AppSumo authorization code for license details.
 // Called client-side from the activate page to avoid exposing client_secret.
@@ -51,6 +52,43 @@ export async function POST(req: Request) {
       email = user.email;
     }
   } catch {}
+
+  // Persist the buyer's email against the license as soon as we learn it. This
+  // is the earliest point we know who they are — a buyer who lands here and then
+  // abandons signup would otherwise leave no contact trail at all.
+  if (info.license_key && email) {
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      const { data: existing } = await supabase
+        .from('appsumo_licenses')
+        .select('license_key')
+        .eq('license_key', info.license_key)
+        .maybeSingle();
+
+      if (existing) {
+        // Only touch the email — never overwrite tier/status from this path.
+        await supabase
+          .from('appsumo_licenses')
+          .update({ buyer_email: email.trim().toLowerCase(), updated_at: new Date().toISOString() })
+          .eq('license_key', info.license_key);
+      } else if (typeof info.tier === 'number') {
+        // Webhook hasn't landed yet (or was missed) — tier is NOT NULL, so we can
+        // only create the row when AppSumo actually told us the tier.
+        await supabase.from('appsumo_licenses').insert({
+          license_key: info.license_key,
+          tier: info.tier,
+          status: 'active',
+          buyer_email: email.trim().toLowerCase(),
+        });
+      }
+    } catch (err) {
+      // Never block activation on bookkeeping.
+      console.error('[AppSumo Exchange] Failed to persist buyer email:', err);
+    }
+  }
 
   return NextResponse.json({
     email,

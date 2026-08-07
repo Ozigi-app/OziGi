@@ -12,12 +12,37 @@ const TIER_NAMES: Record<number, string> = {
 const SESSION_KEY = "appsumo_pending_license_key";
 
 async function redeemKey(licenseKey: string) {
-  const res = await fetch("/api/appsumo/redeem", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ license_key: licenseKey.trim() }),
-  });
-  return { ok: res.ok, data: await res.json() };
+  const post = async (key: string) => {
+    const res = await fetch("/api/appsumo/redeem", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ license_key: key.trim() }),
+    });
+    return { ok: res.ok, status: res.status, data: await res.json() };
+  };
+
+  const first = await post(licenseKey);
+
+  // The key we held was retired by a tier change (we cache it in localStorage,
+  // so an upgrade leaves a stale one behind). The API hands back the live key —
+  // retry with it rather than showing the buyer a dead end.
+  if (!first.ok && first.data?.current_license_key) {
+    const retry = await post(first.data.current_license_key);
+    if (retry.ok) {
+      localStorage.setItem(SESSION_KEY, first.data.current_license_key);
+      return retry;
+    }
+    return retry;
+  }
+
+  // Only a 404 is genuinely unrecoverable — drop the cached key so a later visit
+  // starts clean. Anything else (500s, network blips) may well succeed on retry,
+  // so keep it.
+  if (first.status === 404) {
+    try { localStorage.removeItem(SESSION_KEY); } catch {}
+  }
+
+  return first;
 }
 
 function ActivateForm() {
