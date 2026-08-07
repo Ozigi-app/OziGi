@@ -44,8 +44,19 @@ const state = {
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)) }
 
+// Bumped when a stored setting must be discarded rather than honoured. Values in
+// chrome.storage win over DEFAULTS, so a cap set once during testing would
+// otherwise throttle the extension forever with nothing in the UI to show why.
+const SETTINGS_VERSION = 2
+
 async function cfg() {
-  const s = await chrome.storage.local.get(Object.keys(DEFAULTS).concat(['token', 'counters']))
+  const s = await chrome.storage.local.get(Object.keys(DEFAULTS).concat(['token', 'counters', 'settingsVersion']))
+  if ((s.settingsVersion ?? 0) < SETTINGS_VERSION) {
+    await chrome.storage.local.remove(['dailyConnectCap', 'dailyMessageCap', 'messagingEnabled'])
+    await chrome.storage.local.set({ settingsVersion: SETTINGS_VERSION })
+    delete s.dailyConnectCap
+    delete s.dailyMessageCap
+  }
   return { ...DEFAULTS, ...s }
 }
 
