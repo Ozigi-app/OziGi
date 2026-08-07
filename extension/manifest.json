@@ -1,14 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "Ozigi LinkedIn Sender",
-  "version": "0.1.0",
-  "description": "Sends your Ozigi-queued LinkedIn connection requests and messages from your own browser, at a human pace.",
+  "name": "Ozigi for LinkedIn",
+  "version": "1.0.0",
+  "description": "Find people matching your ideal customer on LinkedIn and send personalised connection requests from your own browser.",
+  "homepage_url": "https://ozigi.app",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": ["storage", "alarms", "tabs", "scripting", "debugger"],
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://ozigi.app/*",
-    "https://*.ozigi.app/*",
-    "http://localhost/*"
+    "https://*.ozigi.app/*"
   ],
   "background": { "service_worker": "background.js" },
   "content_scripts": [
@@ -20,6 +26,12 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Ozigi LinkedIn Sender"
+    "default_title": "Ozigi for LinkedIn",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   }
 }

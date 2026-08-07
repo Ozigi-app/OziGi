@@ -119,3 +119,6 @@ worker/
 # Local outreach samples - contain live unsubscribe tokens
 sample-cold-email.html
 sample-unsubscribe-url.txt
+
+# Packaged browser extension builds
+/dist/
