@@ -284,7 +284,7 @@ export async function getRelatedPosts(categories: string[], currentSlug: string)
 }
 
 export function getAllSections(): string[] {
-  return ["Engineering", "Marketing", "Content", "WordPress", "Security", "Tools Roundup", "Ozigi Focus"];
+  return ["Engineering", "Marketing", "Cold Email", "LinkedIn", "Newsletters", "Prospecting & Outbound", "Content", "WordPress", "Security", "Tools Roundup", "Ozigi Focus"];
 }
 
 export interface SectionMeta {
@@ -316,6 +316,51 @@ export const SECTION_META: Record<string, SectionMeta> = {
       "Community building",
       "Viral content tactics",
       "Paid advertising insights"
+    ],
+    wordCount: "1,200-2,500 words"
+  },
+  "Cold Email": {
+    title: "Cold Email",
+    description: "Templates, subject lines, deliverability, and the sending mechanics that decide whether cold email reaches an inbox or a spam folder. First-touch structure, follow-up sequencing, domain warmup, and compliance.",
+    examples: [
+      "Templates and subject lines",
+      "Deliverability & sending limits",
+      "Follow-up sequencing",
+      "Compliance (CAN-SPAM, GDPR)",
+      "AI-written email detection"
+    ],
+    wordCount: "1,200-2,500 words"
+  },
+  "LinkedIn": {
+    title: "LinkedIn",
+    description: "Connection messages, content strategy, and the data-sourcing questions specific to LinkedIn as a channel. What works, what's against the terms of service, and what to do instead.",
+    examples: [
+      "Connection request messages",
+      "Content strategy",
+      "Data sourcing & compliance",
+      "Outreach sequencing"
+    ],
+    wordCount: "1,000-2,000 words"
+  },
+  "Newsletters": {
+    title: "Newsletters",
+    description: "Format ideas, subject lines, and the setup and cadence decisions that keep a newsletter sustainable for a small team.",
+    examples: [
+      "Content ideas & formats",
+      "Subject lines",
+      "Setup & cadence",
+      "Growth"
+    ],
+    wordCount: "1,000-2,000 words"
+  },
+  "Prospecting & Outbound": {
+    title: "Prospecting & Outbound",
+    description: "Finding, qualifying, and reaching the right people before any pitch happens: ideal customer profiles, lead sourcing, and the small-team motion that runs it all.",
+    examples: [
+      "Ideal customer profiles",
+      "Lead sourcing",
+      "Outbound sequencing",
+      "Channel strategy"
     ],
     wordCount: "1,200-2,500 words"
   },

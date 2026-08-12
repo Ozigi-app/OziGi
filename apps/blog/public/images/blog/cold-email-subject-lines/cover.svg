@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070E1C"/>
+      <stop offset="100%" stop-color="#0F1E35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="73%" cy="50%" r="42%">
+      <stop offset="0%" stop-color="#E8320A" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#E8320A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="22%" r="30%">
+      <stop offset="0%" stop-color="#1E4A8A" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <g stroke="#1E293B" stroke-width="1" opacity="0.4">
+    <line x1="580" y1="70"  x2="1160" y2="70"/>
+    <line x1="580" y1="150" x2="1160" y2="150"/>
+    <line x1="580" y1="230" x2="1160" y2="230"/>
+    <line x1="580" y1="310" x2="1160" y2="310"/>
+    <line x1="580" y1="390" x2="1160" y2="390"/>
+    <line x1="580" y1="470" x2="1160" y2="470"/>
+    <line x1="580" y1="550" x2="1160" y2="550"/>
+    <line x1="630"  y1="40" x2="630"  y2="590"/>
+    <line x1="710"  y1="40" x2="710"  y2="590"/>
+    <line x1="790"  y1="40" x2="790"  y2="590"/>
+    <line x1="870"  y1="40" x2="870"  y2="590"/>
+    <line x1="950"  y1="40" x2="950"  y2="590"/>
+    <line x1="1030" y1="40" x2="1030" y2="590"/>
+    <line x1="1110" y1="40" x2="1110" y2="590"/>
+  </g>
+
+  <text x="660" y="96" font-family="'DM Sans','Inter',monospace" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">35 EXAMPLES, 6 APPROACHES</text>
+
+  <rect x="660" y="106" width="480" height="30" rx="6" fill="#1A2540" stroke="#16a34a" stroke-width="1"/>
+  <text x="680" y="126" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">"your v2 launch post"</text>
+  <text x="1000" y="126" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#16a34a">✓</text>
+
+  <rect x="660" y="140" width="480" height="30" rx="6" fill="#1A2540" stroke="#16a34a" stroke-width="1"/>
+  <text x="680" y="160" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">"bounce rates past two inboxes"</text>
+  <text x="1000" y="160" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#16a34a">✓</text>
+
+  <rect x="660" y="174" width="480" height="30" rx="6" fill="#1A2540" stroke="#E8320A" stroke-width="1" opacity="0.75"/>
+  <text x="680" y="194" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">"Revolutionize Your Workflow"</text>
+  <text x="1000" y="194" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#E8320A">✗</text>
+
+  <rect x="660" y="208" width="480" height="30" rx="6" fill="#1A2540" stroke="#E8320A" stroke-width="1" opacity="0.75"/>
+  <text x="680" y="228" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#94A3B8">RE: (no prior thread exists)</text>
+  <text x="1000" y="228" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#E8320A">✗</text>
+
+  <rect x="660" y="250" width="480" height="66" rx="8" fill="#0F1828" stroke="#1E293B" stroke-width="1"/>
+  <text x="680" y="272" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#94A3B8" letter-spacing="1">THE WINNING PATTERN</text>
+  <text x="680" y="294" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">2 to 5 words, lowercase, drawn from</text>
+  <text x="680" y="310" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">their world, not yours</text>
+
+  <rect x="660" y="326" width="480" height="46" rx="8" fill="#1E2D4A" stroke="#E8320A" stroke-width="1"/>
+  <text x="680" y="348" font-family="'DM Sans','Inter',sans-serif" font-size="11" font-weight="700" fill="#E8320A" letter-spacing="1">THE PROMISE TEST</text>
+  <text x="680" y="364" font-family="'DM Sans','Inter',monospace" font-size="12" fill="#FAFAFA">Does the email deliver what the subject said?</text>
+
+  <g fill="none" stroke="#1E3A5F" stroke-width="1.5" opacity="0.5">
+    <path d="M710 460 L710 550 L790 550"/>
+    <path d="M950 460 L950 550 L1030 550 L1030 460"/>
+  </g>
+  <g fill="#E8320A" opacity="0.85"><circle cx="1030" cy="460" r="4"/></g>
+  <g fill="none" stroke="#E8320A" stroke-width="1" opacity="0.3"><circle cx="1030" cy="460" r="11"/></g>
+
+  <rect x="80" y="88" width="130" height="30" rx="6" fill="#E8320A"/>
+  <text x="145" y="108" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="12" font-weight="700" fill="#FAFAFA" letter-spacing="1">COLD EMAIL</text>
+  <text x="224" y="108" font-family="'DM Sans','Inter',sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">·  2026</text>
+
+  <text x="80" y="175" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="38" font-weight="800" fill="#FAFAFA">Cold Email</text>
+  <text x="80" y="225" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="38" font-weight="800" fill="#FAFAFA">Subject</text>
+  <text x="80" y="275" font-family="'DM Sans','Inter','Helvetica Neue',sans-serif" font-size="38" font-weight="800" fill="#E8320A">Lines</text>
+
+  <text x="80" y="320" font-family="'DM Sans','Inter',sans-serif" font-size="19" fill="#94A3B8">What actually gets opened.</text>
+
+  <line x1="80" y1="348" x2="460" y2="348" stroke="#1E293B" stroke-width="1"/>
+
+  <rect x="80"  y="364" width="150" height="36" rx="18" fill="#1E293B"/>
+  <text x="155" y="387" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">35 examples</text>
+  <rect x="242" y="364" width="180" height="36" rx="18" fill="#1E293B"/>
+  <text x="332" y="387" text-anchor="middle" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#FAFAFA">what kills opens</text>
+
+  <text x="80"  y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" font-weight="700" fill="#E8320A" letter-spacing="3">OZIGI</text>
+  <text x="136" y="598" font-family="'DM Sans','Inter',sans-serif" font-size="13" fill="#94A3B8" opacity="0.7">  ·  blog.ozigi.app</text>
+
+  <rect x="0" y="0" width="6" height="630" fill="#E8320A"/>
+</svg>

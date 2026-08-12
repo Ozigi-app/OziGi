@@ -1,6 +1,13 @@
 import { MetadataRoute } from "next";
 import { getAllPosts, getAllSections } from "@/lib/blog";
 
+// Without this, sitemap.xml is computed once at build time and frozen until
+// the next deploy — scheduled posts (date-gated in lib/blog.ts) wouldn't
+// appear on their go-live date unless something else happened to redeploy
+// main first. Matches the revalidate window already used by post pages and
+// feed.xml's Cache-Control header.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://ozigi.app";
 
