@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Code2,
   User,
+  Users,
   FileText,
   ChevronDown,
   ChevronRight,
@@ -255,8 +256,17 @@ export default function ReviewPage() {
   const errorFlags = allFlags.filter((f) => f.severity === "error");
   const warnFlags = allFlags.filter((f) => f.severity === "warning");
   const namedPersonFlags = allFlags.filter((f) => f.type === "fabricated-authority");
-  const codeFlags = allFlags.filter((f) => f.type === "suspicious-hash" || f.type === "placeholder" || f.type === "lint-error");
+  const codeFlags = allFlags.filter(
+    (f) =>
+      f.type.startsWith("code-") ||
+      f.type === "suspicious-hash" ||
+      f.type === "placeholder" ||
+      f.type === "lint-error"
+  );
   const proseFlags = allFlags.filter((f) => f.type.startsWith("prose-"));
+  const calibrationFlags = allFlags.filter(
+    (f) => f.type === "mode-boundary" || f.type === "audience-mismatch"
+  );
   const linkFlags = allFlags.filter((f) => f.type === "dead-link" || f.type === "out-of-budget-url");
 
   return (
@@ -502,6 +512,25 @@ export default function ReviewPage() {
                     countColor={proseFlags.length > 0 ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"}
                   >
                     <div className="mt-2 space-y-2 text-xs text-foreground-muted">
+                      {typeof audit.prose_audit_score.structural_score === "number" && (
+                        <div className="p-3 rounded bg-surface-2 flex items-center justify-between">
+                          <div>
+                            <p className="font-bold text-foreground">Structural score</p>
+                            <p className="opacity-75">100 = no AI cadence tells detected</p>
+                          </div>
+                          <span
+                            className={`text-2xl font-black ${
+                              audit.prose_audit_score.structural_score >= 80
+                                ? "text-green-700"
+                                : audit.prose_audit_score.structural_score >= 55
+                                  ? "text-amber-700"
+                                  : "text-red-700"
+                            }`}
+                          >
+                            {audit.prose_audit_score.structural_score}
+                          </span>
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-2">
                         <div className="p-2 rounded bg-surface-2">
                           <p className="font-bold text-foreground">List-of-threes</p>
@@ -527,6 +556,30 @@ export default function ReviewPage() {
                             {audit.prose_audit_score.section_closer_count}
                           </p>
                         </div>
+                        <div className="p-2 rounded bg-surface-2">
+                          <p className="font-bold text-foreground">Passive voice</p>
+                          <p className={(audit.prose_audit_score.passive_voice_ratio ?? 0) > 0.2 ? "text-amber-700 font-bold" : ""}>
+                            {Math.round((audit.prose_audit_score.passive_voice_ratio ?? 0) * 100)}%
+                          </p>
+                        </div>
+                        <div className="p-2 rounded bg-surface-2">
+                          <p className="font-bold text-foreground">Em dashes / 1k</p>
+                          <p className={(audit.prose_audit_score.em_dash_per_1000 ?? 0) > 4 ? "text-amber-700 font-bold" : ""}>
+                            {audit.prose_audit_score.em_dash_per_1000 ?? 0}
+                          </p>
+                        </div>
+                        <div className="p-2 rounded bg-surface-2">
+                          <p className="font-bold text-foreground">Metronomic runs</p>
+                          <p className={(audit.prose_audit_score.sentence_uniformity_runs ?? 0) > 0 ? "text-amber-700 font-bold" : ""}>
+                            {audit.prose_audit_score.sentence_uniformity_runs ?? 0}
+                          </p>
+                        </div>
+                        <div className="p-2 rounded bg-surface-2">
+                          <p className="font-bold text-foreground">Restated points</p>
+                          <p className={(audit.prose_audit_score.repeated_theme_count ?? 0) > 0 ? "text-amber-700 font-bold" : ""}>
+                            {audit.prose_audit_score.repeated_theme_count ?? 0}
+                          </p>
+                        </div>
                       </div>
                       {proseFlags.map((flag, i) => (
                         <div key={i} className={`p-3 rounded-lg border flex gap-2 ${severityClass(flag.severity)}`}>
@@ -537,6 +590,33 @@ export default function ReviewPage() {
                       {proseFlags.length === 0 && (
                         <p className="text-green-700 font-medium">No prose pattern issues detected.</p>
                       )}
+                    </div>
+                  </Panel>
+                )}
+
+                {/* Calibration Panel — is this the piece you asked for? */}
+                {calibrationFlags.length > 0 && (
+                  <Panel
+                    title="Fit & Calibration"
+                    icon={<Users className="w-4 h-4 text-amber-600" />}
+                    count={calibrationFlags.length}
+                    countColor="bg-amber-100 text-amber-800"
+                  >
+                    <div className="space-y-2 mt-2">
+                      <p className="text-xs text-foreground-muted">
+                        The draft is well-formed but may not be the piece you asked for.
+                      </p>
+                      {calibrationFlags.map((flag, i) => (
+                        <div key={i} className={`p-3 rounded-lg border text-xs flex gap-2 ${severityClass(flag.severity)}`}>
+                          {severityIcon(flag.severity)}
+                          <div className="min-w-0">
+                            <p className="font-medium leading-relaxed">{flag.message}</p>
+                            <p className="mt-1 opacity-60 uppercase tracking-wide text-[10px] font-bold">
+                              {flag.type === "mode-boundary" ? "Mode boundary" : "Audience fit"}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </Panel>
                 )}

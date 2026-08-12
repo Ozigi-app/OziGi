@@ -6,6 +6,7 @@ import { Redis } from '@upstash/redis'
 import { getVertexAIClient } from '@/lib/genai-client'
 import { buildLongFormPrompt, parseLongFormResponse } from '@/lib/prompts/long-form'
 import { containsPromptInjection } from '@/lib/prompts'
+import { isLongFormAudience } from '@/lib/prompts/audience'
 import { phCapture } from '@/lib/posthog'
 
 const redis = new Redis({
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     tone = 'professional',
     structure = 'narrative',
     depth = 'intermediate',
+    audience,
     targetLength = 1500,
   } = await req.json()
 
@@ -51,6 +53,7 @@ export async function POST(req: Request) {
       targetLength: Math.min(targetLength, 2500),
       structure,
       depth,
+      audience: isLongFormAudience(audience) ? audience : undefined,
     })
 
     const client = await getVertexAIClient()
@@ -76,6 +79,7 @@ export async function POST(req: Request) {
 
     phCapture(distinctId, 'demo_longform_generated', {
       tone, structure, depth, targetLength,
+      audience: isLongFormAudience(audience) ? audience : null,
       durationMs: Date.now() - start,
     }).catch(() => {})
 

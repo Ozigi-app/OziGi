@@ -81,7 +81,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const budget: SourceBudgetEntry[] = Array.isArray(plan?.source_budget)
       ? plan.source_budget
       : [];
-    const freshAudit = await runFullAudit(postId, plan?.id ?? null, post.content, budget);
+    // Re-audit with the parameters the draft was generated under, so the
+    // calibration checks (mode boundary, audience fit) run on review too.
+    const freshAudit = await runFullAudit(postId, plan?.id ?? null, post.content, budget, {
+      tone: metaSection.tone,
+      structure: metaSection.structure,
+      audience: metaSection.audience ?? undefined,
+    });
 
     // Upsert audit result
     await supabaseAdmin
@@ -113,6 +119,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
           tone: metaSection.tone,
           structure: metaSection.structure,
           depth: metaSection.depth,
+          audience: metaSection.audience ?? null,
           webResearch: metaSection.webResearch,
           generatedAt: post.created_at,
         },

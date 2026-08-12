@@ -10,6 +10,7 @@ import AuthModal from "@/components/AuthModal";
 import { SignUpGate, PostGenerationBanner } from "@/components/demo/SignUpGate";
 import { ToolLandingContent } from "@/components/tools/ToolLandingContent";
 import { supabase } from "@/lib/supabase/client";
+import { AUDIENCE_PROFILES, AUDIENCE_DEFAULTS, AUDIENCE_IDS } from "@/lib/prompts/audience";
 
 const FAQS = [
   {
@@ -55,6 +56,10 @@ const STRUCTURE_OPTIONS = [
   { value: "how-to", label: "How-To Guide" },
   { value: "opinion", label: "Opinion Piece" },
   { value: "analysis", label: "Deep Analysis" },
+  // Diátaxis modes — defined by reader need, with enforced boundaries.
+  { value: "tutorial", label: "Tutorial (learn by doing)" },
+  { value: "reference", label: "Reference (look up)" },
+  { value: "explanation", label: "Explanation (understand why)" },
 ];
 const DEPTH_OPTIONS = [
   { value: "beginner", label: "Beginner" },
@@ -67,6 +72,15 @@ const LENGTH_OPTIONS = [
   { value: 2500, label: "~2500 words" },
 ];
 
+// Audience drives jargon, code, analogies, and how claims are evidenced — the
+// other three controls are downstream of it. Picking one pre-fills them.
+// Labels, hints, and defaults all come from lib/prompts/audience.ts, the same
+// module the prompt and the calibration audit read, so they cannot drift.
+const AUDIENCE_OPTIONS = [
+  { value: "", label: "Not specified" },
+  ...AUDIENCE_IDS.map((id) => ({ value: id as string, label: AUDIENCE_PROFILES[id].label })),
+];
+
 function track(event: string, properties?: Record<string, unknown>) {
   fetch("/api/demo/track", {
     method: "POST",
@@ -77,6 +91,7 @@ function track(event: string, properties?: Record<string, unknown>) {
 
 export default function LongFormPage() {
   const [context, setContext] = useState("");
+  const [audience, setAudience] = useState("");
   const [tone, setTone] = useState("professional");
   const [structure, setStructure] = useState("narrative");
   const [depth, setDepth] = useState("intermediate");
@@ -91,6 +106,18 @@ export default function LongFormPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Selecting an audience resets tone/structure/depth to that reader's defaults.
+  // They stay editable — this is a starting point, not a lock.
+  const handleAudienceChange = (value: string) => {
+    setAudience(value);
+    const defaults = AUDIENCE_DEFAULTS[value as keyof typeof AUDIENCE_DEFAULTS];
+    if (defaults) {
+      setTone(defaults.tone);
+      setStructure(defaults.structure);
+      setDepth(defaults.depth);
+    }
+  };
 
   useEffect(() => {
     track("demo_page_viewed", { page: "long_form" });
@@ -130,7 +157,14 @@ export default function LongFormPage() {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ context, tone, structure, depth, targetLength }),
+        body: JSON.stringify({
+          context,
+          tone,
+          structure,
+          depth,
+          targetLength,
+          ...(audience ? { audience } : {}),
+        }),
       });
 
       if (res.status === 403) {
@@ -154,7 +188,7 @@ export default function LongFormPage() {
       setHasGeneratedOnce(true);
 
       if (!isAuthenticated) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ article: result, params: { context, tone, structure, depth, targetLength } }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ article: result, params: { context, audience, tone, structure, depth, targetLength } }));
       }
 
       track("demo_generate_succeeded", { page: "long_form", authenticated: isAuthenticated, wordCount: result?.totalWordCount });
@@ -224,6 +258,22 @@ export default function LongFormPage() {
               rows={5}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30 resize-none"
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-bold text-slate-700 mb-2">Who is this for?</label>
+            <select
+              value={audience}
+              onChange={(e) => handleAudienceChange(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8320A]/30"
+            >
+              {AUDIENCE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <p className="text-xs text-slate-500 mt-1.5 min-h-[1rem]">
+              {audience
+                ? `${AUDIENCE_PROFILES[audience as keyof typeof AUDIENCE_PROFILES].hint} Tone, structure, and depth below are set to match — change any of them if you disagree.`
+                : "Optional, but this is the single biggest lever on how the draft reads."}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

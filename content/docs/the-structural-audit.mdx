@@ -1,0 +1,140 @@
+---
+title: "The Structural Audit: What a Word List Can't Catch"
+readTime: "8 min read"
+tag: "Architecture Deep Dive"
+---
+
+> **TL;DR:** The Banned Lexicon blocks the words that give AI away. But a model routes around a blocklist by reaching for a synonym, and the deeper tells were never words at all — they are rhythm, repetition, and structure. Ozigi's long-form pipeline runs seventeen structural detectors over every draft after generation, scores it out of 100, and flags the specific spans that read as machine-written. It also checks two things a prose audit cannot: whether the code survives a copy-paste, and whether the piece is aimed at the reader you asked for.
+
+## Where the word list runs out
+
+The [Banned Lexicon](/docs/the-banned-lexicon) does the heavy lifting on vocabulary. Ban "delve" and the model stops writing "delve." That part works, and it works reliably, because it is a hard constraint injected at the API route rather than a polite request.
+
+The problem is what happens next. Ban "delve" and the model writes "explore." Ban "explore" and it writes "examine." The blocklist grows, the model keeps finding the next token, and you are in an arms race you cannot win by adding rows to a list.
+
+Meanwhile the actual tells go untouched. Read enough machine-written technical content and the pattern is not really the vocabulary. It is:
+
+- Thirty paragraphs that are all within a few words of the same length.
+- Four sentences in a row opening with "You."
+- Every section closing with a line that restates its own heading.
+- A question used as a transition into each new section, answered nowhere.
+- The same point made in section two, section four, and the conclusion, in slightly different words each time.
+- A lead-in before every code block that says what the code plainly shows.
+
+None of those contain a banned word. Every one of them survives an unlimited blocklist. And unlike vocabulary, a model cannot synonym its way out of them, because they are properties of the whole document rather than of any sentence in it.
+
+That gap is what the structural audit closes.
+
+## Detecting cadence instead of words
+
+The audit runs after generation, inside the same request, over the assembled markdown. Seventeen detectors, all pure functions with no network calls and no second model pass.
+
+Some measure rhythm directly. The banned-lexicon deep dive describes **burstiness** — the variation in sentence and paragraph length that separates human writing from machine writing. Burstiness is now measured rather than hoped for:
+
+```typescript
+// lib/longform/audit-prose.ts
+
+/** Runs of 4+ consecutive sentences all within +/-30% of the run mean. */
+function findUniformSentenceRuns(sentences: Span[]): Span[] {
+  const hits: Span[] = [];
+  const counts = sentences.map((s) => wordCountOf(s.text));
+  let i = 0;
+  while (i < counts.length) {
+    let j = i + 1;
+    let sum = counts[i];
+    let min = counts[i];
+    let max = counts[i];
+    while (j < counts.length) {
+      const mean = (sum + counts[j]) / (j - i + 1);
+      if (mean < 5) break;
+      // The band holds for the whole window iff it holds for its extremes.
+      if ((mean - Math.min(min, counts[j])) / mean > 0.3) break;
+      if ((Math.max(max, counts[j]) - mean) / mean > 0.3) break;
+      sum += counts[j];
+      min = Math.min(min, counts[j]);
+      max = Math.max(max, counts[j]);
+      j++;
+    }
+    if (j - i >= 4) {
+      hits.push({ text: `${j - i} sentences`, offset: sentences[i].offset });
+      i = j;
+    } else {
+      i++;
+    }
+  }
+  return hits;
+}
+```
+
+Low burstiness is no longer a quality you assert about the output. It is a number attached to a specific paragraph, with an offset the review UI can highlight.
+
+The rest of the detectors cover em-dash density, rhetorical questions used as transitions, passive-voice ratio, hedging, repeated sentence openers, distinctive words repeated inside a paragraph, thematic points restated across sections, narrated code, meta-references and conclusion recaps, scare quotes, mid-sentence bold, emoji headings, marketing phrasing like "simple yet powerful," and prose that contains no contractions in a piece whose tone calls for them.
+
+Each detector that fires deducts from a **structural score** out of 100. One number in the review panel, with the individual flags underneath it.
+
+### Topic words are not repetition
+
+The naive version of a repeated-word detector is useless on technical content. An article about webhooks says "webhook" constantly, and it should.
+
+So any word appearing in a heading is exempt. The detector only fires on a distinctive word repeated three or more times inside a single paragraph that the piece is *not* actually about. That single exemption is the difference between a signal and noise.
+
+### Prose statistics ignore code
+
+Running these detectors over raw markdown produces garbage. A forty-line Python sample destroys the paragraph-length distribution and inflates every comma-separated-list count.
+
+Before any detector runs, code fences and link targets are blanked out — replaced character-for-character with spaces, so every byte offset still points at the right span in the original document. The statistics see prose only, and the review UI can still highlight exactly what was flagged.
+
+## Two things prose analysis misses
+
+### Code that breaks on paste
+
+The most damaging defect in a technical article is not a clumsy sentence. It is a snippet the reader copies, pastes, and watches fail.
+
+The audit reads every fenced block for leaked credentials (AWS, GitHub, Slack, Google, and OpenAI key shapes, JWTs, private keys, hardcoded passwords), SQL built by string interpolation, missing language labels, `...` standing in for real lines, and per-language conventions — unpinned Docker base images, shell scripts without `set -euo pipefail`, unquoted `$VAR`, bare `except`, mutable default arguments, `SELECT *`.
+
+The check that earns its place most often is the smallest one. Smart quotes and non-breaking spaces inside a code block are invisible on the rendered page and a syntax error the instant someone pastes them:
+
+```typescript
+const SMART_QUOTE_RE = /[‘’“”]/g;
+const CODE_DASH_RE = /[–—]/g;
+```
+
+Smart quotes and invisible spaces are errors and block publication. An en dash where a hyphen belongs is a warning — it silently turns `--verbose` into something the shell does not recognise. ASCII diagram fences are exempt, since box-drawing characters are the point there.
+
+### Content aimed at the wrong reader
+
+A draft can be well-written, correctly sourced, free of banned words, and still be the wrong article — a beginner tutorial that assumes fluency, a developer guide with no code in it, a reproducibility piece with no method.
+
+This is a calibration failure, not a quality failure, and nothing in the old pipeline could see it.
+
+The long-form form now leads with a single question: **who is this for?** Five reader profiles — developer, practitioner, technical writer, beginner, mixed — each defined across nine dimensions: jargon level, whether code leads or trails, how much theory belongs, structure preference, tone, ideal opening, what an acceptable benchmark claim looks like, analogy use, and length.
+
+Those dimensions are not independent of tone, depth, and structure — they determine them. Picking an audience pre-fills the other three controls, and they stay editable.
+
+The same profile is then checked against the finished draft. Jargon density with no definitions in a beginner piece, code blocks with no line-level explanation, a developer how-to with no code at all, performance claims with no number attached. The profiles live in one module that the prompt and the audit both read, so the instruction and the check cannot drift apart.
+
+## Staying in one mode
+
+The last check borrows from [Diátaxis](https://diataxis.fr/), which holds that a page serves exactly one reader need — learning, doing, looking up, or understanding — and that documentation fails mostly by drifting between them.
+
+The generator is told which mode it is writing in, and every mode carries an explicit boundary:
+
+> **STAY IN MODE:** a how-to serves someone mid-task. Do not teach the concepts behind the steps and do not motivate the topic — assume they already decided to do this. Background belongs in a linked explanation, not here.
+
+Then the draft is checked against that same boundary. A how-to with no step sequence. A tutorial that never tells the reader how to confirm it worked. A reference page written as a walkthrough. An explanation that turned into a procedure.
+
+## Cost
+
+The whole audit is pure computation. No second model pass, no network calls, nothing that competes with generation for the request budget.
+
+- **1,500 words** — ~11ms
+- **2,500 words** — ~10ms
+- **8,000 words** — ~25ms
+
+Against a 60-second serverless ceiling where generation itself takes 30 to 55 seconds, the audit is a rounding error. The audience calibration block adds roughly 320 input tokens to the prompt, about 6%, and does not change output length at all.
+
+## What this does not do
+
+The audit flags patterns. It does not rewrite them, and it does not block publication on style — only on the two things that are unambiguously defects: a leaked credential and code that cannot be pasted.
+
+Everything else lands in the review panel as a flag against a specific span, because the call on whether a repeated point is sloppy or deliberate belongs to the person whose name is on the article. That is the same [90/10 split](/docs/human-in-the-loop) the rest of the engine runs on. The Lexicon handles vocabulary. The structural audit handles cadence, code, and calibration. You still handle the judgment.

@@ -45,6 +45,13 @@ const DEEP_DIVES = [
     slug: "human-in-the-loop",
     description: "The automation fallacy and the 90/10 rule of collaborative content engineering.",
     icon: "🤝"
+  },
+  {
+    number: "05",
+    title: "The Structural Audit",
+    slug: "the-structural-audit",
+    description: "Catching the AI tells a word list can't reach — cadence, repetition, broken code, and content aimed at the wrong reader.",
+    icon: "📐"
   }
 ];
 

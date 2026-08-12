@@ -1,5 +1,6 @@
 import { ANTI_AI_RULES_LONGFORM } from "./anti-ai";
-import type { SourceBudgetEntry } from '@/lib/types/longform';
+import { buildAudienceBlock } from "./audience";
+import type { SourceBudgetEntry, LongFormAudience } from '@/lib/types/longform';
 
 /**
  * Long-form content generation prompt builder
@@ -33,17 +34,34 @@ export interface WebResearchBundle {
 
 export type LongFormDepth = 'beginner' | 'intermediate' | 'advanced';
 
+/**
+ * Content mode. The first five are the original editorial formats; the last
+ * three are the Diataxis modes, which are defined by reader need rather than
+ * by shape and carry explicit boundaries against drifting into each other.
+ */
+export type LongFormStructure =
+  | 'narrative'
+  | 'listicle'
+  | 'how-to'
+  | 'opinion'
+  | 'analysis'
+  | 'tutorial'
+  | 'reference'
+  | 'explanation';
+
 export interface LongFormParams {
   context: string;
   personaVoice?: string;
   tone: 'professional' | 'casual' | 'technical' | 'storytelling';
   targetLength: number; // word count target
-  structure: 'narrative' | 'listicle' | 'how-to' | 'opinion' | 'analysis';
+  structure: LongFormStructure;
   additionalInstructions?: string;
   /** Optional research bundle gathered from the live web. */
   research?: WebResearchBundle;
   /** Reader expertise level - drives depth and assumed knowledge. */
   depth?: LongFormDepth;
+  /** Who the piece is for. Calibrates jargon, code, analogies, and claims. */
+  audience?: LongFormAudience;
   /** Verified source budget from Stage 2 — when present, Stage 3 constraints are injected. */
   verifiedSourceBudget?: SourceBudgetEntry[];
   /** Plan ID linking this draft to a Stage 1 plan. */
@@ -86,6 +104,7 @@ export interface LongFormOutput {
     tone: string;
     structure: string;
     depth?: LongFormDepth;
+    audience?: LongFormAudience;
     webResearch?: boolean;
     generatedAt: string;
   };
@@ -114,26 +133,41 @@ const TONE_INSTRUCTIONS: Record<LongFormParams['tone'], string> = {
   `,
 };
 
-const STRUCTURE_INSTRUCTIONS: Record<LongFormParams['structure'], string> = {
+/**
+ * Each mode carries a STAY IN MODE line. Drift between modes is the most common
+ * structural failure in long-form technical content: the tutorial that pauses to
+ * explain architecture, the reference page that becomes a walkthrough. Naming the
+ * boundary in the prompt is what keeps the draft inside it, and
+ * lib/longform/audit-structure.ts checks the result against the same boundaries.
+ */
+const STRUCTURE_INSTRUCTIONS: Record<LongFormStructure, string> = {
   narrative: `
     Flowing prose with a clear arc:
     - Hook -> rising context -> central thesis -> evidence -> conclusion.
     - Smooth transitions, no bullet-point dumps as the primary mechanism.
     - The piece should feel inevitable in retrospect.
+    STAY IN MODE: if you find yourself writing numbered setup steps, you have
+    drifted into a how-to. Fold the mechanics into the story or cut them.
   `,
   listicle: `
     Numbered list of substantive items:
     - 100-150 word intro framing the list and stakes.
     - Each item: clear heading, 150-300 words of explanation, ideally one example or actionable takeaway.
     - Items should be ordered by importance or logical sequence, not alphabetically.
+    STAY IN MODE: every item must be genuinely parallel. If one item needs three
+    times the space of the others, it is an article of its own, not entry #4.
   `,
   'how-to': `
-    Instructional guide:
-    - State the outcome the reader will achieve.
-    - List prerequisites (tools, accounts, prior knowledge).
+    Instructional guide for a reader who already knows the domain and needs to
+    accomplish one specific task:
+    - State the outcome the reader will achieve, in the first paragraph.
+    - List prerequisites (tools, accounts, prior knowledge) before step one.
     - Numbered, sequential steps. Each step is testable / verifiable.
     - Include common pitfalls and how to recover.
     - Close with verification + next steps.
+    STAY IN MODE: a how-to serves someone mid-task. Do not teach the concepts
+    behind the steps and do not motivate the topic - assume they already decided
+    to do this. Background belongs in a linked explanation, not here.
   `,
   opinion: `
     Persuasive op-ed:
@@ -141,6 +175,8 @@ const STRUCTURE_INSTRUCTIONS: Record<LongFormParams['structure'], string> = {
     - Steelman the opposing view before dismantling it.
     - Build the case with evidence + reasoning + concrete examples.
     - End with a call to action or pointed conclusion.
+    STAY IN MODE: take a position a reasonable person could disagree with. If
+    nothing in the piece is arguable, you have written an explainer instead.
   `,
   analysis: `
     Deep analytical piece:
@@ -149,6 +185,46 @@ const STRUCTURE_INSTRUCTIONS: Record<LongFormParams['structure'], string> = {
     - Examine multiple facets / perspectives with data and primary sources.
     - Identify patterns and second-order implications.
     - Conclude with predictions or open questions.
+    STAY IN MODE: every claim carries evidence. Analysis without data is an
+    opinion piece wearing a lab coat.
+  `,
+  tutorial: `
+    Diataxis TUTORIAL - learning through guided action. The reader is acquiring a
+    skill they do not have yet, so the piece is a lesson, not a task list:
+    - State what the reader will have built by the end, concretely.
+    - List prerequisites and the exact versions you are using.
+    - Every step is one action with a visible result. Never batch three actions
+      into one step.
+    - After each meaningful step, show what the reader should see so they can
+      confirm they are still on track.
+    - The example must work end to end. A tutorial that fails at step 7 is worse
+      than no tutorial.
+    STAY IN MODE: a tutorial guarantees success on one concrete path. Do not
+    offer alternatives, do not enumerate options, do not explain the underlying
+    architecture. Every "you could also" is a chance for the reader to get lost.
+  `,
+  reference: `
+    Diataxis REFERENCE - information structured for lookup while working. The
+    reader already knows what they need and is scanning for it:
+    - Describe the thing itself: parameters, return values, fields, flags, errors.
+    - Consistent structure across every entry so the reader learns the shape once.
+    - Use tables for anything with parallel attributes.
+    - State defaults, types, required/optional, and constraints explicitly.
+    - Be exhaustive within scope. Omissions are the failure mode here.
+    STAY IN MODE: reference is consulted, never read start to finish. Do not
+    address the reader as "you", do not walk them through a scenario, and do not
+    explain why the design is the way it is.
+  `,
+  explanation: `
+    Diataxis EXPLANATION - background and context for a reader who wants to
+    understand why, not do:
+    - Establish the question the piece answers.
+    - Give the history, the design constraints, and the alternatives considered.
+    - Draw connections between concepts the reader already holds separately.
+    - Admit the trade-offs and where the current answer is unsatisfying.
+    STAY IN MODE: explanation is read away from the keyboard. Do not give
+    instructions, do not number steps, and do not turn it into a walkthrough.
+    If the reader could follow along typing, you are writing a tutorial.
   `,
 };
 
@@ -314,11 +390,13 @@ export function buildLongFormPrompt({
   additionalInstructions,
   research,
   depth = 'intermediate',
+  audience,
   verifiedSourceBudget,
 }: LongFormParams): string {
   const toneInstructions = TONE_INSTRUCTIONS[tone];
   const structureInstructions = STRUCTURE_INSTRUCTIONS[structure];
   const depthInstructions = DEPTH_INSTRUCTIONS[depth];
+  const audienceBlock = audience ? buildAudienceBlock(audience) : '';
   const researchBlock = research ? formatResearchBlock(research) : '';
   const stage3Block = verifiedSourceBudget?.length
     ? buildStage3Constraints(verifiedSourceBudget)
@@ -344,6 +422,8 @@ ${researchBlock}
 ${stage3Block}
 
 ${personaSection}
+
+${audienceBlock}
 
 ## Tone: ${tone}
 ${toneInstructions}
@@ -510,6 +590,7 @@ export function parseLongFormResponse(response: string): LongFormOutput | null {
         tone: parsed.metadata?.tone || 'unknown',
         structure: parsed.metadata?.structure || 'unknown',
         depth: parsed.metadata?.depth,
+        audience: parsed.metadata?.audience,
         webResearch: parsed.metadata?.webResearch,
         generatedAt: new Date().toISOString(),
       },

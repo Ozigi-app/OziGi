@@ -35,7 +35,7 @@ Email sends server-side. LinkedIn is the [browser extension](extension/) — it 
 
 Drop in a URL, paste raw notes, or upload a PDF or image. Ozigi extracts the core narrative and returns polished, platform-specific drafts for X (Twitter), LinkedIn, Discord, Slack, and email newsletters — all in your voice, with the Banned Lexicon applied.
 
-Generate full blog posts, tutorials, and technical documentation in MDX-ready format from the long-form module. Write, schedule, and send email newsletters directly from the dashboard. Manage your subscriber list and track delivery.
+Generate full blog posts, tutorials, and technical documentation in MDX-ready format from the long-form module. Pick who the piece is for and the engine calibrates jargon, code, analogies, and how claims are evidenced to that reader. Every long-form draft is then audited before you see it — for AI cadence, for code that breaks on paste, and for whether it actually landed on the audience you asked for. Write, schedule, and send email newsletters directly from the dashboard. Manage your subscriber list and track delivery.
 
 ---
 
@@ -43,6 +43,11 @@ Generate full blog posts, tutorials, and technical documentation in MDX-ready fo
 
 ### The Banned Lexicon
 The single most important reason Ozigi doesn't sound like AI. A hard-coded blocklist enforced at the API route level — not filtered after generation, blocked *during* it. No "delve", no "robust", no "seamlessly", no "tapestry", no "game-changing". The model is penalised for AI-speak vocabulary, which forces every sentence to be constructed from your actual content. Applied identically to cold email, blog posts, LinkedIn posts, and newsletter copy.
+
+### The Structural Audit
+The Banned Lexicon blocks the words. This catches everything a word list can't reach. A model routes around a blocklist by picking a synonym, but it can't synonym its way out of thirty paragraphs of identical length, four sentences opening with "You", a question transitioning into every section, or the same point restated in three places. Seventeen detectors run over every long-form draft after generation and return a structural score out of 100 with each flag anchored to a specific span.
+
+The same pass reads every code block for leaked credentials, injectable SQL, and — the one that bites readers most — smart quotes and non-breaking spaces, which are invisible on the page and a syntax error the moment someone pastes the snippet. Those two are hard errors that block publication; style flags are advisory. It also checks the draft against the reader you selected and the content mode you picked, so a beginner tutorial that assumes fluency or a how-to with no steps gets caught before you do. Pure computation, no second model call: ~10ms on a 2,500-word article. [Read the deep dive](https://ozigi.app/docs/the-structural-audit).
 
 ### System Personas
 Define who is writing — role, tone, beliefs, things they would never say — and save it once. Every campaign generation, every outreach step, and every content piece applies that persona automatically. One setup, consistent voice forever, across both engines.

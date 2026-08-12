@@ -11,7 +11,8 @@ const DEEP_DIVE_ORDER = [
   { slug: "multimodal-pipeline", title: "1. Multimodal Ingestion" },
   { slug: "the-banned-lexicon", title: "2. The Banned Lexicon" },
   { slug: "system-personas", title: "3. System Personas" },
-  { slug: "human-in-the-loop", title: "4. Human-in-the-Loop" }
+  { slug: "human-in-the-loop", title: "4. Human-in-the-Loop" },
+  { slug: "the-structural-audit", title: "5. The Structural Audit" }
 ];
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

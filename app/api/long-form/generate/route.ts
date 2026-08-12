@@ -22,6 +22,7 @@ import {
   type WebSourceSnippet,
 } from '@/lib/prompts/long-form';
 import { containsPromptInjection } from '@/lib/prompts';
+import { isLongFormAudience, AUDIENCE_IDS } from '@/lib/prompts/audience';
 import {
   validateLongForm,
   buildRepairDirective,
@@ -322,6 +323,7 @@ export async function POST(req: Request) {
       additionalInstructions,
       enableWebResearch = false,
       depth = 'intermediate',
+      audience,
       planId,
       verifiedSourceBudget,
     } = body;
@@ -338,7 +340,10 @@ export async function POST(req: Request) {
     }
 
     const validTones = ['professional', 'casual', 'technical', 'storytelling'];
-    const validStructures = ['narrative', 'listicle', 'how-to', 'opinion', 'analysis'];
+    const validStructures = [
+      'narrative', 'listicle', 'how-to', 'opinion', 'analysis',
+      'tutorial', 'reference', 'explanation',
+    ];
     const validDepths: LongFormDepth[] = ['beginner', 'intermediate', 'advanced'];
 
     if (!validTones.includes(tone)) {
@@ -356,6 +361,13 @@ export async function POST(req: Request) {
     if (!validDepths.includes(depth)) {
       return NextResponse.json(
         { error: `Invalid depth. Must be one of: ${validDepths.join(', ')}` },
+        { status: 400 }
+      );
+    }
+    // Audience is optional — omitting it just skips the calibration block.
+    if (audience !== undefined && !isLongFormAudience(audience)) {
+      return NextResponse.json(
+        { error: `Invalid audience. Must be one of: ${AUDIENCE_IDS.join(', ')}` },
         { status: 400 }
       );
     }
@@ -394,11 +406,12 @@ export async function POST(req: Request) {
       additionalInstructions: additionalInstructions?.trim() || undefined,
       research: research ?? undefined,
       depth: depth as LongFormDepth,
+      audience: isLongFormAudience(audience) ? audience : undefined,
       verifiedSourceBudget: Array.isArray(verifiedSourceBudget) ? verifiedSourceBudget as SourceBudgetEntry[] : undefined,
     });
 
     console.log(
-      `[LongForm] Generating ${targetLength}-word ${structure} (${depth}, web=${!!research}) for user ${user.id}`
+      `[LongForm] Generating ${targetLength}-word ${structure} (${depth}, audience=${audience ?? 'unset'}, web=${!!research}) for user ${user.id}`
     );
 
     // ---------------------------------------------------------------------
@@ -500,6 +513,7 @@ export async function POST(req: Request) {
       tone,
       structure,
       depth,
+      audience: isLongFormAudience(audience) ? audience : undefined,
       webResearch: !!research,
       generatedAt: new Date().toISOString(),
     };
@@ -597,6 +611,7 @@ export async function POST(req: Request) {
           tone,
           structure,
           depth,
+          audience: isLongFormAudience(audience) ? audience : null,
           webResearch: !!research,
           references: parsed.references ?? [],
           researchQueries: research?.queries ?? [],
@@ -649,7 +664,11 @@ export async function POST(req: Request) {
       const budget = Array.isArray(verifiedSourceBudget)
         ? (verifiedSourceBudget as SourceBudgetEntry[])
         : [];
-      auditReport = runFastAudit(savedPostId ?? 'unsaved', planId ?? null, fullContent, budget);
+      auditReport = runFastAudit(savedPostId ?? 'unsaved', planId ?? null, fullContent, budget, {
+        tone,
+        structure,
+        audience: isLongFormAudience(audience) ? audience : undefined,
+      });
 
       // Persist audit
       if (savedPostId) {
