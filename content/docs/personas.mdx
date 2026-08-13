@@ -1,0 +1,83 @@
+---
+title: "Personas"
+readTime: "6 min read"
+tag: "Content Engine"
+---
+
+A persona is a voice profile. It defines **who is writing** rather than what to write, and it is applied to every social post, newsletter, outbound email, and long-form article Ozigi generates.
+
+This is the highest-leverage thing you can configure. When people say generated content "sounds generic", the cause is almost always a vague persona rather than the model.
+
+## Why identity beats instruction
+
+A prompt tells the model what task to perform. A persona tells it who to be. The difference shows up immediately in the output.
+
+Asking for "an engaging post about our new API" gives the model no constraints beyond the topic, so it falls back on the statistical average of everything it has read about APIs. You get competent, forgettable copy.
+
+Establishing that the writer is "a backend engineer who has been on call for this service for two years and is tired of explaining the same failure mode" gives the model a position, a vocabulary, and a set of things it would never say. The content becomes a consequence of that identity.
+
+The full argument is in [System Personas](/docs/system-personas).
+
+## Weak versus strong
+
+```text
+WEAK
+"You are a helpful assistant. Write engaging posts about my
+ product updates."
+
+→ Describes a task, not a person. Produces the average of all
+  product-update posts ever written.
+```
+
+```text
+STRONG
+"Pragmatic technical founder, eight years building payments
+ infrastructure. Direct, occasionally dry. Writes short
+ paragraphs. Never uses 'leverage', 'ecosystem', or 'excited to
+ announce'. Always opens with a specific number or a failure that
+ actually happened. Assumes the reader can read code."
+
+→ Describes a person. The model has a voice to hold consistently.
+```
+
+## What to put in one
+
+Four things carry most of the weight:
+
+**Identity.** Role, domain, and how long they have been doing it. "Staff engineer, ten years in distributed systems" sets a vocabulary ceiling and floor at once.
+
+**Voice mechanics.** Sentence length, paragraph length, formality, whether humour is allowed and what kind. Be concrete — "short punchy sentences, dry humour, no exclamation marks" is actionable in a way that "professional but friendly" is not.
+
+**Prohibitions.** The most useful field, and the most skipped. List the words and moves this person would never make. Banned phrases here stack on top of the global [banned lexicon](/docs/the-banned-lexicon), so use it for your own tics and your industry's clichés.
+
+**Openings.** How this person starts. "Always leads with a specific number or outcome" prevents the throat-clearing first paragraph that makes AI writing obvious.
+
+> **Write the prohibitions from real examples.** Look at three posts in your space that made you wince, name what they did, and forbid it. That produces a sharper persona than trying to describe your own voice in the abstract.
+
+## Creating and using one
+
+Go to **Personas** in the sidebar to create, edit, and manage them. Then pick a persona anywhere content is generated:
+
+| Surface | Where the persona is applied |
+|---|---|
+| Social Posts | Persona selector before generating |
+| Newsletter | Persona selector before generating |
+| Long-Form | Persona selector, layered under audience calibration |
+| Outbound campaigns | Set per campaign, applies to every email in the sequence |
+
+You can hold several personas at once — one for technical writing, another for company announcements, another for a colleague whose posts you draft. Each keeps its own voice.
+
+## The Persona Marketplace
+
+Under **Personas → Marketplace** there are pre-built profiles from industry practitioners. They are starting points, not finished products: copy one and edit it until the prohibitions list contains things *you* would never say. An unmodified marketplace persona will sound like a real person, just not like you.
+
+## When output still sounds generic
+
+Work through these in order:
+
+1. **Is a persona actually selected?** The selector defaults to none on some surfaces. No persona means no voice constraints.
+2. **Is the prohibitions field empty?** This is the single most common cause. Add ten phrases you hate.
+3. **Is the persona describing a task instead of a person?** If it contains the word "write", it is probably a prompt wearing a persona's clothes.
+4. **Is it too short?** Two sentences cannot constrain a model. Aim for a paragraph with specifics in it.
+
+For long-form specifically, persona is only half the calibration — the [audience](/docs/long-form) setting controls jargon, code density, and how claims are evidenced, and it is a separate lever.

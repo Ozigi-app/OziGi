@@ -1,0 +1,70 @@
+---
+title: "Social Posts"
+readTime: "5 min read"
+tag: "Content Engine"
+---
+
+Social Posts turns one piece of source material into drafts for LinkedIn, X, Discord, Slack, and email — generated simultaneously, each written to its own platform's shape.
+
+## Generating a campaign
+
+Go to **Social Posts** in the sidebar.
+
+1. **Give it source material.** A URL, pasted notes, or an uploaded file.
+2. **Pick your platforms.** Each selected platform gets its own draft.
+3. **Pick a persona.** See [Personas](/docs/personas) — this is what stops the output sounding generic.
+4. **Generate.** All platforms are produced in one pass.
+
+Every generation is saved automatically. Reach past runs through **Generation History** under Social Posts in the sidebar, where social campaigns and newsletters sit in separate tabs. Click any entry to restore it.
+
+## What you can feed it
+
+| Input | Notes |
+|---|---|
+| Public URL | Blog post, changelog, Dev.to article, docs page. Must be reachable without a login. |
+| Raw notes | Meeting notes, a brain dump, half-formed bullets. Messy is expected. |
+| PDF | Whitepapers, specs, decks exported to PDF. |
+| Image | Screenshots, diagrams, whiteboard photos. |
+| Audio / video | Voice memos, recorded calls, demo footage. |
+
+Files up to 100MB. You do not need to summarise or clean anything first — extraction is the engine's job. The mechanics are in [Multimodal Ingestion](/docs/multimodal-pipeline).
+
+> **A URL behind a login wall will fail.** If the page needs a session to read, the extractor sees the login screen instead of your content. Paste the text directly instead.
+
+## Platform shaping
+
+The platforms are not the same text at different lengths. Each draft is written to different constraints:
+
+- **LinkedIn** — a hook that survives the "see more" fold, short paragraphs, no link in the first line.
+- **X** — compression. The argument has to survive the character limit intact rather than being truncated.
+- **Discord / Slack** — conversational, written for a channel where people reply rather than react.
+- **Email** — a subject line and a body that works in a preview pane.
+
+Generate for all of them at once and edit each individually.
+
+## Editing before publishing
+
+Nothing publishes on its own. Every draft lands in an editable state and stays there until you act on it.
+
+This is deliberate. The engine handles extraction, structure, and platform constraints — roughly ninety percent of the work. The remaining ten percent is the specific number, the internal context, the joke that only lands if you know the team. That part does not automate, and pretending otherwise produces content nobody remembers. The reasoning is in [Human-in-the-Loop](/docs/human-in-the-loop).
+
+## Images
+
+You can generate a graphic alongside a post. Leave the title field blank for an abstract background matched to the post's topic, or enter text for a rendered graphic with clean typography.
+
+Generated images upload server-side to storage and come back as a public CDN URL, so there is no browser upload step and no CORS problem to debug.
+
+## Publishing
+
+How a post reaches each platform differs, and some need a one-time connection:
+
+| Platform | Method |
+|---|---|
+| LinkedIn | Direct — authorise once via OAuth, posts go straight from Ozigi |
+| X | Web intent — opens a pre-filled compose window for you to confirm |
+| Discord | Incoming webhook URL |
+| Slack | Incoming webhook URL |
+
+Set these up in [Integrations](/docs/integrations). You can also schedule a post for later rather than publishing immediately.
+
+> **LinkedIn's token expires.** LinkedIn access tokens last about sixty days and cannot be refreshed silently. When direct posting stops working, reconnect LinkedIn in Settings — the post itself is almost never the problem.

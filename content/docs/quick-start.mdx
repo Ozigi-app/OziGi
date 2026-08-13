@@ -1,0 +1,92 @@
+---
+title: "Quick Start"
+readTime: "6 min read"
+tag: "Getting Started"
+---
+
+> **Before you start:** you need a sending inbox for outbound email, and a persona for anything Ozigi writes. Everything else can wait. If you only care about publishing content, skip steps 2 and 4 entirely — the Content Engine works without any outbound setup.
+
+## The ten-minute path
+
+There are two things worth having running on day one: an outbound campaign that is sourcing and qualifying leads, and one piece of content published in your voice. This walks through both.
+
+| Step | What you do | Roughly |
+|---|---|---|
+| 1 | Create your account | 30 sec |
+| 2 | Connect a sending inbox | 3 min |
+| 3 | Write a persona | 4 min |
+| 4 | Launch an outbound campaign | 3 min |
+| 5 | Generate your first posts | 1 min |
+
+## 1. Create your account
+
+Sign up with your email. You get a full-access trial with no credit card required.
+
+You land on the dashboard, which is split down the middle: content tools on one side, outbound on the other. Both are usable immediately, but outbound will refuse to send anything until step 2 is done.
+
+## 2. Connect a sending inbox
+
+Outbound email sends from **your** inbox, not from Ozigi's servers. That is what keeps replies landing in your mailbox and your domain reputation under your own control.
+
+Go to **Outreach Settings** and connect either:
+
+- **Gmail** — using a 16-character App Password, not your account password. Google requires 2-Step Verification to be on before it will issue one.
+- **Any SMTP provider** — Outlook, Yahoo, Zoho Mail, Fastmail, SendGrid, or a custom host.
+
+Ozigi tests the connection before saving it, so a green result means mail will actually send.
+
+Full walkthrough with the exact Google settings: [Email Setup](/docs/email-setup).
+
+> **Do this before creating a campaign.** A campaign with no connected inbox will source and score leads happily, then fail at the send step.
+
+## 3. Write a persona
+
+This is the step people skip and then complain about the output.
+
+A persona is a voice profile: who is writing, how they sound, and what they would never say. It is applied to outbound emails, social posts, newsletters, and long-form articles alike. One definition, used everywhere.
+
+The difference between a vague persona and a specific one is the difference between generic AI copy and something that sounds like you:
+
+```text
+Weak:    "Helpful assistant. Write engaging posts about our product."
+Strong:  "Pragmatic technical founder. Direct, occasionally dry.
+          Never says 'leverage' or 'ecosystem'. Always opens with a
+          specific number or a failure that actually happened."
+```
+
+Go to **Personas** and write one for yourself. Or start from the **Persona Marketplace** and edit a pre-built profile until it sounds right.
+
+More on what makes a persona work: [Personas](/docs/personas).
+
+## 4. Launch an outbound campaign
+
+Go to **Email Outreach → New Campaign**.
+
+1. Paste your product URL. Ozigi reads the page and pre-fills your sender details, product description, and a first draft of your ICP.
+2. Correct whatever it got wrong, then describe your target audience in plain English. Be specific — "backend engineers at Series A fintechs who have published about payment infrastructure" beats "developers".
+3. Set your sequence steps and the delay between each.
+4. Pick a persona for the writing voice.
+5. Set a daily send limit and create the campaign.
+
+Then, from the campaign page, run these in order:
+
+- **Run Scrape** — sources leads matching your ICP and scores each one
+- **Preview Emails** — generates three sample emails so you can check the personalisation before anything sends
+- **Run Send** — sends the current step to everyone due, up to your daily cap
+
+Details: [Campaigns](/docs/campaigns) and [Sequences & Sending](/docs/sequences-and-sending).
+
+## 5. Generate your first posts
+
+Go to **Social Posts**. Paste a URL, dump some rough notes, or upload a PDF. Pick your platforms and your persona, and generate.
+
+You get drafts for LinkedIn, X, Discord, and Slack simultaneously, each written to that platform's shape rather than the same text reflowed four times.
+
+Nothing publishes on its own. Every draft waits for you to review it.
+
+## What to do next
+
+- Publishing regularly? Set up [Social Posts](/docs/social-posts) properly and connect your [integrations](/docs/integrations).
+- Writing long? [Long-Form Articles](/docs/long-form) covers audience calibration and the pre-publication audit.
+- Running outbound seriously? [Sequences & Sending](/docs/sequences-and-sending) explains daily caps, reply detection, and how sends are scheduled.
+- Something not working? [Troubleshooting](/docs/troubleshooting) covers the failures that actually come up.

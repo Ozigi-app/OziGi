@@ -1,0 +1,85 @@
+---
+title: "Integrations"
+readTime: "6 min read"
+tag: "Integrations"
+---
+
+Everything Ozigi connects to outside itself: CRMs for lead sync, and the publishing paths for each social platform.
+
+## CRM sync
+
+Leads are pushed to your CRM as new contacts **on first contact** — when the first email or LinkedIn connection request goes out, not when the lead is sourced. Your CRM does not fill up with people you never approached.
+
+Configure under **Outreach Settings → CRM**.
+
+| CRM | Connection | Notes |
+|---|---|---|
+| **HubSpot** | OAuth | Works immediately. Click Connect HubSpot and authorise. |
+| **Zoho CRM** | OAuth | Requires an auth config in your Composio dashboard first. |
+| **Salesforce** | OAuth | Requires an auth config in your Composio dashboard first. |
+| **Swipe One** | API key | No OAuth support. Paste a key from Swipe One → Settings → API. |
+
+### Zoho and Salesforce
+
+These two need one extra step before the OAuth flow works. Create an OAuth 2.0 auth config for the app in your [Composio dashboard](https://app.composio.dev), then return to Outreach Settings and connect.
+
+Without that config the OAuth flow fails immediately rather than showing a consent screen. If you clicked Connect and were bounced straight back with an error, this is why.
+
+### Swipe One
+
+Swipe One does not support OAuth. Grab your API key from **Swipe One → Settings → API** and paste it in.
+
+Ozigi tests the key against Swipe One before saving, so a rejected connection means the key is genuinely invalid or has been revoked — not that the integration is broken.
+
+## Publishing
+
+Each platform reaches its destination differently, and the differences are worth knowing before you plan a publishing workflow.
+
+| Platform | Method | What happens |
+|---|---|---|
+| **LinkedIn** | Direct OAuth | Authorise once; posts publish straight from Ozigi |
+| **X (Twitter)** | Web intent | Opens a pre-filled compose window; you confirm and post |
+| **Discord** | Incoming webhook | Posts to the channel the webhook belongs to |
+| **Slack** | Incoming webhook | Posts to the channel the webhook belongs to |
+
+X uses a web intent rather than direct posting, so it always requires one click from you. That is a constraint of X's API access, not a design choice.
+
+> **LinkedIn tokens expire about every sixty days** and cannot be refreshed silently. When direct posting stops working, the token has almost certainly lapsed — reconnect LinkedIn in Settings. The post content is rarely the problem, though the error can look like one.
+
+### Discord webhooks
+
+1. In Discord: **Server Settings → Integrations → Webhooks → New Webhook**.
+2. Pick the channel it posts to and copy the webhook URL.
+3. Paste it into **Settings → Integrations** in Ozigi.
+
+The webhook is channel-specific. Posting to a different channel needs a different webhook.
+
+### Slack webhooks
+
+1. Create a Slack app for your workspace and enable **Incoming Webhooks**.
+2. Add a webhook to the channel you want, and copy the URL.
+3. Paste it into **Settings → Integrations**.
+
+Also channel-specific.
+
+> **Webhook URLs are credentials.** Anyone with one can post to that channel. Do not commit them or paste them into shared documents. If one leaks, delete it in Discord or Slack and create a replacement — rotating it there invalidates the old URL immediately.
+
+## Image storage
+
+Generated images upload server-side to object storage and return a public CDN URL. There is no browser upload step, which is what avoids the CORS failures that usually come with client-side image handling.
+
+This needs no configuration.
+
+## When an integration stops working
+
+**CRM OAuth fails immediately.** For Zoho and Salesforce, the auth config in Composio is missing. HubSpot should not need one.
+
+**Swipe One rejects the key.** The key is invalid or revoked. Regenerate it in Swipe One and paste the new one.
+
+**Discord or Slack posts vanish.** Verify the webhook still exists on their side. Webhooks are deleted when the channel is deleted, and can be revoked by any server admin. Check Discord's **Integrations → Webhooks** or your Slack app settings.
+
+**LinkedIn posting fails.** Expired token. Reconnect.
+
+**Leads are not reaching the CRM.** Sync fires on first contact — a campaign that has sourced and scored but not yet sent will not have pushed anything. Confirm sends have actually gone out.
+
+More in [Troubleshooting](/docs/troubleshooting).

@@ -1,0 +1,69 @@
+---
+title: "Newsletter & Subscribers"
+readTime: "5 min read"
+tag: "Content Engine"
+---
+
+The newsletter surface writes email issues from the same source material as social posts, and sends them to a subscriber list you own.
+
+## Writing an issue
+
+Go to **Newsletter** in the sidebar. The input flow is identical to [Social Posts](/docs/social-posts) — paste a URL, dump notes, or upload a file — with one difference: the email platform is pre-selected and social platforms are locked off.
+
+Pick a persona, generate, then edit. As everywhere else, nothing sends until you explicitly schedule it.
+
+Every issue is saved to **Generation History**, in its own tab separate from social campaigns.
+
+> **Two things must be configured before you can send:** at least one active subscriber, and a sender name in Settings. Without either, the Schedule button will not complete.
+
+## Sending
+
+From a generated issue, click **Schedule** and pick a send time. The issue goes to every active subscriber on your list.
+
+An unsubscribe link is appended automatically. You do not need to add one, and you should not remove it — it is what keeps you compliant and out of spam folders.
+
+> **Check the From address before a large send.** Production mail can go out from a no-reply reminders address depending on configuration. Verify the From address, and set a Reply-To you actually monitor, before any blast — replies to a no-reply address vanish silently.
+
+## Managing subscribers
+
+Go to **Subscribers** in the sidebar.
+
+### Adding people
+
+| Method | How |
+|---|---|
+| Manual | Paste addresses, one per line |
+| CSV upload | One address per row |
+| Public form | Share your subscriber link and let people sign up |
+
+The public form is the one to prefer where you can. It gives you consent you can point at, and it keeps the list clean without you maintaining it.
+
+### List hygiene
+
+Subscribers carry an active/inactive state. Unsubscribes flip to inactive automatically and are excluded from every future send — you do not need to prune them by hand.
+
+Bounced addresses are worth removing periodically. A list with a high bounce rate damages your sending reputation across every future issue, including your outbound campaigns if they share a domain.
+
+## Newsletters versus outbound email
+
+These are different systems and it is worth keeping them straight:
+
+| | Newsletter | Outbound |
+|---|---|---|
+| Who receives it | People who opted in | Leads you sourced |
+| Sent from | Ozigi's sending infrastructure | Your own connected inbox |
+| Content | One issue to everyone | Personalised per lead |
+| Unsubscribe | Automatic | Handled per campaign |
+| Setup needed | Subscribers + sender name | [Connected inbox](/docs/email-setup) |
+
+Sending cold outreach through the newsletter surface is a fast way to damage your list and your domain. Cold contacts belong in [Campaigns](/docs/campaigns), which sends from your inbox at a controlled pace and detects replies.
+
+## Making issues worth opening
+
+The banned lexicon strips the obvious filler, but it cannot supply substance. Two things move open and reply rates more than phrasing:
+
+**A specific subject line.** "What broke in our payment retry logic" beats "Product update — March". The engine will not invent specificity you did not give it.
+
+**One idea per issue.** A newsletter covering four things gets skimmed and forgotten. The pieces that get replies usually make a single argument and support it properly.
+
+If your issues consistently read flat, the persona is the lever — see [Personas](/docs/personas).

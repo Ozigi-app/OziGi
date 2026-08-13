@@ -1,0 +1,77 @@
+---
+title: "Email Setup"
+readTime: "5 min read"
+tag: "Outbound"
+---
+
+Outbound email sends from your own inbox. You need one connected before any campaign can send. Go to **Outreach Settings** in the sidebar.
+
+## Gmail
+
+Gmail connects with a **16-character App Password**, not your normal account password. Google will not issue one until 2-Step Verification is enabled.
+
+1. Turn on [2-Step Verification](https://myaccount.google.com/signinoptions/two-step-verification) on your Google account. Google requires this first.
+2. Open [App Passwords](https://myaccount.google.com/apppasswords), type a name like `Ozigi`, and click **Create**.
+3. Copy the 16-character password Google shows you.
+4. In Outreach Settings, enter your Gmail address, paste the App Password, and set the display name recipients will see.
+5. Click **Connect Gmail**.
+
+Ozigi tests the connection before saving. If it saves, mail will actually send.
+
+> **The App Password is shown once.** Google will not display it again after you close the dialog. If you lose it, delete that entry in App Passwords and generate a new one — you cannot recover the original.
+
+Your display name is the "from" name on every outbound email. `Dumebi from Ozigi` reads better than a bare address.
+
+## Other providers (SMTP)
+
+For Outlook, Microsoft 365, Yahoo, custom domains, or transactional providers, use the SMTP connection.
+
+Click **+ Connect SMTP** and either pick a preset — Outlook, Yahoo, Zoho Mail, Fastmail, SendGrid — or choose Custom and enter the host and port yourself. Then supply your username, password or app password, and the from address.
+
+Ozigi tests the connection before saving here too.
+
+| Provider | Typical host | Port |
+|---|---|---|
+| Outlook / Microsoft 365 | `smtp.office365.com` | 587 |
+| Yahoo | `smtp.mail.yahoo.com` | 587 |
+| Zoho Mail | `smtp.zoho.com` | 587 |
+| Fastmail | `smtp.fastmail.com` | 465 |
+| SendGrid | `smtp.sendgrid.net` | 587 |
+
+Passwords are encrypted at rest.
+
+> **Most providers want an app password, not your login password.** Outlook, Yahoo, and Zoho all issue app-specific passwords once two-factor is on, and will reject your account password outright. If a connection test fails with an authentication error, this is nearly always why.
+
+## Multiple inboxes
+
+Connecting more than one inbox requires **Pro**. Running several spreads volume across addresses, which keeps any single domain's daily count in a safe range.
+
+Each connected account tracks its own daily send count, visible in Outreach Settings.
+
+## Deliverability
+
+The sending setup matters less than the sending behaviour. A few things that reliably decide whether cold email lands:
+
+**Warm the domain.** A domain with no sending history that suddenly emits two hundred cold emails gets classified as spam and stays classified. Start at twenty to thirty a day and build over weeks.
+
+**Set SPF, DKIM, and DMARC.** These are DNS records on your sending domain, configured with your provider rather than in Ozigi. Missing them puts you in spam regardless of anything else.
+
+**Consider a separate domain for cold outreach.** Many teams send outbound from a lookalike domain so that a deliverability problem cannot touch their main one.
+
+**Keep the list clean.** Bounces damage reputation. Leads that bounce are marked and excluded, but a consistently high bounce rate means the ICP is sourcing bad addresses.
+
+## Checking it works
+
+After connecting, the account appears in Outreach Settings with its status and today's send count.
+
+The real test is **Preview Emails** on a campaign — it exercises generation, and confirms your persona and ICP produce something worth sending before any of it reaches a real inbox.
+
+## When it stops working
+
+**Authentication failures after months of working.** App passwords get revoked when the account password changes or 2FA is reconfigured. Generate a new one and reconnect.
+
+**Sends stop mid-campaign.** Usually the daily cap, either yours or your provider's. Gmail enforces its own ceiling on top of whatever you set in Ozigi.
+
+**Mail sends but lands in spam.** That is a domain reputation and DNS problem, not a connection problem. Check SPF/DKIM/DMARC first.
+
+More in [Troubleshooting](/docs/troubleshooting).

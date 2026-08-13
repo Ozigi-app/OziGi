@@ -1,0 +1,106 @@
+---
+title: "Campaigns"
+readTime: "7 min read"
+tag: "Outbound"
+---
+
+A campaign is one ICP, one lead list, and one sequence. Everything outbound hangs off it: sourcing, scoring, personalisation, and sending.
+
+> **Connect a sending inbox first.** A campaign will source and score leads without one, then fail at the send step. See [Email Setup](/docs/email-setup).
+
+## Creating one
+
+Go to **Email Outreach → New Campaign**.
+
+1. **Paste your product URL.** Ozigi reads the page and pre-fills sender details, a product description, and a first draft of your ICP. The page must be publicly reachable — a login wall means the extractor sees the login screen.
+2. **Correct the auto-fill.** It gets the shape right and the specifics wrong often enough that this step matters.
+3. **Describe your target audience** in plain English. This is the field that determines lead quality — see below.
+4. **Configure sequence steps** and the delay between each. Covered in [Sequences & Sending](/docs/sequences-and-sending).
+5. **Pick a persona** for the email voice. See [Personas](/docs/personas).
+6. **Set a daily send limit** and create.
+
+If URL analysis fails, fill the fields in manually. Nothing downstream depends on the auto-fill having run.
+
+## Writing an ICP that works
+
+This is the highest-leverage field in the product and the one most often filled in lazily.
+
+The description is used twice: to build the search queries that source leads, and as the rubric the scorer grades each lead against. A vague ICP produces a vague query and a meaningless score.
+
+```text
+TOO VAGUE
+"Developers who might need our product."
+
+→ Sources thousands of unrelated profiles. Scores are noise
+  because there is nothing concrete to grade against.
+```
+
+```text
+SPECIFIC
+"Backend engineers at Series A–C fintech companies, primarily
+ Python or Go, who have written publicly about payment retries,
+ idempotency, or webhook reliability. Based in the US or UK.
+ Not agencies, not students, not devrel."
+
+→ Query has real terms to match. Scorer has criteria to apply,
+  including explicit exclusions.
+```
+
+Exclusions carry real weight. Naming who you do *not* want removes a whole class of near-miss leads that would otherwise clear the threshold.
+
+## Where leads come from
+
+| Source | How it works |
+|---|---|
+| **GitHub** | User search by bio keyword, language, and location. Where a profile hides its email, Ozigi recovers a real address from public commit history. |
+| **Dev.to** | Authors pulled by tag. |
+| **npm** | Package maintainers. |
+| **Hacker News** | Profiles from public activity. |
+| **LinkedIn** | Runs in the [browser extension](/docs/linkedin-extension), against your own logged-in session. |
+
+GitHub is usually the deepest source for technical ICPs, largely because of the commit-history email recovery — most other tools stop at "email hidden".
+
+LinkedIn is the only source that yields a LinkedIn profile URL, which makes it the only source that can feed the LinkedIn channel of a sequence. It has to run in your browser because LinkedIn withholds search results from flagged server-side sessions.
+
+## Scoring
+
+Every sourced lead is scored 0.0 to 1.0 against your ICP before it becomes eligible for a sequence. Only leads above your threshold are contacted.
+
+This is what keeps a sourced list usable without manual review. It also means a bad ICP description degrades everything downstream — the scorer can only apply criteria you actually gave it.
+
+## Running a campaign
+
+Three actions on the campaign detail page, in order:
+
+**Run Scrape.** Sources leads matching your ICP and scores them. Run it more than once to keep topping the list up; already-sourced leads are not duplicated.
+
+**Preview Emails.** Generates three sample emails against real leads so you can see the personalisation before anything sends. Use this every time you change the ICP, persona, or sequence copy. It is the cheapest possible check on whether your setup produces something you would be willing to receive.
+
+**Run Send.** Sends the current sequence step to every lead that is due, up to your daily cap.
+
+**Pause / Resume** stops a campaign at any point without losing progress. Leads keep their position in the sequence.
+
+## Reading the results
+
+Lead statuses tell you where each person is:
+
+| Status | Meaning |
+|---|---|
+| `sourced` | Found and scored, not yet contacted |
+| `contacted` | At least one sequence step sent |
+| `replied` | Responded — sequence paused automatically for this lead |
+| `bounced` | Address rejected |
+| `unsubscribed` | Opted out, excluded permanently |
+
+A lead moving to `replied` pauses only that lead. The rest of the campaign continues.
+
+## If a scrape returns nothing
+
+Work through it in this order:
+
+1. **Is the ICP too narrow?** A description combining an obscure language, a specific city, and a niche topic can legitimately match nobody. Loosen one constraint at a time.
+2. **Is the ICP too vague?** The opposite failure — queries so broad they match nothing specific enough to score above threshold.
+3. **Is the threshold too high?** Leads may be sourcing fine and failing the score gate.
+4. **Try a different source.** Not every ICP exists on every platform. A design-focused ICP will find little on npm.
+
+More failure modes in [Troubleshooting](/docs/troubleshooting).

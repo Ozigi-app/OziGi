@@ -1,0 +1,84 @@
+---
+title: "LinkedIn Extension"
+readTime: "6 min read"
+tag: "Outbound"
+---
+
+LinkedIn outreach runs from your own browser. Ozigi finds the leads and writes the connection notes and messages; the extension sends them from your logged-in LinkedIn tab, at human pace.
+
+Nothing runs on a server, which is the entire point.
+
+## Why it works this way
+
+LinkedIn is aggressive about server-side automation. Sessions driven from a datacentre get flagged quickly, and once flagged, LinkedIn quietly withholds search results and hides the Connect button rather than showing an error. You get a tool that appears to work and silently does nothing.
+
+Sending from your own browser, in a tab you already have open, in the session you already use, avoids the entire category of problem. It also means your account is never handed to a third party.
+
+```diagram
+   ┌──────────┐     queue of      ┌───────────────┐
+   │  OZIGI   │  connects & msgs  │  YOUR BROWSER │
+   │  finds   │ ────────────────▶ │   extension   │
+   │  leads,  │                   │  polls, sends │
+   │  writes  │ ◀──────────────── │  from your    │
+   │  copy    │     results       │  LinkedIn tab │
+   └──────────┘                   └───────────────┘
+                                          │
+                                          ▼
+                                     linkedin.com
+                                  (your own session)
+```
+
+## Setup
+
+Go to **Outreach Settings → LinkedIn**.
+
+1. **Install the extension in Chrome.** Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select the `extension` folder.
+2. **Copy your connection token** from the LinkedIn section of Outreach Settings.
+3. **Open the extension**, paste the token, and switch it on.
+4. **Keep a LinkedIn tab open** while you work. Ozigi sends in the background at a human pace.
+
+That is the whole setup. There is no password to hand over.
+
+> **Treat the token like a password.** Anyone holding it can queue sends to your LinkedIn account. If it leaks, or you have pasted it somewhere you should not have, hit **Rotate** in Outreach Settings — the old token is revoked immediately and a new one is issued. You will need to paste the new one into the extension.
+
+## What it sends
+
+**Connection requests with a personalised note.** The primary action. The note is written per lead from real signal about that person, not a template with a name slotted in.
+
+**Messages after acceptance.** Once someone accepts, a follow-up message can go out as the next step in the sequence.
+
+**Open Profile direct messages.** Where a lead has LinkedIn Premium's Open Profile enabled, LinkedIn permits messaging without a connection. Ozigi uses that as first contact when available.
+
+It does not cold-message people who have neither accepted a connection nor enabled Open Profile. LinkedIn does not permit it.
+
+## Sourcing leads from LinkedIn
+
+LinkedIn search also runs through the extension, for the same reason sending does. It is the only source that yields a LinkedIn profile URL, which makes it the only source that can feed the LinkedIn channel of a sequence.
+
+Leads sourced from GitHub, Dev.to, npm, or Hacker News can be emailed but generally cannot be reached on LinkedIn, because Ozigi has no reliable way to map a GitHub handle to a LinkedIn profile.
+
+## Pacing
+
+The extension sends slowly on purpose. LinkedIn's tolerance for connection requests is lower than most people expect, and the penalty for exceeding it is a restricted account rather than a warning.
+
+Set your per-day cap on the campaign. Start conservative — well below what feels productive — and increase over weeks rather than days. An account restriction takes far longer to recover from than a slow ramp takes to run.
+
+Leaving the tab open longer beats raising the cap. The extension paces itself across the whole time it is running.
+
+## Keeping it running
+
+**Keep a LinkedIn tab open.** No tab means no sends. The queue simply waits.
+
+**Stay logged in.** If LinkedIn logs you out, sending stops until you log back in. Ozigi will tell you when a session has lapsed.
+
+**Leave the extension enabled.** It is a toggle, and it is easy to switch off and forget.
+
+## When nothing sends
+
+1. **Is the extension installed and switched on?** Check `chrome://extensions`.
+2. **Is a LinkedIn tab open, and are you logged in?**
+3. **Is the token current?** If you rotated it, the extension still holds the old one until you paste the new one.
+4. **Are any leads due?** A sequence step with a delay has nobody due until that delay elapses.
+5. **Do the leads have LinkedIn URLs?** Leads sourced from GitHub or Dev.to usually do not, and cannot be reached on this channel.
+
+If sends were working and stopped abruptly, it is almost always the session or the tab rather than the configuration. More in [Troubleshooting](/docs/troubleshooting).

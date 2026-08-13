@@ -1,0 +1,80 @@
+---
+title: "Platform Overview"
+readTime: "5 min read"
+tag: "Getting Started"
+---
+
+Ozigi is two engines that share one brain. You can run either on its own. Most teams start with one and add the other once the first is paying for itself.
+
+## How the pieces fit
+
+```diagram
+                        ┌──────────────────────┐
+                        │      PERSONAS        │
+                        │  who is writing,     │
+                        │  and how they sound  │
+                        └──────────┬───────────┘
+                                   │ applied to everything below
+                ┌──────────────────┴──────────────────┐
+                ▼                                     ▼
+    ┌───────────────────────┐            ┌───────────────────────┐
+    │   OUTBOUND ENGINE     │            │   CONTENT ENGINE      │
+    ├───────────────────────┤            ├───────────────────────┤
+    │ source leads          │            │ social posts          │
+    │ score against ICP     │            │ newsletters           │
+    │ email sequences       │            │ long-form articles    │
+    │ LinkedIn (extension)  │            │                       │
+    │ reply detection       │            │                       │
+    │ CRM sync              │            │                       │
+    └───────────┬───────────┘            └───────────┬───────────┘
+                │                                    │
+                ▼                                    ▼
+        your own inbox                     you review, then publish
+        your own LinkedIn tab
+```
+
+The shared layer is what makes the output consistent. The persona that writes your cold email writes your blog post. The same [banned lexicon](/docs/the-banned-lexicon) that keeps outreach out of the spam folder keeps a newsletter from reading like it was generated.
+
+## The Outbound Engine
+
+Finds people who match your ideal customer profile, qualifies them, and runs multi-step sequences.
+
+**Sourcing.** Leads come from GitHub, Dev.to, npm, and Hacker News through their public APIs, and from LinkedIn through the browser extension. GitHub is the deepest source: Ozigi queries user search by bio keyword, language, and location, and when a profile hides its email it recovers a real address from the user's public commit history.
+
+**Qualifying.** Every sourced lead is scored 0.0 to 1.0 against your ICP. Only leads above your threshold enter a sequence, which keeps your sending list clean without manual filtering.
+
+**Sending.** Email goes out from your connected inbox on a schedule with per-day caps. LinkedIn runs through the browser extension, from your own logged-in tab, at human pace. Replies on either channel pause that lead's sequence automatically.
+
+**Syncing.** On first contact, a lead is pushed to your connected CRM as a new contact.
+
+## The Content Engine
+
+Turns source material into publishable drafts.
+
+**Input is deliberately forgiving.** A URL, a messy brain dump, meeting notes, a PDF, an image, audio, or video. You are not expected to clean anything up first — extraction is the engine's job, not yours.
+
+**Output is platform-shaped.** A LinkedIn post and an X post are different objects, not the same paragraph at two lengths. Generate for several platforms at once and each is written to its own constraints.
+
+**Three surfaces:**
+
+| Surface | What it produces | Where |
+|---|---|---|
+| Social Posts | LinkedIn, X, Discord, Slack, email | [Social Posts](/docs/social-posts) |
+| Newsletter | Email newsletters to your subscriber list | [Newsletter](/docs/newsletter) |
+| Long-Form | 800–8,000 word articles, MDX-ready | [Long-Form](/docs/long-form) |
+
+## What they share
+
+**Personas.** Voice profiles applied across both engines. Defined once. See [Personas](/docs/personas).
+
+**The banned lexicon.** A hard block on AI filler vocabulary, enforced while the model generates rather than filtered afterwards. Applied identically to cold email, blog posts, and newsletter copy.
+
+**Human-in-the-loop.** Generation and publishing are separate by design. Nothing leaves the dashboard without you approving it — there is no auto-post. The reasoning is in [Human-in-the-Loop](/docs/human-in-the-loop).
+
+## Which one do you need?
+
+- **Publishing regularly, no outbound.** Content Engine only. Skip inbox and LinkedIn setup entirely.
+- **Running outbound, content handled elsewhere.** Outbound only. You still want a persona — it drives the email copy.
+- **Both.** Content warms the market before the ask lands, which is the whole argument for running them together. Same persona across both means a prospect who reads your post and then gets your email hears one voice.
+
+Plan limits differ across the two — the [pricing page](/pricing) has the current breakdown.

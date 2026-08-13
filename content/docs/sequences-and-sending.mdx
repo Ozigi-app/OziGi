@@ -1,0 +1,99 @@
+---
+title: "Sequences & Sending"
+readTime: "7 min read"
+tag: "Outbound"
+---
+
+A sequence is the series of touches a lead receives. Email and LinkedIn run as parallel channels over the same lead list, each with its own timing.
+
+## How the two channels run
+
+Email steps and LinkedIn steps do not interleave into a single queue. They advance independently, and each step's delay counts from the previous step **of the same channel**.
+
+```diagram
+ day 0        day 3          day 7
+   │            │              │
+EMAIL ─────────────────────────────────────▶
+   ├─ Cold intro
+   │            ├─ Follow-up
+   │            │              ├─ Breakup
+   │
+LINKEDIN ──────────────────────────────────▶
+   ├─ Connection request
+   │            ├─ Message (once accepted)
+```
+
+Step 1 of each channel fires on day 0. A lead with both channels configured gets an email and a connection request on the same day.
+
+## Email steps
+
+A typical three-step sequence:
+
+| Step | Delay | Job |
+|---|---|---|
+| Cold intro | day 0 | One specific observation about them, one sentence on why you are writing, one small ask |
+| Follow-up | +3 days | New angle, not a reminder. "Just bumping this" is worse than silence |
+| Breakup | +4 days | Short, no guilt, easy to reply to |
+
+Each email is generated per lead using your persona and whatever Ozigi knows about that person. It is personalisation from real signal — their repositories, their writing, their stack — rather than mail-merged first names.
+
+Use **Preview Emails** on the campaign page before every send after changing anything. It generates three samples against real leads.
+
+## LinkedIn steps
+
+LinkedIn actions run through the [browser extension](/docs/linkedin-extension), from your own logged-in tab.
+
+**Connection request with a personalised note.** The primary action. The note is written per lead.
+
+**Message after acceptance.** Once a connection is accepted, a follow-up message can be sent.
+
+**Open Profile direct message.** Where a lead has LinkedIn Premium's Open Profile enabled, LinkedIn permits a direct message without connecting first. Ozigi uses this as first contact when it is available.
+
+Ozigi does not cold-DM people who have not accepted a connection and do not have Open Profile enabled — LinkedIn does not allow it, and working around that is how accounts get restricted.
+
+## Daily limits
+
+Set a per-day cap per campaign. Sends stop when the cap is reached and resume the next day, picking up where they left off.
+
+The caps protect two different things. On email it is your domain reputation — a new domain sending two hundred cold emails on day one gets classified as spam and stays that way. On LinkedIn it is your account standing, and LinkedIn's tolerance is considerably lower than most people assume.
+
+> **Start lower than feels productive.** Twenty to thirty emails a day from a warmed domain is a reasonable opening position. LinkedIn connection requests should be lower still. Ramping slowly costs a few weeks; getting your domain filtered costs months.
+
+If you need more volume than one inbox supports, Pro allows connecting additional inboxes to spread the load.
+
+## Reply detection
+
+When a lead replies, their sequence pauses automatically and their status moves to `replied`. Only that lead stops — the campaign continues for everyone else.
+
+This matters more than it sounds. The fastest way to lose a warm reply is to send them your scheduled follow-up the next morning as though they had said nothing.
+
+Replies on either channel pause the lead across both channels.
+
+## Sending infrastructure
+
+Outbound email sends from **your** connected inbox, not from Ozigi's servers. Consequences worth knowing:
+
+- Replies arrive in your normal mailbox, and the thread looks like any other conversation.
+- Deliverability is tied to your domain and your sending history.
+- Your provider's own daily limits still apply on top of Ozigi's cap. Gmail in particular enforces its own ceiling.
+- Sent mail appears in your Sent folder.
+
+Newsletters are a separate system that sends from Ozigi's infrastructure to an opted-in list. Do not route cold outreach through it — see [Newsletter](/docs/newsletter).
+
+## CRM sync
+
+When a lead is first contacted on either channel, it is pushed to your connected CRM as a new contact. Sync happens on first contact, not at sourcing, so your CRM does not fill up with people you never actually approached.
+
+Setup: [Integrations](/docs/integrations).
+
+## When sends do not go out
+
+Check in this order:
+
+1. **Is an inbox connected and active?** [Email Setup](/docs/email-setup).
+2. **Is the daily cap already reached?** Sends resume the following day.
+3. **Are any leads actually due?** A step with a three-day delay has nobody due until day three.
+4. **Is the campaign paused?**
+5. **Did leads clear the score threshold?** Sourced but low-scoring leads are never contacted.
+
+For LinkedIn specifically, sends require the extension installed, enabled, and a LinkedIn tab open. See [Troubleshooting](/docs/troubleshooting).

@@ -1,0 +1,132 @@
+---
+title: "Long-Form Articles"
+readTime: "9 min read"
+tag: "Content Engine"
+---
+
+Long-form produces blog posts, tutorials, and technical documentation from 800 to 8,000 words. It is a different pipeline from [Social Posts](/docs/social-posts): the draft is planned, optionally researched against the live web, generated, and then audited before it reaches you.
+
+## Generating an article
+
+Go to **Long-Form** in the sidebar, or use the [public generator](/long-form) without signing in.
+
+Give it a brief — what you want to write about, your angle, and any points you want covered — then set five controls.
+
+### Who is this for?
+
+Start here. Audience is the biggest single lever on how the draft reads, and it determines the other three controls rather than sitting alongside them.
+
+| Reader | Gets |
+|---|---|
+| **Developer** | Code leads, no definitions of terms they know, benchmarks qualified with the setup they came from |
+| **Technical Practitioner** | Full methodology, reproducible examples with versions and seeds, explicit limitations |
+| **Technical Writer** | Concept-first structure, sourced claims, information design over implementation |
+| **Beginner / Non-Technical** | Every term defined where it appears, analogies throughout, code explained line by line |
+| **Mixed / Layered** | Skippable code blocks, plain-language gloss on every number, technical depth nested underneath |
+
+Picking an audience pre-fills tone, structure, and depth to match. All three stay editable — they are a starting point, not a lock.
+
+Leaving audience unset is allowed. The draft is simply not calibrated to anyone in particular, and the post-generation audience check does not run.
+
+### Tone
+
+`professional` · `casual` · `technical` · `storytelling`
+
+Tone controls delivery: formality, contractions, whether personality is welcome. Where tone and audience conflict, audience wins.
+
+### Structure
+
+The first five are editorial formats. The last three are [Diátaxis](https://diataxis.fr/) modes, defined by reader need rather than shape.
+
+| Mode | Serves a reader who wants to |
+|---|---|
+| Narrative | Follow an argument |
+| Listicle | Scan parallel items |
+| How-To Guide | Complete a specific task, already knowing the domain |
+| Opinion Piece | Hear a position worth disagreeing with |
+| Deep Analysis | See evidence and second-order implications |
+| **Tutorial** | Learn a skill they do not have yet |
+| **Reference** | Look something up mid-task |
+| **Explanation** | Understand why, away from the keyboard |
+
+Every mode carries a boundary rule that keeps the draft from drifting into a neighbouring one — a how-to that stops to teach concepts has become an explanation, and it serves neither reader well. The draft is checked against that same boundary afterwards.
+
+### Depth and length
+
+Depth (`beginner` / `intermediate` / `advanced`) sets assumed prior knowledge. Length targets 800, 1,500, or 2,500 words in the form; the API accepts 500 to 8,000.
+
+## What happens after you hit generate
+
+```diagram
+   brief
+     │
+     ▼
+  ┌─────────┐   optional   ┌──────────────┐
+  │  PLAN   │─────────────▶│  WEB RESEARCH │
+  │ outline │              │ live sources  │
+  │ claims  │◀─────────────│ + page scrape │
+  └────┬────┘              └──────────────┘
+       ▼
+  ┌──────────┐
+  │ GENERATE │  persona + audience + mode + banned lexicon
+  └────┬─────┘
+       ▼
+  ┌──────────┐   violations found?   ┌──────────┐
+  │ LEXICON  │──────────────────────▶│  REPAIR  │
+  │ VALIDATE │◀──────────────────────│  retry   │
+  └────┬─────┘                       └──────────┘
+       ▼
+  ┌──────────┐
+  │  AUDIT   │  structure · code · citations · calibration
+  └────┬─────┘
+       ▼
+   your draft, flagged
+```
+
+**Web research** is optional. When enabled, Ozigi derives search queries from your brief, gathers current sources, scrapes the most relevant pages for full text, and requires the model to cite them inline with real URLs. Sources it actually used appear in a references list.
+
+**Lexicon validation** runs after generation. If the draft contains banned vocabulary, Ozigi attempts a repair pass rather than shipping it. On tighter time budgets the repair may be skipped, in which case the draft arrives with warnings attached instead.
+
+**The audit** is the part worth understanding.
+
+## The audit
+
+Every draft is checked before you see it. Findings are advisory and anchored to specific spans — the audit flags, it does not rewrite.
+
+**Structural score out of 100.** Seventeen detectors measure the AI tells a word list cannot reach: paragraphs all the same length, four sentences opening with the same word, a rhetorical question transitioning into every section, the same point restated in three places, closing lines that restate their own heading.
+
+**Code checks.** Every fenced block is read for leaked credentials, SQL built by interpolation, missing language labels, and per-language conventions. Two findings are hard errors rather than warnings: smart quotes and non-breaking spaces inside a code block. Both are invisible on the page and cause a syntax error the moment a reader pastes the snippet.
+
+**Citations and links.** URLs are re-fetched to catch dead links, and claims are checked against the sources meant to support them. Named individuals cited as authorities are flagged if they do not appear in the verified sources — this is where fabricated attributions get caught.
+
+**Calibration.** Did the draft land on the reader you asked for, and did it stay in its mode? A beginner tutorial with undefined jargon, a developer how-to with no code, a reference page written as a walkthrough — all flagged.
+
+The whole audit is pure computation. There is no second model pass, and a 2,500-word article takes about ten milliseconds to check.
+
+Full detail: [The Structural Audit](/docs/the-structural-audit).
+
+## Reviewing a saved article
+
+Saved articles get a review page showing the draft alongside its audit: the structural score, metrics for the individual detectors, and every flag grouped by type — links, authority, code, prose patterns, and calibration.
+
+Opening the review page re-runs the full audit, including a fresh network check on every external link. An article that was clean when written can pick up dead links months later, and this is where you catch that.
+
+## Limits
+
+| Plan | Long-form articles |
+|---|---|
+| Free · Starter · Growth | 1 per month |
+| Pro | Unlimited, capped at 5 per day |
+| Enterprise | Unlimited |
+
+The daily cap on Pro exists to prevent runaway usage, not to ration you.
+
+## Getting better output
+
+**Set the audience.** An uncalibrated draft is the most common cause of "technically fine but not what I wanted".
+
+**Put real material in the brief.** The engine cannot invent the specific number, the version that broke, or the decision you regret. A brief containing three concrete details produces a fundamentally different article from one containing a topic.
+
+**Pick the mode honestly.** If you are writing to teach a skill, choose Tutorial rather than How-To Guide. They look similar and serve completely different readers — a how-to that assumes no competence patronises, and a tutorial that assumes competence loses people at step three.
+
+**Read the flags before editing.** The structural findings point at specific spans. Fixing four flagged paragraphs is faster than rereading the whole draft looking for what feels off.

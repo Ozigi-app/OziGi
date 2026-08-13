@@ -1,0 +1,146 @@
+---
+title: "Troubleshooting"
+readTime: "7 min read"
+tag: "Help"
+---
+
+The failures that actually come up, grouped by where they happen.
+
+## Campaigns and sourcing
+
+### URL analysis fails when creating a campaign
+
+The page must be publicly reachable. Login walls, paywalls, and heavy client-side rendering all mean the extractor sees something other than your content.
+
+Fill the fields in manually and continue — nothing downstream depends on the auto-fill having run.
+
+### A scrape returns no leads
+
+In order of likelihood:
+
+1. **The ICP is too narrow.** An obscure language plus a specific city plus a niche topic can legitimately match nobody. Loosen one constraint at a time.
+2. **The ICP is too vague.** The opposite failure: queries so broad that nothing scores above threshold.
+3. **The score threshold is too high.** Leads may be sourcing correctly and failing the gate. Check whether any leads exist at `sourced` status.
+4. **Wrong source for the ICP.** A design-focused ICP will find almost nothing on npm.
+
+### Leads have no email addresses
+
+Expected for a portion of any list. Ozigi recovers addresses from public GitHub commit history where a profile hides them, but not every profile yields one.
+
+Leads without an address can still be reached on LinkedIn **if** they were sourced from LinkedIn. Leads from GitHub or Dev.to generally have no LinkedIn URL attached.
+
+## Email sending
+
+### Emails are not sending
+
+1. **Is an inbox connected and active?** See [Email Setup](/docs/email-setup).
+2. **Is the daily cap reached?** Sends resume the next day from where they stopped.
+3. **Are any leads due?** A step with a three-day delay has nobody due until day three.
+4. **Is the campaign paused?**
+5. **Did leads clear the score threshold?** Low-scoring leads are never contacted.
+
+### Authentication fails after months of working
+
+App passwords are revoked when you change your account password or reconfigure 2FA. Generate a new one and reconnect.
+
+For Gmail: delete the old entry in [App Passwords](https://myaccount.google.com/apppasswords) and create a replacement.
+
+### SMTP connection test fails
+
+Nearly always because you used your account password instead of an app-specific one. Outlook, Yahoo, and Zoho all require an app password once two-factor is enabled, and reject the account password outright.
+
+Also worth checking: the port. 587 for STARTTLS, 465 for implicit TLS. Using the wrong one produces a timeout rather than a clear error.
+
+### Mail sends but lands in spam
+
+A domain reputation problem, not a connection problem. In order:
+
+1. **SPF, DKIM, and DMARC** on your sending domain. Missing records put you in spam regardless of everything else. These are configured with your DNS provider, not in Ozigi.
+2. **Sending history.** A cold domain that starts at high volume gets classified as spam and stays that way. Start at twenty to thirty a day.
+3. **Bounce rate.** A high rate signals a bad list and damages reputation across every future send.
+
+## LinkedIn
+
+### Nothing sends on the LinkedIn channel
+
+1. **Extension installed and switched on?** Check `chrome://extensions`.
+2. **LinkedIn tab open and logged in?** No tab means the queue just waits.
+3. **Token current?** If you rotated it, the extension still holds the old one until you paste the new one.
+4. **Do the leads have LinkedIn URLs?** Only leads sourced from LinkedIn do.
+
+### Sends were working and stopped abruptly
+
+Almost always the session or the tab, not the configuration. Check that you are still logged into LinkedIn and that a tab is open, then confirm the extension toggle is still on.
+
+### Connection requests send but nothing else happens
+
+Expected. A message step only fires once the connection is accepted. Leads who have not accepted sit waiting at that step.
+
+The exception is Open Profile leads, who can be messaged as first contact.
+
+## Content generation
+
+### Generated content sounds generic
+
+This is a persona problem in almost every case.
+
+1. **Is a persona actually selected?** Some surfaces default to none.
+2. **Is the prohibitions field empty?** The most common cause. List ten phrases you would never use.
+3. **Does the persona describe a task rather than a person?** If it contains the word "write", it is a prompt, not a persona.
+4. **Is it two sentences long?** Too short to constrain anything.
+
+See [Personas](/docs/personas).
+
+### A long-form draft is well written but wrong
+
+Usually audience calibration. An article with no audience set is not aimed at anyone in particular.
+
+Set the audience, regenerate, and read the calibration flags — they name the specific mismatch, such as undefined jargon in a beginner piece or a how-to with no code.
+
+See [Long-Form Articles](/docs/long-form).
+
+### A long-form draft came back with warnings attached
+
+The lexicon repair pass was skipped because the request was close to its time budget. The draft is usable; the warnings point at the vocabulary that would have been repaired. Regenerating often produces a clean pass.
+
+### Code in a generated article does not run when pasted
+
+Check the audit flags first — smart quotes and non-breaking spaces inside code blocks are caught and reported as errors precisely because they are invisible on the page and fail on paste.
+
+If the audit flagged it, the fix is replacing the curly quotes with straight ones.
+
+## Integrations
+
+### CRM OAuth fails immediately
+
+For Zoho CRM and Salesforce, you must create an OAuth 2.0 auth config in your [Composio dashboard](https://app.composio.dev) before the flow will work. HubSpot works without one.
+
+### Swipe One rejects the API key
+
+The key is invalid or revoked. Ozigi tests keys against Swipe One before saving, so a rejection is genuine. Regenerate in **Swipe One → Settings → API**.
+
+### Discord or Slack posts are not appearing
+
+Verify the webhook still exists on their side. Webhooks are deleted with their channel and can be revoked by any server admin.
+
+### LinkedIn publishing stopped working
+
+The access token expired — they last about sixty days and cannot be refreshed silently. Reconnect LinkedIn in Settings. The post content is rarely the cause even when the error suggests it.
+
+### Leads are not syncing to the CRM
+
+Sync fires on **first contact**, not at sourcing. A campaign that has scraped and scored but not sent will not have pushed anything yet.
+
+## Newsletters
+
+### The Schedule button does not complete
+
+Two prerequisites: at least one active subscriber, and a sender name configured in Settings.
+
+### Replies to a newsletter go nowhere
+
+Check the From address before a large send, and set a Reply-To you actually monitor. Mail can send from a no-reply address depending on configuration, and replies to it are lost silently.
+
+## Still stuck
+
+Email **hello@ozigi.app** with your account email and a description of what you were doing when it failed. Include the campaign or article name if it is specific to one.

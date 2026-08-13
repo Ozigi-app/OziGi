@@ -127,9 +127,11 @@ Then the draft is checked against that same boundary. A how-to with no step sequ
 
 The whole audit is pure computation. No second model pass, no network calls, nothing that competes with generation for the request budget.
 
-- **1,500 words** — ~11ms
-- **2,500 words** — ~10ms
-- **8,000 words** — ~25ms
+| Article length | Full audit pass |
+|---|---|
+| 1,500 words | ~11ms |
+| 2,500 words | ~10ms |
+| 8,000 words | ~25ms |
 
 Against a 60-second serverless ceiling where generation itself takes 30 to 55 seconds, the audit is a rounding error. The audience calibration block adds roughly 320 input tokens to the prompt, about 6%, and does not change output length at all.
 
