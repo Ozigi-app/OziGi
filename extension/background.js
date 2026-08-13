@@ -511,7 +511,12 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     (async () => {
       const c = await cfg()
       const counters = await getCounters()
-      sendResponse({ enabled: c.enabled, reviewMode: c.reviewMode, hasToken: !!c.token, counters })
+      sendResponse({
+        enabled: c.enabled, reviewMode: c.reviewMode, hasToken: !!c.token, counters,
+        // Post-migration value, so the popup shows what is actually in force
+        // rather than a stale override sitting in storage.
+        dailyConnectCap: c.dailyConnectCap,
+      })
     })()
     return true
   }

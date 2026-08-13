@@ -9,6 +9,9 @@ async function load() {
   $('review').checked = !!s.reviewMode
   chrome.runtime.sendMessage({ type: 'status' }, (st) => {
     if (!st) return
+    // Read the cap back from the worker, which applies DEFAULTS and the settings
+    // migration — reading storage directly here would show a stale override.
+    $('cap').value = String(st.dailyConnectCap ?? 20)
     const live = st.enabled && st.hasToken
     $('dot').classList.toggle('on', live)
     // The pill must distinguish "off" from "on but unusable" — an enabled
@@ -26,8 +29,10 @@ async function load() {
 
 $('save').addEventListener('click', async () => {
   const token = $('token').value.trim()
+  const cap = Math.min(Math.max(parseInt($('cap').value, 10) || 20, 1), 100)
   await chrome.storage.local.set({
     token,
+    dailyConnectCap: cap,
     apiBase: ($('apiBase').value.trim() || 'https://ozigi.app').replace(/\/$/, ''),
     enabled: $('enabled').checked,
     reviewMode: $('review').checked,

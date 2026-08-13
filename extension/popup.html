@@ -164,6 +164,13 @@
       <input type="text" id="token" placeholder="Paste from Ozigi → Settings" autocomplete="off" spellcheck="false" />
       <div class="hint">Get it in <a href="https://ozigi.app/dashboard/gtm/settings" target="_blank" rel="noreferrer">Ozigi Settings</a>.</div>
 
+      <!-- Visible and editable on purpose. This was previously only settable
+           from the service worker console, so a value set once sat there
+           throttling everything with nothing on screen to explain it. -->
+      <label for="cap">Connection requests per day</label>
+      <input type="number" id="cap" min="1" max="100" step="1" />
+      <div class="hint">LinkedIn tolerates roughly 20&ndash;25 a day. Higher risks a restriction.</div>
+
       <label for="apiBase">Ozigi URL</label>
       <input type="text" id="apiBase" placeholder="https://ozigi.app" autocomplete="off" spellcheck="false" />
       <div class="hint">Use <code>http://localhost:3000</code> for local testing.</div>
