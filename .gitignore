@@ -122,3 +122,6 @@ sample-unsubscribe-url.txt
 
 # Packaged browser extension builds
 /dist/
+
+# Raw screenshot inputs for store assets (derived output is committed)
+extension/store/_src/
