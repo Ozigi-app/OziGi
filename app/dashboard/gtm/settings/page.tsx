@@ -628,16 +628,26 @@ function SettingsContent() {
 
         {/* Browser sender — the safe way to run LinkedIn outreach. */}
         <div className="border border-border rounded-xl p-5 mb-5 bg-surface">
-          <div className="font-semibold text-foreground text-sm mb-1">Ozigi Browser Sender</div>
+          <div className="font-semibold text-foreground text-sm mb-1">Ozigi for LinkedIn</div>
           <p className="text-xs text-foreground-muted leading-relaxed mb-3">
-            Ozigi finds leads and writes your connects &amp; messages automatically. The browser
-            extension sends them from <strong>your own LinkedIn tab</strong>, at a human pace —
-            so nothing runs on a server and your account stays safe.
+            The browser extension is your LinkedIn pipeline: it finds people matching your ICP and
+            sends them personalised connection requests from <strong>your own LinkedIn tab</strong>,
+            at a human pace — so nothing runs on a server and your account stays safe.
           </p>
+          {/* The store link, not "load unpacked": that instruction was written when
+              the extension was developer-only, and no ordinary user can follow it. */}
+          <a
+            href="https://chromewebstore.google.com/detail/ozigi-for-linkedin/kilioffojdajfheabhckfnpinobhjnoa"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent/90 text-white font-bold text-xs rounded-xl transition-colors no-underline mb-3"
+          >
+            Add to Chrome — free
+          </a>
           <ol className="text-xs text-foreground-muted leading-relaxed list-decimal pl-4 mb-3 space-y-1">
-            <li>Install the Ozigi extension in Chrome (Extensions → Load unpacked → the <code>extension</code> folder).</li>
-            <li>Click the extension, paste the token below, and turn it on.</li>
-            <li>Keep a LinkedIn tab open while you work — Ozigi sends in the background.</li>
+            <li>Install the extension from the Chrome Web Store.</li>
+            <li>Click it, paste the token below, and switch it on.</li>
+            <li>Keep a LinkedIn tab open while you work — Ozigi runs in the background.</li>
           </ol>
           <label className="block text-xs font-bold text-foreground-muted mb-1.5">Your connection token</label>
           <div className="flex gap-2">

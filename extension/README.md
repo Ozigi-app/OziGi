@@ -20,14 +20,29 @@ server-side scraper (GitHub, Dev.to, npm, Hacker News) stores `linkedin_url` as
 null, so this extension is the only producer of leads the connect flow can act
 on. With it switched off, LinkedIn outreach doesn't degrade — it stops.
 
-## Install (Chrome / Edge)
+## Install
 
-1. Go to `chrome://extensions`, enable **Developer mode** (top right).
-2. Click **Load unpacked** and select this `extension/` folder.
-3. Pin the Ozigi icon.
-4. In Ozigi → **GTM → Integrations**, copy your **connection token**.
-5. Click the extension, paste the token, tick **Active**, and **Save**.
-6. Keep a LinkedIn tab open while you work. That's it.
+**Users:** [Ozigi for LinkedIn on the Chrome Web Store](https://chromewebstore.google.com/detail/ozigi-for-linkedin/kilioffojdajfheabhckfnpinobhjnoa)
+— then copy your connection token from Ozigi → **GTM → Integrations**, paste it
+into the extension, tick **Active**, and keep a LinkedIn tab open.
+
+**Development:** `chrome://extensions` → **Developer mode** → **Load unpacked** →
+this folder. Do not run an unpacked copy and the store copy at the same time:
+both poll the same queue, so the same person gets two invitations and the daily
+cap is counted twice.
+
+## Releasing a new version
+
+Store installs auto-update, so a bad build reaches every user silently. The pack
+script validates before it writes anything — let it.
+
+1. Bump `version` in `manifest.json` (the store rejects a re-used version).
+2. `npm run pack:extension`.
+3. Load the packaged zip's contents unpacked and send one real connection
+   request. Packaging has silently broken twice.
+4. Upload `dist/ozigi-linkedin-v<version>.zip` in the Developer Dashboard.
+
+Never upload while a review is pending — it restarts the queue.
 
 ## How it works
 
