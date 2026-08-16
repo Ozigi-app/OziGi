@@ -1,4 +1,4 @@
-// Ozigi LinkedIn Sender — background service worker.
+// Ozigi for LinkedIn — background service worker.
 //
 // Orchestrates queued LinkedIn actions WITHOUT a headless server: it pulls the
 // next action from Ozigi, drives the user's own logged-in LinkedIn tab to perform

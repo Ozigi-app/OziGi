@@ -1,4 +1,4 @@
-// Ozigi LinkedIn Sender — content script (runs inside the user's real LinkedIn tab).
+// Ozigi for LinkedIn — content script (runs inside the user's real LinkedIn tab).
 //
 // This script only FINDS elements and reports their on-screen coordinates —
 // it does not click anything itself. LinkedIn's own click handlers check
