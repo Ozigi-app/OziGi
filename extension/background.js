@@ -31,7 +31,6 @@
 const DEFAULTS = {
   apiBase: 'https://ozigi.app',
   enabled: false,          // master on/off
-  reviewMode: false,       // when true, ask the user before each send (handled in popup)
   dailyConnectCap: 20,
   minGapMs: 45_000,        // min delay between actions (jittered up)
   maxGapMs: 120_000,
@@ -47,12 +46,14 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)) }
 // Bumped when a stored setting must be discarded rather than honoured. Values in
 // chrome.storage win over DEFAULTS, so a cap set once during testing would
 // otherwise throttle the extension forever with nothing in the UI to show why.
-const SETTINGS_VERSION = 2
+// v3 also drops reviewMode: it gated tick() but was never implemented, so anyone
+// who ticked it had the pipeline silently stop with no way to tell why.
+const SETTINGS_VERSION = 3
 
 async function cfg() {
   const s = await chrome.storage.local.get(Object.keys(DEFAULTS).concat(['token', 'counters', 'settingsVersion']))
   if ((s.settingsVersion ?? 0) < SETTINGS_VERSION) {
-    await chrome.storage.local.remove(['dailyConnectCap', 'dailyMessageCap', 'messagingEnabled'])
+    await chrome.storage.local.remove(['dailyConnectCap', 'dailyMessageCap', 'messagingEnabled', 'reviewMode'])
     await chrome.storage.local.set({ settingsVersion: SETTINGS_VERSION })
     delete s.dailyConnectCap
     delete s.dailyMessageCap
@@ -417,7 +418,6 @@ async function tick() {
       return
     }
     if (counters.connect >= c.dailyConnectCap) return log(`skip: daily connect cap reached (${counters.connect}/${c.dailyConnectCap})`)
-    if (c.reviewMode) return log('skip: review mode on (manual sending not built yet)')
 
     log(`running connect → ${act.profileUrl}`)
     const tab = await getLinkedInTab()
@@ -512,7 +512,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       const c = await cfg()
       const counters = await getCounters()
       sendResponse({
-        enabled: c.enabled, reviewMode: c.reviewMode, hasToken: !!c.token, counters,
+        enabled: c.enabled, hasToken: !!c.token, counters,
         // Post-migration value, so the popup shows what is actually in force
         // rather than a stale override sitting in storage.
         dailyConnectCap: c.dailyConnectCap,

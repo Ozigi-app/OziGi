@@ -144,12 +144,6 @@
           <span class="sw-sub">Finds leads and sends connection requests, at a human pace</span>
         </span>
       </label>
-      <label class="sw">
-        <input type="checkbox" id="review" />
-        <span class="sw-label">Review before sending
-          <span class="sw-sub">Pauses auto-send (not built yet)</span>
-        </span>
-      </label>
     </div>
 
     <div class="stats">
@@ -171,9 +165,12 @@
       <input type="number" id="cap" min="1" max="100" step="1" />
       <div class="hint">LinkedIn tolerates roughly 20&ndash;25 a day. Higher risks a restriction.</div>
 
+      <!-- Kept for development against a local server, but no longer advertised:
+           a user who changes it points the extension at nothing and the pipeline
+           silently stops. -->
       <label for="apiBase">Ozigi URL</label>
       <input type="text" id="apiBase" placeholder="https://ozigi.app" autocomplete="off" spellcheck="false" />
-      <div class="hint">Use <code>http://localhost:3000</code> for local testing.</div>
+      <div class="hint">Leave this as <code>https://ozigi.app</code>.</div>
     </details>
 
     <div class="actions">

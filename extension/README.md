@@ -63,8 +63,8 @@ when the browser is closed or **Active** is off.
 ## Controls (popup)
 
 - **Active** — master on/off.
-- **Review before sending** — pauses auto-send (manual review flow, coming next).
 - **Connects / Leads found today** — live counters; connects run against the daily cap.
+- **Connection requests per day** — the daily cap, under Connection settings.
 - **Run now** — process the next action immediately.
 
 Status pill: **Active** (running), **Paused** (off), **No token** (set up but

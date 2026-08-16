@@ -2,11 +2,10 @@
 const $ = (id) => document.getElementById(id)
 
 async function load() {
-  const s = await chrome.storage.local.get(['token', 'enabled', 'reviewMode', 'apiBase'])
+  const s = await chrome.storage.local.get(['token', 'enabled', 'apiBase'])
   $('apiBase').value = s.apiBase || 'https://ozigi.app'
   $('token').value = s.token || ''
   $('enabled').checked = !!s.enabled
-  $('review').checked = !!s.reviewMode
   chrome.runtime.sendMessage({ type: 'status' }, (st) => {
     if (!st) return
     // Read the cap back from the worker, which applies DEFAULTS and the settings
@@ -35,14 +34,12 @@ $('save').addEventListener('click', async () => {
     dailyConnectCap: cap,
     apiBase: ($('apiBase').value.trim() || 'https://ozigi.app').replace(/\/$/, ''),
     enabled: $('enabled').checked,
-    reviewMode: $('review').checked,
   })
   $('msg').textContent = token ? 'Saved. The sender is active while LinkedIn is open.' : 'Saved (add a token to start).'
   load()
 })
 
 $('enabled').addEventListener('change', () => chrome.storage.local.set({ enabled: $('enabled').checked }).then(load))
-$('review').addEventListener('change', () => chrome.storage.local.set({ reviewMode: $('review').checked }))
 $('run').addEventListener('click', () => {
   chrome.runtime.sendMessage({ type: 'runNow' }, () => { $('msg').textContent = 'Checking for the next action…' })
 })
