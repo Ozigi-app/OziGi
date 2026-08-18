@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   motion,
-  AnimatePresence,
   Variants,
   useMotionValue,
   useSpring,
@@ -153,19 +152,6 @@ export default function Home() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [nlEmail, setNlEmail] = useState("");
   const [nlStatus, setNlStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [headlineIdx, setHeadlineIdx] = useState(0);
-
-  const HEADLINES = [
-    { pre: "Cold emails that actually get replies. ", hl: "Content that sounds like you." },
-    { pre: "Automate your ",            hl: "content engine."       },
-    { pre: "Grow your ",                hl: "social presence."      },
-    { pre: "Fill your pipeline with ",  hl: "qualified leads."      },
-  ] as const;
-
-  useEffect(() => {
-    const t = setInterval(() => setHeadlineIdx(i => (i + 1) % HEADLINES.length), 2800);
-    return () => clearInterval(t);
-  }, [HEADLINES.length]);
 
   const heroRef = useRef<HTMLElement>(null);
   const mouseX = useMotionValue(0);
@@ -318,29 +304,25 @@ export default function Home() {
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-20 md:py-32">
             <div className="flex flex-col items-center text-center gap-8 max-w-5xl mx-auto">
 
-              {/* Rotating headline */}
+              {/* Headline */}
               <motion.div style={{ y: heroParallaxY }} className="min-h-[6rem] sm:min-h-[7.5rem] md:min-h-[9rem] flex items-center justify-center">
-                <AnimatePresence mode="wait">
-                  <motion.h1
-                    key={headlineIdx}
-                    initial={{ opacity: 0, y: 22 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -18 }}
-                    transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.02] text-balance text-center"
+                <motion.h1
+                  initial={{ opacity: 0, y: 22 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem] font-black italic uppercase tracking-tight leading-[1.02] text-balance text-center"
+                >
+                  GTM and Distribution{" "}
+                  <span
+                    className="relative inline"
+                    style={{
+                      background: `linear-gradient(180deg, transparent 58%, rgba(232,50,10,0.42) 58%)`,
+                      paddingBottom: "0.04em",
+                    }}
                   >
-                    {HEADLINES[headlineIdx].pre}
-                    <span
-                      className="relative inline"
-                      style={{
-                        background: `linear-gradient(180deg, transparent 58%, rgba(232,50,10,0.42) 58%)`,
-                        paddingBottom: "0.04em",
-                      }}
-                    >
-                      {HEADLINES[headlineIdx].hl}
-                    </span>
-                  </motion.h1>
-                </AnimatePresence>
+                    On A Budget
+                  </span>
+                </motion.h1>
               </motion.div>
 
               {/* Subheadline */}
