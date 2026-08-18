@@ -29,31 +29,6 @@ interface EmailAccount {
   created_at: string
 }
 
-interface LinkedInSession {
-  id: string
-  linkedin_email: string
-  status: 'active' | 'logging_in' | 'pending_2fa' | 'needs_login' | 'expired'
-  login_error: string | null
-  last_used_at: string | null
-  created_at: string
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  active:      '● Connected',
-  logging_in:  '⏳ Logging in…',
-  pending_2fa: '🔐 Waiting for verification code',
-  needs_login: '○ Not connected',
-  expired:     '⚠ Session expired',
-}
-
-function friendlyLoginError(raw: string): string {
-  if (raw.includes('credentials') || raw.includes('wrong') || raw.includes('blocked')) return 'Login failed — check your email and password.'
-  if (raw.includes('Timed out') || raw.includes('timeout') || raw.includes('Timeout'))  return 'Login timed out — please try again.'
-  if (raw.includes('credentials found'))  return 'No credentials saved — enter your LinkedIn email and password below.'
-  if (raw.includes('2FA') || raw.includes('verify') || raw.includes('checkpoint'))      return 'Verification required — enter the code sent to your email or phone.'
-  return 'Login failed — please try again.'
-}
-
 function SettingsContent() {
   const searchParams = useSearchParams()
   const { planStatus } = usePlanStatus()
@@ -88,15 +63,6 @@ function SettingsContent() {
   const [swipeoneApiKey, setSwipeoneApiKey]     = useState('')
   const [swipeoneSaving, setSwipeoneSaving]     = useState(false)
 
-  // ── LinkedIn state ───────────────────────────────────────────────────────────
-  const [liSessions, setLiSessions] = useState<LinkedInSession[]>([])
-  const [liEmail, setLiEmail] = useState('')
-  const [liPassword, setLiPassword] = useState('')
-  const [liConnecting, setLiConnecting] = useState(false)
-  const [twoFaCode, setTwoFaCode] = useState('')
-  const [twoFaSubmitting, setTwoFaSubmitting] = useState(false)
-  const [liMsg, setLiMsg] = useState('')
-
   // Browser-extension sender token (replaces the headless worker login).
   const [extToken, setExtToken] = useState<string | null>(null)
   const [extCopied, setExtCopied] = useState(false)
@@ -109,11 +75,6 @@ function SettingsContent() {
     if (d?.token) { setExtToken(d.token); setExtCopied(false) }
   }
   useEffect(() => { loadExtToken() }, [])
-
-  // Timestamp of when we started polling for login progress, or null when idle.
-  // Drives the polling interval below — state (not a ref) so the interval
-  // lifecycle is owned by a single effect and survives unrelated re-renders.
-  const [liPollingSince, setLiPollingSince] = useState<number | null>(null)
 
   const connected = searchParams.get('connected')
   const error = searchParams.get('error')
@@ -236,114 +197,6 @@ function SettingsContent() {
     setSwipeoneSaving(false)
   }
 
-  // ── Load + poll LinkedIn sessions ────────────────────────────────────────────
-  function loadLinkedIn() {
-    return fetch('/api/gtm/linkedin/status')
-      .then(r => r.json())
-      .then(d => setLiSessions(d.sessions ?? []))
-  }
-
-  useEffect(() => {
-    loadLinkedIn()
-  }, [])
-
-  // Poll while a login is in flight. The interval is owned by this one effect:
-  // it starts when liPollingSince is set and is only torn down when it goes
-  // back to null (or on unmount) — session updates don't touch it.
-  useEffect(() => {
-    if (liPollingSince === null) return
-    const iv = setInterval(loadLinkedIn, 3000)
-    return () => clearInterval(iv)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liPollingSince])
-
-  // Decide when to stop polling, on every status response:
-  //  - a session went active → success, tell the user
-  //  - a login failed (error present, nothing in flight) → stop and show it,
-  //    but only after a grace period: the worker takes a few seconds to flip
-  //    the row to 'logging_in', and until then the row still holds the stale
-  //    pre-login status, which must not be read as a result
-  //  - hard timeout → stop with a "check back" message instead of hanging
-  useEffect(() => {
-    if (liPollingSince === null) {
-      // Page opened (or refreshed) while a login is already in flight —
-      // resume polling so the user still sees the outcome.
-      if (liSessions.some(s => s.status === 'logging_in' || s.status === 'pending_2fa')) {
-        setLiPollingSince(Date.now())
-      }
-      return
-    }
-
-    const GRACE_MS   = 20_000       // worker pickup time before statuses are trusted
-    const TIMEOUT_MS = 6 * 60_000   // covers login + the 5-minute 2FA window
-
-    const elapsed    = Date.now() - liPollingSince
-    const active     = liSessions.find(s => s.status === 'active')
-    const inProgress = liSessions.some(s => s.status === 'logging_in' || s.status === 'pending_2fa')
-    const failed     = liSessions.find(
-      s => (s.status === 'needs_login' || s.status === 'expired') && s.login_error
-    )
-
-    if (active) {
-      setLiPollingSince(null)
-      setLiMsg(`✓ LinkedIn connected as ${active.linkedin_email}. Outreach will resume automatically.`)
-    } else if (!inProgress && failed && elapsed > GRACE_MS) {
-      setLiPollingSince(null)
-      setLiMsg('')  // the session card renders the login error itself
-    } else if (elapsed > TIMEOUT_MS) {
-      setLiPollingSince(null)
-      setLiMsg('Login is taking longer than expected — refresh this page in a minute to check the status.')
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liSessions, liPollingSince])
-
-  async function connectLinkedIn(e: React.FormEvent) {
-    e.preventDefault()
-    setLiConnecting(true)
-    setLiMsg('')
-    const res = await fetch('/api/gtm/linkedin/connect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ linkedin_email: liEmail, linkedin_password: liPassword }),
-    })
-    const d = await res.json()
-    if (res.ok) {
-      setLiMsg(d.message)
-      setLiPassword('') // clear password from state
-      loadLinkedIn()
-      // Start polling immediately — don't wait to see 'logging_in' in DB first
-      setLiPollingSince(Date.now())
-    } else {
-      setLiMsg('Could not start LinkedIn login — please check your credentials and try again.')
-    }
-    setLiConnecting(false)
-  }
-
-  async function disconnectLinkedIn(sessionId: string) {
-    if (!confirm('Disconnect this LinkedIn account? You can reconnect at any time.')) return
-    await fetch('/api/gtm/linkedin/disconnect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId }),
-    })
-    setLiPollingSince(null)
-    loadLinkedIn()
-  }
-
-  async function submitTwoFa(e: React.FormEvent) {
-    e.preventDefault()
-    setTwoFaSubmitting(true)
-    const res = await fetch('/api/gtm/linkedin/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: twoFaCode }),
-    })
-    const d = await res.json()
-    setLiMsg(d.ok ? 'Verification code submitted.' : 'Invalid or expired code — please try again.')
-    setTwoFaCode('')
-    setTwoFaSubmitting(false)
-  }
-
   async function disconnectGmail(accountId: string, email: string) {
     if (!confirm(`Disconnect ${email}?`)) return
     await fetch('/api/gtm/gmail/disconnect', {
@@ -354,8 +207,6 @@ function SettingsContent() {
     setAccounts(prev => prev.filter(a => a.id !== accountId))
   }
 
-  const pendingTwoFa = liSessions.find(s => s.status === 'pending_2fa')
-  const activeSession = liSessions.find(s => s.status === 'active')
 
   const inputCls = "px-3 py-2 bg-bg border border-border rounded-lg text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent/50 transition-colors"
   const labelCls = "flex flex-col gap-1.5"
@@ -628,7 +479,7 @@ function SettingsContent() {
 
         {/* Browser sender — the safe way to run LinkedIn outreach. */}
         <div className="border border-border rounded-xl p-5 mb-5 bg-surface">
-          <div className="font-semibold text-foreground text-sm mb-1">Ozigi for LinkedIn</div>
+          <div className="font-semibold text-foreground text-sm mb-1">LinkedIn Extension</div>
           <p className="text-xs text-foreground-muted leading-relaxed mb-3">
             The browser extension is your LinkedIn pipeline: it finds people matching your ICP and
             sends them personalised connection requests from <strong>your own LinkedIn tab</strong>,
@@ -674,111 +525,6 @@ function SettingsContent() {
             Keep this private — anyone with it can queue sends to your LinkedIn. Rotate if it leaks.
           </p>
         </div>
-
-        {liMsg && (
-          <div className="bg-sky-50 border border-sky-200 text-sky-800 rounded-lg px-4 py-3 mb-4 text-sm">
-            {liMsg}
-          </div>
-        )}
-
-        {/* Existing sessions */}
-        {liSessions.map(s => (
-          <div key={s.id} className={cardCls}>
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-semibold text-foreground text-sm">{s.linkedin_email}</div>
-                <div className="text-xs text-foreground-muted mt-0.5">
-                  {STATUS_LABEL[s.status] ?? s.status}
-                </div>
-                {s.login_error && s.login_error !== '__push_notification__' && (
-                  <div className="text-xs text-red-600 mt-1">
-                    ✗ {friendlyLoginError(s.login_error)}
-                  </div>
-                )}
-              </div>
-              <button onClick={() => disconnectLinkedIn(s.id)} className={dangerBtnCls}>
-                {s.status === 'active' ? 'Disconnect' : 'Remove'}
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {/* 2FA prompt — shown when worker is waiting for verification */}
-        {pendingTwoFa && (() => {
-          const isPush = pendingTwoFa.login_error === '__push_notification__'
-          return (
-            <div className="border-2 border-amber-300 bg-amber-50 rounded-xl p-5 mb-4">
-              {isPush ? (
-                <>
-                  <div className="font-bold text-amber-900 mb-2">📱 Approve the sign-in on your LinkedIn app</div>
-                  <div className="text-sm text-amber-900/80 leading-relaxed">
-                    LinkedIn sent a push notification to your phone. Open your <strong>LinkedIn app</strong> and tap <strong>Yes</strong> to approve the sign-in.
-                    This page will update automatically once approved.
-                  </div>
-                  <div className="mt-3 text-xs text-amber-800/70">
-                    No notification? Try the code method instead — disconnect and reconnect, then use a verification code sent to your email.
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="font-bold text-amber-900 mb-2">🔐 LinkedIn sent you a verification code</div>
-                  <div className="text-sm text-amber-900/80 mb-4 leading-relaxed">
-                    Check your email or phone for a code from LinkedIn. Enter it below — you have 5 minutes.
-                  </div>
-                  <form onSubmit={submitTwoFa} className="flex gap-2">
-                    <input
-                      value={twoFaCode}
-                      onChange={e => setTwoFaCode(e.target.value)}
-                      placeholder="Enter verification code"
-                      className="flex-1 px-3 py-2 bg-white border border-amber-300 rounded-lg text-base tracking-widest text-slate-900 outline-none focus:border-amber-500"
-                      autoFocus
-                    />
-                    <button
-                      type="submit"
-                      disabled={twoFaSubmitting || !twoFaCode}
-                      className="px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      {twoFaSubmitting ? 'Submitting…' : 'Submit'}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
-          )
-        })()}
-
-        {/* Connect form — shown if no active session */}
-        {!activeSession && !pendingTwoFa && liSessions.every(s => s.status !== 'logging_in') && (
-          <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="font-semibold text-foreground text-sm mb-2">Connect a LinkedIn account</div>
-            <div className="text-xs text-foreground-muted mb-4 leading-relaxed">
-              We log into LinkedIn on your behalf using your credentials. Your password is encrypted at rest and never shared.
-            </div>
-            <form onSubmit={connectLinkedIn} className="flex flex-col gap-3">
-              <input
-                type="email"
-                value={liEmail}
-                onChange={e => setLiEmail(e.target.value)}
-                placeholder="LinkedIn email"
-                className={inputCls}
-              />
-              <input
-                type="password"
-                value={liPassword}
-                onChange={e => setLiPassword(e.target.value)}
-                placeholder="LinkedIn password"
-                className={inputCls}
-              />
-              <button
-                type="submit"
-                disabled={liConnecting || !liEmail || !liPassword}
-                className="px-4 py-2 bg-[#0a66c2] hover:bg-[#004182] text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 self-start"
-              >
-                {liConnecting ? 'Connecting…' : 'Connect LinkedIn'}
-              </button>
-            </form>
-          </div>
-        )}
       </section>
       </div>
     </div>
