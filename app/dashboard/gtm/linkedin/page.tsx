@@ -43,6 +43,10 @@ function formatScheduled(iso: string): string {
 export default function LinkedInOutreachPage() {
   const [items, setItems]     = useState<QueueItem[]>([])
   const [loading, setLoading] = useState(true)
+  // Whether the extension is set up yet — it's the actual pipeline, so until
+  // it has a token, sending someone to create another ICP campaign gets them
+  // no closer to a connection request going out. null while unknown (first load).
+  const [hasExtensionToken, setHasExtensionToken] = useState<boolean | null>(null)
 
   const load = useCallback(() => {
     return fetch('/api/gtm/linkedin/queue')
@@ -52,6 +56,13 @@ export default function LinkedInOutreachPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    fetch('/api/gtm/linkedin/extension-status')
+      .then(r => r.json())
+      .then(d => setHasExtensionToken(!!d.hasToken))
+      .catch(() => setHasExtensionToken(true)) // fail open — don't block the normal CTA on a status-check hiccup
+  }, [])
 
   const today = new Date().toDateString()
   const sentToday  = items.filter(i => i.status === 'done' && i.processed_at && new Date(i.processed_at).toDateString() === today).length
@@ -77,11 +88,15 @@ export default function LinkedInOutreachPage() {
               </p>
             </div>
           </div>
+          {/* Without the extension there's nothing to send a connection request from,
+              no matter how many campaigns exist — so that's the closer next step
+              until it's set up. Once it's connected, adding an ICP-defined campaign
+              is what actually finds more leads. */}
           <Link
-            href="/dashboard/gtm/new"
+            href={hasExtensionToken === false ? '/dashboard/gtm/settings#linkedin' : '/dashboard/gtm/new'}
             className="flex items-center gap-2 px-4 py-2.5 border border-border hover:border-foreground-subtle text-foreground font-bold text-sm rounded-xl transition-colors no-underline"
           >
-            + New campaign
+            {hasExtensionToken === false ? 'Set up the extension' : '+ New campaign'}
           </Link>
         </div>
 

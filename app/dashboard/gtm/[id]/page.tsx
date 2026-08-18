@@ -132,6 +132,99 @@ function IcpEditor({ campaignId, icp, onSaved }: { campaignId: string; icp: IcpC
   )
 }
 
+// ── Prompt Editor ────────────────────────────────────────────────────────────
+type PromptFields = Pick<Campaign,
+  'sender_name' | 'sender_title' | 'product_name' | 'product_description' |
+  'product_context' | 'persona_voice' | 'cta_url' | 'sample_email'>
+
+const PROMPT_FIELDS: { key: keyof PromptFields; label: string; hint: string; multiline?: boolean }[] = [
+  { key: 'sender_name',        label: 'Sender name',        hint: 'Who the email is signed from' },
+  { key: 'sender_title',       label: 'Sender title',       hint: 'e.g. Founder, Head of Growth — optional' },
+  { key: 'product_name',       label: 'Product name',       hint: 'What you’re pitching' },
+  { key: 'cta_url',            label: 'CTA URL',            hint: 'Link included in the call-to-action' },
+  { key: 'product_description',label: 'Product description', hint: 'One-liner used to introduce the product', multiline: true },
+  { key: 'product_context',    label: 'AI knowledge base',  hint: 'Features, pain points, outcomes — fed to the AI for specific, non-generic copy', multiline: true },
+  { key: 'persona_voice',      label: 'Writing voice',      hint: 'Tone/persona instructions for the AI', multiline: true },
+  { key: 'sample_email',       label: 'Sample email',       hint: 'Paste an email you like — the AI will imitate its tone, structure, and length (not its exact wording)', multiline: true },
+]
+
+function PromptEditor({ campaignId, campaign, onSaved }: { campaignId: string; campaign: Campaign; onSaved: (fresh: Partial<Campaign>) => void }) {
+  const initial: PromptFields = {
+    sender_name: campaign.sender_name ?? '',
+    sender_title: campaign.sender_title ?? '',
+    product_name: campaign.product_name ?? '',
+    product_description: campaign.product_description ?? '',
+    product_context: campaign.product_context ?? '',
+    persona_voice: campaign.persona_voice ?? '',
+    cta_url: campaign.cta_url ?? '',
+    sample_email: campaign.sample_email ?? '',
+  }
+  const [fields, setFields] = useState<PromptFields>(initial)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved]   = useState(false)
+  const [open, setOpen]     = useState(false)
+
+  function setField(key: keyof PromptFields, val: string) {
+    setFields(prev => ({ ...prev, [key]: val }))
+    setSaved(false)
+  }
+
+  async function save() {
+    setSaving(true)
+    const res = await fetch(`/api/gtm/campaigns/${campaignId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    })
+    const d = await res.json()
+    setSaving(false)
+    setSaved(true)
+    if (res.ok) onSaved(d.campaign)
+    setTimeout(() => setSaved(false), 3000)
+  }
+
+  return (
+    <div className="mt-4 bg-surface border border-border rounded-xl overflow-hidden">
+      <div className={`flex justify-between items-center px-4 py-3 cursor-pointer ${open ? 'bg-surface-2' : ''}`}
+        onClick={() => setOpen(o => !o)}>
+        <span className="font-semibold text-sm text-foreground">
+          Email content &amp; voice <span className="font-normal text-foreground-subtle text-xs">— what the AI uses to write each email</span>
+        </span>
+        <span className="text-foreground-subtle text-sm">{open ? '▲ collapse' : '▼ edit'}</span>
+      </div>
+
+      {open && (
+        <div className="p-4 border-t border-border">
+          <p className="mb-4 text-xs text-foreground-subtle">
+            Didn&apos;t like a preview? Edit these, save, then hit <strong>Preview emails</strong> again to regenerate with the new inputs.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {PROMPT_FIELDS.map(({ key, label, hint, multiline }) => (
+              <div key={key} className={`flex flex-col gap-1 ${multiline ? 'sm:col-span-2' : ''}`}>
+                <label className="text-xs font-semibold text-foreground">{label}</label>
+                {multiline ? (
+                  <textarea value={fields[key] ?? ''} onChange={e => setField(key, e.target.value)} rows={key === 'sample_email' ? 6 : 3}
+                    className="w-full text-sm px-3 py-2 bg-bg border border-border rounded-lg text-foreground placeholder-foreground-subtle resize-y outline-none focus:border-accent/50 box-border" />
+                ) : (
+                  <input value={fields[key] ?? ''} onChange={e => setField(key, e.target.value)}
+                    className="w-full text-sm px-3 py-2 bg-bg border border-border rounded-lg text-foreground placeholder-foreground-subtle outline-none focus:border-accent/50 box-border" />
+                )}
+                <span className="text-[11px] text-foreground-subtle">{hint}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-3">
+            <button onClick={save} disabled={saving} className="px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            {saved && <span className="text-green-600 text-sm">✓ Saved — regenerate the preview to see it reflected</span>}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface Send {
   id: string
   step: number
@@ -610,6 +703,9 @@ export default function CampaignDetailPage() {
 
       {/* ── ICP config editor ───────────────────────────────────────────────── */}
       <IcpEditor campaignId={id} icp={campaign.icp_config} onSaved={fresh => setData(prev => prev ? { ...prev, campaign: { ...prev.campaign, icp_config: fresh } } : prev)} />
+
+      {/* ── Prompt / voice editor ──────────────────────────────────────────── */}
+      <PromptEditor campaignId={id} campaign={campaign} onSaved={fresh => setData(prev => prev ? { ...prev, campaign: { ...prev.campaign, ...fresh } } : prev)} />
 
       {/* ── CSV import modal ─────────────────────────────────────────────────── */}
       {showImport && (

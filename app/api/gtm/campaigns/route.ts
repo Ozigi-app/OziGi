@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
   const {
     name, icp_description, sources, daily_email_limit, daily_linkedin_limit, sequence_steps,
-    sender_name, sender_title, product_name, product_description, product_context, cta_url, persona_voice,
+    sender_name, sender_title, product_name, product_description, product_context, cta_url, persona_voice, sample_email,
   } = await req.json()
 
   if (!name || !icp_description || !sources?.length) {
@@ -56,6 +56,22 @@ export async function POST(req: Request) {
 
   // Parse ICP with Gemini
   const icp_config = await parseIcpDescription(icp_description)
+
+  const steps = sequence_steps ?? [
+    { step: 1, channel: 'email', delay_days: 0 },
+    { step: 2, channel: 'email', delay_days: 3 },
+    { step: 3, channel: 'email', delay_days: 7 },
+  ]
+  // The campaign-creation UI only lets users configure email steps — LinkedIn
+  // runs independently via the browser extension (see /dashboard/gtm/linkedin).
+  // But the extension's connect-queueing (enqueueConnects in
+  // app/api/gtm/linkedin/extension/leads/route.ts) still keys off a
+  // `channel: 'linkedin'` entry in sequence_steps, so every campaign gets one
+  // appended here even though nobody chooses it in the UI.
+  const hasLinkedinStep = steps.some((s: { channel?: string }) => s?.channel === 'linkedin')
+  const finalSteps = hasLinkedinStep
+    ? steps
+    : [...steps, { step: (Math.max(0, ...steps.map((s: { step: number }) => s.step)) + 1), channel: 'linkedin', delay_days: 0 }]
 
   const { data: campaign, error } = await supabaseAdmin
     .from('campaigns')
@@ -67,11 +83,7 @@ export async function POST(req: Request) {
       sources,
       daily_email_limit: daily_email_limit ?? 40,
       daily_linkedin_limit: daily_linkedin_limit ?? 20,
-      sequence_steps: sequence_steps ?? [
-        { step: 1, channel: 'email', delay_days: 0 },
-        { step: 2, channel: 'email', delay_days: 3 },
-        { step: 3, channel: 'email', delay_days: 7 },
-      ],
+      sequence_steps: finalSteps,
       status: 'active',
       sender_name:         sender_name         ?? 'Dumebi',
       sender_title:        sender_title        ?? 'Founder',
@@ -80,6 +92,7 @@ export async function POST(req: Request) {
       product_context:     product_context     ?? null,
       cta_url:             cta_url             ?? 'https://ozigi.app',
       persona_voice:       persona_voice       ?? null,
+      sample_email:        sample_email        ?? null,
     })
     .select()
     .single()

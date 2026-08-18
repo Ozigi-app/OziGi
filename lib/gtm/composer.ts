@@ -55,6 +55,9 @@ export async function composeEmail(
   const knowledgeBase = campaign.product_context
     ? `\nPRODUCT KNOWLEDGE BASE (use this to write specific, compelling copy — don't be generic):\n${campaign.product_context}`
     : ''
+  const sampleEmailLine = campaign.sample_email
+    ? `\nSAMPLE EMAIL TO IMITATE (match this tone, structure, length, and voice — do NOT reuse its exact wording or claims, it's a style reference only):\n${campaign.sample_email}`
+    : ''
 
   const stepPrompts: Record<number, string> = {
     1: `You are writing a cold outreach email on behalf of ${sender}${title ? ` (${title})` : ''}.
@@ -63,6 +66,7 @@ PRODUCT:
 ${product}${pitch ? ` — ${pitch}` : ''}
 ${knowledgeBase}
 ${voiceLine}
+${sampleEmailLine}
 CAMPAIGN ICP:
 ${icpSummary}
 
@@ -83,6 +87,7 @@ Return JSON: {"subject": "...", "body": "..."}`,
 The recipient did not reply to the first email.
 ${knowledgeBase}
 ${voiceLine}
+${sampleEmailLine}
 LEAD PROFILE:
 ${leadContext}
 
@@ -100,6 +105,7 @@ Return JSON: {"subject": "...", "body": "..."}`,
 The recipient did not reply to two previous emails.
 ${knowledgeBase}
 ${voiceLine}
+${sampleEmailLine}
 LEAD PROFILE:
 ${leadContext}
 

@@ -42,6 +42,7 @@ export interface Campaign {
   cta_url: string
   persona_voice: string | null   // writing style/tone for AI email composition
   product_context: string | null // rich AI-generated brief: features, pain points, outcomes — fed to composer
+  sample_email: string | null    // reference email pasted by the user for the composer to imitate
   created_at: string
   updated_at: string
 }

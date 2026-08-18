@@ -12,18 +12,11 @@ interface SequenceStep {
 }
 
 const EMAIL_ACTIONS   = ['Cold intro', 'Follow-up', 'Breakup email', 'Follow-up 2', 'Follow-up 3']
-// LinkedIn is a single-action channel: the connection request carries the note,
-// and Ozigi does not send DMs. Extra LinkedIn steps are not queued.
-const LINKEDIN_ACTIONS = ['Connect request']
 
 /** Returns the human-readable action label for a step */
 function getStepLabel(step: SequenceStep, allSteps: SequenceStep[]): string {
-  const channelSteps = allSteps.filter(s => s.channel === step.channel)
-  const pos = channelSteps.findIndex(s => s.step === step.step)
-  if (step.channel === 'email')    return EMAIL_ACTIONS[pos]    ?? `Email ${pos + 1}`
-  // Only the first LinkedIn step does anything; later ones aren't sent.
-  if (step.channel === 'linkedin') return LINKEDIN_ACTIONS[pos] ?? 'Not sent — LinkedIn is connect-only'
-  return ''
+  const pos = allSteps.findIndex(s => s.step === step.step)
+  return EMAIL_ACTIONS[pos] ?? `Email ${pos + 1}`
 }
 
 const CHANNEL_CARD_CLS: Record<Channel, string> = {
@@ -31,11 +24,13 @@ const CHANNEL_CARD_CLS: Record<Channel, string> = {
   linkedin: 'border-blue-300 bg-blue-50',
 }
 
+// LinkedIn isn't a step a user configures here — it runs on its own via the
+// browser extension (see /dashboard/gtm/linkedin), independent of this
+// campaign's email sequence. Only email steps are offered.
 const DEFAULT_STEPS: SequenceStep[] = [
-  { step: 1, channel: 'email',    delay_days: 0 },
-  { step: 2, channel: 'email',    delay_days: 3 },
-  { step: 3, channel: 'email',    delay_days: 7 },
-  { step: 4, channel: 'linkedin', delay_days: 0 },
+  { step: 1, channel: 'email', delay_days: 0 },
+  { step: 2, channel: 'email', delay_days: 3 },
+  { step: 3, channel: 'email', delay_days: 7 },
 ]
 
 const inputCls = 'w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm text-foreground placeholder-foreground-subtle outline-none focus:border-accent/50 transition-colors'
@@ -78,6 +73,7 @@ export default function NewCampaignPage() {
   // ── Personas ──────────────────────────────────────────────────────────────────
   const [personas, setPersonas] = useState<{ id: string; name: string; prompt?: string }[]>([])
   const [personaId, setPersonaId] = useState<string>('default')
+  const [sampleEmail, setSampleEmail] = useState('')
   useEffect(() => {
     fetch('/api/personas').then(r => r.ok ? r.json() : { personas: [] }).then(d => setPersonas(d.personas ?? []))
   }, [])
@@ -164,6 +160,7 @@ export default function NewCampaignPage() {
           product_context: productContext || null,
           cta_url: ctaUrl,
           persona_voice: selectedPersona?.prompt ?? null,
+          sample_email: sampleEmail || null,
         }),
       })
       const data = await res.json()
@@ -291,13 +288,11 @@ export default function NewCampaignPage() {
 
         {/* ── Sequence ───────────────────────────────────────────────────── */}
         <fieldset className={fieldsetCls}>
-          <legend className={legendCls}>Sequence</legend>
+          <legend className={legendCls}>Email sequence</legend>
           <div className="mt-2">
 
             <div className="text-xs text-foreground-muted mb-4 leading-relaxed bg-surface-2 rounded-lg px-3 py-2.5">
-              Email and LinkedIn steps run <strong className="text-foreground">in parallel</strong> on the same leads.
-              The <em>delay</em> on each step is how many days after the <em>previous step of the same channel</em> it fires.
-              Step 1 and the first LinkedIn step both fire on day 0.
+              The <em>delay</em> on each step is how many days after the previous email it fires. Step 1 fires on day 0.
             </div>
 
             {steps.map((s, i) => {
@@ -317,14 +312,9 @@ export default function NewCampaignPage() {
                       {i + 1}
                     </span>
 
-                    {/* Channel badge */}
-                    <select
-                      value={s.channel}
-                      onChange={e => updateStep(i, 'channel', e.target.value as Channel)}
-                      className="px-2 py-1 border border-slate-300 rounded-md text-xs bg-white text-slate-900 font-semibold cursor-pointer outline-none">
-                      <option value="email">✉ Email</option>
-                      <option value="linkedin">in LinkedIn</option>
-                    </select>
+                    <span className="px-2 py-1 rounded-md text-xs bg-white text-slate-900 font-semibold border border-slate-300">
+                      ✉ Email
+                    </span>
 
                     {/* Action label — computed, read-only */}
                     <span className="flex-1 min-w-0 text-sm font-semibold text-slate-700 truncate">
@@ -361,7 +351,7 @@ export default function NewCampaignPage() {
               )
             })}
 
-            {/* Add step buttons */}
+            {/* Add step */}
             <div className="flex gap-2 mt-3">
               <button type="button"
                 onClick={() => setSteps(prev => {
@@ -371,37 +361,41 @@ export default function NewCampaignPage() {
                 className="px-3 py-1.5 border border-dashed border-green-400 rounded-lg bg-green-50 text-green-700 text-xs font-semibold hover:bg-green-100 transition-colors">
                 + Email step
               </button>
-              <button type="button"
-                onClick={() => setSteps(prev => {
-                  const n = prev.length + 1
-                  return [...prev, { step: n, channel: 'linkedin', delay_days: 3 }]
-                })}
-                className="px-3 py-1.5 border border-dashed border-blue-400 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                + LinkedIn step
-              </button>
             </div>
           </div>
         </fieldset>
 
         {/* ── Email persona / writing voice ──────────────────────────────── */}
-        {personas.length > 0 && (
-          <fieldset className={fieldsetCls}>
-            <legend className={legendCls}>Email writing voice</legend>
-            <div className="text-xs text-foreground-muted mb-3.5 mt-2 leading-relaxed">
-              Pick a persona to shape the tone of all outbound emails in this campaign. Leave as Default for a neutral professional voice.
-            </div>
-            <select
-              value={personaId}
-              onChange={e => setPersonaId(e.target.value)}
-              className={`${inputCls} max-w-xs`}
-            >
-              <option value="default">Default — neutral professional</option>
-              {personas.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </fieldset>
-        )}
+        <fieldset className={fieldsetCls}>
+          <legend className={legendCls}>Email writing voice</legend>
+          <div className="flex flex-col gap-4 mt-2">
+            {personas.length > 0 && (
+              <label className={labelCls}>
+                <span className={labelTextCls}>Persona</span>
+                <span className={hintCls}>Pick a persona to shape the tone of all outbound emails in this campaign. Leave as Default for a neutral professional voice.</span>
+                <select
+                  value={personaId}
+                  onChange={e => setPersonaId(e.target.value)}
+                  className={`${inputCls} max-w-xs`}
+                >
+                  <option value="default">Default — neutral professional</option>
+                  {personas.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            <label className={labelCls}>
+              <span className={labelTextCls}>Sample email <span className="text-foreground-subtle font-normal">(optional)</span></span>
+              <span className={hintCls}>Paste an email you like — the AI will imitate its tone, structure, and length, not copy its exact wording.</span>
+              <textarea value={sampleEmail} onChange={e => setSampleEmail(e.target.value)}
+                rows={6}
+                placeholder={'Subject: quick one\n\nHey {name},\n\nSaw your work on...'}
+                className={`${inputCls} resize-y text-xs leading-relaxed`} />
+            </label>
+          </div>
+        </fieldset>
 
         {/* ── Limits ─────────────────────────────────────────────────────── */}
         <fieldset className={fieldsetCls}>
@@ -411,12 +405,6 @@ export default function NewCampaignPage() {
               <span className="text-sm font-semibold text-foreground">Emails / day</span>
               <input type="number" min={1} max={200} value={dailyEmailLimit}
                 onChange={e => setDailyEmailLimit(Number(e.target.value))}
-                className="w-[70px] px-2.5 py-1.5 bg-bg border border-border rounded-lg text-sm text-foreground outline-none focus:border-accent/50" />
-            </label>
-            <label className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-foreground">LinkedIn actions / day</span>
-              <input type="number" min={1} max={50} value={dailyLinkedInLimit}
-                onChange={e => setDailyLinkedInLimit(Number(e.target.value))}
                 className="w-[70px] px-2.5 py-1.5 bg-bg border border-border rounded-lg text-sm text-foreground outline-none focus:border-accent/50" />
             </label>
           </div>

@@ -623,7 +623,7 @@ function SettingsContent() {
       </section>
 
       {/* ── LinkedIn ──────────────────────────────────────────────────────── */}
-      <section className="mb-10">
+      <section id="linkedin" className="mb-10 scroll-mt-6">
         <h2 className="text-base font-bold text-foreground mb-4">LinkedIn</h2>
 
         {/* Browser sender — the safe way to run LinkedIn outreach. */}
