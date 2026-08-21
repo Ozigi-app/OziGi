@@ -93,7 +93,7 @@ export default function LinkedInOutreachPage() {
               until it's set up. Once it's connected, adding an ICP-defined campaign
               is what actually finds more leads. */}
           <Link
-            href={hasExtensionToken === false ? '/dashboard/gtm/settings#linkedin' : '/dashboard/gtm/new'}
+            href={hasExtensionToken === false ? '/dashboard/gtm/settings#linkedin' : '/dashboard/gtm/linkedin/new'}
             className="flex items-center gap-2 px-4 py-2.5 border border-border hover:border-foreground-subtle text-foreground font-bold text-sm rounded-xl transition-colors no-underline"
           >
             {hasExtensionToken === false ? 'Set up the extension' : '+ New campaign'}
