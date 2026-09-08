@@ -206,6 +206,40 @@ function adminClient() {
   );
 }
 
+/**
+ * Trials were granted by writing a paid plan straight into `profiles.plan`
+ * alongside `trial_ends_at`, but nothing ever expired them — so April–May 2026
+ * signups kept full entitlements for months after their 7 days ran out.
+ *
+ * We resolve the effective plan at read time rather than trusting the stored
+ * column, so a lapsed trial stops granting access immediately and the fix is
+ * reversible without touching anyone's row.
+ *
+ * A paid conversion clears the trial columns (see app/api/dodo-webhook), so a
+ * non-null `trial_ends_at` means the trial was never converted. AppSumo grants
+ * are lifetime licences that also carry trial dates from signup, so they are
+ * explicitly exempt — expiring those would strip legitimate paying customers.
+ */
+export function resolveEffectivePlan(
+  storedPlan: Plan,
+  profile: { trial_ends_at?: string | null; appsumo_license_key?: string | null },
+  now: Date = new Date()
+): Plan {
+  if (storedPlan === 'free') return 'free';
+
+  // Lifetime licences never lapse.
+  if (storedPlan.startsWith('appsumo_')) return storedPlan;
+  if (profile.appsumo_license_key) return storedPlan;
+
+  const endsAt = profile.trial_ends_at;
+  if (!endsAt) return storedPlan;          // converted to paid, or never trialled
+
+  const ended = new Date(endsAt);
+  if (Number.isNaN(ended.getTime())) return storedPlan;
+
+  return ended.getTime() <= now.getTime() ? 'free' : storedPlan;
+}
+
 export async function getPlanStatus(userId: string): Promise<PlanStatus> {
   const ADMIN_EMAILS = process.env.ADMIN_EMAILS
     ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim())
@@ -259,16 +293,17 @@ export async function getPlanStatus(userId: string): Promise<PlanStatus> {
   // 3. Fetch or create profile — new users default to "free", no trial
   let { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select('plan')
+    .select('plan, trial_ends_at, appsumo_license_key')
     .eq('id', userId)
     .maybeSingle();
 
   if (!profile) {
     await supabaseAdmin.from('profiles').insert({ id: userId, plan: 'free' });
-    profile = { plan: 'free' };
+    profile = { plan: 'free', trial_ends_at: null, appsumo_license_key: null };
   }
 
-  const plan: Plan = VALID_PLANS.has(profile.plan) ? (profile.plan as Plan) : 'free';
+  const storedPlan: Plan = VALID_PLANS.has(profile.plan) ? (profile.plan as Plan) : 'free';
+  const plan: Plan = resolveEffectivePlan(storedPlan, profile, now);
 
   // 4. Fetch usage stats, auto-create row if missing
   const { data: existingStats } = await supabaseAdmin
