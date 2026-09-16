@@ -57,10 +57,13 @@ export async function POST(req: Request) {
   const { campaignId } = JSON.parse(rawBody) as { campaignId?: string }
 
   // Load campaign(s)
+  // Content-studio rows live in this table too and default to status 'active',
+  // so an unscoped sweep would walk them as if they were outreach campaigns.
   let query = supabaseAdmin
     .from('campaigns')
     .select('*')
     .eq('status', 'active')
+    .is('generated_content', null)
 
   if (campaignId) query = query.eq('id', campaignId)
 

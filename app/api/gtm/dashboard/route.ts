@@ -24,9 +24,12 @@ export async function GET() {
     crmRes,
   ] = await Promise.all([
     // Campaigns
+    // `campaigns` is shared with content-studio rows (they carry
+    // generated_content); without this filter they show up in the GTM dashboard.
     supabaseAdmin.from('campaigns')
       .select('id, name, status, created_at, daily_email_limit')
       .eq('user_id', user.id)
+      .is('generated_content', null)
       .order('created_at', { ascending: false })
       .limit(10),
 
