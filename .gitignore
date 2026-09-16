@@ -125,3 +125,13 @@ sample-unsubscribe-url.txt
 
 # Raw screenshot inputs for store assets (derived output is committed)
 extension/store/_src/
+send_reactivation.py
+reactivation_drafts.json
+reactivation_preview.txt
+reactivation_tracking.csv
+reactivation_names.csv
+reactivation_daily.json
+reactivation_send.log
+feedback_outreach_drafts.md
+send_feedback_outreach.py
+feedback_outreach_tracking.csv
