@@ -135,3 +135,11 @@ reactivation_send.log
 feedback_outreach_drafts.md
 send_feedback_outreach.py
 feedback_outreach_tracking.csv
+
+# Claude Code worktrees — scratch checkouts, one per session. The
+# pedantic-brown-b3b5e5 gitlink was committed by accident; tracking these
+# records an arbitrary SHA that drifts every session.
+.claude/worktrees/
+
+# Research scratch for article drafts (review-gate harness + its jsonl output)
+qodo-article/
