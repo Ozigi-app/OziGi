@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GTAG_ID } from "@/lib/gtag";
+import CookieConsent from "@/components/CookieConsent";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -72,6 +73,27 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
             <head>
+        {/*
+          Google Consent Mode v2 defaults. This MUST stay beforeInteractive and
+          MUST stay ahead of the Google tag below: the tag treats consent as
+          granted unless a default was already recorded, so if this stops
+          running first the gate silently opens. Denied here, upgraded by
+          lib/consent.ts when the visitor accepts.
+        */}
+        <Script id="consent-default" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              analytics_storage: 'denied',
+              wait_for_update: 500
+            });
+          `}
+        </Script>
+
         {/* Favicon links */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -142,6 +164,7 @@ export default function RootLayout({
             {children}
           </ErrorBoundary>
         </ThemeProvider>
+        <CookieConsent />
         <Analytics />
         <SpeedInsights />
 
