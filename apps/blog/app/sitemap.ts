@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Section pages
   const sectionPages: MetadataRoute.Sitemap = sections.map((section) => ({
-    url: `${baseUrl}/blog/section/${section.toLowerCase().replace(/\s+/g, "-")}`,
+    url: `${baseUrl}/blog/section/${section.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-")}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,

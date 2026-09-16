@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export async function generateStaticParams() {
   const sections = getAllSections();
   return sections.map((section) => ({
-    slug: section.toLowerCase().replace(/\s+/g, "-"),
+    slug: section.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-"),
   }));
 }
 
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 function slugToSection(slug: string): string {
   const sections = getAllSections();
   return (
-    sections.find((s) => s.toLowerCase().replace(/\s+/g, "-") === slug) ?? slug
+    sections.find((s) => s.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-") === slug) ?? slug
   );
 }
 
@@ -70,7 +70,7 @@ export default async function SectionPage({ params }: { params: Promise<{ slug: 
                 href={
                   isActive
                     ? "#"
-                    : `/blog/section/${section.toLowerCase().replace(/\s+/g, "-")}`
+                    : `/blog/section/${section.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-")}`
                 }
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
                   isActive
