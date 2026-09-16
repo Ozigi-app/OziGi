@@ -368,14 +368,22 @@ export async function getPlanStatus(userId: string): Promise<PlanStatus> {
     }
   }
 
-  // 5. Count active campaigns from the campaigns table
+  // 5. Count active GTM campaigns from the campaigns table.
+  //
+  // The table is shared with social/newsletter content campaigns, which carry
+  // `generated_content` and are inserted without a status — so they land on the
+  // column default of 'active' and used to be counted here. That made the
+  // content engine silently burn the GTM campaign quota: a free user who had
+  // generated any content got a 403 creating their *first* outreach campaign.
+  // Match the GET handler in app/api/gtm/campaigns and count outreach only.
   let activeCampaignsUsed = 0;
   try {
     const { count } = await supabaseAdmin
       .from('campaigns')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .eq('status', 'active');
+      .eq('status', 'active')
+      .is('generated_content', null);
     activeCampaignsUsed = count ?? 0;
   } catch {}
 

@@ -164,7 +164,10 @@ export default function NewCampaignPage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error('Failed to create campaign — please try again.')
+      // The API explains *why* it refused (plan gate, campaign limit, missing
+      // field). Surface that instead of a generic retry prompt the user can
+      // only act on by retrying forever.
+      if (!res.ok) throw new Error(data?.error || 'Failed to create campaign — please try again.')
       router.push(`/dashboard/gtm/${data.campaign.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
