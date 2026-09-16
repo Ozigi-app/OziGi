@@ -17,6 +17,7 @@ import { getPlanStatus } from '@/lib/plan';
 import { getVertexAIClient } from '@/lib/genai-client';
 import { containsPromptInjection } from '@/lib/prompts';
 import type { OutlineSection, ClaimEntry, SourceBudgetEntry, LongformPlan } from '@/lib/types/longform';
+import { MAX_CONTEXT_CHARS, MIN_CONTEXT_CHARS, contextTooLongError } from '@/lib/longform/limits';
 
 export const maxDuration = 60;
 
@@ -85,7 +86,7 @@ RULES:
 
 BRIEF:
 """
-${brief.slice(0, 8000)}
+${brief.slice(0, MAX_CONTEXT_CHARS)}
 """
 
 Return a JSON object matching the schema exactly. No prose before or after.`;
@@ -123,8 +124,20 @@ export async function POST(req: Request) {
     }
 
     const { brief } = await req.json();
-    if (!brief || typeof brief !== 'string' || brief.trim().length < 50) {
-      return NextResponse.json({ error: 'Brief must be at least 50 characters' }, { status: 400 });
+    if (!brief || typeof brief !== 'string' || brief.trim().length < MIN_CONTEXT_CHARS) {
+      return NextResponse.json(
+        { error: `Brief must be at least ${MIN_CONTEXT_CHARS} characters` },
+        { status: 400 }
+      );
+    }
+    // Reject here rather than silently truncating to 8k below — the user needs
+    // to know the tail of their brief would have been dropped, and the same
+    // cap has to hold at the generate step anyway.
+    if (brief.trim().length > MAX_CONTEXT_CHARS) {
+      return NextResponse.json(
+        { error: contextTooLongError(brief.trim().length) },
+        { status: 400 }
+      );
     }
     if (containsPromptInjection(brief)) {
       return NextResponse.json({ error: 'Invalid input detected' }, { status: 400 });
@@ -176,14 +189,25 @@ export async function POST(req: Request) {
       .single();
 
     if (saveError) {
-      console.error('[Plan] Failed to save plan:', saveError);
-      // Still return the plan even if DB save fails
+      // PGRST205 = PostgREST can't see the table. In practice that means
+      // supabase/migrations/20260512000000_longform_pipeline.sql was never
+      // applied to this project, not that the insert was rejected.
+      if (saveError.code === 'PGRST205') {
+        console.error(
+          '[Plan] longform_plans table is missing — apply supabase/migrations/20260512000000_longform_pipeline.sql'
+        );
+      } else {
+        console.error('[Plan] Failed to save plan:', saveError);
+      }
+      // Still return the plan even if DB save fails. Downstream stages fall
+      // back to the client-held budget when plan_id is null, so the pipeline
+      // degrades to stateless rather than breaking.
       return NextResponse.json({
         plan_id: null,
         outline: planData.outline,
         claim_ledger: planData.claim_ledger,
         source_budget: planData.source_budget,
-        warning: 'Plan generated but could not be saved to database',
+        warning: 'Plan generated but could not be saved — it will not persist after you leave this page.',
       });
     }
 

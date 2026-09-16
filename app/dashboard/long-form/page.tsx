@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { SourceBudgetEntry } from "@/lib/types/longform";
+import type { SourceBudgetEntry, OutlineSection, ClaimEntry } from "@/lib/types/longform";
+import {
+  MAX_CONTEXT_CHARS,
+  MIN_CONTEXT_CHARS,
+  CONTEXT_WARN_CHARS,
+  BRIEF_SOFT_LIMIT_CHARS,
+} from "@/lib/longform/limits";
 import { toast } from "sonner";
 import {
   FileText,
@@ -17,6 +23,11 @@ import {
   Link2,
   ExternalLink,
   GraduationCap,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  CheckCircle2,
+  HelpCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -214,6 +225,32 @@ Always output all six sections: Audience, Outcome, Key Arguments, Suggested Stru
 Match the specificity, the evidence labels on Key Arguments, and the candor in Tensions. A brief without Tensions is incomplete.
 `.trim();
 
+// 3. Length budget. The brief is pasted straight into Source Context, which is
+// injected verbatim into the generation prompt under a 60s function timeout —
+// an oversized brief times the draft out entirely. The gold standard above is
+// ~6k characters and is the target, not a floor.
+const BRIEF_LENGTH_BUDGET = `
+## LENGTH BUDGET (hard constraint)
+
+The finished brief must come in under ${BRIEF_SOFT_LIMIT_CHARS.toLocaleString()} characters — roughly ${Math.round(
+  BRIEF_SOFT_LIMIT_CHARS / 6
+).toLocaleString()} words. The gold standard example is about the right size; treat it as the target, not a minimum.
+
+This is not a style preference. The brief is pasted into the article generator, which runs
+under a 60-second timeout — an oversized brief makes generation fail outright and the writer
+gets nothing back.
+
+To stay inside the budget:
+- Cap Key Arguments at 5. If you have more, the extras are not key.
+- Cap Research Anchors at 8, ranked by usefulness. Drop the weakest rather than listing everything you found.
+- Suggested Structure is bullets, not prose. One line per beat. Do not draft sentences the writer will rewrite anyway.
+- Tensions: 3 to 4 bullets. Sharp beats exhaustive.
+- Never restate a point across sections. Say it once, in the section it belongs to.
+
+If a topic genuinely cannot be covered inside the budget, narrow the topic and say so in one
+line at the top — do not overrun.
+`.trim();
+
 export default function LongFormPage() {
   return (
     <CopilotKit runtimeUrl="/api/copilotkit">
@@ -255,13 +292,17 @@ function LongFormContent() {
   const [pipelineStage, setPipelineStage] = useState<PipelineStage>("idle");
   const [planData, setPlanData] = useState<{
     plan_id: string | null;
-    outline: Array<{ heading: string; summary: string }>;
+    outline: OutlineSection[];
+    claim_ledger: ClaimEntry[];
     source_budget: SourceBudgetEntry[];
   } | null>(null);
   const [verifiedBudget, setVerifiedBudget] = useState<SourceBudgetEntry[]>([]);
   const [verifyGateReport, setVerifyGateReport] = useState<{
     dead_count: number; total_count: number; dead_rate: number;
   } | null>(null);
+  // True once the user has hand-edited the plan — drives the note explaining
+  // that those edits apply to this draft only, not to the brief above.
+  const [planEdited, setPlanEdited] = useState(false);
   // Derived: any active processing (avoids TypeScript narrowing issues inside JSX guards)
   const isPipelineRunning = pipelineStage !== "idle" && pipelineStage !== "plan-review";
   const isPlanReview = pipelineStage === "plan-review";
@@ -314,11 +355,124 @@ function LongFormContent() {
     toast.success("Article loaded from history");
   };
 
+  // --- Plan editing -------------------------------------------------------
+  // The plan-review screen is the only place a user can correct the model's
+  // outline or drop a bad source, so every mutation here is local-first; the
+  // edited plan is what gets sent to verify and generate.
+
+  const updateOutlineSection = (index: number, field: keyof OutlineSection, value: string) => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev
+        ? {
+            ...prev,
+            outline: prev.outline.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
+          }
+        : prev
+    );
+  };
+
+  const removeOutlineSection = (index: number) => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev ? { ...prev, outline: prev.outline.filter((_, i) => i !== index) } : prev
+    );
+  };
+
+  const addOutlineSection = () => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev ? { ...prev, outline: [...prev.outline, { heading: "", summary: "" }] } : prev
+    );
+  };
+
+  const updateSource = (index: number, field: "url" | "justification", value: string) => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev
+        ? {
+            ...prev,
+            source_budget: prev.source_budget.map((e, i) =>
+              i === index
+                ? {
+                    ...e,
+                    [field]: value,
+                    // Editing the URL invalidates the previous verdict.
+                    ...(field === "url"
+                      ? {
+                          status: undefined,
+                          final_url: undefined,
+                          claim_support: undefined,
+                          claim_support_reason: undefined,
+                        }
+                      : {}),
+                  }
+                : e
+            ),
+          }
+        : prev
+    );
+  };
+
+  const removeSource = (index: number) => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev ? { ...prev, source_budget: prev.source_budget.filter((_, i) => i !== index) } : prev
+    );
+  };
+
+  const addSource = () => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev
+        ? {
+            ...prev,
+            source_budget: [
+              ...prev.source_budget,
+              { url: "", justification: "", from_brief: true, supports_claims: [] },
+            ],
+          }
+        : prev
+    );
+  };
+
+  /** Drop every source the last verify pass marked dead or non-supporting. */
+  const removeFailedSources = () => {
+    setPlanEdited(true);
+    setPlanData((prev) =>
+      prev
+        ? {
+            ...prev,
+            source_budget: prev.source_budget.filter(
+              (e) => e.status !== "dead" && e.claim_support !== "NO"
+            ),
+          }
+        : prev
+    );
+    toast.success("Failed sources removed — re-run verify when you're ready");
+  };
+
+  /**
+   * Recomputed from the live budget rather than read off the verify response,
+   * so the banner shrinks as the user deletes sources instead of going stale.
+   */
+  const failedSources =
+    planData?.source_budget.filter((e) => e.status === "dead" || e.claim_support === "NO") ?? [];
+
   const handleGenerate = async () => {
-    if (!context.trim() || context.length < 50) {
-      toast.error("Please enter at least 50 characters of context");
+    if (!context.trim() || context.trim().length < MIN_CONTEXT_CHARS) {
+      toast.error(`Please enter at least ${MIN_CONTEXT_CHARS} characters of context`);
       return;
     }
+    if (context.trim().length > MAX_CONTEXT_CHARS) {
+      toast.error(
+        `Source context is ${context.trim().length.toLocaleString()} characters — trim it to ${MAX_CONTEXT_CHARS.toLocaleString()} or fewer.`
+      );
+      return;
+    }
+
+    setPlanEdited(false);
+    setVerifyGateReport(null);
 
     // Stage 1: PLAN
     setPipelineStage("planning");
@@ -333,8 +487,10 @@ function LongFormContent() {
       setPlanData({
         plan_id: planJson.plan_id ?? null,
         outline: planJson.outline ?? [],
+        claim_ledger: planJson.claim_ledger ?? [],
         source_budget: planJson.source_budget ?? [],
       });
+      if (planJson.warning) toast.warning(planJson.warning);
       setPipelineStage("plan-review");
     } catch (err: any) {
       console.error("[LongForm][plan]", err);
@@ -347,6 +503,9 @@ function LongFormContent() {
   const handleProceedFromPlan = async () => {
     if (!planData) { await runGenerate(null, []); return; }
 
+    const cleanedBudget = planData.source_budget.filter((e) => e.url.trim().length > 0);
+    const cleanedOutline = planData.outline.filter((s) => s.heading.trim().length > 0);
+
     // Stage 2: VERIFY
     setPipelineStage("verifying");
     try {
@@ -355,11 +514,22 @@ function LongFormContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan_id: planData.plan_id,
-          source_budget: planData.plan_id ? undefined : planData.source_budget,
+          // Always send the budget we're showing: it may include edits the
+          // stored plan doesn't have yet.
+          source_budget: cleanedBudget,
+          claim_ledger: planData.claim_ledger,
         }),
       });
       const verifyJson = await verifyResp.json();
       if (!verifyResp.ok) throw new Error(verifyJson.error || "Verification failed");
+
+      const annotated: SourceBudgetEntry[] = verifyJson.annotated_budget ?? [];
+
+      // Fold the per-source verdicts back into the plan either way, so the
+      // review screen can name which links failed and why.
+      if (annotated.length > 0) {
+        setPlanData((prev) => (prev ? { ...prev, source_budget: annotated } : prev));
+      }
 
       if (verifyJson.gate_triggered) {
         setVerifyGateReport({
@@ -368,22 +538,27 @@ function LongFormContent() {
           dead_rate: verifyJson.dead_rate,
         });
         setPipelineStage("plan-review");
-        toast.error(`Source gate triggered: ${verifyJson.dead_count}/${verifyJson.total_count} sources dead or unsupporting. Review before proceeding.`);
+        toast.error(
+          `${verifyJson.dead_count} of ${verifyJson.total_count} sources failed verification. They're flagged below — fix or remove them.`
+        );
         return;
       }
 
-      const budget = verifyJson.annotated_budget ?? [];
-      setVerifiedBudget(budget);
+      setVerifiedBudget(annotated);
       setVerifyGateReport(null);
-      await runGenerate(planData.plan_id, budget);
+      await runGenerate(planData.plan_id, annotated, cleanedOutline);
     } catch (err: any) {
       console.error("[LongForm][verify]", err);
       toast.error(err.message || "Verification failed — proceeding without verified budget");
-      await runGenerate(planData.plan_id, []);
+      await runGenerate(planData.plan_id, [], cleanedOutline);
     }
   };
 
-  const runGenerate = async (planId: string | null, budget: SourceBudgetEntry[]) => {
+  const runGenerate = async (
+    planId: string | null,
+    budget: SourceBudgetEntry[],
+    outline?: OutlineSection[]
+  ) => {
     setPipelineStage("generating");
     setIsGenerating(true);
     try {
@@ -407,6 +582,7 @@ function LongFormContent() {
           additionalInstructions: additionalInstructions.trim() || undefined,
           planId,
           verifiedSourceBudget: budget.length > 0 ? budget : undefined,
+          planOutline: outline && outline.length > 0 ? outline : undefined,
         }),
       });
 
@@ -561,73 +737,234 @@ function LongFormContent() {
                     <div>
                       <h2 className="text-lg font-black uppercase tracking-widest text-foreground">Article Plan</h2>
                       <p className="text-sm text-foreground-muted mt-1">
-                        Review the outline and source budget before drafting. Most users can proceed directly.
+                        Edit anything here before drafting — rewrite headings, fix a bad URL, or drop a
+                        source. Most users can proceed directly.
                       </p>
                     </div>
                     <button
-                      onClick={() => { setPipelineStage("idle"); setPlanData(null); setVerifyGateReport(null); }}
+                      onClick={() => { setPipelineStage("idle"); setPlanData(null); setVerifyGateReport(null); setPlanEdited(false); }}
                       className="text-xs text-foreground-muted hover:text-accent transition-colors flex-shrink-0"
                     >
                       ← Back to input
                     </button>
                   </div>
 
-                  {verifyGateReport && (
+                  {verifyGateReport && failedSources.length > 0 && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
-                      <p className="font-bold mb-1">⚠ Source gate triggered</p>
-                      <p>
-                        {verifyGateReport.dead_count} of {verifyGateReport.total_count} sources ({Math.round(verifyGateReport.dead_rate * 100)}%) are dead or don&apos;t support their claims — above the 20% threshold.
-                        Review and remove dead sources below, or proceed anyway.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Outline */}
-                  {planData.outline.length > 0 && (
-                    <div>
-                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle mb-3">Outline</h3>
-                      <ol className="space-y-2">
-                        {planData.outline.map((section, i) => (
-                          <li key={i} className="flex gap-3 p-3 bg-bg border border-border rounded-lg">
-                            <span className="text-xs font-bold text-foreground-subtle mt-0.5 flex-shrink-0">{i + 1}.</span>
-                            <div>
-                              <p className="text-sm font-bold text-foreground">{section.heading}</p>
-                              <p className="text-xs text-foreground-muted mt-0.5">{section.summary}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
-
-                  {/* Source budget preview */}
-                  {planData.source_budget.length > 0 && (
-                    <div>
-                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle mb-3">
-                        Source Budget ({planData.source_budget.length})
-                      </h3>
-                      <div className="space-y-2">
-                        {planData.source_budget.map((entry, i) => (
-                          <div key={i} className="p-3 bg-bg border border-border rounded-lg text-xs">
-                            <a
-                              href={entry.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-accent hover:underline break-all font-medium"
-                            >
-                              {entry.url}
-                            </a>
-                            <p className="text-foreground-muted mt-0.5">{entry.justification}</p>
-                            {entry.from_brief && (
-                              <span className="inline-block mt-1 text-[10px] font-bold uppercase bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
-                                From brief
-                              </span>
-                            )}
-                          </div>
-                        ))}
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="font-bold mb-1">⚠ Source gate triggered</p>
+                          <p>
+                            {failedSources.length} of {planData.source_budget.length} sources are dead
+                            or don&apos;t support their claims — above the 20% threshold. Each one is
+                            marked in red below with the reason. Fix the URLs, remove them, or proceed anyway.
+                          </p>
+                          <ul className="mt-2 space-y-0.5 list-disc list-inside">
+                            {failedSources.map((e, i) => (
+                              <li key={i} className="break-all text-xs">
+                                {e.url}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <button
+                          onClick={removeFailedSources}
+                          className="flex-shrink-0 px-3 py-2 bg-red-100 hover:bg-red-200 border border-red-300 rounded-lg text-xs font-bold text-red-900 transition-colors flex items-center gap-1.5"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Remove all {failedSources.length}
+                        </button>
                       </div>
                     </div>
                   )}
+
+                  {/* Outline — editable */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle">
+                        Outline ({planData.outline.length})
+                      </h3>
+                      <button
+                        onClick={addOutlineSection}
+                        className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add section
+                      </button>
+                    </div>
+                    {planData.outline.length === 0 ? (
+                      <p className="text-xs text-foreground-subtle italic p-3 bg-bg border border-border rounded-lg">
+                        No outline sections. Add one, or proceed and let the writer structure the piece.
+                      </p>
+                    ) : (
+                      <ol className="space-y-2">
+                        {planData.outline.map((section, i) => (
+                          <li key={i} className="flex gap-3 p-3 bg-bg border border-border rounded-lg">
+                            <span className="text-xs font-bold text-foreground-subtle mt-2 flex-shrink-0">{i + 1}.</span>
+                            <div className="flex-1 min-w-0 space-y-1.5">
+                              <input
+                                type="text"
+                                value={section.heading}
+                                onChange={(e) => updateOutlineSection(i, "heading", e.target.value)}
+                                placeholder="Section heading"
+                                aria-label={`Section ${i + 1} heading`}
+                                className="w-full bg-transparent text-sm font-bold text-foreground border-b border-transparent hover:border-border focus:border-accent outline-none py-0.5 placeholder:text-foreground-subtle placeholder:font-normal"
+                              />
+                              <textarea
+                                value={section.summary}
+                                onChange={(e) => updateOutlineSection(i, "summary", e.target.value)}
+                                placeholder="What this section covers"
+                                aria-label={`Section ${i + 1} summary`}
+                                rows={2}
+                                className="w-full bg-transparent text-xs text-foreground-muted border-b border-transparent hover:border-border focus:border-accent outline-none resize-y py-0.5 placeholder:text-foreground-subtle"
+                              />
+                            </div>
+                            <button
+                              onClick={() => removeOutlineSection(i)}
+                              aria-label={`Remove section ${i + 1}`}
+                              title="Remove section"
+                              className="flex-shrink-0 self-start p-1.5 text-foreground-subtle hover:text-red-600 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+
+                  {/* Source budget — editable, with per-source verification verdicts */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-foreground-subtle">
+                        Source Budget ({planData.source_budget.length})
+                      </h3>
+                      <button
+                        onClick={addSource}
+                        className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Add source
+                      </button>
+                    </div>
+                    {planData.source_budget.length === 0 ? (
+                      <p className="text-xs text-foreground-subtle italic p-3 bg-bg border border-border rounded-lg">
+                        No sources. The draft will be written without inline citations.
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {planData.source_budget.map((entry, i) => {
+                          const failed = entry.status === "dead" || entry.claim_support === "NO";
+                          const unclear = entry.status === "paywalled" || entry.claim_support === "UNCLEAR";
+                          return (
+                            <div
+                              key={i}
+                              className={`p-3 border rounded-lg text-xs ${
+                                failed
+                                  ? "bg-red-50 border-red-300"
+                                  : unclear
+                                  ? "bg-amber-50 border-amber-300"
+                                  : "bg-bg border-border"
+                              }`}
+                            >
+                              <div className="flex gap-2 items-start">
+                                <div className="flex-1 min-w-0 space-y-1.5">
+                                  <input
+                                    type="url"
+                                    value={entry.url}
+                                    onChange={(e) => updateSource(i, "url", e.target.value)}
+                                    placeholder="https://..."
+                                    aria-label={`Source ${i + 1} URL`}
+                                    className="w-full bg-transparent text-xs font-medium text-accent break-all border-b border-transparent hover:border-border focus:border-accent outline-none py-0.5 placeholder:text-foreground-subtle placeholder:font-normal"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={entry.justification}
+                                    onChange={(e) => updateSource(i, "justification", e.target.value)}
+                                    placeholder="What this source is for"
+                                    aria-label={`Source ${i + 1} justification`}
+                                    className="w-full bg-transparent text-xs text-foreground-muted border-b border-transparent hover:border-border focus:border-accent outline-none py-0.5 placeholder:text-foreground-subtle"
+                                  />
+                                </div>
+                                {entry.url.trim() && (
+                                  <a
+                                    href={entry.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={`Open source ${i + 1} in a new tab`}
+                                    title="Open in new tab"
+                                    className="flex-shrink-0 p-1.5 text-foreground-subtle hover:text-accent transition-colors"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() => removeSource(i)}
+                                  aria-label={`Remove source ${i + 1}`}
+                                  title="Remove source"
+                                  className="flex-shrink-0 p-1.5 text-foreground-subtle hover:text-red-600 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 flex-wrap mt-2">
+                                {entry.from_brief && (
+                                  <span className="text-[10px] font-bold uppercase bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
+                                    From brief
+                                  </span>
+                                )}
+                                {entry.status === "dead" && (
+                                  <span className="text-[10px] font-bold uppercase bg-red-100 text-red-800 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Dead link
+                                  </span>
+                                )}
+                                {entry.status === "paywalled" && (
+                                  <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">
+                                    Paywalled
+                                  </span>
+                                )}
+                                {entry.status === "redirected" && (
+                                  <span className="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                                    Redirected
+                                  </span>
+                                )}
+                                {entry.status === "resolved" && entry.claim_support !== "NO" && (
+                                  <span className="text-[10px] font-bold uppercase bg-green-100 text-green-800 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    Resolves
+                                  </span>
+                                )}
+                                {entry.claim_support === "NO" && (
+                                  <span className="text-[10px] font-bold uppercase bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
+                                    Doesn&apos;t support claim
+                                  </span>
+                                )}
+                                {entry.claim_support === "UNCLEAR" && (
+                                  <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <HelpCircle className="w-3 h-3" />
+                                    Unclear
+                                  </span>
+                                )}
+                              </div>
+
+                              {entry.claim_support_reason && entry.claim_support !== "YES" && (
+                                <p className={`mt-1.5 text-[11px] leading-snug ${failed ? "text-red-800" : "text-amber-900"}`}>
+                                  {entry.claim_support_reason}
+                                </p>
+                              )}
+                              {entry.final_url && (
+                                <p className="mt-1.5 text-[11px] text-foreground-subtle break-all">
+                                  Redirects to: {entry.final_url}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
 
                   <div className="flex gap-3">
                     <button
@@ -638,18 +975,32 @@ function LongFormContent() {
                       {isPipelineRunning ? (
                         <><Loader2 className="w-4 h-4 animate-spin" />Working...</>
                       ) : (
-                        <><Sparkles className="w-4 h-4" />Verify &amp; Generate Draft</>
+                        <>
+                          <Sparkles className="w-4 h-4" />
+                          {verifyGateReport ? "Re-verify & Generate Draft" : "Verify & Generate Draft"}
+                        </>
                       )}
                     </button>
                     {verifyGateReport && !isPipelineRunning && (
                       <button
-                        onClick={() => runGenerate(planData.plan_id, [])}
+                        onClick={() =>
+                          runGenerate(
+                            planData.plan_id,
+                            [],
+                            planData.outline.filter((s) => s.heading.trim().length > 0)
+                          )
+                        }
                         className="px-4 py-3.5 border-2 border-border-strong hover:border-accent rounded-xl text-foreground-muted hover:text-accent transition-colors font-bold text-sm"
                       >
                         Skip verify &amp; draft anyway
                       </button>
                     )}
                   </div>
+                  {planEdited && (
+                    <p className="text-[11px] text-foreground-subtle">
+                      Your edits are applied to this draft only — they don&apos;t change the brief above.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -662,16 +1013,36 @@ function LongFormContent() {
                     </label>
                     <textarea
                       value={context}
-                      onChange={(e) => setContext(e.target.value)}
+                      onChange={(e) => setContext(e.target.value.slice(0, MAX_CONTEXT_CHARS))}
+                      maxLength={MAX_CONTEXT_CHARS}
                       placeholder="Paste your source material here: articles, notes, research, URLs content, etc. The more context you provide, the better the output."
                       className="w-full h-48 p-4 border border-border rounded-xl text-sm resize-none focus:border-accent focus:ring-1 focus:ring-brand-red outline-none text-foreground placeholder:text-foreground-subtle"
                     />
-                    <p className="text-xs text-foreground-subtle mt-1">
-                      {context.length} characters ({context.length < 50 ? "min 50 required" : "ready"})
+                    <p
+                      className={`text-xs mt-1 ${
+                        context.length >= MAX_CONTEXT_CHARS
+                          ? "text-red-600 font-semibold"
+                          : context.length >= CONTEXT_WARN_CHARS
+                          ? "text-amber-700"
+                          : "text-foreground-subtle"
+                      }`}
+                    >
+                      {context.length.toLocaleString()} / {MAX_CONTEXT_CHARS.toLocaleString()} characters
+                      {context.length < MIN_CONTEXT_CHARS
+                        ? ` — min ${MIN_CONTEXT_CHARS} required`
+                        : context.length >= MAX_CONTEXT_CHARS
+                        ? " — limit reached, trim the brief to its Key Arguments, Structure, and Research Anchors"
+                        : context.length >= CONTEXT_WARN_CHARS
+                        ? " — approaching the limit"
+                        : " — ready"}
                     </p>
                     <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                       <p className="text-xs font-semibold text-amber-900 mb-1">Pro Tip:</p>
-                      <p className="text-xs text-amber-700">Avoid overly verbose or repetitive context/briefs as they can confuse the model and break the generation cycle. Keep your input concise and focused.</p>
+                      <p className="text-xs text-amber-700">
+                        Keep your input concise and focused. Verbose or repetitive briefs confuse the
+                        model and push generation past the 60-second function timeout, which fails with
+                        no article at all. The sweet spot is roughly 2,000–6,000 characters.
+                      </p>
                     </div>
                   </div>
 
@@ -829,7 +1200,11 @@ function LongFormContent() {
 
                   <button
                     onClick={handleGenerate}
-                    disabled={isPipelineRunning || context.length < 50}
+                    disabled={
+                      isPipelineRunning ||
+                      context.trim().length < MIN_CONTEXT_CHARS ||
+                      context.trim().length > MAX_CONTEXT_CHARS
+                    }
                     className="w-full bg-accent text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isPipelineRunning ? (
@@ -1196,6 +1571,11 @@ function BriefTab({ session }: { session: any }) {
     instructions: BRIEF_GOLD_STANDARD,
   });
 
+  // Length budget last, so it's the freshest constraint when the model writes
+  useCopilotAdditionalInstructions({
+    instructions: BRIEF_LENGTH_BUDGET,
+  });
+
   const handleGenerate = useCallback(async () => {
     if (!topic.trim()) {
       toast.error("Please enter a topic or notes first");
@@ -1360,6 +1740,25 @@ function BriefTab({ session }: { session: any }) {
                   <Check className="w-4 h-4 text-green-500" />
                   <span className="text-xs font-black uppercase tracking-widest text-foreground-muted">
                     Brief Ready
+                  </span>
+                  {/* The brief gets pasted into Source Context, so flag it here
+                      rather than letting the paste get silently truncated. */}
+                  <span
+                    className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                      briefText.length > MAX_CONTEXT_CHARS
+                        ? "bg-red-100 text-red-800"
+                        : briefText.length > BRIEF_SOFT_LIMIT_CHARS
+                        ? "bg-amber-100 text-amber-900"
+                        : "bg-green-100 text-green-800"
+                    }`}
+                    title={
+                      briefText.length > MAX_CONTEXT_CHARS
+                        ? `Over the ${MAX_CONTEXT_CHARS.toLocaleString()}-character Source Context limit — trim before pasting into the Input tab.`
+                        : "Fits the Source Context limit"
+                    }
+                  >
+                    {briefText.length.toLocaleString()} chars
+                    {briefText.length > MAX_CONTEXT_CHARS ? " — over limit" : ""}
                   </span>
                 </>
               )}

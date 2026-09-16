@@ -9,7 +9,7 @@
  */
 
 import { getVertexAIClient } from '@/lib/genai-client';
-import type { SourceBudgetEntry, SourceStatus, ClaimSupport, VerifySourcesResult } from '@/lib/types/longform';
+import type { SourceBudgetEntry, SourceStatus, ClaimSupport, ClaimEntry, VerifySourcesResult } from '@/lib/types/longform';
 
 const FETCH_TIMEOUT_MS = 10_000;
 const MAX_CONTENT_CHARS = 4_000;
@@ -151,11 +151,33 @@ async function verifyCorroborating(
 }
 
 /**
+ * `supports_claims` holds claim *IDs* from the plan's claim ledger ("c1", "c3"),
+ * not claim text. Asking the model whether a page supports the claim "c1" is
+ * meaningless and reliably returns NO/UNCLEAR, which then counts toward the
+ * dead-source gate. Resolve the ID to its sentence before asking.
+ */
+function resolveClaimText(
+  claimId: string,
+  ledger: ClaimEntry[] | undefined,
+  fallback: string
+): string {
+  const match = ledger?.find((c) => c.id === claimId);
+  if (match?.claim) return match.claim;
+  // Older plans (and hand-edited budgets) sometimes carry the claim text
+  // inline instead of an ID — anything with a space is already prose.
+  if (/\s/.test(claimId.trim())) return claimId.trim();
+  return fallback;
+}
+
+/**
  * Verify all URLs in a source budget. Returns an annotated budget with
  * status + claim_support fields, plus gate metadata.
+ *
+ * Pass `claimLedger` so `supports_claims` IDs can be resolved to claim text.
  */
 export async function verifySources(
-  sourceBudget: SourceBudgetEntry[]
+  sourceBudget: SourceBudgetEntry[],
+  claimLedger?: ClaimEntry[]
 ): Promise<VerifySourcesResult> {
   if (sourceBudget.length === 0) {
     return {
@@ -180,9 +202,10 @@ export async function verifySources(
 
       if (status === 'resolved' || status === 'redirected') {
         // Claim support check for the first claim this source supports
-        const firstClaimId = entry.supports_claims[0];
+        const firstClaimId = entry.supports_claims?.[0];
         if (firstClaimId) {
-          const { support, reason } = await checkClaimSupport(firstClaimId, body);
+          const claimText = resolveClaimText(firstClaimId, claimLedger, entry.justification);
+          const { support, reason } = await checkClaimSupport(claimText, body);
           updated.claim_support = support;
           updated.claim_support_reason = reason;
         }

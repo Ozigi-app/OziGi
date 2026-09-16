@@ -1,6 +1,6 @@
 import { ANTI_AI_RULES_LONGFORM } from "./anti-ai";
 import { buildAudienceBlock } from "./audience";
-import type { SourceBudgetEntry, LongFormAudience } from '@/lib/types/longform';
+import type { SourceBudgetEntry, LongFormAudience, OutlineSection } from '@/lib/types/longform';
 
 /**
  * Long-form content generation prompt builder
@@ -64,6 +64,11 @@ export interface LongFormParams {
   audience?: LongFormAudience;
   /** Verified source budget from Stage 2 — when present, Stage 3 constraints are injected. */
   verifiedSourceBudget?: SourceBudgetEntry[];
+  /**
+   * Outline approved (and possibly hand-edited) by the user in the Stage 1
+   * plan review. When present the draft must follow it section for section.
+   */
+  outline?: OutlineSection[];
   /** Plan ID linking this draft to a Stage 1 plan. */
   planId?: string;
 }
@@ -381,6 +386,33 @@ ${budgetLines}
 `.trim();
 }
 
+/**
+ * The user reviewed — and may have rewritten — this outline in the plan step.
+ * Their edits are the whole point of that screen, so the draft has to honour
+ * them rather than re-planning from the brief.
+ */
+function buildApprovedOutlineBlock(outline: OutlineSection[]): string {
+  const lines = outline
+    .map((s, i) => {
+      const summary = s.summary?.trim();
+      return summary
+        ? `${i + 1}. ${s.heading}\n   ${summary}`
+        : `${i + 1}. ${s.heading}`;
+    })
+    .join('\n');
+
+  return `
+## Approved Outline (user-reviewed — follow it)
+
+The writer reviewed and edited this outline before commissioning the draft.
+Write one section per entry, in this order, using these headings (you may
+lightly reword a heading for flow, but do not add, drop, merge, or reorder
+sections). The summary under each heading is what that section must cover.
+
+${lines}
+`.trim();
+}
+
 export function buildLongFormPrompt({
   context,
   personaVoice,
@@ -392,6 +424,7 @@ export function buildLongFormPrompt({
   depth = 'intermediate',
   audience,
   verifiedSourceBudget,
+  outline,
 }: LongFormParams): string {
   const toneInstructions = TONE_INSTRUCTIONS[tone];
   const structureInstructions = STRUCTURE_INSTRUCTIONS[structure];
@@ -401,12 +434,18 @@ export function buildLongFormPrompt({
   const stage3Block = verifiedSourceBudget?.length
     ? buildStage3Constraints(verifiedSourceBudget)
     : '';
+  const outlineBlock = outline?.length ? buildApprovedOutlineBlock(outline) : '';
 
   const personaSection = personaVoice
     ? `## Voice / Persona\nWrite in the voice of: ${personaVoice.substring(0, 400)}\nMatch their cadence and characteristic phrasing without parodying them.`
     : '';
 
-  const sectionTarget = Math.max(3, Math.min(9, Math.round(targetLength / 350)));
+  // An approved outline fixes the section count, so derive the per-section word
+  // budget from it rather than from targetLength — otherwise the two blocks give
+  // the model contradictory instructions.
+  const sectionTarget = outline?.length
+    ? outline.length
+    : Math.max(3, Math.min(9, Math.round(targetLength / 350)));
 
   return `# LONG-FORM ARTICLE GENERATION
 
@@ -420,6 +459,8 @@ ${context}
 ${researchBlock}
 
 ${stage3Block}
+
+${outlineBlock}
 
 ${personaSection}
 
@@ -442,7 +483,9 @@ ${REFERENCES_INSTRUCTION}
 
 ## Section Plan
 
-Aim for roughly ${sectionTarget} sections of substantive length (~${Math.round(targetLength / sectionTarget)} words each).
+${outline?.length
+  ? `Write exactly ${sectionTarget} sections — one per entry in the Approved Outline above (~${Math.round(targetLength / sectionTarget)} words each).`
+  : `Aim for roughly ${sectionTarget} sections of substantive length (~${Math.round(targetLength / sectionTarget)} words each).`}
 Section headings should be specific and descriptive — never generic ("Introduction", "Conclusion",
 "Background" alone). A reader skimming the headings should be able to summarize the article.
 

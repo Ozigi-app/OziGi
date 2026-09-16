@@ -32,7 +32,8 @@ import { searchWebWithExa } from '@/lib/exa';
 import { searchWeb as searchTavily } from '@/lib/search';
 import { fetchPageContent } from '@/lib/firecrawl';
 import { runFastAudit } from '@/lib/longform/audit';
-import type { SourceBudgetEntry } from '@/lib/types/longform';
+import type { SourceBudgetEntry, OutlineSection } from '@/lib/types/longform';
+import { MAX_CONTEXT_CHARS, MIN_CONTEXT_CHARS, contextTooLongError } from '@/lib/longform/limits';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -326,11 +327,21 @@ export async function POST(req: Request) {
       audience,
       planId,
       verifiedSourceBudget,
+      planOutline,
     } = body;
 
-    if (!context || typeof context !== 'string' || context.trim().length < 50) {
+    if (!context || typeof context !== 'string' || context.trim().length < MIN_CONTEXT_CHARS) {
       return NextResponse.json(
-        { error: 'Context must be at least 50 characters' },
+        { error: `Context must be at least ${MIN_CONTEXT_CHARS} characters` },
+        { status: 400 }
+      );
+    }
+
+    // Hard cap — an oversized brief is the most common cause of the 60s
+    // function timeout, and a timeout gives the user nothing at all.
+    if (context.trim().length > MAX_CONTEXT_CHARS) {
+      return NextResponse.json(
+        { error: contextTooLongError(context.trim().length) },
         { status: 400 }
       );
     }
@@ -408,6 +419,7 @@ export async function POST(req: Request) {
       depth: depth as LongFormDepth,
       audience: isLongFormAudience(audience) ? audience : undefined,
       verifiedSourceBudget: Array.isArray(verifiedSourceBudget) ? verifiedSourceBudget as SourceBudgetEntry[] : undefined,
+      outline: Array.isArray(planOutline) ? planOutline as OutlineSection[] : undefined,
     });
 
     console.log(
