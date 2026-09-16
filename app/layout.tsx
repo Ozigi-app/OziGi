@@ -54,6 +54,13 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://ozigi.app",
+    // Without this the feed is undiscoverable: nothing on the site advertised
+    // it, so readers fed a bare ozigi.app URL had nothing to find.
+    types: {
+      "application/rss+xml": [
+        { url: "https://ozigi.app/blog/feed.xml", title: "Ozigi Blog" },
+      ],
+    },
   },
 };
 

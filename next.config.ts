@@ -34,6 +34,25 @@ const nextConfig = {
       { source: '/blog/:path*', destination: 'https://blog.ozigi.app/blog/:path*?__ozigi_proxy=1' },
     ];
   },
+
+  // The only feed we publish is the blog's, served at /blog/feed.xml via the
+  // rewrite above. Readers and autodiscovery bots overwhelmingly probe the
+  // root first, so /feed.xml, /rss.xml and /feed all 404'd for anyone trying
+  // to subscribe. Point them at the real feed.
+  //
+  // 301 rather than Next's default 308 for `permanent: true`: feed readers are
+  // long-lived clients and the older ones only special-case 301 for persisting
+  // a moved feed URL.
+  //
+  // Redirects are evaluated before rewrites, so the redirected request comes
+  // back in as /blog/feed.xml and is then proxied to blog.ozigi.app normally.
+  async redirects() {
+    return [
+      { source: '/feed.xml', destination: '/blog/feed.xml', statusCode: 301 },
+      { source: '/rss.xml',  destination: '/blog/feed.xml', statusCode: 301 },
+      { source: '/feed',     destination: '/blog/feed.xml', statusCode: 301 },
+    ];
+  },
 };
 
 // Only apply Sentry config if auth token is available
