@@ -31,6 +31,11 @@ const nextConfig = {
     return [
       { source: '/blog', destination: 'https://blog.ozigi.app?__ozigi_proxy=1' },
       { source: '/blog/feed.xml', destination: 'https://blog.ozigi.app/feed.xml?__ozigi_proxy=1' },
+      // Same shape as feed.xml above: apps/blog serves sitemap.ts from its own
+      // ROOT, so the generic /blog/:path* rule below would proxy this to
+      // blog.ozigi.app/blog/sitemap.xml, which does not exist. Must stay ahead
+      // of that rule -- rewrites match in order.
+      { source: '/blog/sitemap.xml', destination: 'https://blog.ozigi.app/sitemap.xml?__ozigi_proxy=1' },
       { source: '/blog/:path*', destination: 'https://blog.ozigi.app/blog/:path*?__ozigi_proxy=1' },
     ];
   },
