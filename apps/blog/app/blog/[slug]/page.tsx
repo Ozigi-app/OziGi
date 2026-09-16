@@ -130,7 +130,7 @@ const hasHeadings = post.headings && post.headings.length > 0;
         "@type": "ListItem",
         position: 2,
         name: post.section,
-        item: `${baseUrl}/blog/section/${post.section.toLowerCase().replace(/\s+/g, "-")}`,
+        item: `${baseUrl}/blog/section/${post.section.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-")}`,
       }] : []),
       {
         "@type": "ListItem",
