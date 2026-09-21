@@ -3,6 +3,8 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
+import SessionExpiredNotice from '@/components/gtm/SessionExpiredNotice'
+import { getJson, SessionExpiredError } from '@/lib/gtm/sessionFetch'
 import { usePlanStatus } from '@/components/hooks/usePlanStatus'
 
 interface CrmConnection {
@@ -32,6 +34,8 @@ interface EmailAccount {
 function SettingsContent() {
   const searchParams = useSearchParams()
   const { planStatus } = usePlanStatus()
+
+  const [expired, setExpired] = useState(false)
 
   // ── Gmail state ─────────────────────────────────────────────────────────────
   const [accounts, setAccounts] = useState<EmailAccount[]>([])
@@ -66,13 +70,29 @@ function SettingsContent() {
   // Browser-extension sender token (replaces the headless worker login).
   const [extToken, setExtToken] = useState<string | null>(null)
   const [extCopied, setExtCopied] = useState(false)
+  const [extError, setExtError] = useState('')
   async function loadExtToken() {
-    const d = await fetch('/api/gtm/linkedin/extension/token').then(r => r.json()).catch(() => null)
-    if (d?.token) setExtToken(d.token)
+    setExtError('')
+    try {
+      const d = await getJson<{ token?: string }>('/api/gtm/linkedin/extension/token')
+      if (d.token) setExtToken(d.token)
+      else setExtError("Couldn't issue a token — try again, or contact support if it persists.")
+    } catch (err) {
+      if (err instanceof SessionExpiredError) setExpired(true)
+      else setExtError("Couldn't load your token — check your connection and retry.")
+    }
   }
   async function rotateExtToken() {
-    const d = await fetch('/api/gtm/linkedin/extension/token', { method: 'POST' }).then(r => r.json()).catch(() => null)
-    if (d?.token) { setExtToken(d.token); setExtCopied(false) }
+    setExtError('')
+    try {
+      const res = await fetch('/api/gtm/linkedin/extension/token', { method: 'POST' })
+      const d = await res.json().catch(() => null)
+      if (!res.ok || !d?.token) throw new Error('rotate failed')
+      setExtToken(d.token)
+      setExtCopied(false)
+    } catch {
+      setExtError("Couldn't rotate the token — the old one is still active.")
+    }
   }
   useEffect(() => { loadExtToken() }, [])
 
@@ -81,16 +101,17 @@ function SettingsContent() {
 
   // ── Load Gmail accounts ──────────────────────────────────────────────────────
   useEffect(() => {
-    fetch('/api/gtm/gmail/accounts')
-      .then(r => r.json())
-      .then(d => { setAccounts(d.accounts ?? []); setGmailLoading(false) })
+    getJson<{ accounts?: EmailAccount[] }>('/api/gtm/gmail/accounts')
+      .then(d => setAccounts(d.accounts ?? []))
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
+      .finally(() => setGmailLoading(false))
   }, [])
 
   // ── Load CRM connections ──────────────────────────────────────────────────────
   useEffect(() => {
-    fetch('/api/gtm/crm/connections')
-      .then(r => r.json())
+    getJson<{ connections?: CrmConnection[] }>('/api/gtm/crm/connections')
       .then(d => setCrmConnections(d.connections ?? []))
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
   }, [])
 
   const SMTP_PRESETS: Record<string, { host: string; port: number }> = {
@@ -214,6 +235,13 @@ function SettingsContent() {
   const primaryBtnCls = "px-4 py-2 bg-accent hover:bg-accent/90 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start"
   const dangerBtnCls = "px-2.5 py-1 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg text-xs font-semibold bg-surface transition-colors shrink-0"
   const cardCls = "bg-surface border border-border rounded-xl px-5 py-4 mb-3"
+
+  if (expired) return (
+    <div>
+      <GtmPageHeader title="Outreach Settings" />
+      <SessionExpiredNotice />
+    </div>
+  )
 
   return (
     <div>
@@ -504,7 +532,7 @@ function SettingsContent() {
           <div className="flex gap-2">
             <input
               readOnly
-              value={extToken ?? 'Loading…'}
+              value={extToken ?? (extError ? 'Unavailable' : 'Loading…')}
               className="flex-1 border border-border rounded-lg px-3 py-2 text-xs font-mono bg-surface-2 text-foreground"
             />
             <button
@@ -521,6 +549,12 @@ function SettingsContent() {
               Rotate
             </button>
           </div>
+          {extError && (
+            <p className="text-[11px] text-red-600 mt-2 mb-0">
+              {extError}{' '}
+              <button onClick={loadExtToken} className="underline font-semibold">Retry</button>
+            </p>
+          )}
           <p className="text-[11px] text-foreground-muted mt-2">
             Keep this private — anyone with it can queue sends to your LinkedIn. Rotate if it leaks.
           </p>

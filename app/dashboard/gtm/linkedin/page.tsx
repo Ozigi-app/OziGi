@@ -4,6 +4,8 @@ import { UserPlus, CheckCircle, Clock, RefreshCw } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
 import ExtensionStatusPanel from '@/components/gtm/ExtensionStatusPanel'
+import SessionExpiredNotice from '@/components/gtm/SessionExpiredNotice'
+import { getJson, SessionExpiredError } from '@/lib/gtm/sessionFetch'
 import Link from 'next/link'
 
 interface QueueItem {
@@ -48,11 +50,13 @@ export default function LinkedInOutreachPage() {
   // no closer to a connection request going out. null while unknown (first load).
   const [hasExtensionToken, setHasExtensionToken] = useState<boolean | null>(null)
 
+  const [expired, setExpired] = useState(false)
+
   const load = useCallback(() => {
-    return fetch('/api/gtm/linkedin/queue')
-      .then(r => r.json())
-      .then(d => { setItems(d.items ?? []); setLoading(false) })
-      .catch(() => setLoading(false))
+    return getJson<{ items?: QueueItem[] }>('/api/gtm/linkedin/queue')
+      .then(d => setItems(d.items ?? []))
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => { load() }, [load])
@@ -73,6 +77,13 @@ export default function LinkedInOutreachPage() {
     .filter(i => i.status === 'queued')
     .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())[0]
   const nextSend = nextItem ? formatScheduled(nextItem.scheduled_at) : null
+
+  if (expired) return (
+    <div>
+      <GtmPageHeader title="LinkedIn Outreach" />
+      <SessionExpiredNotice />
+    </div>
+  )
 
   return (
     <div>

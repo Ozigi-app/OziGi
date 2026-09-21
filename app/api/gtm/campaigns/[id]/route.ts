@@ -3,6 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { deleteCampaignSchedules } from '@/lib/gtm/scheduler'
 
+// These tables are paged, so their row arrays must never be used as totals —
+// `counts` is queried separately and is what the UI displays.
+const LEAD_PAGE  = 100
+const SEND_PAGE  = 200
+const QUEUE_PAGE = 100
+
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -10,26 +16,43 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   const { id } = await params
 
-  const [campaignRes, leadsRes, sendsRes, liQueueRes] = await Promise.all([
+  const countOf = (table: string) =>
+    supabaseAdmin.from(table).select('id', { count: 'exact', head: true }).eq('campaign_id', id)
+
+  const [
+    campaignRes, leadsRes, sendsRes, liQueueRes,
+    leadTotal, leadWithLi, sendTotal, emailSent, emailQueued, replied,
+    liDone, liPending, liFailed,
+  ] = await Promise.all([
     supabaseAdmin.from('campaigns').select('*').eq('id', id).eq('user_id', user.id).single(),
     supabaseAdmin
       .from('leads')
       .select('id, name, email, linkedin_url, source, status, icp_match_score, company, created_at')
       .eq('campaign_id', id)
       .order('icp_match_score', { ascending: false })
-      .limit(100),
+      .limit(LEAD_PAGE),
     supabaseAdmin
       .from('sequence_sends')
       .select('id, step, channel, status, sent_at, lead_id')
       .eq('campaign_id', id)
       .order('sent_at', { ascending: false })
-      .limit(200),
+      .limit(SEND_PAGE),
     supabaseAdmin
       .from('linkedin_queue')
       .select('id, lead_id, action, status, attempts, error, scheduled_at, processed_at')
       .eq('campaign_id', id)
       .order('created_at', { ascending: false })
-      .limit(100),
+      .limit(QUEUE_PAGE),
+
+    countOf('leads'),
+    countOf('leads').not('linkedin_url', 'is', null),
+    countOf('sequence_sends'),
+    countOf('sequence_sends').eq('channel', 'email').eq('status', 'sent'),
+    countOf('sequence_sends').eq('channel', 'email').eq('status', 'queued'),
+    countOf('sequence_sends').eq('status', 'replied'),
+    countOf('linkedin_queue').eq('status', 'done'),
+    countOf('linkedin_queue').in('status', ['queued', 'in_progress']),
+    countOf('linkedin_queue').eq('status', 'failed'),
   ])
 
   if (campaignRes.error || !campaignRes.data) {
@@ -41,6 +64,17 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     leads:       leadsRes.data    ?? [],
     sends:       sendsRes.data    ?? [],
     liQueue:     liQueueRes.data  ?? [],
+    counts: {
+      leads:             leadTotal.count   ?? 0,
+      leadsWithLinkedin: leadWithLi.count  ?? 0,
+      sends:             sendTotal.count   ?? 0,
+      emailSent:         emailSent.count   ?? 0,
+      emailQueued:       emailQueued.count ?? 0,
+      replied:           replied.count     ?? 0,
+      liDone:            liDone.count      ?? 0,
+      liPending:         liPending.count   ?? 0,
+      liFailed:          liFailed.count    ?? 0,
+    },
   })
 }
 

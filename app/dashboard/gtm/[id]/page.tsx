@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
+import SessionExpiredNotice from '@/components/gtm/SessionExpiredNotice'
+import { getJson, SessionExpiredError } from '@/lib/gtm/sessionFetch'
 import type { Campaign, Lead } from '@/lib/types/gtm'
 
 // ── Friendly error messages — never expose raw backend errors to users ─────────
@@ -258,11 +260,24 @@ interface LiQueueItem {
   processed_at: string | null
 }
 
+interface Counts {
+  leads: number
+  leadsWithLinkedin: number
+  sends: number
+  emailSent: number
+  emailQueued: number
+  replied: number
+  liDone: number
+  liPending: number
+  liFailed: number
+}
+
 interface PageData {
   campaign: Campaign
   leads: Lead[]
   sends: Send[]
   liQueue: LiQueueItem[]
+  counts: Counts
 }
 
 const ACTION_LABEL: Record<string, string> = {
@@ -342,10 +357,13 @@ export default function CampaignDetailPage() {
   const [importing, setImporting]     = useState(false)
   const [importMsg, setImportMsg]     = useState('')
 
+  const [expired, setExpired] = useState(false)
+
   useEffect(() => {
-    fetch(`/api/gtm/campaigns/${id}`)
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false) })
+    getJson<PageData>(`/api/gtm/campaigns/${id}`)
+      .then(setData)
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
+      .finally(() => setLoading(false))
   }, [id])
 
   async function triggerAction(action: 'scrape' | 'send') {
@@ -358,12 +376,14 @@ export default function CampaignDetailPage() {
     const d = await res.json()
     if (!res.ok) { setActionMsg(friendlyActionError(d.error ?? '')); return }
 
-    const before = action === 'scrape' ? data?.leads.length ?? 0 : data?.sends.length ?? 0
+    // Compare totals, not row-array lengths: those are capped page fetches, so a
+    // campaign past the cap would report "no new records" on every run.
+    const before = action === 'scrape' ? data?.counts.leads ?? 0 : data?.counts.sends ?? 0
     let attempts = 0
     const poll = setInterval(async () => {
       attempts++
       const fresh = await fetch(`/api/gtm/campaigns/${id}`).then(r => r.json()) as PageData
-      const after = action === 'scrape' ? fresh.leads.length : fresh.sends.length
+      const after = action === 'scrape' ? fresh.counts.leads : fresh.counts.sends
       if (after > before || attempts >= 36) {
         clearInterval(poll)
         setData(fresh)
@@ -428,18 +448,23 @@ export default function CampaignDetailPage() {
   }
 
   if (loading) return <div className="p-8 text-foreground-subtle text-sm">Loading…</div>
+  if (expired) return <SessionExpiredNotice />
   if (!data)   return <div className="p-8 text-red-600 text-sm">Campaign not found.</div>
 
-  const { campaign, leads, sends, liQueue } = data
+  const { campaign, leads, sends, liQueue, counts } = data
 
   // ── Derived stats ────────────────────────────────────────────────────────────
+  // Every figure here comes from `counts`, not from the row arrays: those are
+  // capped page fetches, so their lengths flatline once a campaign outgrows a page.
   const emailSends    = sends.filter(s => s.channel === 'email')
   const liSends       = sends.filter(s => s.channel === 'linkedin')
-  const emailSent     = emailSends.filter(s => s.status === 'sent').length
-  const liDone        = liQueue.filter(q => q.status === 'done').length
-  const liPending     = liQueue.filter(q => q.status === 'queued' || q.status === 'in_progress').length
-  const liFailed      = liQueue.filter(q => q.status === 'failed').length
-  const leadsWithLi   = leads.filter(l => l.linkedin_url).length
+  const emailSent     = counts.emailSent
+  const liDone        = counts.liDone
+  const liPending     = counts.liPending
+  const liFailed      = counts.liFailed
+  const leadsWithLi   = counts.leadsWithLinkedin
+
+  const leadsTruncated = counts.leads > leads.length
 
   // Build a map of lead_id → lead name for queue display
   const leadMap = Object.fromEntries(leads.map(l => [l.id, l.name ?? l.id.slice(0, 8)]))
@@ -488,10 +513,10 @@ export default function CampaignDetailPage() {
       {/* ── Stats grid ──────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
-          { label: 'Total leads',          value: leads.length,   sub: `${leadsWithLi} have LinkedIn` },
-          { label: 'Emails sent',           value: emailSent,      sub: `${emailSends.filter(s=>s.status==='queued').length} queued` },
+          { label: 'Total leads',          value: counts.leads,   sub: `${leadsWithLi} have LinkedIn` },
+          { label: 'Emails sent',           value: emailSent,      sub: `${counts.emailQueued} queued` },
           { label: 'LinkedIn actions done', value: liDone,         sub: liPending > 0 ? `${liPending} pending` : liFailed > 0 ? `${liFailed} failed` : 'worker idle' },
-          { label: 'Replied',               value: sends.filter(s=>s.status==='replied').length, sub: `${campaign.daily_email_limit} email/day limit` },
+          { label: 'Replied',               value: counts.replied, sub: `${campaign.daily_email_limit} email/day limit` },
         ].map(s => (
           <div key={s.label} className="bg-surface border border-border rounded-xl px-4 py-3.5">
             <div className="text-2xl font-bold text-foreground tabular-nums">{s.value}</div>
@@ -519,7 +544,7 @@ export default function CampaignDetailPage() {
           vertical scrollbar. See the same pairing in GtmPageHeader. */}
       <div className="flex mb-5 pb-0.5 border-b-2 border-border overflow-x-auto overflow-y-hidden">
         {([
-          { key: 'leads',    label: `Leads (${leads.length})` },
+          { key: 'leads',    label: `Leads (${counts.leads})` },
           { key: 'email',    label: `Email (${emailSent} sent)` },
           { key: 'linkedin', label: `LinkedIn (${liDone} done${liPending > 0 ? `, ${liPending} pending` : ''})` },
         ] as { key: Tab; label: string }[]).map(t => (
@@ -577,6 +602,11 @@ export default function CampaignDetailPage() {
                 ))}
               </tbody>
             </table>
+            {leadsTruncated && (
+              <p className="px-3 py-2.5 m-0 text-xs text-foreground-subtle border-t border-border">
+                Showing the top {leads.length} of {counts.leads} leads by match score. Export to CSV for the full list.
+              </p>
+            )}
           </div>
         )
       )}
@@ -631,7 +661,7 @@ export default function CampaignDetailPage() {
                 <li>Results appear here — done, failed, and error details</li>
               </ol>
               <div className="mt-3.5 px-3 py-2.5 bg-surface-2 rounded-lg text-xs">
-                <strong className="text-foreground">{leadsWithLi} of {leads.length} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
+                <strong className="text-foreground">{leadsWithLi} of {counts.leads} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
                 {leadsWithLi === 0 && campaign.sources?.includes('linkedin')
                   ? ' Run a scrape — the LinkedIn worker will find and add leads with LinkedIn profiles directly.'
                   : leadsWithLi === 0 ? ' GitHub profiles sometimes include LinkedIn URLs, but for direct LinkedIn sourcing add "linkedin" to your campaign sources.' : ''

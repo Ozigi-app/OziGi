@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Megaphone, Play, Pause, ChevronRight, Plus } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
+import SessionExpiredNotice from '@/components/gtm/SessionExpiredNotice'
+import { getJson, SessionExpiredError } from '@/lib/gtm/sessionFetch'
 
 interface Campaign {
   id: string
@@ -26,12 +28,13 @@ export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading]     = useState(true)
   const [toggling, setToggling]   = useState<string | null>(null)
+  const [expired, setExpired]     = useState(false)
 
   useEffect(() => {
-    fetch('/api/gtm/campaigns')
-      .then(r => r.json())
-      .then(d => { setCampaigns(d.campaigns ?? []); setLoading(false) })
-      .catch(() => setLoading(false))
+    getJson<{ campaigns?: Campaign[] }>('/api/gtm/campaigns')
+      .then(d => setCampaigns(d.campaigns ?? []))
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
+      .finally(() => setLoading(false))
   }, [])
 
   async function toggleStatus(campaign: Campaign) {
@@ -49,6 +52,13 @@ export default function CampaignsPage() {
     }
     setToggling(null)
   }
+
+  if (expired) return (
+    <div>
+      <GtmPageHeader title="Outreach Campaigns" />
+      <SessionExpiredNotice />
+    </div>
+  )
 
   return (
     <div>

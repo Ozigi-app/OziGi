@@ -6,6 +6,8 @@ import {
 } from 'lucide-react'
 import GtmPageHeader from '@/components/gtm/GtmPageHeader'
 import FreeAgentBanner from '@/components/gtm/FreeAgentBanner'
+import SessionExpiredNotice from '@/components/gtm/SessionExpiredNotice'
+import { getJson, SessionExpiredError } from '@/lib/gtm/sessionFetch'
 
 interface EmailRecord {
   id: string
@@ -49,11 +51,13 @@ export default function EmailOutreachPage() {
   const [composeError, setComposeError] = useState('')
   const [composeSent, setComposeSent]   = useState(false)
 
+  const [expired, setExpired] = useState(false)
+
   useEffect(() => {
-    fetch('/api/gtm/outreach')
-      .then(r => r.json())
-      .then(d => { setEmails(d.emails ?? []); setLoading(false) })
-      .catch(() => setLoading(false))
+    getJson<{ emails?: EmailRecord[] }>('/api/gtm/outreach')
+      .then(d => setEmails(d.emails ?? []))
+      .catch(err => { if (err instanceof SessionExpiredError) setExpired(true) })
+      .finally(() => setLoading(false))
   }, [])
 
   const stats: OutreachStats = {
@@ -117,6 +121,13 @@ export default function EmailOutreachPage() {
   }
 
   const visible = filter === 'all' ? emails : emails.filter(e => e.status === filter)
+
+  if (expired) return (
+    <div>
+      <GtmPageHeader title="Email Outreach" />
+      <SessionExpiredNotice />
+    </div>
+  )
 
   return (
     <div>
