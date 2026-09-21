@@ -18,6 +18,7 @@ import {
   BANNED_OPENERS,
   BANNED_CLOSERS,
   BANNED_REGEX_PATTERNS,
+  termPatternBody,
 } from './anti-ai';
 
 // ---------------------------------------------------------------------------
@@ -76,19 +77,15 @@ export interface LongFormShape {
 
 const SNIPPET_RADIUS = 36;
 
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 /**
  * Build a case-insensitive whole-word/whole-phrase regex from a literal term.
- * Apostrophes in the term match either ASCII (') or curly (’) variants.
- * Hyphens match ASCII (-) only — that's the canonical AI form anyway.
+ * Apostrophes in the term match either ASCII (') or curly (’) variants, and
+ * separators are handled by `termPatternBody` — a hyphen in a listed term also
+ * matches a space, so "game-changer" catches "game changer".
  */
 function termToRegex(term: string, opts: { wordBounded?: boolean } = {}): RegExp {
   const wordBounded = opts.wordBounded ?? true;
-  const escaped = escapeRegExp(term).replace(/'/g, "['’]");
-  const body = escaped.replace(/\\\s+/g, '\\s+');
+  const body = termPatternBody(term);
   // Use lookarounds so trailing/leading punctuation is allowed but interior
   // letters don't match (so "delve" doesn't match inside "delivery").
   const left = wordBounded ? '(?<![\\p{L}\\p{N}])' : '';
@@ -155,19 +152,19 @@ const PHRASE_MATCHERS: CompiledTerm[] = BANNED_PHRASES.map((t) => ({
 }));
 
 const OPENER_MATCHERS: CompiledTerm[] = BANNED_OPENERS.map((t) => {
-  const escaped = escapeRegExp(t).replace(/'/g, "['’]").replace(/\\\s+/g, '\\s+');
+  const body = termPatternBody(t);
   // Anchor at start-of-text, after a sentence-ending punctuation+space, or
   // at the start of a new paragraph.
   return {
     term: t,
-    re: new RegExp(`(?:^|(?<=[.!?]\\s)|(?<=\\n\\s*))${escaped}`, 'gi'),
+    re: new RegExp(`(?:^|(?<=[.!?]\\s)|(?<=\\n\\s*))${body}`, 'gi'),
   };
 });
 
 const CLOSER_MATCHERS: CompiledTerm[] = BANNED_CLOSERS.map((t) => {
-  const escaped = escapeRegExp(t).replace(/'/g, "['’]").replace(/\\\s+/g, '\\s+');
+  const body = termPatternBody(t);
   // Closers fire when they appear in the final ~120 chars of the text.
-  return { term: t, re: new RegExp(escaped, 'gi') };
+  return { term: t, re: new RegExp(body, 'gi') };
 });
 
 // ---------------------------------------------------------------------------

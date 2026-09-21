@@ -328,6 +328,8 @@ export {
   BANNED_OPENERS,
   BANNED_CLOSERS,
   BANNED_REGEX_PATTERNS,
+  escapeTerm,
+  termPatternBody,
 } from './banned-lexicon';
 
 

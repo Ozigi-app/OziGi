@@ -27,6 +27,7 @@ import {
   BANNED_OPENERS,
   BANNED_CLOSERS,
   BANNED_REGEX_PATTERNS,
+  termPatternBody,
 } from '../prompts/banned-lexicon';
 
 // ---------------------------------------------------------------------------
@@ -150,20 +151,16 @@ const PHRASE_LIST: string[] = dedupeTerms([...BANNED_PHRASES, ...CHECKER_EXTRA_P
 // Matching helpers — mirror lexicon-validator.ts so both agree on what counts
 // ---------------------------------------------------------------------------
 
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 /**
  * Case-insensitive whole-word/whole-phrase matcher built from a literal term.
- * Apostrophes match ASCII (') or curly. Lookarounds (rather than \b) mean
- * trailing punctuation is fine but interior letters aren't — "delve" must not
- * fire inside "delved" unless "delved" is itself listed.
+ * Apostrophes match ASCII (') or curly, and a separator in the term matches any
+ * separator in the text, so "game-changer" also catches "game changer".
+ * Lookarounds (rather than \b) mean trailing punctuation is fine but interior
+ * letters aren't — "delve" must not fire inside "delved" unless "delved" is
+ * itself listed.
  */
 function termToRegex(term: string): RegExp {
-  const body = escapeRegExp(term)
-    .replace(/'/g, "['’]")
-    .replace(/\\?\s+/g, '\\s+');
+  const body = termPatternBody(term);
   return new RegExp(`(?<![\\p{L}\\p{N}])${body}(?![\\p{L}\\p{N}])`, 'giu');
 }
 
@@ -192,17 +189,14 @@ const WORD_MATCHERS = WORD_LIST.map((term) => ({ term, re: termToRegex(term) }))
 const PHRASE_MATCHERS = PHRASE_LIST.map((term) => ({ term, re: termToRegex(term) }));
 
 const OPENER_MATCHERS = BANNED_OPENERS.map((term) => {
-  const body = escapeRegExp(term).replace(/'/g, "['’]").replace(/\\?\s+/g, '\\s+');
+  const body = termPatternBody(term);
   // Start of text, after sentence-ending punctuation, or at a new paragraph.
   return { term, re: new RegExp(`(?:^|(?<=[.!?]\\s)|(?<=\\n[ \\t]*))${body}`, 'gi') };
 });
 
 const CLOSER_MATCHERS = BANNED_CLOSERS.map((term) => ({
   term,
-  re: new RegExp(
-    escapeRegExp(term).replace(/'/g, "['’]").replace(/\\?\s+/g, '\\s+'),
-    'gi'
-  ),
+  re: new RegExp(termPatternBody(term), 'gi'),
 }));
 
 // ---------------------------------------------------------------------------
