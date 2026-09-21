@@ -10,13 +10,13 @@ A campaign is one ICP, one lead list, and one sequence. Everything outbound hang
 
 ## Creating one
 
-Go to **Email Outreach → New Campaign**.
+Go to **Outreach Campaigns → New Outreach Campaign**. (Email Outreach is the log of what has already gone out, not where campaigns are made.)
 
 1. **Paste your product URL.** Ozigi reads the page and pre-fills sender details, a product description, and a first draft of your ICP. The page must be publicly reachable — a login wall means the extractor sees the login screen.
 2. **Correct the auto-fill.** It gets the shape right and the specifics wrong often enough that this step matters.
 3. **Describe your target audience** in plain English. This is the field that determines lead quality — see below.
 4. **Configure sequence steps** and the delay between each. Covered in [Sequences & Sending](/docs/sequences-and-sending).
-5. **Pick a persona** for the email voice. See [Personas](/docs/personas).
+5. **Pick a persona** for the email voice. The selector only appears once you have saved at least one persona — on a new account the field is not there. See [Personas](/docs/personas).
 6. **Set a daily send limit** and create.
 
 If URL analysis fails, fill the fields in manually. Nothing downstream depends on the auto-fill having run.
@@ -46,7 +46,7 @@ SPECIFIC
   including explicit exclusions.
 ```
 
-Exclusions carry real weight. Naming who you do *not* want removes a whole class of near-miss leads that would otherwise clear the threshold.
+Exclusions carry real weight. Naming who you do *not* want removes a whole class of near-miss leads that would otherwise clear the cut-off.
 
 ## Where leads come from
 
@@ -64,9 +64,13 @@ LinkedIn is the only source that yields a LinkedIn profile URL, which makes it t
 
 ## Scoring
 
-Every sourced lead is scored 0.0 to 1.0 against your ICP before it becomes eligible for a sequence. Only leads above your threshold are contacted.
+Every sourced lead is scored 0.0 to 1.0 against your ICP as it is sourced. Anything below **0.3** is discarded at that point and never reaches your list. That cut-off is fixed — there is nothing to tune.
+
+Above the cut-off, the score orders everything that follows. The lead table, the preview samples, and the send queue all work down from the strongest match, so a better ICP does not just filter harder — it changes who gets contacted first.
 
 This is what keeps a sourced list usable without manual review. It also means a bad ICP description degrades everything downstream — the scorer can only apply criteria you actually gave it.
+
+> **LinkedIn-sourced leads arrive unscored.** The extension returns profiles without running them through the scorer, so their Score column reads `—`. They sort last, below every scored lead.
 
 ## Running a campaign
 
@@ -99,8 +103,8 @@ A lead moving to `replied` pauses only that lead. The rest of the campaign conti
 Work through it in this order:
 
 1. **Is the ICP too narrow?** A description combining an obscure language, a specific city, and a niche topic can legitimately match nobody. Loosen one constraint at a time.
-2. **Is the ICP too vague?** The opposite failure — queries so broad they match nothing specific enough to score above threshold.
-3. **Is the threshold too high?** Leads may be sourcing fine and failing the score gate.
+2. **Is the ICP too vague?** The opposite failure — queries so broad they match nothing specific enough to score above the cut-off.
+3. **Are leads sourcing but scoring under 0.3?** They are being found and then discarded at the cut-off. You cannot lower it, so the fix is a sharper ICP — the scorer is grading against what you wrote.
 4. **Try a different source.** Not every ICP exists on every platform. A design-focused ICP will find little on npm.
 
 More failure modes in [Troubleshooting](/docs/troubleshooting).

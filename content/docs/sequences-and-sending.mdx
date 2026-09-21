@@ -4,26 +4,26 @@ readTime: "7 min read"
 tag: "Outbound"
 ---
 
-A sequence is the series of touches a lead receives. Email and LinkedIn run as parallel channels over the same lead list, each with its own timing.
+A sequence is the series of touches a lead receives. Email is the channel with steps in it; LinkedIn is a single action, and the two are set up separately.
 
 ## How the two channels run
 
-Email steps and LinkedIn steps do not interleave into a single queue. They advance independently, and each step's delay counts from the previous step **of the same channel**.
+Email and LinkedIn are configured as **separate campaigns**. A new outreach campaign carries email steps only; LinkedIn gets its own campaign from the LinkedIn tab, sourcing its own leads. They do not share a lead list, and nothing interleaves into a single queue.
 
 ```diagram
  day 0        day 3          day 7
    │            │              │
-EMAIL ─────────────────────────────────────▶
+EMAIL CAMPAIGN ────────────────────────────▶
    ├─ Cold intro
    │            ├─ Follow-up
    │            │              ├─ Breakup
-   │
-LINKEDIN ──────────────────────────────────▶
+
+LINKEDIN CAMPAIGN ─────────────────────────▶
    ├─ Connection request
-   │            ├─ Message (once accepted)
+        (one action — nothing follows it)
 ```
 
-Step 1 of each channel fires on day 0. A lead with both channels configured gets an email and a connection request on the same day.
+Older campaigns created before the split may still hold both email and LinkedIn steps on one lead list. Those keep running as configured; you just cannot build that shape any more.
 
 ## Email steps
 
@@ -39,7 +39,7 @@ Each email is generated per lead using your persona and whatever Ozigi knows abo
 
 Use **Preview Emails** on the campaign page before every send after changing anything. It generates three samples against real leads.
 
-## LinkedIn steps
+## The LinkedIn action
 
 LinkedIn actions run through the [browser extension](/docs/linkedin-extension), from your own logged-in tab.
 
@@ -92,6 +92,6 @@ Check in this order:
 2. **Is the daily cap already reached?** Sends resume the following day.
 3. **Are any leads actually due?** A step with a three-day delay has nobody due until day three.
 4. **Is the campaign paused?**
-5. **Did leads clear the score threshold?** Sourced but low-scoring leads are never contacted.
+5. **Did leads clear the 0.3 score cut-off?** Anything scoring under it is discarded during sourcing and never reaches the campaign. See [Campaigns](/docs/campaigns).
 
 For LinkedIn specifically, sends require the extension installed, enabled, and a LinkedIn tab open. See [Troubleshooting](/docs/troubleshooting).

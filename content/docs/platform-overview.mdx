@@ -41,7 +41,7 @@ Finds people who match your ideal customer profile, qualifies them, and runs mul
 
 **Sourcing.** Leads come from GitHub, Dev.to, npm, and Hacker News through their public APIs, and from LinkedIn through the browser extension. GitHub is the deepest source: Ozigi queries user search by bio keyword, language, and location, and when a profile hides its email it recovers a real address from the user's public commit history.
 
-**Qualifying.** Every sourced lead is scored 0.0 to 1.0 against your ICP. Only leads above your threshold enter a sequence, which keeps your sending list clean without manual filtering.
+**Qualifying.** Every sourced lead is scored 0.0 to 1.0 against your ICP. Anything under 0.3 is discarded as it is sourced, and the rest are worked in score order — which keeps your sending list clean without manual filtering.
 
 **Sending.** Email goes out from your connected inbox on a schedule with per-day caps. LinkedIn runs through the browser extension, from your own logged-in tab, at human pace. Replies on either channel pause that lead's sequence automatically.
 

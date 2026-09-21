@@ -19,8 +19,8 @@ Fill the fields in manually and continue — nothing downstream depends on the a
 In order of likelihood:
 
 1. **The ICP is too narrow.** An obscure language plus a specific city plus a niche topic can legitimately match nobody. Loosen one constraint at a time.
-2. **The ICP is too vague.** The opposite failure: queries so broad that nothing scores above threshold.
-3. **The score threshold is too high.** Leads may be sourcing correctly and failing the gate. Check whether any leads exist at `sourced` status.
+2. **The ICP is too vague.** The opposite failure: queries so broad that nothing scores above the 0.3 cut-off.
+3. **They are sourcing, then being discarded.** Leads scoring under 0.3 are dropped as they are found. The cut-off is fixed, so the fix is a sharper ICP rather than a setting — add concrete criteria and explicit exclusions.
 4. **Wrong source for the ICP.** A design-focused ICP will find almost nothing on npm.
 
 ### Leads have no email addresses
@@ -37,7 +37,7 @@ Leads without an address can still be reached on LinkedIn **if** they were sourc
 2. **Is the daily cap reached?** Sends resume the next day from where they stopped.
 3. **Are any leads due?** A step with a three-day delay has nobody due until day three.
 4. **Is the campaign paused?**
-5. **Did leads clear the score threshold?** Low-scoring leads are never contacted.
+5. **Did leads clear the 0.3 score cut-off?** Anything under it was discarded during sourcing and never reached the campaign.
 
 ### Authentication fails after months of working
 
