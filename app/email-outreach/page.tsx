@@ -55,7 +55,7 @@ const STEPS = [
   { icon: Search, label: "Find leads", desc: "Ozigi sources verified emails matching your ideal customer." },
   { icon: Mail,   label: "Write emails", desc: "Personalised first-touch emails — no templates, no placeholders." },
   { icon: Send,   label: "Send automatically", desc: "Emails go out on a schedule while you focus on replies." },
-  { icon: BarChart2, label: "Track results", desc: "Opens, replies, and booked calls — all in one dashboard." },
+  { icon: BarChart2, label: "Track results", desc: "Replies, sequence status, and your lead pipeline — all in one dashboard." },
 ];
 
 export default function EmailOutreachPage() {

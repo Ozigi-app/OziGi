@@ -22,7 +22,7 @@ interface EmailRecord {
 
 interface OutreachStats {
   sent: number
-  openRate: string
+  replyRate: string
   replies: number
   scheduled: number
 }
@@ -60,12 +60,23 @@ export default function EmailOutreachPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Opens are not tracked. Nothing writes `opened_at` or moves a send into the
+  // 'opened' status — there is no pixel — so the old "Open Rate" tile resolved
+  // to (replied / delivered) and printed the reply rate under a label that made
+  // a 4% reply rate look like catastrophic deliverability. Report the number we
+  // actually measure, with the same denominator the GTM dashboard uses
+  // (app/api/gtm/dashboard/route.ts) so the two pages agree: delivered means it
+  // left the building and did not bounce, and a reply moves a send out of
+  // 'sent' into 'replied', so both belong in the denominator.
+  const delivered = emails.filter(
+    e => e.status !== 'scheduled' && e.status !== 'bounced'
+  ).length
+  const replies = emails.filter(e => e.status === 'replied').length
+
   const stats: OutreachStats = {
-    sent:      emails.filter(e => e.status !== 'scheduled').length,
-    openRate:  emails.length
-      ? `${Math.round((emails.filter(e => e.status === 'opened' || e.status === 'replied').length / Math.max(emails.filter(e => e.status !== 'scheduled').length, 1)) * 100)}%`
-      : '—',
-    replies:   emails.filter(e => e.status === 'replied').length,
+    sent:      delivered,
+    replyRate: delivered > 0 ? `${((replies / delivered) * 100).toFixed(1)}%` : '—',
+    replies,
     scheduled: emails.filter(e => e.status === 'scheduled').length,
   }
 
@@ -260,7 +271,7 @@ export default function EmailOutreachPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
             { label: 'Emails Sent', value: stats.sent,      color: 'text-foreground'  },
-            { label: 'Open Rate',   value: stats.openRate,  color: 'text-accent'       },
+            { label: 'Reply Rate',  value: stats.replyRate, color: 'text-accent'       },
             { label: 'Replies',     value: stats.replies,   color: 'text-green-600'   },
             { label: 'Scheduled',   value: stats.scheduled, color: 'text-amber-500'   },
           ].map(s => (
@@ -274,7 +285,9 @@ export default function EmailOutreachPage() {
         {/* Filter tabs + email list */}
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           <div className="flex items-center gap-1 px-5 py-3.5 border-b border-border overflow-x-auto overflow-y-hidden">
-            {['all', 'sent', 'opened', 'replied', 'bounced', 'scheduled'].map(f => (
+            {/* No 'opened' tab — see the stats comment above: nothing ever sets
+                that status, so the filter was a permanently empty list. */}
+            {['all', 'sent', 'replied', 'bounced', 'scheduled'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
