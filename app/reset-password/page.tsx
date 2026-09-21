@@ -25,8 +25,8 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
     if (password !== confirm) {
@@ -37,6 +37,10 @@ export default function ResetPasswordPage() {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) { setError(error.message); return; }
+      // Recovery reset: revoke every other session so a login that was already
+      // compromised cannot survive the password change. This session is kept.
+      const { error: revokeError } = await supabase.auth.signOut({ scope: "others" });
+      if (revokeError) console.error("Failed to revoke other sessions:", revokeError.message);
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 3000);
     } catch (err: any) {
@@ -103,7 +107,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="New password"
                   required
-                  minLength={6}
+                  minLength={8}
                   className="w-full bg-slate-50 text-slate-900 rounded-xl px-4 py-3 pr-10 border border-slate-200 outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 text-sm transition-all"
                 />
                 <button
@@ -120,7 +124,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Confirm new password"
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full bg-slate-50 text-slate-900 rounded-xl px-4 py-3 border border-slate-200 outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 text-sm transition-all"
               />
               <button
