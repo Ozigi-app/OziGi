@@ -214,3 +214,38 @@ export const BANNED_REGEX_PATTERNS: readonly { label: string; pattern: RegExp; k
     pattern: /\brather\s+than\s+[\w-]+(?:\s+[\w-]+){0,2},?\s+(?:do|use|try|consider|opt\s+for)\s+[\w-]+/gi,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Shared term → regex body
+// ---------------------------------------------------------------------------
+
+/**
+ * Separator class used between the tokens of a multi-token term.
+ *
+ * A listed term fixes one spelling, but the tell does not care: "game-changer",
+ * "game changer" and "game\nchanger" are the same phrase, and a model told to
+ * avoid the hyphenated form will happily emit the spaced one. So any separator
+ * in a term matches any separator in the text — hyphen (ASCII or the Unicode
+ * dash range), whitespace, or a run of both.
+ */
+const TERM_SEPARATOR = '[\\s\\u2010-\\u2015-]+';
+
+/**
+ * Escape a literal term for use inside a RegExp. Hyphens and whitespace are
+ * left alone here — `termPatternBody` rewrites them into `TERM_SEPARATOR`.
+ */
+export function escapeTerm(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Build the body of a matcher for one literal term: apostrophes match ASCII or
+ * curly, and every internal separator matches any separator. Callers add their
+ * own anchors (word boundaries for words and phrases, start-of-sentence for
+ * openers), so this returns the body only.
+ */
+export function termPatternBody(term: string): string {
+  return escapeTerm(term)
+    .replace(/'/g, "['\u2019]")
+    .replace(/[\s\u2010-\u2015-]+/g, TERM_SEPARATOR);
+}
