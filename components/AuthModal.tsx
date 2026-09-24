@@ -107,7 +107,7 @@ export default function AuthModal({
         if (signUpError.message.includes("User already registered")) {
           setError("An account with this email already exists. Please sign in instead.");
         } else if (signUpError.message.includes("Password should be")) {
-          setError("Password must be at least 6 characters long.");
+          setError("Password must be at least 8 characters long.");
         } else {
           setError(signUpError.message);
         }
@@ -407,9 +407,9 @@ export default function AuthModal({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-slate-50 rounded-xl px-4 py-3 pr-10 border border-slate-200 outline-none focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 text-sm transition-all"
-                    placeholder="Password (min 6 characters)"
+                    placeholder="Password (min 8 characters)"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
