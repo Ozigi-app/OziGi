@@ -1,10 +1,16 @@
-// Vercel Hobby caps at 60s. Long-form + web research routinely runs 30-55s
-// on its own, which means the lexicon repair retry will rarely fire on Hobby
-// — we ship the original with `lexiconWarnings` instead of timing out.
-// Upgrade to Pro to raise this to 300s and let retries run reliably.
+// Vercel Hobby caps at 60s and this project is on Hobby. Note that Vercel
+// CLAMPS a higher `maxDuration` to the plan ceiling rather than failing the
+// build — the gtm/cron/* routes declare 300 and silently run at 60 — so a
+// number above 60 here would be a lie, not an upgrade.
+//
+// 60s is tight: web research eats 8-27s, leaving the draft ~25-45s. The route
+// therefore budgets every model call against the time actually left (see
+// LONGFORM_BUDGET_MS) so that an overrun returns a real error we control
+// instead of a platform kill that returns nothing at all.
 export const maxDuration = 60;
 
 import { NextResponse } from 'next/server';
+import { ThinkingLevel } from '@google/genai';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -74,6 +80,50 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T | n
   });
 }
 
+/** Thrown when a model call blows its slice of the route budget. */
+class GenerationTimeoutError extends Error {
+  constructor(ms: number, label: string) {
+    super(`${label} exceeded its ${Math.round(ms / 1000)}s budget`);
+    this.name = 'GenerationTimeoutError';
+  }
+}
+
+/**
+ * Like `withTimeout`, but for calls we cannot silently drop. `withTimeout`
+ * resolves `null` on both timeout and error, which is right for research
+ * (degrade to fewer sources) and wrong for the draft itself — there we need to
+ * tell the two apart and surface a real message instead of letting the
+ * platform kill the function and hand the user an untyped 504.
+ *
+ * Pass `controller` to also tear down the in-flight HTTP request on timeout.
+ * Note that per the SDK this is client-side only — it frees the socket but
+ * does NOT stop Vertex from completing and billing the generation.
+ */
+function withDeadline<T>(
+  p: Promise<T>,
+  ms: number,
+  label: string,
+  controller?: AbortController
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      console.error(`[LongForm] ${label} exceeded ${ms}ms budget`);
+      controller?.abort();
+      reject(new GenerationTimeoutError(ms, label));
+    }, ms);
+    p.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
+
 /**
  * Use Vertex AI to derive 2-3 high-signal search queries from the user's context.
  * Falls back to a heuristic extractor if the model call fails.
@@ -102,7 +152,17 @@ JSON array only. Example: ["query one", "query two", "query three"]`,
           ],
         },
       ],
-      config: { temperature: 0.2, maxOutputTokens: 256 },
+      // `gemini-3-flash-preview` thinks by default, and thinking tokens come
+      // out of maxOutputTokens. The old budget of 256 was consumed entirely by
+      // thinking, so this returned empty text every time and we silently fell
+      // back to `extractFallbackQueries` — which searches the raw brief text
+      // ("Tech Leads", a 180-char slice of a markdown header) and returns
+      // sources unrelated to the article. Extraction needs no thinking.
+      config: {
+        temperature: 0.2,
+        maxOutputTokens: 2048,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      },
     });
 
     let text = '';
@@ -111,6 +171,14 @@ JSON array only. Example: ["query one", "query two", "query three"]`,
       text = typeof t === 'function' ? t() : t;
     } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
       text = response.candidates[0].content.parts[0].text;
+    }
+
+    if (!text) {
+      console.warn(
+        `[LongForm][research] query derivation returned no text (finishReason=${
+          response.candidates?.[0]?.finishReason ?? 'unknown'
+        }); falling back to heuristic queries`
+      );
     }
 
     const arrMatch = text.match(/\[[\s\S]*\]/);
@@ -248,9 +316,23 @@ async function runWebResearch(context: string): Promise<WebResearchBundle | null
 // Leaves ~5s for DB persist + JSON return.
 const LONGFORM_BUDGET_MS = 55_000;
 // Minimum runtime headroom before we'll START a repair retry. On Hobby
-// long-form often consumes 30-55s on its own, so the retry will rarely
-// fire — we ship the original with `lexiconWarnings` instead of timing out.
+// long-form often consumes most of the budget on its own, so the retry will
+// rarely fire — we ship the original with `lexiconWarnings` instead.
 const LONGFORM_RETRY_MIN_REMAINING_MS = 30_000;
+// Held back from the draft's deadline so that when the draft DOES blow its
+// budget we still have time to log it and return a 504 of our own. Without
+// this the deadline and the platform cap expire together and Vercel wins.
+const LONGFORM_ERROR_RESERVE_MS = 6_000;
+
+/**
+ * Deadline for a model call: whatever is left of the route budget, minus the
+ * reserve needed to report a failure. Computed per call rather than fixed,
+ * because the research phase ahead of it varies from ~8s to ~27s.
+ */
+function remainingModelBudgetMs(routeStartTime: number): number {
+  const elapsed = Date.now() - routeStartTime;
+  return Math.max(0, LONGFORM_BUDGET_MS - elapsed - LONGFORM_ERROR_RESERVE_MS);
+}
 
 export async function POST(req: Request) {
   const routeStartTime = Date.now();
@@ -299,10 +381,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Rate limit Pro users (daily cap to prevent abuse on unlimited tier)
-    if (planStatus.plan === 'pro') {
-      const { success, remaining } = await orgRatelimit.limit(user.id);
-      if (!success) {
+    // Rate limit Pro users (daily cap to prevent abuse on unlimited tier).
+    //
+    // This CHECKS without consuming; the token is spent further down, once we
+    // actually have an article. Consuming up front meant a timeout or a model
+    // error still cost the user one of their five daily generations for
+    // nothing. `resetUsedTokens` is not the fix for that — it would clear the
+    // whole day's usage, so one forced failure would refund all five.
+    const isPro = planStatus.plan === 'pro';
+    if (isPro) {
+      const { remaining } = await orgRatelimit.getRemaining(user.id);
+      if (remaining <= 0) {
         return NextResponse.json(
           {
             error: 'Daily limit reached. You can generate 5 long-form articles per day.',
@@ -430,14 +519,27 @@ export async function POST(req: Request) {
     // Generate
     // ---------------------------------------------------------------------
     const client = await getVertexAIClient();
-    const response = await client.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      config: {
-        temperature: 0.75,
-        maxOutputTokens: 32768,
-      },
-    });
+    const draftAbort = new AbortController();
+    const response = await withDeadline(
+      client.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          abortSignal: draftAbort.signal,
+          temperature: 0.75,
+          maxOutputTokens: 32768,
+          // Bound the thinking phase. Left unset, the model reasons for an
+          // unbounded stretch before emitting its first token — on a long
+          // structured-JSON draft that was the bulk of the wall clock, and it
+          // buys little on a task where the outline and sources are already
+          // supplied in the prompt.
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        },
+      }),
+      remainingModelBudgetMs(routeStartTime),
+      'draft generation',
+      draftAbort
+    );
 
     let responseText = '';
     if ((response as any).text) {
@@ -566,11 +668,24 @@ export async function POST(req: Request) {
       );
       try {
         const repairPrompt = `${prompt}\n\n${buildRepairDirective(lexiconReport)}\n\n## Rejected article (for reference only — rewrite from source, do NOT paraphrase)\n${responseText.slice(0, 6000)}`;
-        const retryResp = await client.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          contents: [{ role: 'user', parts: [{ text: repairPrompt }] }],
-          config: { temperature: 0.7, maxOutputTokens: 32768 },
-        });
+        // Bounded by whatever budget is actually left, so a slow retry degrades
+        // to "ship the original with warnings" instead of eating the route.
+        const retryAbort = new AbortController();
+        const retryResp = await withDeadline(
+          client.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ role: 'user', parts: [{ text: repairPrompt }] }],
+            config: {
+              abortSignal: retryAbort.signal,
+              temperature: 0.7,
+              maxOutputTokens: 32768,
+              thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+            },
+          }),
+          remainingModelBudgetMs(routeStartTime),
+          'lexicon repair retry',
+          retryAbort
+        );
         let retryText = '';
         if ((retryResp as any).text) {
           const t = (retryResp as any).text;
@@ -603,6 +718,13 @@ export async function POST(req: Request) {
     }
 
     const lexiconWarnings = summarizeForClient(lexiconReport);
+
+    // We have a real article — charge the daily token now. Every path below
+    // this point returns `parsed` to the user, including the save-failure one.
+    if (isPro) {
+      const { remaining } = await orgRatelimit.limit(user.id);
+      console.log(`[LongForm] Pro user ${user.id} now has ${remaining} generations remaining today`);
+    }
 
     // ---------------------------------------------------------------------
     // Persist to history + run audit
@@ -729,6 +851,16 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error('[LongForm] Error:', error);
+    if (error instanceof GenerationTimeoutError) {
+      return NextResponse.json(
+        {
+          error:
+            'Generation took too long and was stopped before it finished. Try a shorter target length, or turn off web research — your daily quota was not charged.',
+          timedOut: true,
+        },
+        { status: 504 }
+      );
+    }
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

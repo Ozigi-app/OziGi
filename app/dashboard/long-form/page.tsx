@@ -586,8 +586,28 @@ function LongFormContent() {
         }),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to generate article");
+      // A platform-level timeout returns an HTML/plain-text body, not JSON.
+      // Calling response.json() on that throws a SyntaxError, and the user got
+      // a JSON parse message in the toast instead of what actually went wrong.
+      const raw = await response.text();
+      let data: any = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+            (response.status === 504
+              ? "Generation timed out before it finished. Try a shorter target length, or turn off web research."
+              : `Failed to generate article (HTTP ${response.status})`)
+        );
+      }
+      if (!data?.article) {
+        throw new Error("The server returned an unreadable response. Please try again.");
+      }
 
       setArticle(data.article);
       setSavedPostId(data.post_id ?? null);
