@@ -161,6 +161,16 @@ export default function Distillery({
               placeholder="Paste a URL, meeting notes, or any text context here..."
               value={inputs.text}
               onChange={(e) => setInputs({ ...inputs, text: e.target.value })}
+              onKeyDown={(e) => {
+                // Cmd+Enter (Mac) / Ctrl+Enter (Win/Linux) triggers generation,
+                // same as the Generate button. Plain Enter still inserts a newline.
+                if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                  e.preventDefault();
+                  if ((inputs.text.trim() || inputs.files.length > 0) && !isUploading) {
+                    onGenerate();
+                  }
+                }
+              }}
             />
           </div>
 
