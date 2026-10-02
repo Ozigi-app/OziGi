@@ -151,9 +151,21 @@ Every brief must include a "## Tensions & Honest Critique" section that surfaces
 This section is for the writer's benefit, not for publication. Be candid.
 `.trim();
 
-// 2. Gold standard: positive example of the exact output format and depth
+// 2. Gold standard: positive example of the output format and depth. Its
+// subject matter is deliberately fenced off — without that, the model lifts the
+// example's audience (senior SDETs) into every brief regardless of topic.
 const BRIEF_GOLD_STANDARD = `
-## GOLD STANDARD EXAMPLE — match this level of specificity, evidence labeling, and candor:
+## GOLD STANDARD EXAMPLE — FORMAT AND DEPTH ONLY
+
+The example below is about Playwright and feature flags, written for senior SDETs. That topic and
+that audience belong to the example, NOT to the brief you are writing. Copy its shape — section
+order, specificity, evidence labels, candor — and nothing else.
+
+- Derive the Audience from the user's topic and notes. If they name an audience, use it. If they
+  don't, infer the most likely reader for that topic and say in one line that it was inferred.
+- Never mention SDETs, QA, Playwright, CI/CD, or feature flags unless the user's topic is about them.
+- Before you output, check: would this Audience section make sense pasted under a different topic?
+  If it reads like the example's audience, rewrite it.
 
 --- START GOLD STANDARD ---
 ## Audience
@@ -223,6 +235,7 @@ By the end, readers will understand why feature flags break Playwright's isolati
 
 Always output all six sections: Audience, Outcome, Key Arguments, Suggested Structure, Tensions & Honest Critique, Research Anchors.
 Match the specificity, the evidence labels on Key Arguments, and the candor in Tensions. A brief without Tensions is incomplete.
+The Audience, topic, and examples must come from the user's input — never from the example above.
 `.trim();
 
 // 3. Length budget. The brief is pasted straight into Source Context, which is
@@ -480,7 +493,7 @@ function LongFormContent() {
       const planResp = await fetch("/api/longform/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief: context.trim() }),
+        body: JSON.stringify({ brief: context.trim(), structure }),
       });
       const planJson = await planResp.json();
       if (!planResp.ok) throw new Error(planJson.error || "Planning failed");

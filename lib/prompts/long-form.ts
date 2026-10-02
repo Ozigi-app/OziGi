@@ -159,12 +159,22 @@ const STRUCTURE_INSTRUCTIONS: Record<LongFormStructure, string> = {
     drifted into a how-to. Fold the mechanics into the story or cut them.
   `,
   listicle: `
-    Numbered list of substantive items:
-    - 100-150 word intro framing the list and stakes.
-    - Each item: clear heading, 150-300 words of explanation, ideally one example or actionable takeaway.
-    - Items should be ordered by importance or logical sequence, not alphabetically.
+    Numbered list of substantive items. A reader should be able to skim the
+    headings alone and come away with the whole list:
+    - First section: a 100-150 word intro framing the list and the stakes. It is
+      short - do not pad it to the per-section word budget.
+    - Then ONE SECTION PER ITEM. Each item heading starts with its number
+      ("1. ...", "2. ...") and names the item itself - the tool, mistake, tactic,
+      or reason - not a theme like "Why this matters".
+    - Each item: 150-300 words, leading with the point, then one concrete example
+      or actionable takeaway. No item spans multiple sections; no section holds
+      multiple items.
+    - Items ordered by importance or logical sequence, not alphabetically.
+    - Optional short closing section (no number) - no recap of every item.
     STAY IN MODE: every item must be genuinely parallel. If one item needs three
-    times the space of the others, it is an article of its own, not entry #4.
+    times the space of the others, it is an article of its own, not entry #4. If
+    your sections read as stages of one argument, you have written a narrative
+    with numbers on it - restructure into discrete items.
   `,
   'how-to': `
     Instructional guide for a reader who already knows the domain and needs to

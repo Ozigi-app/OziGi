@@ -23,7 +23,14 @@ function BriefGenerator() {
   });
 
   // Inject the gold-standard few-shot example into the agent's context
-  const systemInstructions = `Here is your GOLD STANDARD example of the exact tone, depth, and structure you must follow:
+  // Its subject matter is fenced off — without that, the model lifts the
+  // example's audience (senior SDETs) and its Currents plugs into every brief.
+  const systemInstructions = `Here is your GOLD STANDARD example. Match its depth, specificity, and section shape — NOT its content.
+
+The example is about Playwright and feature flags, written for senior SDETs, and it promotes Currents.dev.
+That topic, audience, and product belong to the example only. Derive the Audience from the user's topic
+and notes (if they don't name one, infer the likeliest reader and say it was inferred). Never mention SDETs,
+QA, Playwright, feature flags, or Currents unless the user's input is about them.
 
 --- START GOLD STANDARD ---
 Audience
@@ -141,6 +148,7 @@ H2: Final Considerations
 --- END GOLD STANDARD ---
 
 Always output: Audience, Outcome, and Suggested Structure (using H2s and H3s). Explicitly note where internal/external links or code examples belong.
+The Audience, topic, examples, and any product mentions must come from the user's input — never from the example above.
 `;
 
   useCopilotAdditionalInstructions({ instructions: systemInstructions });

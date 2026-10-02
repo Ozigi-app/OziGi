@@ -69,10 +69,24 @@ const PLAN_SCHEMA = {
   required: ['outline', 'claim_ledger', 'source_budget'],
 };
 
-function buildPlanPrompt(brief: string): string {
+// The draft step must follow this outline verbatim, so the outline is where the
+// chosen format either survives or dies. Without a format rule here, the outline
+// mirrors the brief's narrative "Suggested Structure" and a listicle comes out
+// as an ordinary sectioned article.
+const OUTLINE_SHAPE: Record<string, string> = {
+  listicle: `- outline: this is a LISTICLE. Shape it as a short framing entry, then 5-10 numbered items, then an optional short closing entry.
+  * Item headings start with their number: "1. ...", "2. ...". Each item is one distinct, parallel thing (a tool, a mistake, a tactic, a reason) — never a phase of an argument like "Background" or "Why this matters".
+  * Each item's summary says what the item is and the one example or takeaway it carries.
+  * Reshape the brief's Suggested Structure into items rather than copying its sections.`,
+  'how-to': `- outline: this is a HOW-TO. After a short outcome + prerequisites entry, each entry is one sequential step, headed "Step N: <action>".`,
+  opinion: `- outline: this is an OPINION piece. The first entry states the thesis; include one entry that steelmans the opposing view; end on a pointed conclusion.`,
+};
+
+function buildPlanPrompt(brief: string, structure?: string): string {
+  const shape = structure ? OUTLINE_SHAPE[structure] : undefined;
   return `You are a research editor preparing a longform article. Given the brief below, produce a structured plan with three components.
 
-RULES:
+RULES:${shape ? `\n${shape}` : ''}
 - claim_ledger: every factual claim the article will make. Mark support_type as:
   * "brief_supplied" if the brief explicitly names a URL or stat supporting it
   * "needs_source" if the claim needs a source but none is supplied in the brief — you may propose one in proposed_source
@@ -123,7 +137,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { brief } = await req.json();
+    const { brief, structure } = await req.json();
     if (!brief || typeof brief !== 'string' || brief.trim().length < MIN_CONTEXT_CHARS) {
       return NextResponse.json(
         { error: `Brief must be at least ${MIN_CONTEXT_CHARS} characters` },
@@ -146,7 +160,7 @@ export async function POST(req: Request) {
     const client = await getVertexAIClient();
     const response = await client.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: [{ role: 'user', parts: [{ text: buildPlanPrompt(brief.trim()) }] }],
+      contents: [{ role: 'user', parts: [{ text: buildPlanPrompt(brief.trim(), typeof structure === 'string' ? structure : undefined) }] }],
       config: {
         temperature: 0.2,
         maxOutputTokens: 8192,
