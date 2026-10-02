@@ -28,6 +28,7 @@ import {
   type WebSourceSnippet,
 } from '@/lib/prompts/long-form';
 import { containsPromptInjection } from '@/lib/prompts';
+import { loadPersonaVoice, buildVoiceBlock, hasVoiceMaterial } from '@/lib/prompts/voice';
 import { isLongFormAudience, AUDIENCE_IDS } from '@/lib/prompts/audience';
 import {
   validateLongForm,
@@ -407,6 +408,7 @@ export async function POST(req: Request) {
     const {
       context,
       personaVoice,
+      personaId,
       tone = 'professional',
       targetLength = 1500,
       structure = 'narrative',
@@ -497,9 +499,15 @@ export async function POST(req: Request) {
     // ---------------------------------------------------------------------
     // Build prompt
     // ---------------------------------------------------------------------
+    // A saved persona is loaded by id so its writing samples and style guide
+    // come along; the bare personaVoice string is the fallback.
+    const persona = await loadPersonaVoice(supabaseAdmin, user.id, personaId);
+
     const prompt = buildLongFormPrompt({
       context: context.trim(),
       personaVoice: personaVoice?.trim() || undefined,
+      voiceBlock: persona ? buildVoiceBlock(persona) : undefined,
+      hasVoiceMaterial: persona ? hasVoiceMaterial(persona) : false,
       tone: tone as LongFormParams['tone'],
       targetLength,
       structure: structure as LongFormParams['structure'],

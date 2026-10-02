@@ -562,10 +562,14 @@ function LongFormContent() {
     setPipelineStage("generating");
     setIsGenerating(true);
     try {
+      // user_personas has no uuid column — matching on it meant a selected
+      // persona never reached long-form generation.
       let personaVoice: string | undefined;
+      let personaId: string | undefined;
       if (selectedPersonaId !== "default") {
-        const persona = personas?.find(p => p.uuid === selectedPersonaId);
+        const persona = personas?.find(p => p.id === selectedPersonaId);
         personaVoice = persona?.prompt;
+        personaId = persona?.id;
       }
 
       const response = await fetch("/api/long-form/generate", {
@@ -574,6 +578,7 @@ function LongFormContent() {
         body: JSON.stringify({
           context: context.trim(),
           personaVoice,
+          personaId,
           tone,
           structure,
           targetLength,
@@ -1129,7 +1134,7 @@ function LongFormContent() {
                       >
                         <option value="default">Default (no specific voice)</option>
                         {personas?.map((p) => (
-                          <option key={p.uuid} value={p.uuid}>{p.name}</option>
+                          <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
                       </select>
                     </div>

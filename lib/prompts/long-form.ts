@@ -52,6 +52,10 @@ export type LongFormStructure =
 export interface LongFormParams {
   context: string;
   personaVoice?: string;
+  /** Full voice block from lib/prompts/voice.ts; takes the place of personaVoice. */
+  voiceBlock?: string;
+  /** True when the persona carries writing samples or a style guide. */
+  hasVoiceMaterial?: boolean;
   tone: 'professional' | 'casual' | 'technical' | 'storytelling';
   targetLength: number; // word count target
   structure: LongFormStructure;
@@ -416,6 +420,8 @@ ${lines}
 export function buildLongFormPrompt({
   context,
   personaVoice,
+  voiceBlock,
+  hasVoiceMaterial = false,
   tone,
   targetLength,
   structure,
@@ -436,9 +442,15 @@ export function buildLongFormPrompt({
     : '';
   const outlineBlock = outline?.length ? buildApprovedOutlineBlock(outline) : '';
 
-  const personaSection = personaVoice
-    ? `## Voice / Persona\nWrite in the voice of: ${personaVoice.substring(0, 400)}\nMatch their cadence and characteristic phrasing without parodying them.`
-    : '';
+  const personaSection = voiceBlock
+    ? voiceBlock
+    : personaVoice
+      ? `## Voice / Persona\nWrite in the voice of: ${personaVoice.substring(0, 2000)}\nMatch their cadence and characteristic phrasing without parodying them.`
+      : '';
+  // Writing samples are a truer signal of register than a tone preset.
+  const toneHeading = hasVoiceMaterial
+    ? `## Tone: ${tone} (secondary: where it conflicts with THE AUTHOR'S VOICE, the author wins)`
+    : `## Tone: ${tone}`;
 
   // An approved outline fixes the section count, so derive the per-section word
   // budget from it rather than from targetLength — otherwise the two blocks give
@@ -466,7 +478,7 @@ ${personaSection}
 
 ${audienceBlock}
 
-## Tone: ${tone}
+${toneHeading}
 ${toneInstructions}
 
 ## Structure: ${structure}

@@ -25,11 +25,21 @@ export const containsPromptInjection = (text: string | null): boolean => {
   return JAILBREAK_PATTERNS.some((pattern) => pattern.test(text));
 };
 
+// Domain adaptation tells the model to write "like a chef" or "like a trader";
+// when the author has supplied their own samples, their voice must win.
+const VOICE_OVERRIDE_RULE = `
+VOICE OVERRIDE: This author supplied writing samples and/or a style guide (see THE AUTHOR'S VOICE near the end). Take the subject matter from the context, but take tone, register, and phrasing from the author — not from the domain archetypes above.
+`;
+
 export interface PromptParams {
   tweetFormat: string;
   personaVoice: string;
   textContext: string | null;
   urlContext: string | null;
+  /** Full voice block from lib/prompts/voice.ts; replaces the bare personaVoice line. */
+  voiceBlock?: string;
+  /** True when the persona carries writing samples or a style guide. */
+  hasVoiceMaterial?: boolean;
 }
 
 export const buildGenerationPrompt = ({
@@ -37,6 +47,8 @@ export const buildGenerationPrompt = ({
   personaVoice,
   textContext,
   urlContext,
+  voiceBlock,
+  hasVoiceMaterial = false,
 }: PromptParams): string => {
   const xConstraint =
     tweetFormat === "thread"
@@ -56,7 +68,7 @@ You MUST mirror the industry, culture, and subject matter of the provided contex
 - If the context is about sports, write like an athlete or sports analyst.
 - If the context is about finance, write like a trader or analyst — precise, no fluff.
 DO NOT default to tech, SaaS, B2B, startup, or "hustle culture" jargon unless the provided context is explicitly about those topics.
-
+${hasVoiceMaterial ? VOICE_OVERRIDE_RULE : ""}
 ${ANTI_AI_RULES}
 
 ---
@@ -259,7 +271,7 @@ Final reminders:
 
 ---
 
-PERSONA/VOICE: ${personaVoice}
+${voiceBlock || `PERSONA/VOICE: ${personaVoice}`}
 
 CONTEXT TO ANALYZE:
 ${textContext ? `\nRaw Notes: ${textContext}` : ""}

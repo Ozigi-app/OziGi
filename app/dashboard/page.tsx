@@ -250,6 +250,7 @@ const handleGenerate = async () => {
         tweetFormat: inputs.tweetFormat,
         additionalContext: inputs.additionalInfo,
         personaVoice: selectedVoice,
+        personaId: inputs.personaId,
       },
     };
 
@@ -445,10 +446,9 @@ useEffect(() => {
 useEffect(() => {
   const personaParam = searchParams.get("persona");
   if (personaParam && personas && personas.length > 0) {
-    // Find the persona by uuid
-    const found = personas.find((p: any) => p.uuid === personaParam);
+    const found = personas.find((p: any) => p.id === personaParam);
     if (found) {
-      setInputs((prev) => ({ ...prev, personaId: found.uuid }));
+      setInputs((prev) => ({ ...prev, personaId: found.id }));
       toast.success(`Persona "${found.name}" selected`);
       // Clear the URL parameter
       const url = new URL(window.location.href);

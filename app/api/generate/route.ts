@@ -5,6 +5,7 @@ export const maxDuration = 60;
 
 import { NextResponse } from 'next/server';
 import { buildGenerationPrompt, containsPromptInjection } from '../../../lib/prompts';
+import { loadPersonaVoice, buildVoiceBlock, hasVoiceMaterial } from '@/lib/prompts/voice';
 import {
   validateCampaign,
   summarizeForClient,
@@ -338,7 +339,23 @@ export async function POST(req: Request) {
       );
     }
 
-    const textPrompt = buildGenerationPrompt({ tweetFormat, personaVoice, textContext: finalContext, urlContext: effectiveUrlContext });
+    // Load the saved persona by id so its writing samples and style guide come
+    // along. Service role because a bearer-token request has no cookie session
+    // for RLS; loadPersonaVoice scopes the read to this user.
+    const persona = await loadPersonaVoice(
+      createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!),
+      user.id,
+      campaignDirectives?.personaId,
+    );
+
+    const textPrompt = buildGenerationPrompt({
+      tweetFormat,
+      personaVoice,
+      textContext: finalContext,
+      urlContext: effectiveUrlContext,
+      voiceBlock: persona ? buildVoiceBlock(persona) : undefined,
+      hasVoiceMaterial: persona ? hasVoiceMaterial(persona) : false,
+    });
     const parts: any[] = [{ text: textPrompt }, ...(await buildFileParts(assetUrls))];
 
     const { responseText, report: lexiconReport, retried } =
@@ -350,7 +367,7 @@ export async function POST(req: Request) {
     posthog.capture({
       distinctId: user.id,
       event: 'vertex_generation_completed',
-      properties: { email: user.email, durationMs: Date.now() - startTime, personaVoice, hasFile: assetUrls.length > 0, assetCount: assetUrls.length, status: 'success', lexiconViolations: lexiconReport.violations.length, lexiconSlopScore: lexiconReport.slopScore, lexiconRetried: retried },
+      properties: { email: user.email, durationMs: Date.now() - startTime, personaVoice, personaVoiceMaterial: persona ? hasVoiceMaterial(persona) : false, hasFile: assetUrls.length > 0, assetCount: assetUrls.length, status: 'success', lexiconViolations: lexiconReport.violations.length, lexiconSlopScore: lexiconReport.slopScore, lexiconRetried: retried },
     });
     await posthog.shutdown();
 
