@@ -19,3 +19,9 @@ jobs:
         run: npx playwright test
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          # The app builds its Supabase client at module load, so without
+          # these every route 500s and Playwright times out waiting for the
+          # dev server. Both are public values -- the anon key ships in the
+          # client bundle, so neither belongs in a private secret store.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
