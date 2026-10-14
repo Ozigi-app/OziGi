@@ -80,24 +80,30 @@ export async function POST(req: Request) {
   if (!isTest) {
     const signature = req.headers.get('x-appsumo-signature') ?? '';
     const timestamp = req.headers.get('x-appsumo-timestamp') ?? '';
-    const expectedSig = crypto
-      .createHmac('sha256', process.env.APPSUMO_API_KEY!)
-      .update(timestamp + rawBody)
-      .digest('hex');
 
-    let signaturesMatch = false;
-    try {
-      const sigBuf = Buffer.from(signature);
-      const expBuf = Buffer.from(expectedSig);
-      signaturesMatch = sigBuf.length === expBuf.length &&
-        crypto.timingSafeEqual(sigBuf, expBuf);
-    } catch {
-      signaturesMatch = false;
-    }
+    // Each AppSumo listing has its own licensing key, and both the original
+    // listing and its relaunch post to this endpoint. Accept a signature from
+    // any configured key; the tier → plan mapping is identical across them.
+    const keys = [process.env.APPSUMO_API_KEY, process.env.APPSUMO_API_KEY_2]
+      .filter((k): k is string => Boolean(k));
+
+    const signaturesMatch = keys.some((key) => {
+      const expectedSig = crypto
+        .createHmac('sha256', key)
+        .update(timestamp + rawBody)
+        .digest('hex');
+      try {
+        const sigBuf = Buffer.from(signature);
+        const expBuf = Buffer.from(expectedSig);
+        return sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);
+      } catch {
+        return false;
+      }
+    });
 
     if (!signaturesMatch) {
       await logEvent(false);
-      console.error('[AppSumo Webhook] Invalid signature — received:', signature, 'expected:', expectedSig);
+      console.error('[AppSumo Webhook] Invalid signature — received:', signature, `(checked ${keys.length} key(s))`);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
   }

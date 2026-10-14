@@ -7,26 +7,42 @@ export async function POST(req: Request) {
   const { code } = await req.json();
   if (!code) return NextResponse.json({ error: 'Missing code' }, { status: 400 });
 
-  // 1. Exchange code for access token
-  const tokenRes = await fetch('https://appsumo.com/openid/token/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: process.env.APPSUMO_CLIENT_ID!,
-      client_secret: process.env.APPSUMO_CLIENT_SECRET!,
-      redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/appsumo/activate`,
-    }),
-  });
+  // 1. Exchange code for access token.
+  //
+  // Each AppSumo listing can carry its own OAuth client, and buyers from both
+  // the original listing and its relaunch land on the same activate page with
+  // no hint of which one issued the code. Try each configured client in turn:
+  // a code presented to the wrong client is rejected as invalid_client before
+  // it is consumed, so the right client can still redeem it.
+  const clients = [
+    { id: process.env.APPSUMO_CLIENT_ID, secret: process.env.APPSUMO_CLIENT_SECRET },
+    { id: process.env.APPSUMO_CLIENT_ID_2, secret: process.env.APPSUMO_CLIENT_SECRET_2 },
+  ].filter((c): c is { id: string; secret: string } => Boolean(c.id && c.secret));
 
-  if (!tokenRes.ok) {
-    const body = await tokenRes.text();
-    console.error('[AppSumo Exchange] Token error:', body);
-    return NextResponse.json({ error: 'Failed to exchange code' }, { status: 502 });
+  let access_token: string | undefined;
+  for (const client of clients) {
+    const tokenRes = await fetch('https://appsumo.com/openid/token/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        client_id: client.id,
+        client_secret: client.secret,
+        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/appsumo/activate`,
+      }),
+    });
+
+    if (tokenRes.ok) {
+      ({ access_token } = await tokenRes.json());
+      break;
+    }
+    console.error('[AppSumo Exchange] Token error for client', client.id, await tokenRes.text());
   }
 
-  const { access_token } = await tokenRes.json();
+  if (!access_token) {
+    return NextResponse.json({ error: 'Failed to exchange code' }, { status: 502 });
+  }
 
   // 2. Fetch license info with access token
   const infoRes = await fetch(`https://appsumo.com/openid/license_key/?access_token=${access_token}`);
