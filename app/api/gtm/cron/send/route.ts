@@ -10,6 +10,7 @@ import { getPlanStatus, incrementSequenceSend } from '@/lib/plan'
 import type { Campaign, Lead, SequenceStep } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
 import { phCapture } from '@/lib/posthog'
+import { reportFailure, reportWarning } from '@/lib/monitor'
 
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
@@ -53,7 +54,10 @@ export async function POST(req: Request) {
   if (campaignId) query = query.eq('id', campaignId)
 
   const { data: campaigns, error } = await query
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    await reportFailure('gtm.send.load_campaigns', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
   if (!campaigns?.length) return NextResponse.json({ ok: true, message: 'No active campaigns' })
 
   planCache.clear()
@@ -93,6 +97,9 @@ export async function POST(req: Request) {
       let campaignEmailSent = 0
       let campaignLiEnqueued = 0
       let campaignSkipped = 0
+      // Per-lead failures are collected and reported once per campaign, so one
+      // revoked Gmail token is one Error Tracking issue, not 50 events.
+      const failures: { channel: string; leadId: string; step: number; msg: string }[] = []
 
       // ── Email steps ─────────────────────────────────────────────────────────
       const emailSteps = steps.filter(s => s.channel === 'email')
@@ -107,6 +114,7 @@ export async function POST(req: Request) {
 
         if (!emailAccounts?.length) {
           console.warn(`[gtm/cron/send] campaign ${campaign.id}: no active email account`)
+          await reportWarning('gtm.send.no_email_account', 'active campaign has no active email account', { userId: campaign.user_id, campaignId: campaign.id })
         } else {
           const today = new Date().toISOString().split('T')[0]
           // Round-robin across all connected inboxes (Pro multi-inbox) instead of
@@ -248,6 +256,7 @@ export async function POST(req: Request) {
                   .from('sequence_sends')
                   .update({ status: 'failed', error: msg })
                   .eq('lead_id', lead.id).eq('step', step.step).eq('channel', 'email').eq('status', 'queued')
+                failures.push({ channel: 'email', leadId: lead.id, step: step.step, msg })
                 campaignSkipped++
               }
             }
@@ -361,6 +370,7 @@ export async function POST(req: Request) {
             } catch (err) {
               const msg = err instanceof Error ? err.message : String(err)
               console.error(`[gtm/cron/send] linkedin lead ${lead.id} step ${step.step}:`, msg)
+              failures.push({ channel: 'linkedin', leadId: lead.id, step: step.step, msg })
               campaignSkipped++
             }
           }
@@ -368,6 +378,17 @@ export async function POST(req: Request) {
       }
 
       results[campaign.id] = { emailSent: campaignEmailSent, liEnqueued: campaignLiEnqueued, skipped: campaignSkipped }
+
+      if (failures.length > 0) {
+        await reportFailure('gtm.send.lead_failures', new Error(failures[0].msg), {
+          userId: campaign.user_id,
+          campaignId: campaign.id,
+          failedCount: failures.length,
+          sentCount: campaignEmailSent + campaignLiEnqueued,
+          channels: [...new Set(failures.map(f => f.channel))],
+          sample: failures.slice(0, 3),
+        })
+      }
 
       if (campaignEmailSent > 0 || campaignLiEnqueued > 0) {
         // First-ever campaign: send the onboarding "here's what happens next" email.
@@ -397,7 +418,7 @@ export async function POST(req: Request) {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      console.error(`[gtm/cron/send] campaign ${campaign.id}:`, msg)
+      await reportFailure('gtm.send.campaign', err, { userId: campaign.user_id, campaignId: campaign.id })
       results[campaign.id] = { emailSent: 0, liEnqueued: 0, skipped: 0, error: msg }
     }
   }
