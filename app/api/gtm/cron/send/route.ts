@@ -11,6 +11,7 @@ import type { Campaign, Lead, SequenceStep } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
 import { phCapture } from '@/lib/posthog'
 import { reportFailure, reportWarning } from '@/lib/monitor'
+import { checkEmailDomain, isHardBounceError, type DomainCheck } from '@/lib/gtm/emailCheck'
 
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
@@ -62,6 +63,8 @@ export async function POST(req: Request) {
 
   planCache.clear()
   const firstSendCache: FirstSendCache = new Map()
+  // domain -> deliverability, shared across every campaign in this run
+  const domainCache = new Map<string, DomainCheck>()
   const results: Record<string, { emailSent: number; liEnqueued: number; skipped: number; error?: string }> = {}
 
   for (const campaign of campaigns as Campaign[]) {
@@ -162,6 +165,21 @@ export async function POST(req: Request) {
               // In test mode TEST_EMAIL overrides recipient, so no real email needed
               if (!lead.email && !process.env.TEST_EMAIL) { campaignSkipped++; continue }
 
+              // Skip addresses whose domain cannot receive mail. Bounces hurt the
+              // sender's inbox reputation, so mark the lead and never send to it.
+              if (lead.email && !process.env.TEST_EMAIL) {
+                const check = await checkEmailDomain(lead.email, domainCache)
+                if (!check.ok) {
+                  await supabaseAdmin
+                    .from('leads')
+                    .update({ status: 'bounced', updated_at: new Date().toISOString() })
+                    .eq('id', lead.id)
+                  console.log(`[gtm/cron/send] lead ${lead.id} skipped: ${check.reason}`)
+                  campaignSkipped++
+                  continue
+                }
+              }
+
               const primaryState = pickAccount()
               if (!primaryState) break // every inbox hit its per-account share for today
 
@@ -204,7 +222,7 @@ export async function POST(req: Request) {
                   // Transient provider failure (e.g. Gmail token hiccup) — fail over to
                   // another connected inbox once before giving up on this lead entirely.
                   const fallbackState = accountStates.length > 1 ? pickAccount(sendState.account.id) : null
-                  if (!fallbackState) throw primaryErr
+                  if (!fallbackState || isHardBounceError(primaryErr)) throw primaryErr
                   console.warn(`[gtm/cron/send] ${sendState.account.email_address} failed, retrying via ${fallbackState.account.email_address}`)
                   sendState = fallbackState
                   const sender = sendState.account.provider === 'gmail' ? sendViaGmail : sendViaSmtp
@@ -256,7 +274,16 @@ export async function POST(req: Request) {
                   .from('sequence_sends')
                   .update({ status: 'failed', error: msg })
                   .eq('lead_id', lead.id).eq('step', step.step).eq('channel', 'email').eq('status', 'queued')
-                failures.push({ channel: 'email', leadId: lead.id, step: step.step, msg })
+                if (isHardBounceError(err)) {
+                  // The recipient's server says the mailbox does not exist. That is
+                  // the lead's problem, not a system failure, so do not report it.
+                  await supabaseAdmin
+                    .from('leads')
+                    .update({ status: 'bounced', updated_at: new Date().toISOString() })
+                    .eq('id', lead.id)
+                } else {
+                  failures.push({ channel: 'email', leadId: lead.id, step: step.step, msg })
+                }
                 campaignSkipped++
               }
             }

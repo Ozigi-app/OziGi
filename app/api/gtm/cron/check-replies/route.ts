@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { verifyQStashRequest } from '@/lib/qstash'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { threadHasReply } from '@/lib/gtm/gmail'
+import { classifyThread } from '@/lib/gtm/gmail'
 
 export const maxDuration = 300
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     .in('id', leadIds)
 
   const skipLeads = new Set(
-    (leads ?? []).filter(l => l.status === 'replied' || l.status === 'opted_out').map(l => l.id)
+    (leads ?? []).filter(l => l.status === 'replied' || l.status === 'opted_out' || l.status === 'bounced').map(l => l.id)
   )
 
   const pending = sends.filter(s => !skipLeads.has(s.lead_id))
@@ -69,15 +69,33 @@ export async function POST(req: Request) {
 
   let checked = 0
   let replied = 0
+  let bounced = 0
 
   for (const send of pending) {
     const accountId = accountByUser[send.user_id]
     if (!accountId) continue
 
-    const hasReply = await threadHasReply(accountId, send.gmail_thread_id!, send.sent_at!)
+    const outcome = await classifyThread(accountId, send.gmail_thread_id!, send.sent_at!)
     checked++
 
-    if (hasReply) {
+    if (outcome === 'bounce') {
+      const now = new Date().toISOString()
+      await Promise.all([
+        supabaseAdmin
+          .from('sequence_sends')
+          .update({ status: 'failed', error: 'Bounced: recipient mail server rejected the message' })
+          .eq('id', send.id),
+        // Stops all future sequence steps and keeps the address out of new sends
+        supabaseAdmin
+          .from('leads')
+          .update({ status: 'bounced', updated_at: now })
+          .eq('id', send.lead_id),
+      ])
+      console.log(`[check-replies] lead ${send.lead_id} bounced — sequence stopped`)
+      bounced++
+    }
+
+    if (outcome === 'reply') {
       const now = new Date().toISOString()
       await Promise.all([
         // Mark this specific send as replied
@@ -101,5 +119,5 @@ export async function POST(req: Request) {
     await new Promise(r => setTimeout(r, 200))
   }
 
-  return NextResponse.json({ ok: true, checked, replied })
+  return NextResponse.json({ ok: true, checked, replied, bounced })
 }

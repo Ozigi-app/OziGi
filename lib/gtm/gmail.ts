@@ -1,3 +1,4 @@
+import { classifyThreadMessage } from '@/lib/gtm/emailCheck'
 import crypto from 'crypto'
 import { decrypt, encrypt } from './encrypt'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -170,37 +171,48 @@ export async function sendViaGmail(
 }
 
 /**
- * Fetches a Gmail thread and returns true if there are messages in it
- * that were received AFTER sentAt (i.e. the lead replied).
- * Requires gmail.readonly scope. Silently returns false if scope is missing.
+ * Looks at the messages that arrived in a sent email's Gmail thread AFTER the
+ * send and says what they were: a real reply, a bounce (delivery-status
+ * notification from mailer-daemon), or nothing. A bounce lands in the same
+ * thread as the original, so without the sender check it counted as a reply.
+ * Requires gmail.readonly scope. Returns 'none' if the scope is missing.
  */
-export async function threadHasReply(
+export async function classifyThread(
   accountId: string,
   threadId: string,
   sentAt: string
-): Promise<boolean> {
+): Promise<'reply' | 'bounce' | 'none'> {
   let accessToken: string
   try {
     accessToken = await refreshAccessToken(accountId)
   } catch {
-    return false
+    return 'none'
   }
 
   const res = await fetch(
-    `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=minimal`,
+    `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=metadata&metadataHeaders=From&metadataHeaders=Subject`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
   )
 
   // 403 = missing scope (old connection) — silently skip
-  if (res.status === 403 || res.status === 404) return false
-  if (!res.ok) return false
+  if (!res.ok) return 'none'
 
-  const thread = await res.json() as { messages?: Array<{ internalDate: string }> }
-  const messages = thread.messages ?? []
-
-  // Any message whose internalDate is after our send is a reply from the lead
+  const thread = await res.json() as {
+    messages?: Array<{ internalDate: string; payload?: { headers?: Array<{ name: string; value: string }> } }>
+  }
   const sentMs = new Date(sentAt).getTime()
-  return messages.some(m => parseInt(m.internalDate) > sentMs + 30_000)  // +30s buffer
+  const header = (m: { payload?: { headers?: Array<{ name: string; value: string }> } }, name: string) =>
+    m.payload?.headers?.find(h => h.name.toLowerCase() === name)?.value ?? ''
+
+  let sawBounce = false
+  // Any message after our send (+30s buffer) is either a reply or a bounce
+  for (const m of thread.messages ?? []) {
+    if (parseInt(m.internalDate) <= sentMs + 30_000) continue
+    const kind = classifyThreadMessage(header(m, 'from'), header(m, 'subject'))
+    if (kind === 'reply') return 'reply'
+    if (kind === 'bounce') sawBounce = true
+  }
+  return sawBounce ? 'bounce' : 'none'
 }
 
 // Fetch the authenticated user's email address via the userinfo endpoint.
