@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { phCapture } from "@/lib/posthog";
+import { reportFailure, reportWarning } from "@/lib/monitor";
 
 // LinkedIn REST API version — YYYYMM format used by /rest/* endpoints.
 // 202601 = January 2026 — ~5 months old, safely released and within LinkedIn's
@@ -318,11 +319,13 @@ export async function POST(req: Request) {
             .eq("user_id", userId)
             .eq("provider", "linkedin_oidc");
           postResult = await postToLinkedIn(newTokenData.access_token);
-        } catch {
+        } catch (refreshError) {
+          await reportFailure("publish.linkedin.refresh", refreshError, { userId });
           return NextResponse.json({ error: "LINKEDIN_EXPIRED" }, { status: 401 });
         }
       } else if (isExpired) {
         // No refresh token (the common case) — the user must reconnect.
+        await reportWarning("publish.linkedin.token_expired", "token expired, no refresh token", { userId });
         return NextResponse.json({ error: "LINKEDIN_EXPIRED" }, { status: 401 });
       } else {
         throw error;
@@ -345,7 +348,7 @@ export async function POST(req: Request) {
       message: "Post published successfully",
     });
   } catch (error: any) {
-    console.error("LinkedIn API Error:", error);
+    await reportFailure("publish.linkedin", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -13,6 +13,7 @@ import {
   type ValidationReport,
 } from '@/lib/prompts/lexicon-validator';
 import { Ratelimit } from '@upstash/ratelimit';
+import { reportFailure } from '@/lib/monitor';
 import { Redis } from '@upstash/redis';
 import { PostHog } from 'posthog-node';
 import { cookies } from 'next/headers';
@@ -385,7 +386,7 @@ export async function POST(req: Request) {
       },
     });
     await posthog.shutdown();
-    console.error('Vertex AI Generate Error:', error);
+    await reportFailure('generate', error, { userId: posthogUser?.id, assetCount: posthogAssetCount });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

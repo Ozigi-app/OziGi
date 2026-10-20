@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { reportFailure } from "@/lib/monitor";
 
 export async function POST(req: Request) {
   try {
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error("Slack post error:", err);
+    await reportFailure("publish.slack", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

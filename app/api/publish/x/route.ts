@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { TwitterApi } from "twitter-api-v2";
 import { phCapture } from "@/lib/posthog";
+import { reportFailure } from "@/lib/monitor";
 
 export async function POST(req: Request) {
   try {
@@ -100,7 +101,7 @@ export async function POST(req: Request) {
 
 
   } catch (error: any) {
-    console.error("X Publish API Error:", error);
+    await reportFailure("publish.x", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

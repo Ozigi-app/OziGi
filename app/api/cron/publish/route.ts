@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { SendMailClient } from "zeptomail";
+import { reportFailure } from "@/lib/monitor";
 import { buildXReminderEmail, buildLinkedInReminderEmail, buildNewsletterEmail } from "@/lib/email-templates";
 
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -384,6 +385,7 @@ if (data.postId) console.log('[CRON] LinkedIn post ID:', data.postId);
         });
 
       } catch (postError: any) {
+        await reportFailure("cron.publish.post", postError, { postId: post.id, platform: post.platform });
         await supabase
           .from("scheduled_posts")
           .update({
@@ -407,7 +409,7 @@ if (data.postId) console.log('[CRON] LinkedIn post ID:', data.postId);
     });
 
   } catch (error: any) {
-    console.error("Cron error:", error);
+    await reportFailure("cron.publish", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
