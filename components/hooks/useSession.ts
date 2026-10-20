@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { isSessionExpired, clearSessionStart } from "@/lib/supabase/sessionAge";
 
 export function useSession() {
   const [session, setSession] = useState<any>(null);
@@ -37,12 +38,25 @@ export function useSession() {
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && isSessionExpired()) {
+        clearSessionStart();
+        supabase.auth.signOut(); // onAuthStateChange below clears state
+        setSession(null);
+        setSessionLoading(false);
+        return;
+      }
       setSession(session);
       setSessionLoading(false);
       if (session?.user?.id) maybeAutoClaim(session.user.id);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT") clearSessionStart();
+      else if (session && isSessionExpired()) {
+        clearSessionStart();
+        supabase.auth.signOut();
+        return;
+      }
       setSession(session);
 
       if (session?.user?.id) maybeAutoClaim(session.user.id);

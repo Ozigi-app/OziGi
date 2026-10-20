@@ -37,6 +37,9 @@ export default function ResetPasswordPage() {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) { setError(error.message); return; }
+      // Revoke every other session so a changed password actually logs out the
+      // old devices/tabs (their refresh tokens otherwise stay valid).
+      await supabase.auth.signOut({ scope: "others" });
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 3000);
     } catch (err: any) {
