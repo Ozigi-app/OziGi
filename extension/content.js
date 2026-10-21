@@ -419,6 +419,33 @@ function headlineFrom(cardText, name) {
   return t.replace(/\s+/g, ' ').replace(/[\s·|,-]+$/, '').trim().slice(0, 150)
 }
 
+// textContent flattens a card into one string, so the headline and the location
+// (separate blocks on the page) arrive glued: "...DemandFarmDelaware City".
+// innerText keeps a line break between blocks, which is the boundary we need.
+// Lines run: name, "• 2nd", headline, location, [action button], summary blurb.
+const CARD_STOP = /^(Connect|Message|Following|Follow|Pending|View profile|Visit my website|Current:|Summary|Past:)/i
+const CARD_SOCIAL = /(mutual connection|\d[\d.,]*\s*K?\+?\s*followers?\b)/i
+
+function parseCardLines(lines) {
+  const badge = lines.findIndex((l) => /•\s*(1st|2nd|3rd\+?)/i.test(l))
+  if (badge === -1) return null
+  const rest = lines[badge].replace(/^.*•\s*(?:1st|2nd|3rd\+?)\s*/i, '').trim()
+  // The badge and headline can share a line or sit on consecutive ones.
+  const after = rest ? [rest, ...lines.slice(badge + 1)] : lines.slice(badge + 1)
+  const usable = (l) => l && !CARD_STOP.test(l) && !CARD_SOCIAL.test(l)
+  const title = usable(after[0]) ? after[0] : ''
+  const location = title && usable(after[1]) ? after[1] : ''
+  return { title: title.slice(0, 150), location: location.slice(0, 120) }
+}
+
+function headlineAndLocation(card, name, fallbackTitle) {
+  const lines = (card.innerText || '').split(/\n+/).map((s) => s.replace(/\s+/g, ' ').trim()).filter(Boolean)
+  const parsed = parseCardLines(lines)
+  // No usable structure (layout changed, or innerText unavailable): keep the old
+  // behaviour and leave location empty rather than guess a split.
+  return parsed && parsed.title ? parsed : { title: fallbackTitle, location: '' }
+}
+
 function scrapeSearchResults() {
   const results = []
   const seen = new Set()
@@ -444,7 +471,8 @@ function scrapeSearchResults() {
     if (!name || /linkedin member/i.test(name)) continue
 
     seen.add(url)
-    results.push({ url, name, title: headlineFrom(cardText, name), location: '' })
+    const { title, location } = headlineAndLocation(card, name, headlineFrom(cardText, name))
+    results.push({ url, name, title, location })
   }
 
   return { outcome: 'ok', profiles: results }

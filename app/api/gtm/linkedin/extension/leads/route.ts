@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { userIdFromExtensionToken, extensionCors } from '@/lib/gtm/extensionAuth'
+import { extractCompanyName } from '@/lib/gtm/domainResolve'
 
 // Receives profiles the extension found in the user's own LinkedIn search and
 // saves them as leads. These are the only leads carrying a linkedin_url — every
@@ -59,6 +60,10 @@ export async function POST(req: Request) {
       linkedin_url: `https://www.linkedin.com/in/${slug}/`,
       linkedin_profile_id: slug,
       bio: (p.title ?? '').trim().slice(0, 500) || null,
+      // Only trust the headline for a company when a location came with it. Extension
+      // builds before 1.0.3 glued the location onto the headline ("...DemandFarmDelaware
+      // City") and sent no location, so a missing location means a possibly-dirty headline.
+      company: (p.location ?? '').trim() ? extractCompanyName(p.title ?? '')?.slice(0, 120) ?? null : null,
       location: (p.location ?? '').trim().slice(0, 120) || null,
       status: 'pending',
     }]
