@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { verifyUnsubscribeToken } from '@/lib/gtm/unsubscribe-token'
+import { optOutEverywhere } from '@/lib/gtm/suppression'
 
 const page = (title: string, body: string) => `<!DOCTYPE html>
 <html lang="en">
@@ -46,12 +47,14 @@ export async function GET(req: Request) {
   // Check if already opted out
   const { data: lead } = await supabaseAdmin
     .from('leads')
-    .select('status, name')
+    .select('status, name, user_id, email')
     .eq('id', leadId)
     .eq('campaign_id', campaignId)
     .single()
 
   if (lead?.status === 'opted_out') {
+    // An earlier opt-out may predate cross-campaign suppression: apply it everywhere now.
+    if (lead.user_id && lead.email) await optOutEverywhere(lead.user_id, lead.email)
     return new Response(
       page('Already unsubscribed', `<h1>Already unsubscribed</h1><p>You've already been removed from this mailing list.</p>`),
       { status: 200, headers: { 'Content-Type': 'text/html' } }
@@ -64,6 +67,9 @@ export async function GET(req: Request) {
     .update({ status: 'opted_out', updated_at: new Date().toISOString() })
     .eq('id', leadId)
     .eq('campaign_id', campaignId)
+
+  // The request is "stop emailing me", not "stop emailing me from this campaign".
+  if (lead?.user_id && lead.email) await optOutEverywhere(lead.user_id, lead.email)
 
   return new Response(
     page('Unsubscribed', `

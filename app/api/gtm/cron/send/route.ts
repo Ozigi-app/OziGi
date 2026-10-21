@@ -12,6 +12,7 @@ import type { PlanStatus } from '@/lib/plan'
 import { phCapture } from '@/lib/posthog'
 import { reportFailure, reportWarning } from '@/lib/monitor'
 import { checkEmailDomain, isHardBounceError, type DomainCheck } from '@/lib/gtm/emailCheck'
+import { findSuppression, statusFor } from '@/lib/gtm/suppression'
 
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
@@ -175,6 +176,21 @@ export async function POST(req: Request) {
                     .update({ status: 'bounced', updated_at: new Date().toISOString() })
                     .eq('id', lead.id)
                   console.log(`[gtm/cron/send] lead ${lead.id} skipped: ${check.reason}`)
+                  campaignSkipped++
+                  continue
+                }
+              }
+
+              // Never contact an address this sender has already opted out, bounced, heard
+              // back from, or emailed in another campaign (the same person is often in several).
+              if (lead.email && !process.env.TEST_EMAIL) {
+                const suppression = await findSuppression(campaign.user_id, lead.email, lead.id, step.step)
+                if (suppression) {
+                  await supabaseAdmin
+                    .from('leads')
+                    .update({ status: statusFor(suppression), updated_at: new Date().toISOString() })
+                    .eq('id', lead.id)
+                  console.log(`[gtm/cron/send] lead ${lead.id} skipped: ${suppression}`)
                   campaignSkipped++
                   continue
                 }
