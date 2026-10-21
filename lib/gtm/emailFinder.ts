@@ -1,18 +1,17 @@
 /**
  * Turn "a person at a company" into an email address we can stand behind.
  *
- * Order of trust:
- *   1. found_on_site   the person's own address is published on the company site
- *   2. verified        a candidate the verifier confirms as a real mailbox
- *   3. catch_all_guess / unverified_guess   best guess only, NOT usable
- *
- * `usable` is true only for 1 and 2. Guesses are returned so a human can look
- * at them, but nothing should send to a guess: a wrong address is a bounce on
- * the user's own inbox.
+ * Runs providers in order and stops at the first one that returns an address
+ * it vouches for (see emailProviders.ts). Guesses are collected and returned
+ * so a human can look at them, but `usable` is true only for a vouched-for
+ * address: a wrong address is a bounce on the user's own inbox.
  */
 import { checkEmailDomain } from '@/lib/gtm/emailCheck'
-import { crawlDomainForEmails, type CrawledEmail } from '@/lib/gtm/emailCrawl'
-import { verifyEmail, verifierConfigured } from '@/lib/gtm/emailVerify'
+import { crawlDomainForEmails, type CrawlResult } from '@/lib/gtm/emailCrawl'
+import { defaultProviders, type EmailProvider, type FinderContext } from '@/lib/gtm/emailProviders'
+import { reportFailure } from '@/lib/monitor'
+
+export { generateCandidates, inferPatterns, normalizeNamePart } from '@/lib/gtm/emailPatterns'
 
 export type FinderStatus =
   | 'found_on_site' | 'verified' | 'catch_all_guess' | 'unverified_guess' | 'not_found' | 'invalid_domain'
@@ -21,103 +20,74 @@ export interface FinderResult {
   status: FinderStatus
   usable: boolean
   email: string | null
+  /** Which provider produced `email` (null when nothing was found). */
+  source: string | null
+  /** Providers consulted, in order, so a caller can see what a lookup cost. */
+  tried: string[]
   /** Role addresses published on the site (info@, sales@...): safe fallbacks for company-level outreach. */
   roleEmails: string[]
   crawlAllowed: boolean
-  verifierUsed: boolean
 }
 
-type Pattern = 'first.last' | 'first_last' | 'first-last' | 'firstlast' | 'flast' | 'first' | 'f.last' | 'last' | 'firstl'
-
-const DEFAULT_ORDER: Pattern[] = ['first.last', 'first', 'flast', 'firstlast', 'f.last', 'first_last', 'last', 'firstl', 'first-last']
-const MAX_VERIFY = 4
-
-export function normalizeNamePart(s: string): string {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '')
-}
-
-function build(p: Pattern, first: string, last: string): string | null {
-  switch (p) {
-    case 'first.last': return last ? `${first}.${last}` : null
-    case 'first_last': return last ? `${first}_${last}` : null
-    case 'first-last': return last ? `${first}-${last}` : null
-    case 'firstlast':  return last ? `${first}${last}` : null
-    case 'flast':      return last ? `${first[0]}${last}` : null
-    case 'f.last':     return last ? `${first[0]}.${last}` : null
-    case 'firstl':     return last ? `${first}${last[0]}` : null
-    case 'last':       return last || null
-    case 'first':      return first
-  }
-}
-
-/** Patterns the company's published personal addresses point to, most telling first. */
-export function inferPatterns(published: CrawledEmail[]): Pattern[] {
-  const out: Pattern[] = []
-  for (const { email, role } of published) {
-    if (role) continue
-    const local = email.split('@')[0]
-    if (/^[a-z]+\.[a-z]+$/.test(local)) out.push(local.split('.')[0].length === 1 ? 'f.last' : 'first.last')
-    else if (/^[a-z]+_[a-z]+$/.test(local)) out.push('first_last')
-    else if (/^[a-z]+-[a-z]+$/.test(local)) out.push('first-last')
-  }
-  return [...new Set(out)]
-}
-
-export function generateCandidates(
-  firstName: string, lastName: string, domain: string, preferred: Pattern[] = [],
-): string[] {
-  const first = normalizeNamePart(firstName)
-  const last = normalizeNamePart(lastName)
-  if (!first) return []
-  const order = [...new Set([...preferred, ...DEFAULT_ORDER])]
-  const locals = order.map(p => build(p, first, last)).filter((l): l is string => !!l)
-  return [...new Set(locals)].map(l => `${l}@${domain}`)
-}
-
-/** Does a published address look like it belongs to this person? */
-function matchesPerson(email: string, first: string, last: string): boolean {
-  const local = email.split('@')[0].replace(/[^a-z]/g, '')
-  if (!first || !last) return !!first && local === first
-  return local === first + last || local === last + first || local === first[0] + last || local === first + last[0] || local === first
-}
-
-export async function findEmail(input: {
-  firstName: string
-  lastName: string
-  domain: string
-}): Promise<FinderResult> {
+export async function findEmail(
+  input: { firstName: string; lastName: string; domain: string },
+  providers: EmailProvider[] = defaultProviders(),
+): Promise<FinderResult> {
   const domain = input.domain.trim().toLowerCase()
-  const base: FinderResult = {
-    status: 'not_found', usable: false, email: null, roleEmails: [],
-    crawlAllowed: true, verifierUsed: false,
+  const result: FinderResult = {
+    status: 'not_found', usable: false, email: null, source: null,
+    tried: [], roleEmails: [], crawlAllowed: true,
   }
 
   const domainOk = await checkEmailDomain(`x@${domain}`)
-  if (!domainOk.ok) return { ...base, status: 'invalid_domain' }
+  if (!domainOk.ok) return { ...result, status: 'invalid_domain' }
 
-  const crawl = await crawlDomainForEmails(domain)
-  base.crawlAllowed = crawl.allowed
-  base.roleEmails = crawl.emails.filter(e => e.role).map(e => e.email)
-
-  const first = normalizeNamePart(input.firstName)
-  const last = normalizeNamePart(input.lastName)
-
-  const onSite = crawl.emails.find(e => !e.role && matchesPerson(e.email, first, last))
-  if (onSite) return { ...base, status: 'found_on_site', usable: true, email: onSite.email }
-
-  const candidates = generateCandidates(input.firstName, input.lastName, domain, inferPatterns(crawl.emails))
-  if (!candidates.length) return base
-
-  if (!verifierConfigured()) {
-    return { ...base, status: 'unverified_guess', email: candidates[0] }
+  // Memoised so site + pattern providers share one crawl (and one polite pass over the site).
+  const crawlRef: { p: Promise<CrawlResult> | null } = { p: null }
+  const ctx: FinderContext = {
+    firstName: input.firstName,
+    lastName: input.lastName,
+    domain,
+    getCrawl: () => (crawlRef.p ??= crawlDomainForEmails(domain)),
   }
 
-  base.verifierUsed = true
-  for (const candidate of candidates.slice(0, MAX_VERIFY)) {
-    const v = await verifyEmail(candidate)
-    if (v === 'valid') return { ...base, status: 'verified', usable: true, email: candidate }
-    // Catch-all: the server says yes to everything, so no candidate can be confirmed.
-    if (v === 'catch_all') return { ...base, status: 'catch_all_guess', email: candidates[0] }
+  let bestGuess: { email: string; source: string; reason: 'catch_all' | 'unverified' } | null = null
+
+  for (const provider of providers) {
+    if (!provider.enabled()) continue
+    result.tried.push(provider.name)
+    let outcome
+    try {
+      outcome = await provider.find(ctx)
+    } catch (err) {
+      // One broken provider must not end the waterfall.
+      await reportFailure('gtm.find_email.provider', err, { provider: provider.name })
+      continue
+    }
+
+    if (outcome.kind === 'found') {
+      result.email = outcome.email
+      result.source = provider.name
+      result.usable = true
+      result.status = outcome.confidence === 'on_site' ? 'found_on_site' : 'verified'
+      break
+    }
+    // Keep the first guess only: providers are ordered best-first.
+    if (outcome.kind === 'guess' && !bestGuess) {
+      bestGuess = { email: outcome.email, source: provider.name, reason: outcome.reason }
+    }
   }
-  return base
+
+  if (crawlRef.p) {
+    const c = await crawlRef.p
+    result.crawlAllowed = c.allowed
+    result.roleEmails = c.emails.filter(e => e.role).map(e => e.email)
+  }
+
+  if (!result.usable && bestGuess) {
+    result.email = bestGuess.email
+    result.source = bestGuess.source
+    result.status = bestGuess.reason === 'catch_all' ? 'catch_all_guess' : 'unverified_guess'
+  }
+  return result
 }
