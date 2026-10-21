@@ -1,5 +1,6 @@
 import { getVertexAIClient } from '@/lib/genai-client'
 import type { IcpConfig, Lead } from '@/lib/types/gtm'
+import { enrichFromWebsite, newEnrichBudget } from '@/lib/gtm/leadEnrich'
 
 const GITHUB_API = 'https://api.github.com'
 const DEVTO_API = 'https://dev.to/api'
@@ -32,6 +33,7 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
   const { items } = await searchRes.json() as { items: Array<{ login: string }> }
 
   const leads: RawLead[] = []
+  const enrichBudget = newEnrichBudget()
 
   for (const item of items.slice(0, limit)) {
     try {
@@ -62,6 +64,12 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
       if (!email) {
         email = await getCommitEmail(profile.login)
         if (email) console.log(`[scraper:github] commit email found for ${profile.login}`)
+      }
+      // Still nothing: the profile's own website may publish one. The cron drops
+      // email-less leads, so this is the last chance to keep them.
+      if (!email) {
+        email = await enrichFromWebsite({ name: profile.name, email }, profile.blog, enrichBudget)
+        if (email) console.log(`[scraper:github] website email found for ${profile.login}`)
       }
 
       leads.push({
@@ -98,6 +106,7 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
 
   const seen = new Set<string>()
   const leads: RawLead[] = []
+  const enrichBudget = newEnrichBudget()
 
   for (const tag of tags) {
     if (leads.length >= limit) break
@@ -129,6 +138,10 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
       if (article.user.github_username) {
         devtoEmail = await getCommitEmail(article.user.github_username)
         if (devtoEmail) console.log(`[scraper:devto] commit email found for ${username}`)
+      }
+      if (!devtoEmail) {
+        devtoEmail = await enrichFromWebsite({ name: article.user.name, email: devtoEmail }, article.user.website_url, enrichBudget)
+        if (devtoEmail) console.log(`[scraper:devto] website email found for ${username}`)
       }
 
       leads.push({

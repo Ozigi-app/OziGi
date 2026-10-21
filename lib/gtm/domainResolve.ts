@@ -37,6 +37,9 @@ export function extractCompanyName(bio: string): string | null {
   const m = /(?:\bat|@)\s+([A-Z0-9][\w&.\-' ]{1,40})/i.exec(bio)
   if (!m) return null
   const name = m[1].split(/[|·•,;(/\n]| - | – | and | & /i)[0].trim().replace(SUFFIXES, '').trim()
+  // Real company names start with a capital or digit. "a new startup called X" or
+  // "the speed of light" are sentence fragments, not employers.
+  if (!/^[A-Z0-9]/.test(name)) return null
   return name.length >= 3 ? name : null
 }
 
