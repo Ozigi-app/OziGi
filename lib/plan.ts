@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { reportFailure } from '@/lib/monitor';
 
 export type Plan = "free" | "starter" | "growth" | "pro" | "enterprise" | "appsumo_launch" | "appsumo_builder" | "appsumo_dominate";
 
@@ -467,7 +468,11 @@ export async function incrementLeadsScraped(userId: string, count = 1): Promise<
 
 export async function incrementSequenceSend(userId: string): Promise<void> {
   const { error } = await adminClient().rpc('increment_sequence_sends', { user_id_param: userId });
-  if (error) console.error('increment_sequence_sends error:', error);
+  if (error) {
+    // Visible in monitoring: a silent failure here under-counts usage and lets a
+    // capped plan keep sending.
+    await reportFailure('plan.increment_sequence_sends', new Error(`increment_sequence_sends: ${error.message}`), { userId });
+  }
 }
 
 export async function incrementLongFormUsed(userId: string): Promise<void> {

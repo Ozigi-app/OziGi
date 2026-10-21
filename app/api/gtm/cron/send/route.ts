@@ -13,6 +13,7 @@ import { phCapture } from '@/lib/posthog'
 import { reportFailure, reportWarning } from '@/lib/monitor'
 import { checkEmailDomain, isHardBounceError, type DomainCheck } from '@/lib/gtm/emailCheck'
 import { findSuppression, statusFor } from '@/lib/gtm/suppression'
+import { initialSendBudget } from '@/lib/gtm/sendBudget'
 
 // Cache plan status per user within a single cron run
 const planCache = new Map<string, PlanStatus>()
@@ -66,6 +67,8 @@ export async function POST(req: Request) {
   const firstSendCache: FirstSendCache = new Map()
   // domain -> deliverability, shared across every campaign in this run
   const domainCache = new Map<string, DomainCheck>()
+  // Plan send allowance left per user, shared by all of that user's campaigns in this run
+  const sendBudget = new Map<string, number>()
   const results: Record<string, { emailSent: number; liEnqueued: number; skipped: number; error?: string }> = {}
 
   for (const campaign of campaigns as Campaign[]) {
@@ -94,8 +97,12 @@ export async function POST(req: Request) {
         continue
       }
 
-      // Check global sequence sends limit (applies to free plan: 30/mo)
-      const atSendLimit = ps.sequenceSendsLimit !== -1 && ps.sequenceSendsUsed >= ps.sequenceSendsLimit
+      // Global sequence sends limit (free plan: 30/mo). Taken once per user per run and
+      // decremented on every send: the plan counter is only read here, so checking it
+      // up front let a user at 29/30 send a whole batch.
+      if (!sendBudget.has(campaign.user_id)) {
+        sendBudget.set(campaign.user_id, initialSendBudget(ps.sequenceSendsLimit, ps.sequenceSendsUsed))
+      }
 
       const steps: SequenceStep[] = (campaign.sequence_steps ?? []).sort((a, b) => a.step - b.step)
       let campaignEmailSent = 0
@@ -162,7 +169,7 @@ export async function POST(req: Request) {
               if (totalSentToday >= dailyEmailLimit) break
               if (sentThisRun >= MAX_PER_RUN) break
               if (allAccountsCapped()) break
-              if (atSendLimit) { campaignSkipped++; continue }
+              if (sendBudget.get(campaign.user_id)! <= 0) { campaignSkipped++; continue }
               // In test mode TEST_EMAIL overrides recipient, so no real email needed
               if (!lead.email && !process.env.TEST_EMAIL) { campaignSkipped++; continue }
 
@@ -277,8 +284,12 @@ export async function POST(req: Request) {
                 totalSentToday++
                 sentThisRun++
                 campaignEmailSent++
-                // Track sequence send usage (fire-and-forget; bust cache so limit is respected)
-                incrementSequenceSend(campaign.user_id).catch(() => {})
+                sendBudget.set(campaign.user_id, sendBudget.get(campaign.user_id)! - 1)
+                // Count the send. Awaited so the write finishes before the function can be
+                // frozen, but a counter failure must never undo a send that already went out,
+                // so it is reported and swallowed here rather than reaching the catch below.
+                await incrementSequenceSend(campaign.user_id).catch(e =>
+                  reportFailure('gtm.send.increment_counter', e, { userId: campaign.user_id }))
                 planCache.delete(campaign.user_id)
 
                 // Human-paced delay — skip after the last send of this run
