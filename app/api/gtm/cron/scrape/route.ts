@@ -71,6 +71,7 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!campaigns?.length) return NextResponse.json({ ok: true, message: 'No active campaigns' })
 
+  const runStartedAt = Date.now()
   planCache.clear()
   const results: Record<string, { scraped: number; inserted: number; skipped?: boolean; error?: string }> = {}
 
@@ -92,23 +93,29 @@ export async function POST(req: Request) {
 
       const allLeads: Awaited<ReturnType<typeof scrapeGitHub>> = []
 
+      // Most productive first. npm is fast and every lead has an email; GitHub is the
+      // richest pool; Hacker News and dev.to rarely yield a contactable lead (dev.to
+      // took ~70s for zero emails in a test), so they go last and are skipped once the
+      // run is already long, instead of eating the time the good sources need.
+      const SLOW_SOURCE_CUTOFF_MS = 40_000
+
+      if (campaign.sources.includes('npm')) {
+        const leads = await scrapeNpm(campaign.icp_config, SOURCE_LIMITS.npm)
+        allLeads.push(...leads)
+      }
+
       if (campaign.sources.includes('github')) {
         const leads = await scrapeGitHub(campaign.icp_config, SOURCE_LIMITS.github)
         allLeads.push(...leads)
       }
 
-      if (campaign.sources.includes('devto')) {
-        const leads = await scrapeDevTo(campaign.icp_config, SOURCE_LIMITS.devto)
-        allLeads.push(...leads)
-      }
-
-      if (campaign.sources.includes('hackernews')) {
+      if (campaign.sources.includes('hackernews') && Date.now() - runStartedAt < SLOW_SOURCE_CUTOFF_MS) {
         const leads = await scrapeHackerNews(campaign.icp_config, SOURCE_LIMITS.hackernews)
         allLeads.push(...leads)
       }
 
-      if (campaign.sources.includes('npm')) {
-        const leads = await scrapeNpm(campaign.icp_config, SOURCE_LIMITS.npm)
+      if (campaign.sources.includes('devto') && Date.now() - runStartedAt < SLOW_SOURCE_CUTOFF_MS) {
+        const leads = await scrapeDevTo(campaign.icp_config, SOURCE_LIMITS.devto)
         allLeads.push(...leads)
       }
 

@@ -1,6 +1,7 @@
 import { getVertexAIClient } from '@/lib/genai-client'
 import type { IcpConfig, Lead } from '@/lib/types/gtm'
 import { enrichFromWebsite, newEnrichBudget } from '@/lib/gtm/leadEnrich'
+import { reportFailure } from '@/lib/monitor'
 
 const GITHUB_API = 'https://api.github.com'
 const DEVTO_API = 'https://dev.to/api'
@@ -12,6 +13,17 @@ function githubHeaders() {
   const h: Record<string, string> = { Accept: 'application/vnd.github.v3+json' }
   if (GITHUB_TOKEN) h['Authorization'] = `Bearer ${GITHUB_TOKEN}`
   return h
+}
+
+/**
+ * A scrape source that errors returns [] and the run carries on, so a revoked
+ * token or a rate limit looked exactly like "found nothing" (GitHub returned
+ * 401 on every run and nobody knew). Report it; Error Tracking groups repeats.
+ */
+async function reportScrapeFailure(source: string, res: Response, what: string): Promise<void> {
+  let body = ''
+  try { body = (await res.text()).slice(0, 200) } catch { /* ignore */ }
+  await reportFailure(`gtm.scrape.${source}`, new Error(`${what}: HTTP ${res.status} ${body}`))
 }
 
 // Search GitHub users matching ICP keywords. Returns up to `limit` raw leads.
@@ -26,7 +38,7 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
 
   const searchRes = await fetch(url, { headers: githubHeaders() })
   if (!searchRes.ok) {
-    console.error('[scraper:github] search failed', await searchRes.text())
+    await reportScrapeFailure('github', searchRes, 'user search failed')
     return []
   }
 
@@ -34,13 +46,15 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
 
   const leads: RawLead[] = []
   const enrichBudget = newEnrichBudget()
+  const ghFailure = { status: 0, count: 0 }
+  const onGhFail = (status: number) => { ghFailure.count++; ghFailure.status ||= status }
 
   for (const item of items.slice(0, limit)) {
     try {
       const profileRes = await fetch(`${GITHUB_API}/users/${item.login}`, {
         headers: githubHeaders(),
       })
-      if (!profileRes.ok) continue
+      if (!profileRes.ok) { onGhFail(profileRes.status); continue }
 
       const profile = await profileRes.json() as {
         login: string
@@ -62,7 +76,7 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
       // Enrich: if profile email is hidden, mine it from commit history
       let email = profile.email ?? null
       if (!email) {
-        email = await getCommitEmail(profile.login)
+        email = await getCommitEmail(profile.login, onGhFail)
         if (email) console.log(`[scraper:github] commit email found for ${profile.login}`)
       }
       // Still nothing: the profile's own website may publish one. The cron drops
@@ -95,6 +109,9 @@ export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<Ra
     }
   }
 
+  if (ghFailure.count > 0) {
+    await reportFailure('gtm.scrape.github', new Error(`${ghFailure.count} GitHub API call(s) failed, first status ${ghFailure.status}`))
+  }
   return leads
 }
 
@@ -107,13 +124,15 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
   const seen = new Set<string>()
   const leads: RawLead[] = []
   const enrichBudget = newEnrichBudget()
+  const ghFailure = { status: 0, count: 0 }
+  const onGhFail = (status: number) => { ghFailure.count++; ghFailure.status ||= status }
 
   for (const tag of tags) {
     if (leads.length >= limit) break
 
     const url = `${DEVTO_API}/articles?tag=${tag}&per_page=30&top=30`
     const res = await fetch(url, { headers: { 'api-key': process.env.DEVTO_API_KEY ?? '' } })
-    if (!res.ok) continue
+    if (!res.ok) { await reportScrapeFailure('devto', res, `article search for tag ${tag} failed`); continue }
 
     const articles = await res.json() as Array<{
       user: {
@@ -136,7 +155,7 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
       // GitHub username we can mine their commit history for a real address
       let devtoEmail: string | null = null
       if (article.user.github_username) {
-        devtoEmail = await getCommitEmail(article.user.github_username)
+        devtoEmail = await getCommitEmail(article.user.github_username, onGhFail)
         if (devtoEmail) console.log(`[scraper:devto] commit email found for ${username}`)
       }
       if (!devtoEmail) {
@@ -166,6 +185,9 @@ export async function scrapeDevTo(icpConfig: IcpConfig, limit = 30): Promise<Raw
     await sleep(200)
   }
 
+  if (ghFailure.count > 0) {
+    await reportFailure('gtm.scrape.devto', new Error(`${ghFailure.count} GitHub lookup(s) for dev.to authors failed, first status ${ghFailure.status}`))
+  }
   return leads
 }
 
@@ -179,7 +201,7 @@ export async function scrapeHackerNews(icpConfig: IcpConfig, limit = 30): Promis
   const url = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(keywords)}&tags=story&hitsPerPage=100`
   const res = await fetch(url)
   if (!res.ok) {
-    console.error('[scraper:hn] search failed', await res.text())
+    await reportScrapeFailure('hackernews', res, 'story search failed')
     return []
   }
 
@@ -238,62 +260,71 @@ export async function scrapeHackerNews(icpConfig: IcpConfig, limit = 30): Promis
 // Search npm packages by keyword, extract package authors/publishers.
 // npm is particularly valuable because authors often include real emails in package metadata.
 export async function scrapeNpm(icpConfig: IcpConfig, limit = 30): Promise<RawLead[]> {
-  const keywords = (icpConfig.keywords ?? []).slice(0, 3).join(' ')
-  if (!keywords) return []
-
-  const url = `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(keywords)}&size=100`
-  const res = await fetch(url)
-  if (!res.ok) {
-    console.error('[scraper:npm] search failed', await res.text())
-    return []
-  }
-
-  const data = await res.json() as {
-    objects: Array<{
-      package: {
-        name: string
-        description: string
-        keywords?: string[]
-        author?: { name?: string; email?: string }
-        publisher: { username: string; email: string }
-        links: { homepage?: string; repository?: string }
-      }
-    }>
-  }
+  // One search per keyword, merged. npm's search ANDs the words in a query, so
+  // "B2B SaaS Growth" matched only packages that mention all three (31 publishers
+  // for a campaign with 11 keywords). Each keyword on its own casts a much wider net.
+  const keywords = [...new Set((icpConfig.keywords ?? []).map(k => k.trim()).filter(Boolean))].slice(0, 6)
+  if (!keywords.length) return []
 
   const seen = new Set<string>()
   const leads: RawLead[] = []
 
-  for (const obj of data.objects) {
-    const pkg = obj.package
-    const username = pkg.publisher?.username
-    if (!username || seen.has(username)) continue
-    seen.add(username)
-
-    // Prefer publisher email (always present) over author email
-    const email = pkg.publisher?.email ?? pkg.author?.email ?? null
-    // npm publisher emails are almost always real — still validate
-    if (!isValidEmail(email ?? '')) continue
-
-    const name = pkg.author?.name ?? username
-
-    leads.push({
-      source: 'npm',
-      source_id: username,
-      name,
-      email,
-      github_username: null,
-      linkedin_url: null,
-      linkedin_profile_id: null,
-      twitter_handle: null,
-      bio: pkg.description ?? null,
-      company: null,
-      location: null,
-      tags: pkg.keywords?.slice(0, 10) ?? extractTagsFromBio(pkg.description ?? ''),
-      icp_match_score: null,
-    })
-
+  for (const keyword of keywords) {
     if (leads.length >= limit) break
+
+    const url = `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(keyword)}&size=100`
+    const res = await fetch(url)
+    if (!res.ok) {
+      await reportScrapeFailure('npm', res, `search for "${keyword}" failed`)
+      continue
+    }
+
+    const data = await res.json() as {
+      objects?: Array<{
+        package: {
+          name: string
+          description: string
+          keywords?: string[]
+          author?: { name?: string; email?: string }
+          publisher: { username: string; email: string }
+          links: { homepage?: string; repository?: string }
+        }
+      }>
+    }
+
+    for (const obj of data.objects ?? []) {
+      const pkg = obj.package
+      const username = pkg.publisher?.username
+      if (!username || seen.has(username)) continue
+      seen.add(username)
+
+      // Prefer publisher email (always present) over author email
+      const email = pkg.publisher?.email ?? pkg.author?.email ?? null
+      // npm publisher emails are almost always real — still validate
+      if (!isValidEmail(email ?? '')) continue
+
+      const name = pkg.author?.name ?? username
+
+      leads.push({
+        source: 'npm',
+        source_id: username,
+        name,
+        email,
+        github_username: null,
+        linkedin_url: null,
+        linkedin_profile_id: null,
+        twitter_handle: null,
+        bio: pkg.description ?? null,
+        company: null,
+        location: null,
+        tags: pkg.keywords?.slice(0, 10) ?? extractTagsFromBio(pkg.description ?? ''),
+        icp_match_score: null,
+      })
+
+      if (leads.length >= limit) break
+    }
+
+    await sleep(200)
   }
 
   return leads
@@ -349,12 +380,12 @@ Return a JSON array of numbers, one per lead, same order: [0.8, 0.3, ...]`
  * Walks the user's most-recently-pushed public repos and reads the commit author
  * email, which is almost always a real address even when the profile email is hidden.
  */
-async function getCommitEmail(username: string): Promise<string | null> {
+async function getCommitEmail(username: string, onFail?: (status: number) => void): Promise<string | null> {
   const reposRes = await fetch(
     `${GITHUB_API}/users/${username}/repos?sort=pushed&per_page=10&type=owner`,
     { headers: githubHeaders() }
   )
-  if (!reposRes.ok) return null
+  if (!reposRes.ok) { onFail?.(reposRes.status); return null }
 
   const repos = await reposRes.json() as Array<{ name: string; fork: boolean; private: boolean }>
 

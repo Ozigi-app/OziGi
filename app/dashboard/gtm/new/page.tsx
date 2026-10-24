@@ -61,8 +61,9 @@ export default function NewCampaignPage() {
   // ── Campaign ─────────────────────────────────────────────────────────────────
   const [name, setName]                   = useState('')
   const [icpDescription, setIcpDescription] = useState('')
-  // Sources are always all — no picker shown to users
-  const sources = ['github', 'devto', 'linkedin', 'hackernews', 'npm']
+  // No picker shown to users. dev.to and Hacker News are left out: neither exposes
+  // an email address, so nearly every lead from them is dropped as uncontactable.
+  const sources = ['npm', 'github', 'linkedin']
   const [dailyEmailLimit, setDailyEmailLimit] = useState(40)
   const [dailyLinkedInLimit, setDailyLinkedInLimit] = useState(20)
   const [steps, setSteps]                 = useState<SequenceStep[]>(DEFAULT_STEPS)
