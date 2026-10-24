@@ -6,6 +6,7 @@ import { getPlanStatus, incrementLeadsScraped, deductAddonCredits } from '@/lib/
 import type { Campaign } from '@/lib/types/gtm'
 import type { PlanStatus } from '@/lib/plan'
 import { phCapture } from '@/lib/posthog'
+import { ensureSourceQueries, icpForSource } from '@/lib/gtm/sourceQueries'
 
 // Cache plan status per user within a single cron run to avoid N×DB calls
 const planCache = new Map<string, PlanStatus>()
@@ -24,6 +25,17 @@ const SOURCE_LIMITS = {
   // No linkedin entry: that source is served by the extension, which sets its
   // own per-search limit in /api/gtm/linkedin/extension/search.
 } as const
+
+/** source_ids this campaign already holds for a source, so scrapers can skip them. */
+async function knownSourceIds(campaignId: string, source: string): Promise<Set<string>> {
+  const { data } = await supabaseAdmin
+    .from('leads')
+    .select('source_id')
+    .eq('campaign_id', campaignId)
+    .eq('source', source)
+    .range(0, 4999)
+  return new Set((data ?? []).map(r => r.source_id as string))
+}
 
 // Supabase/PostgREST errors are plain objects, not Error instances, so String(err)
 // collapses them to "[object Object]". Pull out the fields that actually explain
@@ -93,6 +105,10 @@ export async function POST(req: Request) {
 
       const allLeads: Awaited<ReturnType<typeof scrapeGitHub>> = []
 
+      // Search each source with terms that source's users actually write, not the
+      // LinkedIn-style ICP keywords. Falls back to the original keywords on any failure.
+      const sourceQueries = await ensureSourceQueries(campaign)
+
       // Most productive first. npm is fast and every lead has an email; GitHub is the
       // richest pool; Hacker News and dev.to rarely yield a contactable lead (dev.to
       // took ~70s for zero emails in a test), so they go last and are skipped once the
@@ -100,22 +116,26 @@ export async function POST(req: Request) {
       const SLOW_SOURCE_CUTOFF_MS = 40_000
 
       if (campaign.sources.includes('npm')) {
-        const leads = await scrapeNpm(campaign.icp_config, SOURCE_LIMITS.npm)
+        const leads = await scrapeNpm(
+          icpForSource(campaign.icp_config, sourceQueries, 'npm'),
+          SOURCE_LIMITS.npm,
+          await knownSourceIds(campaign.id, 'npm'),
+        )
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('github')) {
-        const leads = await scrapeGitHub(campaign.icp_config, SOURCE_LIMITS.github)
+        const leads = await scrapeGitHub(icpForSource(campaign.icp_config, sourceQueries, 'github'), SOURCE_LIMITS.github)
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('hackernews') && Date.now() - runStartedAt < SLOW_SOURCE_CUTOFF_MS) {
-        const leads = await scrapeHackerNews(campaign.icp_config, SOURCE_LIMITS.hackernews)
+        const leads = await scrapeHackerNews(icpForSource(campaign.icp_config, sourceQueries, 'hackernews'), SOURCE_LIMITS.hackernews)
         allLeads.push(...leads)
       }
 
       if (campaign.sources.includes('devto') && Date.now() - runStartedAt < SLOW_SOURCE_CUTOFF_MS) {
-        const leads = await scrapeDevTo(campaign.icp_config, SOURCE_LIMITS.devto)
+        const leads = await scrapeDevTo(icpForSource(campaign.icp_config, sourceQueries, 'devto'), SOURCE_LIMITS.devto)
         allLeads.push(...leads)
       }
 

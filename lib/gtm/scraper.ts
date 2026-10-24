@@ -28,10 +28,11 @@ async function reportScrapeFailure(source: string, res: Response, what: string):
 
 // Search GitHub users matching ICP keywords. Returns up to `limit` raw leads.
 export async function scrapeGitHub(icpConfig: IcpConfig, limit = 30): Promise<RawLead[]> {
+  // Quote multi-word terms: unquoted, "indie hacker" became two separate required words.
   const keywords = [
     ...(icpConfig.keywords ?? []),
     ...(icpConfig.job_titles ?? []),
-  ].slice(0, 5).join(' OR ')
+  ].slice(0, 5).map(k => (/\s/.test(k) ? `"${k}"` : k)).join(' OR ')
 
   const query = encodeURIComponent(`${keywords} in:bio type:user`)
   const url = `${GITHUB_API}/search/users?q=${query}&per_page=${Math.min(limit, 30)}&sort=followers`
@@ -259,11 +260,18 @@ export async function scrapeHackerNews(icpConfig: IcpConfig, limit = 30): Promis
 
 // Search npm packages by keyword, extract package authors/publishers.
 // npm is particularly valuable because authors often include real emails in package metadata.
-export async function scrapeNpm(icpConfig: IcpConfig, limit = 30): Promise<RawLead[]> {
+export async function scrapeNpm(
+  icpConfig: IcpConfig,
+  limit = 30,
+  // Publishers this campaign already has. Skipped BEFORE counting toward `limit`,
+  // so each run reaches past the top results it saved last time instead of
+  // re-finding (and re-scoring) the same people.
+  known: ReadonlySet<string> = new Set(),
+): Promise<RawLead[]> {
   // One search per keyword, merged. npm's search ANDs the words in a query, so
   // "B2B SaaS Growth" matched only packages that mention all three (31 publishers
   // for a campaign with 11 keywords). Each keyword on its own casts a much wider net.
-  const keywords = [...new Set((icpConfig.keywords ?? []).map(k => k.trim()).filter(Boolean))].slice(0, 6)
+  const keywords = [...new Set((icpConfig.keywords ?? []).map(k => k.trim()).filter(Boolean))].slice(0, 12)
   if (!keywords.length) return []
 
   const seen = new Set<string>()
@@ -295,7 +303,7 @@ export async function scrapeNpm(icpConfig: IcpConfig, limit = 30): Promise<RawLe
     for (const obj of data.objects ?? []) {
       const pkg = obj.package
       const username = pkg.publisher?.username
-      if (!username || seen.has(username)) continue
+      if (!username || seen.has(username) || known.has(username)) continue
       seen.add(username)
 
       // Prefer publisher email (always present) over author email

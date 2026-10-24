@@ -8,6 +8,14 @@ export type LinkedInSessionStatus = 'active' | 'expired' | 'needs_login'
 export type LinkedInAction = 'connect' | 'message' | 'follow_up'
 export type LinkedInQueueStatus = 'queued' | 'in_progress' | 'done' | 'failed' | 'skipped'
 
+/** Search terms per scrape source, translated from the ICP. See lib/gtm/sourceQueries.ts. */
+export interface SourceQueries {
+  npm: string[]
+  github: string[]
+  devto: string[]
+  hackernews: string[]
+}
+
 export interface IcpConfig {
   job_titles: string[]
   industries: string[]
@@ -15,6 +23,7 @@ export interface IcpConfig {
   keywords: string[]
   locations?: string[]
   seniority_levels?: string[]
+  source_queries?: SourceQueries
 }
 
 export interface SequenceStep {
