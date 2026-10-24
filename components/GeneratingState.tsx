@@ -1,23 +1,41 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { PLATFORMS } from "@/lib/platforms";
 
-const GENERATION_MESSAGES = [
+// `only` limits a step to generations that include one of those platforms.
+// Steps without `only` are shown for every generation.
+const SOCIAL_PLATFORMS: string[] = [PLATFORMS.X, PLATFORMS.LINKEDIN, PLATFORMS.DISCORD, PLATFORMS.SLACK];
+
+const GENERATION_MESSAGES: { text: string; duration: number; only?: string[] }[] = [
   { text: "Analyzing your source material...", duration: 3000 },
   { text: "Extracting key narratives...", duration: 4000 },
   { text: "Applying your persona voice...", duration: 5000 },
-  { text: "Drafting platform-specific posts...", duration: 6000 },
-  { text: "Generating X thread...", duration: 5000 },
-  { text: "Writing LinkedIn post...", duration: 5000 },
-  { text: "Building Discord announcement...", duration: 4000 },
-  { text: "Composing email newsletter...", duration: 5000 },
+  { text: "Drafting platform-specific posts...", duration: 6000, only: SOCIAL_PLATFORMS },
+  { text: "Generating X thread...", duration: 5000, only: [PLATFORMS.X] },
+  { text: "Writing LinkedIn post...", duration: 5000, only: [PLATFORMS.LINKEDIN] },
+  { text: "Building Discord announcement...", duration: 4000, only: [PLATFORMS.DISCORD] },
+  { text: "Composing email newsletter...", duration: 5000, only: [PLATFORMS.EMAIL] },
   { text: "Running the slop filter...", duration: 5000 },
   { text: "Scanning for AI tells...", duration: 4000 },
   { text: "Re-running if any slop slipped through...", duration: 8000 },
   { text: "Almost there...", duration: 10000 },
 ];
 
-export default function GeneratingState() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+interface GeneratingStateProps {
+  /** Platforms being generated. When omitted, every step is shown. */
+  platforms?: readonly string[];
+}
+
+export default function GeneratingState({ platforms }: GeneratingStateProps = {}) {
+  const platformKey = platforms ? platforms.join(",") : "";
+  const messages = useMemo(() => {
+    if (!platformKey) return GENERATION_MESSAGES;
+    const active = platformKey.split(",");
+    return GENERATION_MESSAGES.filter((m) => !m.only || m.only.some((p) => active.includes(p)));
+  }, [platformKey]);
+
+  const [rawIndex, setCurrentIndex] = useState(0);
+  const currentIndex = rawIndex % messages.length;
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -38,11 +56,11 @@ export default function GeneratingState() {
   useEffect(() => {
     // Cycle through messages
     const messageTimeout = setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % GENERATION_MESSAGES.length);
-    }, GENERATION_MESSAGES[currentIndex].duration);
+      setCurrentIndex((currentIndex + 1) % messages.length);
+    }, messages[currentIndex].duration);
 
     return () => clearTimeout(messageTimeout);
-  }, [currentIndex]);
+  }, [currentIndex, messages]);
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -67,7 +85,7 @@ export default function GeneratingState() {
           key={currentIndex}
           className="text-lg font-semibold text-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-500"
         >
-          {GENERATION_MESSAGES[currentIndex].text}
+          {messages[currentIndex].text}
         </p>
       </div>
 

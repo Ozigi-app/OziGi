@@ -678,7 +678,11 @@ useEffect(() => {
 
               {loading && (
                 <div className="mt-8">
-                  <GeneratingState />
+                  <GeneratingState
+                    platforms={currentView === 'newsletter'
+                      ? [PLATFORMS.EMAIL]
+                      : inputs.platforms.filter(p => p !== PLATFORMS.EMAIL)}
+                  />
                 </div>
               )}
 

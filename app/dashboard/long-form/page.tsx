@@ -768,6 +768,25 @@ function LongFormContent() {
                 ))}
               </div>
 
+              {/* Pipeline status. While a stage runs the page sits on the Input tab and the only
+                  progress cue was a "Working..." button below the fold, so a 60s generation
+                  looked like the page had reset. */}
+              {isPipelineRunning && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mb-6 flex items-center gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-foreground"
+                >
+                  <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
+                  <span>
+                    {pipelineStage === "planning" && "Planning your article..."}
+                    {pipelineStage === "verifying" && "Verifying your sources..."}
+                    {pipelineStage === "generating" &&
+                      "Drafting and auditing your article. This can take up to a minute, so keep this tab open."}
+                  </span>
+                </div>
+              )}
+
               {/* Plan Review Step — shown between input submission and generation */}
               {pipelineStage === "plan-review" && planData && (
                 <div className="bg-surface border-4 border-border rounded-2xl p-6 space-y-6">

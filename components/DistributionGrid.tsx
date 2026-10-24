@@ -10,6 +10,7 @@ import { usePlanStatus } from "@/components/hooks/usePlanStatus";
 import { supabase } from "@/lib/supabase/client";
 import { PLATFORMS, getApiEndpoint } from "@/lib/platforms";
 import { uploadLargeAsset } from "@/lib/utils";
+import { plainTextToEmailHtml } from "@/lib/email-format";
 import { ImagePlus, X } from "lucide-react";
 import {
   BUILT_IN_THEMES,
@@ -1526,6 +1527,10 @@ export default function DistributionGrid({
     setLocalEmailContent(emailContent || null);
   }, [emailContent]);
 
+  // Display/editor only. The scheduled content stays exactly as generated: the
+  // send route already turns plain text into paragraphs and pulls out the subject.
+  const emailDisplayHtml = plainTextToEmailHtml(localEmailContent);
+
   const handleEmailCopy = () => {
     if (localEmailContent) {
       navigator.clipboard.writeText(localEmailContent);
@@ -1938,7 +1943,7 @@ export default function DistributionGrid({
 
               {isEditingEmail ? (
                 <RichTextEditor
-                  content={localEmailContent || ""}
+                  content={emailDisplayHtml}
                   onChange={(html) => {
                     setLocalEmailContent(html);
                     if (setEmailContent) setEmailContent(html);
@@ -1948,7 +1953,7 @@ export default function DistributionGrid({
               ) : (
                 <div
                   className="mb-4 prose prose-sm max-w-none text-sm font-medium text-slate-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: localEmailContent || "" }}
+                  dangerouslySetInnerHTML={{ __html: emailDisplayHtml }}
                 />
               )}
 
