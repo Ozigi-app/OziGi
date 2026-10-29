@@ -1,3 +1,4 @@
+import { missingEmailAccount, NO_EMAIL_ACCOUNT_MESSAGE } from '@/lib/gtm/readiness'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -52,6 +53,10 @@ export async function POST(req: Request) {
 
   if (!name || !icp_description || !sources?.length) {
     return NextResponse.json({ error: 'name, icp_description, and sources are required' }, { status: 400 })
+  }
+
+  if (await missingEmailAccount(user.id, sequence_steps ?? [{ channel: 'email' }])) {
+    return NextResponse.json({ error: NO_EMAIL_ACCOUNT_MESSAGE, code: 'no_email_account' }, { status: 409 })
   }
 
   // Parse ICP with Gemini

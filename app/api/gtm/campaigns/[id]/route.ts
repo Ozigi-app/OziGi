@@ -1,3 +1,4 @@
+import { missingEmailAccount, NO_EMAIL_ACCOUNT_MESSAGE } from '@/lib/gtm/readiness'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -94,6 +95,20 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   if (!Object.keys(updates).length) {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
+  }
+
+  // Resuming a campaign that can't send would just trip the cron's warning
+  if (updates.status === 'active') {
+    const { data: existing } = await supabaseAdmin
+      .from('campaigns')
+      .select('sequence_steps')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+    const steps = (updates.sequence_steps as { channel?: string }[] | undefined) ?? existing?.sequence_steps
+    if (await missingEmailAccount(user.id, steps)) {
+      return NextResponse.json({ error: NO_EMAIL_ACCOUNT_MESSAGE, code: 'no_email_account' }, { status: 409 })
+    }
   }
 
   // If pausing/completing, remove QStash schedules

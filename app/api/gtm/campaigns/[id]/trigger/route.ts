@@ -1,3 +1,4 @@
+import { missingEmailAccount, NO_EMAIL_ACCOUNT_MESSAGE } from '@/lib/gtm/readiness'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
@@ -16,7 +17,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   // Verify ownership
   const { data: campaign } = await supabaseAdmin
     .from('campaigns')
-    .select('id, user_id')
+    .select('id, user_id, sequence_steps')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
@@ -42,6 +43,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       { error: 'Monthly sequence send limit reached. Upgrade to Growth or Pro for unlimited sends.', sequenceSendsUsed: planStatus.sequenceSendsUsed, sequenceSendsLimit: planStatus.sequenceSendsLimit },
       { status: 403 }
     )
+  }
+
+  if (action === 'send' && await missingEmailAccount(user.id, campaign.sequence_steps)) {
+    return NextResponse.json({ error: NO_EMAIL_ACCOUNT_MESSAGE, code: 'no_email_account' }, { status: 409 })
   }
 
   const origin = new URL(req.url).origin

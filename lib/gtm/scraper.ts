@@ -393,6 +393,9 @@ async function getCommitEmail(username: string, onFail?: (status: number) => voi
     `${GITHUB_API}/users/${username}/repos?sort=pushed&per_page=10&type=owner`,
     { headers: githubHeaders() }
   )
+  // 404 = the linked GitHub account is gone or renamed (common on dev.to profiles).
+  // That's bad lead data, not a scraper failure; 403/429/5xx still get reported.
+  if (reposRes.status === 404) return null
   if (!reposRes.ok) { onFail?.(reposRes.status); return null }
 
   const repos = await reposRes.json() as Array<{ name: string; fork: boolean; private: boolean }>
