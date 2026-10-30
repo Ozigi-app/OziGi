@@ -464,6 +464,10 @@ export default function CampaignDetailPage() {
   const liFailed      = counts.liFailed
   const leadsWithLi   = counts.leadsWithLinkedin
 
+  // LinkedIn-only campaigns are driven entirely by the browser extension: the
+  // scrape/send crons and everything email-shaped don't apply to them.
+  const linkedinOnly = !(campaign.sequence_steps ?? []).some(st => st.channel === 'email')
+
   const leadsTruncated = counts.leads > leads.length
 
   // Build a map of lead_id → lead name for queue display
@@ -480,12 +484,18 @@ export default function CampaignDetailPage() {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-2">
           <h1 className="text-2xl font-black text-foreground tracking-tight">{campaign.name}</h1>
           <div className="flex gap-2 flex-wrap">
+            {linkedinOnly ? (
+              <Link href="/dashboard/gtm/linkedin" className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors no-underline">
+                Open LinkedIn extension
+              </Link>
+            ) : (<>
             <button onClick={() => triggerAction('scrape')} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Run Scrape
             </button>
             <button onClick={() => { setShowImport(true); setImportMsg('') }} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Import CSV
             </button>
+            </>)}
             {leads.length > 0 ? (
               <a href={`/api/gtm/campaigns/${id}/export`} download
                 className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
@@ -496,12 +506,14 @@ export default function CampaignDetailPage() {
                 Export CSV
               </span>
             )}
+            {!linkedinOnly && (<>
             <button onClick={previewEmails} disabled={previewing} className="px-3 py-1.5 border border-indigo-400 rounded-lg bg-surface text-sm text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-60">
               {previewing ? 'Generating…' : '👁 Preview emails'}
             </button>
             <button onClick={() => triggerAction('send')} className="px-3 py-1.5 border border-border rounded-lg bg-surface text-sm text-foreground-muted hover:text-foreground hover:border-border-strong transition-colors">
               Run Send
             </button>
+            </>)}
             <button onClick={toggleStatus} className={`px-3 py-1.5 border rounded-lg text-sm font-semibold transition-colors ${campaign.status === 'active' ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100' : 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100'}`}>
               {campaign.status === 'active' ? 'Pause' : 'Resume'}
             </button>
@@ -511,12 +523,12 @@ export default function CampaignDetailPage() {
       </div>
 
       {/* ── Stats grid ──────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div className={`grid grid-cols-2 ${linkedinOnly ? 'sm:grid-cols-2' : 'sm:grid-cols-4'} gap-3 mb-6`}>
         {[
           { label: 'Total leads',          value: counts.leads,   sub: `${leadsWithLi} have LinkedIn` },
-          { label: 'Emails sent',           value: emailSent,      sub: `${counts.emailQueued} queued` },
-          { label: 'LinkedIn actions done', value: liDone,         sub: liPending > 0 ? `${liPending} pending` : liFailed > 0 ? `${liFailed} failed` : 'worker idle' },
-          { label: 'Replied',               value: counts.replied, sub: `${campaign.daily_email_limit} email/day limit` },
+          ...(linkedinOnly ? [] : [{ label: 'Emails sent', value: emailSent, sub: `${counts.emailQueued} queued` }]),
+          { label: 'LinkedIn actions done', value: liDone,         sub: liPending > 0 ? `${liPending} pending` : liFailed > 0 ? `${liFailed} failed` : 'extension idle' },
+          ...(linkedinOnly ? [] : [{ label: 'Replied', value: counts.replied, sub: `${campaign.daily_email_limit} email/day limit` }]),
         ].map(s => (
           <div key={s.label} className="bg-surface border border-border rounded-xl px-4 py-3.5">
             <div className="text-2xl font-bold text-foreground tabular-nums">{s.value}</div>
@@ -545,7 +557,7 @@ export default function CampaignDetailPage() {
       <div className="flex mb-5 pb-0.5 border-b-2 border-border overflow-x-auto overflow-y-hidden">
         {([
           { key: 'leads',    label: `Leads (${counts.leads})` },
-          { key: 'email',    label: `Email (${emailSent} sent)` },
+          ...(linkedinOnly ? [] : [{ key: 'email' as Tab, label: `Email (${emailSent} sent)` }]),
           { key: 'linkedin', label: `LinkedIn (${liDone} done${liPending > 0 ? `, ${liPending} pending` : ''})` },
         ] as { key: Tab; label: string }[]).map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
@@ -562,7 +574,7 @@ export default function CampaignDetailPage() {
       {/* ── Leads tab ───────────────────────────────────────────────────────── */}
       {tab === 'leads' && (
         leads.length === 0 ? (
-          <p className="text-foreground-subtle text-sm">No leads yet — run a scrape to discover leads.</p>
+          <p className="text-foreground-subtle text-sm">{linkedinOnly ? 'No leads yet — the extension adds them as it finds people matching your ICP.' : 'No leads yet — run a scrape to discover leads.'}</p>
         ) : (
           <div className="overflow-x-auto bg-surface border border-border rounded-xl">
             <table className="w-full min-w-[640px] text-sm">
@@ -654,16 +666,15 @@ export default function CampaignDetailPage() {
             <div className="bg-surface border border-border rounded-xl p-6 text-foreground-muted text-sm leading-relaxed">
               <div className="font-bold text-foreground mb-2">How LinkedIn outreach works</div>
               <ol className="pl-5 m-0 list-decimal space-y-1">
-                <li>Run Scrape → the LinkedIn worker finds profiles on LinkedIn matching your ICP and adds them as leads</li>
-                <li>Run Send → the cron queues LinkedIn actions for those leads</li>
-                <li>The LinkedIn worker (running locally or on Fly.io) picks them up every 30s</li>
-                <li>It opens a browser session using your connected LinkedIn account and performs each action</li>
-                <li>Results appear here — done, failed, and error details</li>
+                <li>Install the browser extension and connect it in <Link href="/dashboard/gtm/settings#linkedin" className="text-accent">Settings → LinkedIn</Link></li>
+                <li>Keep LinkedIn open and signed in — the extension searches for people matching your ICP and adds them here as leads</li>
+                <li>It sends connection requests from your own browser, spaced out to look human</li>
+                <li>Results appear here — done, failed, and error details. Overall status is on the <Link href="/dashboard/gtm/linkedin" className="text-accent">LinkedIn page</Link></li>
               </ol>
               <div className="mt-3.5 px-3 py-2.5 bg-surface-2 rounded-lg text-xs">
                 <strong className="text-foreground">{leadsWithLi} of {counts.leads} leads</strong> have a LinkedIn URL and are eligible for LinkedIn outreach.
                 {leadsWithLi === 0 && campaign.sources?.includes('linkedin')
-                  ? ' Run a scrape — the LinkedIn worker will find and add leads with LinkedIn profiles directly.'
+                  ? ' None yet — the extension adds leads as it finds them.'
                   : leadsWithLi === 0 ? ' GitHub profiles sometimes include LinkedIn URLs, but for direct LinkedIn sourcing add "linkedin" to your campaign sources.' : ''
                 }
               </div>

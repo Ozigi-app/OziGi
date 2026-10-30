@@ -94,7 +94,11 @@ export default function NewLinkedInCampaignPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed to create campaign — please try again.')
-      router.push(`/dashboard/gtm/${data.campaign.id}`)
+      // The extension does the searching and sending, so land where it's set up
+      // or where its results show up, not on the email campaign page.
+      const hasToken = await fetch('/api/gtm/linkedin/extension-status')
+        .then(r => r.json()).then(d => !!d.hasToken).catch(() => true)
+      router.push(hasToken ? '/dashboard/gtm/linkedin' : '/dashboard/gtm/settings#linkedin')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
