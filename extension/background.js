@@ -101,6 +101,12 @@ async function api(path, opts, c) {
 async function attachDebugger(tabId) {
   try {
     await chrome.debugger.attach({ tabId }, '1.3')
+    // The automation tab usually sits in the background. Chrome throttles hidden
+    // tabs, and LinkedIn then never mounts the invite modal after the click
+    // (confirmed: same profile flow succeeds with the tab in front, fails behind
+    // another tab). Focus emulation makes the page behave as focused and visible
+    // without pulling the user's window forward.
+    try { await chrome.debugger.sendCommand({ tabId }, 'Emulation.setFocusEmulationEnabled', { enabled: true }) } catch { /* best effort */ }
     return true
   } catch (e) {
     return false // another debugger (e.g. real DevTools) may already be attached
@@ -179,13 +185,26 @@ async function waitForTabSettle(tabId) {
   })
 }
 
-function sendToContent(tabId, msg) {
+function sendToContentOnce(tabId, msg) {
   return new Promise((resolve) => {
     chrome.tabs.sendMessage(tabId, msg, (resp) => {
       if (chrome.runtime.lastError) return resolve({ outcome: 'retry_later', error: chrome.runtime.lastError.message })
       resolve(resp || { outcome: 'failed', error: 'no response from page' })
     })
   })
+}
+
+// "Receiving end does not exist" means the page's content script isn't up right
+// now — LinkedIn re-rendered or navigated mid-flow (seen between clicking Connect
+// and "Add a note"). It usually comes back within a second or two, so retry
+// briefly rather than failing the whole lead on the first miss.
+async function sendToContent(tabId, msg) {
+  let res = await sendToContentOnce(tabId, msg)
+  for (let i = 0; i < 4 && /Receiving end does not exist/.test(res.error || ''); i++) {
+    await sleep(1000)
+    res = await sendToContentOnce(tabId, msg)
+  }
+  return res
 }
 
 async function reportResult(id, outcome, error, c) {
@@ -265,6 +284,11 @@ async function runConnectAction(tabId, note) {
       // "done" here while the request was never sent — LinkedIn's invite modal
       // is a native <dialog>, not always matched by className/role selectors).
       const verify = await sendToContent(tabId, { cmd: 'rectConnectButton' })
+      if (verify.outcome !== 'done') {
+        // Leaves evidence of what the page actually had open, so the next failure
+        // names its cause instead of repeating "click likely missed".
+        try { console.warn('[ozigi] no-modal diagnosis:', await sendToContent(tabId, { cmd: 'diagnoseModal' })) } catch {}
+      }
       return verify.outcome === 'done' ? { outcome: 'done' } : { outcome: 'retry_later', error: 'no modal appeared and button still shows Connect — click likely missed' }
     }
 

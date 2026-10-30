@@ -65,7 +65,11 @@ function visible(el) {
 // into frames that are genuinely rendered and aren't the preload shell.
 function usableFrame(frame) {
   const src = frame.getAttribute('src') || ''
-  if (/\/preload\b/.test(src) || src === 'about:blank') return false
+  // The invite modal's link is /preload/custom-invite/, so the invite overlay can
+  // be framed under the same /preload prefix as the hidden messaging shell. Only
+  // the shell is excluded; a custom-invite frame must still be searched.
+  if (src === 'about:blank') return false
+  if (/\/preload\b/.test(src) && !/custom-invite/.test(src)) return false
   const r = frame.getBoundingClientRect()
   if (r.width <= 0 || r.height <= 0) return false
   const s = getComputedStyle(frame)
