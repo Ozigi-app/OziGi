@@ -1,0 +1,140 @@
+---
+title: "How to Build a Brand Voice an AI Can Actually Follow"
+date: "2026-11-02"
+modifiedTime: "2026-11-02"
+description: "Adjectives like 'friendly but professional' give an AI nothing to follow. This guide shows how to turn five to ten writing samples into testable voice rules, how to split them across a persona, writing samples, and a style guide, and how to test whether the voice holds across posts."
+coverImage: "/images/blog/brand-voice-ai-can-follow/cover.svg"
+section: "Content"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about content strategy, LLM tooling, and the systems small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "10 min read"
+category: "Content, Brand Voice, AI Writing"
+keywords: ["brand voice for ai", "how to train ai on your writing style", "ai brand voice guidelines", "writing samples for ai", "ai persona writing style", "make ai sound like me", "brand voice rules", "ai style guide", "consistent ai voice", "ozigi personas"]
+---
+
+## TL;DR
+
+An AI follows a brand voice when the voice is written as rules it can check, backed by real text it can imitate. "Friendly and professional" is neither. Collect five to ten of your best posts, read them for measurable habits (sentence length, openings, punctuation, what you never say), and write each habit as a rule with a number or an example in it. Then test the result with five different inputs and count the rule violations. In Ozigi that maps to three fields on a persona: who is writing, writing samples, and a style guide. This guide walks through each step.
+
+Most people describe their voice in adjectives and then blame the model when the output sounds like everyone else.
+
+The model did what the adjectives allowed. "Conversational, authoritative, a little witty" fits ten million posts. It tells the model nothing about how long your sentences run, how you open a post, or which words you would delete on sight.
+
+The rest of this post covers how to write a voice down so a model can follow it, and how to check that it does.
+
+## What does it mean for an AI to follow a brand voice?
+
+It means the output makes the same small decisions you would make, consistently, across topics. Voice is not a feeling. It is a pile of repeatable choices: sentence length, how a post starts, where the number goes, what gets cut.
+
+You can see this in your own writing. Open three posts you wrote last month. You probably open with a number or a failure. You probably never use an exclamation mark. Your paragraphs are likely two to three sentences. None of that is "tone." It is behavior, and behavior can be written as a rule.
+
+A model follows a rule when the rule is specific enough to check after the fact. "Be concise" cannot be checked. "Paragraphs stop at three sentences" can.
+
+## Why do adjectives fail as voice guidelines?
+
+Adjectives fail because the model fills every gap with the statistical average of its training data. Ask for "engaging" and you get the most common version of engaging: a rhetorical question, a bold claim, a tidy closer.
+
+Compare two ways of describing the same writer:
+
+| Description | What the model can do with it |
+|---|---|
+| "Friendly, expert, approachable" | Almost nothing. Any LLM default already counts as friendly. |
+| "Eight years building payments infrastructure. Writes in first person. Paragraphs of one to three sentences. Opens with a number or a failure that happened. Never writes 'excited to announce'. Admits what the tool does badly." | Enough to produce a first draft you would only need to polish. |
+
+The second version contains a person, a mechanic, and a prohibition. Those three carry most of the weight, and they are the same three parts we recommend in the [Personas guide](https://ozigi.app/docs/personas).
+
+## How do you turn writing samples into voice rules?
+
+You read your samples like an editor, extract what repeats, and rewrite each pattern as a rule with a number or an example. It takes about an hour and you only do it once.
+
+1. **Pick the right samples.** Choose five to ten pieces you are proud of, not the average of everything you have published. A voice file built from your worst posts will reproduce your worst posts.
+2. **Cover more than one format.** Include at least one short post, one long piece, and one message you wrote fast. Voice shows up differently at each length.
+3. **Mark every opening and closing line.** Write them in a list. Patterns appear fast. You will notice that you never close with a summary, or that you always open mid-thought.
+4. **Measure the boring things.** Count words per sentence in a few paragraphs. Note how often you use parentheses, fragments, contractions, and first person.
+5. **List what you would never write.** Read three posts in your niche that made you wince. Name the move that caused the wince. Each one becomes a prohibition.
+6. **Write each habit as a testable rule.** If a stranger could not check it against a draft, rewrite it.
+
+The table shows what that conversion looks like.
+
+| Observed habit | Weak rule | Testable rule |
+|---|---|---|
+| Short, blunt openings | "Start strong" | "Open with a number, a date, or something that broke. Never with a question." |
+| Plain vocabulary | "Avoid jargon" | "If a word needs a glossary entry, use the plain one. Name the exact tool instead of the category." |
+| Dry humor | "Add personality" | "One dry aside per post, in parentheses. No jokes in the first sentence." |
+| No hype | "Don't oversell" | "Never use 'excited', 'thrilled', or 'pleased to announce'. State the number instead." |
+| Honest about limits | "Be transparent" | "Each product post names one thing the product does not do." |
+
+## What goes in a persona, writing samples, and a style guide?
+
+Each field answers a different question. The persona says who is writing. Samples show how that person sounds. The style guide holds the house rules for terminology, spelling, formatting, and words to avoid.
+
+In Ozigi, a persona has all three. The samples go in as raw text separated by a line of `---`, and the engine reads them for sentence length, rhythm, punctuation habits, how you open and close, how much you hedge, and the words you reach for. The instruction it gets is to copy the voice and never the content, so your old sentences and facts do not leak into new posts.
+
+Two limits are worth knowing. Writing samples are capped at 15,000 characters and the style guide at 8,000, which is plenty for five to ten posts and a real rulebook. A pasted archive of every post you have ever written would crowd out the source material, so choose.
+
+The precedence rule matters too. Your samples and style guide override the engine's general tone guidance. The [Banned Lexicon](https://ozigi.app/docs/the-banned-lexicon) still applies on top, and where your style guide and the lexicon disagree, the stricter one wins. Your voice minus the AI tells. If your style guide says "always open with 'Look,'" you will get it, until that opener trips a banned-opener rule.
+
+Use the persona field for the short identity statement, the samples for proof, and the style guide for the rules you extracted in the last section. Do not paste your rules into the samples box or your posts into the style guide. The model treats the two differently.
+
+## How do you test whether a voice holds across posts?
+
+Run the same persona against five unrelated inputs and score the output against your rules. A voice that holds on your favorite topic and collapses on the other four is a topic, not a voice.
+
+The five-input test:
+
+1. Pick five inputs that differ on purpose: a product update, a bug story, a customer question, a link to someone else's article, a rambling set of notes.
+2. Generate one post from each, same persona, same platform.
+3. Check each draft against your rules with a simple tally. Count the violations. Opening wrong, a banned word, paragraph too long, a hedge you never use.
+4. Run the drafts through the [free slop checker](https://ozigi.app/slop-checker) to catch lexicon hits and cadence tells you stopped seeing.
+5. Do a blind read. Mix one post you wrote with two generated ones and hand them to someone who reads you often. If they pick the generated ones, note which sentence gave it away.
+
+Fix the persona one rule at a time. If four of five drafts open with a question, the fix is one line in the style guide ("Never open with a question"), not a rewrite of the whole persona. Then rerun the same five inputs so you can tell whether the change worked.
+
+A reasonable target is zero rule violations in four of five drafts. Chasing a perfect score on all five usually means your rules contradict each other.
+
+## What are the most common reasons a voice drifts?
+
+Four causes account for nearly all of it, and they are all fixable in the persona.
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Output sounds like generic LinkedIn | No persona selected, or the prohibitions field is empty | Select a persona. Add ten phrases you hate. |
+| Right voice, wrong facts | Samples contain topics the model copied | Rewrite the instruction to "voice only" and swap in samples on different subjects |
+| Voice fades in long pieces | Rules cover posts but not long-form | Add rules for paragraph length and section openings |
+| Two personas sound alike | Both are mostly adjectives | Add one sample and three prohibitions to each |
+
+Marketplace personas have the same problem. They are written by practitioners and they sound like a real person, just not like you. Copy one, then edit the prohibitions until the list contains things you would never say.
+
+## How often should you update a brand voice?
+
+Update it when the drafts start needing the same edit twice. If you keep deleting the same closing sentence, that edit belongs in the style guide.
+
+Review the samples every quarter. Your writing moves, and a voice file built from last year's posts will drag you back to last year. Swap in your two best recent pieces and retire the two oldest.
+
+Keep a short log of every edit you make to generated drafts for a week. Repeated edits are your next rules.
+
+## Frequently Asked Questions
+
+**How do I make AI write in my voice?**
+Give it real samples of your writing, a short description of who you are as a writer, and a list of rules written so each one can be checked. Adjectives do not work because the model fills the gaps with its training average. Five to ten of your best posts plus ten specific prohibitions beat a long paragraph of tone words.
+
+**How many writing samples does an AI need to copy a voice?**
+Five to ten is enough for most writers, covering at least a short post, a long piece, and something written quickly. More than that rarely helps and crowds out the source material. In Ozigi, writing samples are capped at 15,000 characters per persona.
+
+**What is the difference between a persona and a style guide?**
+A persona says who is writing: role, experience, worldview. A style guide lists the house rules: terminology, spelling, formatting, and words to avoid. The persona sets the identity and the style guide enforces the details. Ozigi accepts both, plus writing samples, and treats the samples and style guide as the strongest voice signal.
+
+**Will AI-generated posts in my voice still sound like AI?**
+They can, if the model reaches for its default vocabulary. A banned lexicon blocks the words and phrases that mark text as machine-written, and your persona fills the gap with your own word choices. Ozigi applies both on every generation, and the lexicon wins when the two conflict.
+
+**How do I test whether my brand voice is working?**
+Generate five posts from five unrelated inputs, check each against your written rules, and count violations. Then run a blind read where someone who knows your writing tries to spot the generated posts. Fix one rule at a time and rerun the same five inputs.
+
+**How often should I update my AI voice profile?**
+Whenever you make the same edit to generated drafts twice, and at least once a quarter. Replace the oldest samples with your best recent writing so the profile follows how you write now.
+
+---
+
+*Want a voice file that holds across X, LinkedIn, newsletters, and cold email? [Ozigi](https://ozigi.app) lets you save a persona with writing samples and a style guide, and applies the Banned Lexicon on every draft. Free to start. Check any draft with the [free slop checker](https://ozigi.app/slop-checker).*

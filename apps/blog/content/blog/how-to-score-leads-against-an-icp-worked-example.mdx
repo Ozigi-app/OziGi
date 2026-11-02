@@ -1,0 +1,139 @@
+---
+title: "How to Score Leads Against an ICP: A Worked Example"
+date: "2026-11-10"
+modifiedTime: "2026-11-10"
+description: "A lead score is only useful if you can explain it. This worked example builds a 100-point ICP scoring rubric for a developer product, scores eight sample leads, sets thresholds and knockout rules, and shows how Ozigi's 0 to 1 AI score fits alongside it."
+coverImage: "/images/blog/icp-lead-scoring-example/cover.svg"
+section: "Prospecting & Outbound"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about go-to-market, content strategy, and the tooling small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "10 min read"
+category: "Marketing, GTM, ICP, Lead Scoring"
+keywords: ["how to score leads against icp", "icp scoring rubric", "lead scoring example", "lead scoring for developer products", "icp match score", "lead scoring model small team", "score leads with ai", "icp scoring worked example", "ozigi icp scoring"]
+---
+
+## TL;DR
+
+To score a lead against an ICP, split the profile into five weighted signals (role, stack, public activity, company stage, reachability), give each a few fixed point values, and add a knockout rule so one bad mismatch cannot be hidden by a high total. Contact leads scoring 70 or higher, queue 50 to 69, drop the rest. This post builds the rubric for a developer API product, scores eight sample leads by hand, and shows how that compares with the 0 to 1 match score Ozigi's AI produces. Then you check the thresholds against reply data and adjust.
+
+If you read our post on [defining an ICP for developer products](https://ozigi.app/blog/ideal-customer-profile-for-developer-products), you have a profile. What you probably do not have is a way to apply it to 200 sourced profiles without gut feel.
+
+A score fixes that. It makes the profile executable, and it makes your decisions arguable, which is the real benefit. When a lead lands in the wrong bucket, you can point at the line that caused it and change the line.
+
+Everything below uses an invented ICP and invented leads. The numbers are for illustration. Swap in your own signals.
+
+## What is ICP lead scoring?
+
+ICP lead scoring assigns each prospect a number that says how closely they match your ideal customer profile. A high score means contact now. A low score means skip. The number is only as good as the signals behind it, so the work is choosing signals you can observe.
+
+Scoring is different from lead qualification. Qualification asks whether someone has budget and need, which you learn in conversation. ICP scoring happens before any conversation and uses public information only.
+
+## What is the ICP in this example?
+
+Backend and platform engineers at seed to Series A startups who maintain a public TypeScript API client and write about API testing or tooling cost.
+
+It is narrow on purpose. Every phrase in that sentence maps to something you can search for or read off a profile.
+
+## How do you build the rubric?
+
+Pick five signals, weight them to 100 points, and write fixed point values for each level. Fixed values are what stop two people from scoring the same lead differently.
+
+| Signal | Max points | Full | Partial | None |
+|---|---|---|---|---|
+| Role | 25 | Backend or platform engineer: 25 | Adjacent (full-stack, founding engineer, DevRel): 12 | Other: 0 |
+| Stack | 25 | TypeScript: 25 | Related (Python, Node tooling): 12 | Unrelated: 0 |
+| Public activity | 25 | Maintains or writes about API clients and testing: 25 | Some relevant repos or posts: 12 | Nothing public: 0 |
+| Company stage | 15 | Seed or Series A: 15 | Pre-seed solo, or Series B: 8 | Larger or unknown: 0 |
+| Reachability | 10 | Email found: 10 | Public profile only: 5 | Nothing: 0 |
+
+Then add a **knockout rule**: a zero in role or company stage drops the lead, whatever the total. This matters more than it looks, as the next section shows.
+
+Thresholds:
+
+- 70 and above: contact now.
+- 50 to 69: queue for later or a softer touch.
+- Below 50, or any knockout: drop.
+
+## How do eight sample leads score?
+
+Eight invented leads, scored line by line:
+
+| Lead | Description | Role | Stack | Activity | Stage | Reach | Total | Result |
+|---|---|---|---|---|---|---|---|---|
+| A | Backend engineer, seed startup, maintains a TS API client, writes on Dev.to about API testing, email in commits | 25 | 25 | 25 | 15 | 10 | 100 | Contact |
+| E | Solo indie maker, many TS API client repos, writes on Dev.to, email public | 12 | 25 | 25 | 8 | 10 | 80 | Contact |
+| B | Founding engineer, Series A, mostly Python, contributes to open source, email in commits | 25 | 12 | 12 | 15 | 10 | 74 | Contact |
+| H | Backend engineer, seed, Go, maintains a Go API client, email found | 25 | 0 | 12 | 15 | 10 | 62 | Queue |
+| D | Engineering manager, Series A, TypeScript, nothing public | 12 | 25 | 0 | 15 | 5 | 57 | Queue |
+| F | Full-stack developer, seed, TypeScript, writes about CSS | 12 | 25 | 0 | 15 | 5 | 57 | Queue |
+| C | Staff platform engineer at a 2,000-person company, TypeScript, writes about API gateways, email public | 25 | 25 | 25 | 0 | 10 | 85 | Dropped by knockout |
+| G | Technical recruiter at a seed startup | 0 | 0 | 0 | 15 | 5 | 20 | Dropped |
+
+Lead C is the reason for the knockout rule. Raw, C scores 85, higher than three of the leads we are contacting. Everything about C matches except the one thing that changes the sale: a 2,000-person company buys by committee, and a cold email to one engineer does not move a purchasing process. The ICP post covers why. Without the knockout, C would sit at the top of your list and eat a send.
+
+Lead B shows the opposite case. Python is only a partial stack match, yet B still clears 70 because role, stage, and reachability are strong. Whether that is right depends on your product. If the product ships only a TypeScript SDK, set the stack signal as a knockout too.
+
+## How do you pick thresholds?
+
+Start with cutoffs that give you a list you can actually work, then adjust against replies. The 70 and 50 lines above are starting guesses, not facts.
+
+A workable method:
+
+1. Score a batch of 40 to 50 leads by hand.
+2. Sort them. Look at where the natural gaps fall.
+3. Set "contact now" at a line that leaves you with the volume you can send in a week, based on your [daily sending limits](https://ozigi.app/blog/how-many-cold-emails-per-day-without-spam).
+4. Send to the top band first. Track replies by band.
+5. If the 50 to 69 band replies as well as the 70+ band, your weights are off. Raise the weights on the signals that distinguish the repliers.
+
+The ICP is a hypothesis and the reply data is the test. If the scores do not predict replies, the rubric is wrong, not the leads.
+
+## How does Ozigi score leads?
+
+Ozigi sends each sourced lead's name, bio, company, tags, and location to Gemini, alongside the job titles, industries, keywords, and company sizes from your ICP. It returns a match score between 0.0 and 1.0 for each lead: 1.0 is a perfect match, 0.5 a partial match, 0.0 no match. Leads below your threshold are dropped before they enter a sequence.
+
+That is the same logic as the rubric above, applied automatically. A score of 0.74 corresponds loosely to a 74-point lead.
+
+One difference matters for how you write your ICP. The AI scorer sees the bio, company, tags, and location. It does not see repositories, commit history, or whether an email was found. Signals like public activity and reachability happen earlier, in sourcing. So scoring quality depends on putting your stack and role terms in the ICP keywords, because that is what the scorer can match against the bio and tags.
+
+A practical way to calibrate:
+
+1. Take 20 leads from a real campaign.
+2. Score them by hand with your rubric.
+3. Compare to the AI scores.
+4. Where they disagree by more than 0.3, read the lead and decide who is right. Usually the disagreement shows a missing keyword in your ICP, or a knockout your rubric has that the ICP config does not.
+
+Fix the keywords, rerun, and the two scores converge.
+
+## What are the common mistakes in ICP scoring?
+
+- **Too many signals.** Eight signals with 12 points each turns every lead into a mushy 60. Five is plenty.
+- **Weights that sum to nothing.** If all signals are worth the same, none of them is a priority. Decide which matters most and weight it.
+- **No knockouts.** A high total can hide a fatal mismatch, as Lead C shows.
+- **Scoring on vanity signals.** Follower count predicts almost nothing about need.
+- **Never revisiting the rubric.** The first version is a guess. Review it every few weeks against the [weekly go-to-market loop](https://ozigi.app/blog/go-to-market-playbook-solo-founder-technical-team).
+
+## Frequently Asked Questions
+
+**How do you score leads against an ICP?**
+Break the ICP into a few weighted signals such as role, stack, public activity, company stage, and reachability. Assign fixed point values to each level, add them up to a score out of 100, and set thresholds for contact, queue, and drop. Add a knockout rule so a fatal mismatch cannot be hidden by a high total.
+
+**How many signals should a lead scoring model have?**
+Five is enough for most small teams. More than that spreads weight too thin and pushes every lead toward the middle. Choose signals you can observe publicly, and weight the most important one highest.
+
+**What is a good ICP match score threshold?**
+There is no universal number. Start with a line that gives you a list you can send in a week, such as 70 out of 100 or 0.7 on a 0 to 1 scale, then compare reply rates by score band and move the line. If lower bands reply as well as higher ones, the rubric is mismeasuring something.
+
+**How does Ozigi score leads against an ICP?**
+Ozigi sends each lead's bio, company, tags, and location to Gemini with your ICP's job titles, industries, keywords, and company sizes, and gets back a score from 0.0 to 1.0. Leads under your threshold are dropped before they enter a sequence. Put your stack and role terms in the ICP keywords, since the scorer matches against the bio and tags.
+
+**What is a knockout rule in lead scoring?**
+A knockout rule drops a lead automatically when one critical signal is a mismatch, whatever their total score. For a product sold to small startups, company stage might be a knockout, because an enterprise engineer with a perfect profile still cannot approve a purchase alone.
+
+**Should I trust the AI score or my own rubric?**
+Use both. Score 20 leads by hand, compare them with the AI scores, and investigate where they differ by a wide margin. Most gaps come from a missing keyword in the ICP or a rule in your rubric the scorer never saw.
+
+---
+
+*Want to define an ICP once and have every sourced lead scored for fit before it enters a sequence? [Ozigi](https://ozigi.app) sources from GitHub and Dev.to, scores matches with AI, and writes the outreach in your voice. Free to start, no credit card.*

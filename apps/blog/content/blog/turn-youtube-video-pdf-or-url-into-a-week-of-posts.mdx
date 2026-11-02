@@ -1,0 +1,132 @@
+---
+title: "How to Turn a YouTube Video, PDF, or URL Into a Week of Posts"
+date: "2026-11-04"
+modifiedTime: "2026-11-04"
+description: "A talk, a webinar, or a long document already contains a week of posts. This guide shows how to pull five angles out of one YouTube video, PDF, or URL, what each source type needs from you, and where the extraction runs out."
+coverImage: "/images/blog/youtube-pdf-url-to-posts/cover.svg"
+section: "Content"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about content strategy, LLM tooling, and the systems small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "9 min read"
+category: "Content, Repurposing, Social Media"
+keywords: ["turn youtube video into social posts", "repurpose pdf into linkedin posts", "url to social media posts ai", "repurpose webinar into content", "youtube transcript to linkedin post", "content repurposing from video", "ai content from pdf", "multimodal content ingestion", "ozigi from youtube"]
+---
+
+## TL;DR
+
+One talk, webinar, PDF, or article holds about five distinct angles, which is a week of posts if you stop trying to summarize the whole thing. Paste the URL or upload the file, tell the engine which single claim each post should carry, generate for X, LinkedIn, and Discord, then spend ten minutes adding the specifics only you know. YouTube links are read through their transcript, PDFs through their text and layout, and web pages through the article body. Check numbers and quotes against the source before posting. This guide covers the workflow, the source-specific traps, and the cases where it breaks.
+
+Most repurposing advice starts from a newsletter. A lot of people start from something else: a conference talk they gave, a webinar recording, a 30-page report, a README nobody reads.
+
+Those sources are richer than a newsletter and harder to mine, because nothing in them is pre-cut into sections you can fan out. The work is choosing angles. The writing is the easy part.
+
+## Can you turn a YouTube video into social posts?
+
+Yes. Paste the video link into the Context Engine and Ozigi fetches the transcript and drafts from that text, so the post is grounded in what was said and not in the URL string. There is also a free page at [ozigi.app/from-youtube](https://ozigi.app/from-youtube) built for exactly this.
+
+Two things to know before you rely on it.
+
+First, it reads captions. A video with no captions available may return no transcript, and in that case there is nothing to ground the draft in. The fix takes a minute: copy the transcript out of the video page yourself and paste the text.
+
+Second, a transcript is spoken language. It has filler, false starts, and tangents. That is fine for extraction, but it means a 45-minute talk contains maybe five ideas worth a post and forty minutes of everything else. You need to pick.
+
+## What kinds of files and links can you use as a source?
+
+The Context Engine accepts pasted text, PDFs, plain text, CSV files, images, audio, video, and URLs. Uploads go up to 100MB.
+
+| Source | What the engine reads | What you add |
+|---|---|---|
+| YouTube link | The caption transcript | The one claim per post, and anything shown on screen but not said aloud |
+| PDF | Text layer and page structure | Which section matters, since a 30-page report is not one post |
+| Web page URL | The article body, with navigation and boilerplate stripped | A pasted excerpt if the page is very long |
+| Screenshot or image | Text and code visible in the image | What the viewer should notice |
+| Audio or video file | The spoken content | The same angle selection as a YouTube link |
+| Raw notes | Everything, noise included | Nothing to clean up first |
+
+One limit is easy to miss. For web pages, Ozigi reads roughly the first 8,000 characters of the article. A long post or documentation page gets cut, and anything past the cutoff never reaches the draft. If your best material sits in the last third, paste that section directly.
+
+## How do you find a week of posts inside one source?
+
+Find five claims, not five summaries. A claim is a sentence someone could disagree with, or a fact someone could repeat. A summary of the whole source gives you one forgettable post. Five claims give you five posts that each stand alone.
+
+Read or skim the source with a pen and mark these:
+
+1. **The surprise.** The one thing that contradicted what you expected.
+2. **The number.** A figure, a date, a before-and-after.
+3. **The story.** A moment where something broke, shipped, or got decided.
+4. **The disagreement.** A place where you would push back on the source or on the conventional view.
+5. **The how-to.** A sequence someone could follow in under five minutes.
+
+If you gave the talk yourself, add a sixth: the question the audience asked that you answered badly. That one tends to produce the best post of the week.
+
+The table below turns those five claims into a week.
+
+| Day | Angle | Platform | Shape |
+|---|---|---|---|
+| Monday | The surprise | LinkedIn | 150 to 200 words, opens with what you expected |
+| Tuesday | The number | X | One post, the figure in the first line |
+| Wednesday | The story | LinkedIn | Short narrative, one lesson buried inside it |
+| Thursday | The disagreement | X thread | Three to five posts, your position first |
+| Friday | The how-to | Discord | A short drop with the steps, link to the source |
+
+Seven days is a maximum, not a quota. If the source only supports three claims, publish three posts.
+
+## What is the workflow, start to finish?
+
+Allow about fifteen minutes of setup and ten minutes of finishing per source.
+
+1. Open the Context Engine and add the source: the link, the file, or pasted text.
+2. Pick a [persona](https://ozigi.app/docs/personas) before you generate. With no persona selected on some surfaces, you get no voice constraints at all.
+3. Write one line telling the engine which claim to build the post around. "Focus on the 40% latency drop and the tradeoff we accepted." One claim per generation produces tighter posts than "make posts from this."
+4. Choose the platforms and generate.
+5. Open the draft in the editor. Everything stays staged until you act on it.
+6. Check every number, name, and quote against the source. Add the detail only you have: the real figure, the date, the reason you made the call.
+7. Schedule or publish each post on its day.
+
+Repeat steps 3 to 6 for each claim. The source stays loaded, so the second through fifth posts go faster than the first.
+
+## Where do you have to double-check the output?
+
+Check numbers, direct quotes, names, and anything the source implied but did not say. Extraction compresses, and compression is where small errors get in.
+
+Three checks catch most problems:
+
+- **Numbers.** Search the transcript or PDF for each figure in the draft. If you cannot find it, remove it.
+- **Quotes.** Spoken language reads differently in print. Trim filler words from a quote, but do not change the meaning, and never attribute a paraphrase to a speaker as a direct quote.
+- **Context stripped by compression.** A speaker who said "this only applies if you run Postgres 15" often loses that clause when the claim is pulled out. Add it back.
+
+Slides are a separate trap. If a talk's key number was on a slide and never spoken, the transcript does not contain it. Upload the slide deck as a PDF alongside the link and the engine can read both.
+
+## When does this workflow not work well?
+
+It struggles with sources that have no clear claims: a pure demo, a meandering panel, a document that lists features without opinions. The engine can summarize those, but a summary is not a post.
+
+For a demo, supply the story yourself in the focus line ("the part where it failed live and what we did"). With a panel, pick the one speaker who said something specific and build around that. For a feature list, choose the one feature you actually have an opinion about and ignore the rest.
+
+If the source is someone else's work, summarize and link to it. Posting another person's argument as your own is a reputation problem no tool can fix.
+
+## Frequently Asked Questions
+
+**Can AI turn a YouTube video into LinkedIn posts?**
+Yes. Ozigi reads the video's caption transcript when you paste the link, then drafts posts for X, LinkedIn, and Discord from that text. If the video has no captions, copy the transcript from the page and paste it as text. Tell the engine which single claim each post should carry, and check numbers against the video before publishing.
+
+**How many posts can you get from one video, PDF, or article?**
+Usually three to five good ones. A source holds a handful of distinct claims, such as a surprise, a number, a story, a disagreement, and a how-to. Each claim can carry one post. Forcing seven posts from a source with three claims produces filler.
+
+**What file types can Ozigi use as source material?**
+Pasted text, PDFs, text files, CSVs, images, audio, video, and URLs, with uploads up to 100MB. YouTube links are read through their transcript, and web pages through the article body.
+
+**Does Ozigi read the whole article from a URL?**
+It reads roughly the first 8,000 characters of the page body. For long articles or documentation, paste the section you want posts about so nothing past the cutoff gets lost.
+
+**Will the posts sound like me or like the video's speaker?**
+They follow the persona you select, not the source. If you gave the talk, a persona built from your writing samples keeps the posts in your written voice. Spoken style and written style differ, so the persona matters more here than with a text source.
+
+**Is it okay to repurpose someone else's video or PDF?**
+Summarizing and linking is fine. Presenting another person's argument as your own is not. If you are building posts from a source you did not create, credit it and link to it.
+
+---
+
+*Have a talk, webinar, or report sitting unused? Drop the link into [Ozigi's YouTube-to-posts tool](https://ozigi.app/from-youtube) and see which claims it pulls out. No credit card needed. For the newsletter version of this workflow, see [how to turn one newsletter into seven days of social content](https://ozigi.app/blog/repurpose-newsletter-to-social-content-2026).*

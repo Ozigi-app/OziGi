@@ -1,0 +1,119 @@
+---
+title: "How We Built the Banned Lexicon: Seven Product Decisions"
+date: "2026-11-16"
+modifiedTime: "2026-11-16"
+description: "The Banned Lexicon is a list of words, phrases, openers, closers, and sentence patterns that Ozigi will not let into a draft. This post covers the product decisions behind it for founders: why a hard list, why structure as well as vocabulary, why persona rules cannot override it, and what we chose not to promise."
+coverImage: "/images/blog/how-we-built-banned-lexicon/cover.svg"
+section: "Engineering"
+author: "Dumebi Okolo"
+authorImage: "/images/authors/dumebi-okolo.jpg"
+authorBio: "Founder and CEO of Ozigi. Writes about content strategy, LLM tooling, and the architecture small teams rely on."
+authorUrl: "https://linkedin.com/in/dumebi-okolo"
+readTime: "10 min read"
+category: "Engineering, Product, AI Writing"
+keywords: ["banned lexicon", "how to build ai writing guardrails", "ai writing filter product design", "avoid ai words in generated text", "llm output quality control for founders", "ai slop prevention product", "banned words list for ai writing", "ozigi banned lexicon", "ai content guardrails"]
+---
+
+## TL;DR
+
+The Banned Lexicon started as a short list of words in a prompt. It became a system because five assumptions turned out to be wrong. Politeness is not a constraint. A word list loses to synonyms. A rulebook the model reads and a validator the code runs will drift apart unless one file feeds both. Voice customization needs a ceiling. And a quality filter should never promise to beat a detector. This post walks through seven product decisions, what each cost us, and what you can copy if you are building anything that ships AI-written text under a customer's name.
+
+This is the product story. If you want the code, the [validator post](https://ozigi.app/blog/stopping-ai-slop-in-production-banned-lexicon-validator) has the TypeScript and the latency numbers. Here I want to cover why the feature looks the way it does, because each part exists as the answer to a specific mistake.
+
+## What is the Banned Lexicon?
+
+It is a curated set of vocabulary and patterns that signal machine-written text, enforced twice: once in the instructions the model reads, and once in code that scans every draft afterward. Today it holds 94 single words, 191 phrases, 64 sentence openers, 18 closers, and 9 regex patterns for structures that no word list can express.
+
+It is a quality filter, not a safety filter. A safety filter blocks harmful text. This one blocks bland text.
+
+## Decision 1: Why did we use a hard list and not a tone instruction?
+
+We tried the tone instruction first. "Sound natural. Avoid buzzwords." It improved output a little and then drifted back to defaults on any long piece.
+
+The reason is structural. A negative instruction is a soft preference, and the model's habits come from billions of training words. By the time the model is deep into a long draft, your one-line request competes with thousands of tokens of other context. So we stopped asking and started forbidding, with named words, a list the model sees in full, and a second check afterward. Prompts alone caught roughly 80% of problems in our testing. The last 20% is where user trust lives.
+
+The cost: a hard list is blunt. It also bans a word in cases where the word is legitimate. We accepted that, because a user can rewrite one sentence and cannot un-send an email that opens with "I hope this finds you well."
+
+## Decision 2: Why did we ban structures as well as words?
+
+Because a word list is an arms race you lose. Ban "utilize" and the model writes "employ." Ban "employ" and it writes "apply." The vocabulary moves and the pattern stays.
+
+So the lexicon includes things that are not words: the "not X but Y" contrast sentence, bold-colon paragraph prefixes, the three-beat escalation ("Fast. Faster. The fastest."), and sentence-opening adverbs followed by a comma. Nine regex patterns cover the structures that regular expressions can catch.
+
+For long-form content we went further. A separate [structural audit](https://ozigi.app/docs/the-structural-audit) runs 17 detectors for the things a vocabulary check cannot see, such as uniform paragraph length and repeated sentence openers, and scores the piece out of 100. The reasoning is the same: after you remove the obvious words, what remains is rhythm.
+
+## Decision 3: Why keep the rulebook in two places?
+
+The model needs prose. The validator needs arrays. Maintaining both by hand guarantees they diverge, and a divergence is worse than having only one. If the prompt bans a phrase the code does not check, you get silent misses. If the code checks a phrase the prompt never mentioned, the model keeps producing it and then the repair step has to catch it every time.
+
+We solved it with one source file. The structured arrays live in one module, the prose rulebook references them, and a development-time check warns if a term appears in the arrays but not in the prose. It is a small guard and it has caught real drift.
+
+Founders building a similar system should copy this pattern more than any other. Any rule that lives in two places will eventually say two different things.
+
+## Decision 4: Why did we make the checker public?
+
+We built the [free slop checker](https://ozigi.app/slop-checker) as a separate page that anyone can paste text into, no signup. It runs the same lexicon in the browser.
+
+Three reasons. First, it is proof. A claim like "our drafts avoid AI tells" is easy to make and hard to believe, but a tool you can aim at any text, including a competitor's, is easy to believe. Second, it is a teaching tool. Seeing your own draft with the hits highlighted teaches the lexicon faster than any doc. Third, it forced a clean separation: the arrays had to live in a file the browser could import without the rest of the prompt code.
+
+The cost was exposing the list. Anyone can read what we ban. We decided that was fine, because the value is in enforcement and in the repair step, not in secrecy.
+
+## Decision 5: How should a custom voice interact with the lexicon?
+
+A custom voice must never be able to switch the lexicon off. This was the most debated decision.
+
+Ozigi lets a persona include real writing samples and a style guide. Those are the strongest voice signal in the system, and they override the engine's general guidance on tone and register. But the banned-language rules still apply on top, and where a style guide and the lexicon disagree, the stricter rule wins.
+
+The failure we were guarding against is subtle. If someone's own writing contains "utilize," a perfect imitation would reproduce those tells. We decided a user's voice, minus the AI tells, was what they actually wanted. Everything in the [persona design](https://ozigi.app/blog/how-to-build-a-brand-voice-ai-can-follow) follows from that.
+
+The cost: occasionally a user's genuine habit is on the list. They can see it flagged and decide.
+
+## Decision 6: Why repair a field and not regenerate the draft?
+
+When the validator finds violations, regenerating the entire output is the obvious fix and the wrong one. It doubles latency and can introduce new violations in sections that were fine.
+
+We repair surgically. Only the fields that failed validation go back to the model, each in a small parallel call of roughly 200 tokens in and 200 out, and the clean text is spliced back into the draft. Typical added latency is one to two seconds regardless of how large the campaign is. A user waiting on a draft will tolerate two seconds. They will not tolerate a second full generation.
+
+Founders should note the general principle: validate at the smallest unit you can, and fix only that unit.
+
+## Decision 7: What did we choose not to promise?
+
+We do not promise that output will pass an AI detector. The goal of the lexicon is to cut every word that is not doing work and to make drafts readable by a skeptical human. Detector results shift as detectors change. A promise tied to them has an expiry date we do not control.
+
+We also chose limits on social formatting that are product opinions and not detection tricks: no hashtags, at most one emoji, and one em dash per post at most. Those rules come from reading what experienced readers find tiresome on LinkedIn and X.
+
+The lexicon is also never finished. The rulebook carries a review date, and we add terms spotted in the wild from users, cold email replies, and LinkedIn feeds. A static list would be stale in a quarter.
+
+## What can you reuse if you are building something similar?
+
+Five things transfer to any product that ships AI-written text under a customer's name:
+
+1. **Enforce in code, not only in the prompt.** The prompt is a request. The validator is the contract.
+2. **Ban structures, not just words.** Patterns survive synonym swaps.
+3. **Keep one source of truth.** Generate the prose and the checks from the same file, and test for drift.
+4. **Put a ceiling on customization.** Let users change voice. Do not let them disable quality rules.
+5. **Repair the smallest unit.** Fix the failed field, not the whole output.
+
+## Frequently Asked Questions
+
+**What is the Banned Lexicon?**
+It is Ozigi's curated set of words, phrases, sentence openers, closers, and structural patterns that mark text as machine-written. It is enforced in two places: in the instructions the model sees, and in code that scans each draft afterward. It holds 94 words, 191 phrases, 64 openers, 18 closers, and 9 structural patterns.
+
+**Why not just tell the AI to sound natural?**
+A tone instruction is a soft preference, and models drift back to their defaults on long outputs. Named, forbidden terms plus a code-side check catch the problems a prompt alone misses. In our testing, prompt rules alone stopped roughly 80% of slop.
+
+**Does the Banned Lexicon make text pass AI detectors?**
+We do not promise that. The purpose is to cut filler and produce text a skeptical reader finds clear. Detectors change, and any guarantee tied to them would go stale.
+
+**Can a custom persona override the Banned Lexicon?**
+No. A persona's writing samples and style guide override general tone guidance, but the lexicon still applies, and the stricter rule wins when they conflict.
+
+**Can I check my own writing against the lexicon?**
+Yes. The free slop checker at ozigi.app/slop-checker runs the lexicon on any text you paste, with no signup.
+
+**What happens when a draft contains a banned term?**
+The validator flags it and sends only the failing fields back to the model for a short, parallel repair. Typical added latency is one to two seconds, and the clean text is spliced back into the draft.
+
+---
+
+*Want drafts that arrive without the usual AI tells? [Ozigi](https://ozigi.app) applies the Banned Lexicon to every post, newsletter, and cold email. Run any text through the [free slop checker](https://ozigi.app/slop-checker) to see it in action.*
