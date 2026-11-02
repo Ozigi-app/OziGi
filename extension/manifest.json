@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ozigi for LinkedIn",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Find people matching your ideal customer on LinkedIn and send personalised connection requests from your own browser.",
   "homepage_url": "https://ozigi.app",
   "icons": {
@@ -10,7 +10,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage", "alarms", "tabs", "scripting", "debugger"],
+  "permissions": ["storage", "alarms", "tabs", "debugger"],
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://ozigi.app/*",
